@@ -68,11 +68,18 @@ function Package(
 async function requestHandler(request) {
   try {
     const { pathname } = new URL(request.url);
-    if(pathname === '/package/style.css'){
-        const response = await Deno.readFile('./style.css');
+    if (pathname === "/") {
+      const response = await Deno.readFile("./index.html");
 
       return new Response(response, {
-        headers: { "content-type": 'text/css; charset=utf-8' },
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    }
+    if (pathname === "/package/style.css" || pathname === "/style.css") {
+      const response = await Deno.readFile("./style.css");
+
+      return new Response(response, {
+        headers: { "content-type": "text/css; charset=utf-8" },
       });
     }
     const BASE_PATH = "/package/";
@@ -82,7 +89,7 @@ async function requestHandler(request) {
       "content-type": "text/html; charset=UTF-8",
       "Cache-Control":
         "s-maxage=1500, public, immutable, stale-while-revalidate=1501",
-        'Link': `</package/style.css>; rel="preload"; as="style"`
+      "Link": `<https://ga.jspm.io>; rel="preconnect", <https://fonts.googleapis.com>; rel="preconnect", </package/style.css>; rel="preload"; as="style", <https://ga.jspm.io/npm:the-new-css-reset@1.4.4/css/reset.css>; rel="preload"; as="style", <https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&display=swap>; rel="preload"; as="style"`,
     };
 
     if (pathname.startsWith(BASE_PATH)) {
@@ -134,6 +141,8 @@ async function requestHandler(request) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content=${description}>
+        <link rel="stylesheet" href="https://ga.jspm.io/npm:the-new-css-reset@1.4.4/css/reset.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&display=swap" />
         <link rel="stylesheet" href="./style.css" />
         
         ${head.join("\n")}

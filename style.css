@@ -1,11 +1,5 @@
-@import url('https://ga.jspm.io/npm:the-new-css-reset@1.4.4/css/reset.css');
-@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&display=swap");
 /* @link https://utopia.fyi/type/calculator?c=320,21,1.2,1140,24,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l */
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
+
 :root {
   --step--2: clamp(0.91rem, 0.89rem + 0.1vw, 0.96rem);
   --step--1: clamp(1.09rem, 1.05rem + 0.21vw, 1.2rem);
@@ -82,8 +76,12 @@ body {
   font-family: "Vollkorn", serif;
   font-size: var(--step--1);
 }
-jspm-package {
+jspm-package, jspm-packages-featured {
   display: block;
   max-width: 1140px;
   margin: 0 auto;
+}
+a {
+    cursor: pointer;
+    color: crimson;
 }
