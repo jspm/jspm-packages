@@ -22,15 +22,33 @@ function Aside({ license, files }) {
 </jspm-package-aside>`;
 }
 
+function Logo({ name, version }) {
+  return jsx`
+  <jspm-package-logo>
+    <div class="scene">
+  <div class="cube show-top">
+    <div class="cube__face cube__face--front">${name}</div>
+    <div class="cube__face cube__face--back"></div>
+    <div class="cube__face cube__face--right">${version}</div>
+    <div class="cube__face cube__face--left">left</div>
+    <div class="cube__face cube__face--top"><a href="/">JSPM</a></div>
+    <div class="cube__face cube__face--bottom"></div>
+  </div>
+</div>
+</jspm-package-logo>
+    `;
+}
 function Header({ homepage, name, version, description }) {
   return jsx`
  <jspm-package-header>
- <jspm-package-name>
+    <${Logo} name=${name} version=${version} />
+    <jspm-package-information>
+    <jspm-package-name>
    <h1><a href=${homepage}>${name}</a></h1>
  </jspm-package-name>
  <jspm-package-version>${version}</jspm-package-version>
  <jspm-package-description>${description}</jspm-package-description>
-
+ </jspm-package-information>
 </jspm-package-header>
  `;
 }
@@ -89,7 +107,8 @@ async function requestHandler(request) {
       "content-type": "text/html; charset=UTF-8",
       "Cache-Control":
         "s-maxage=1500, public, immutable, stale-while-revalidate=1501",
-      "Link": `<https://ga.jspm.io>; rel="preconnect", <https://fonts.googleapis.com>; rel="preconnect", </package/style.css>; rel="preload"; as="style", <https://ga.jspm.io/npm:the-new-css-reset@1.4.4/css/reset.css>; rel="preload"; as="style", <https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&display=swap>; rel="preload"; as="style"`,
+      "Link":
+        `<https://ga.jspm.io>; rel="preconnect", <https://fonts.googleapis.com>; rel="preconnect", </package/style.css>; rel="preload"; as="style", <https://ga.jspm.io/npm:the-new-css-reset@1.4.4/css/reset.css>; rel="preload"; as="style", <https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&display=swap>; rel="preload"; as="style"`,
     };
 
     if (pathname.startsWith(BASE_PATH)) {
@@ -141,7 +160,7 @@ async function requestHandler(request) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content=${description}>
-        <link rel="stylesheet" href="https://ga.jspm.io/npm:the-new-css-reset@1.4.4/css/reset.css" />
+        <link rel="stylesheet" href="https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&display=swap" />
         <link rel="stylesheet" href="./style.css" />
         
