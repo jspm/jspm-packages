@@ -11,10 +11,10 @@ async function requestHandler(request) {
   try {
     const { pathname } = new URL(request.url);
     if (pathname === "/") {
-      const response = await getRecentPackages();
-      const packages = response?.objects || [];
-      FeaturedPackages.fetchPackages = () => packages;
-      const indexPage = renderSSR(jsx`<${FeaturedPackages}  />`);
+      const packages = await FeaturedPackages.fetchPackages();
+      const indexPage = renderSSR(
+        jsx`<${FeaturedPackages} packages=${packages}  />`
+      );
       const { body, head, footer } = Helmet.SSR(indexPage);
 
       const html = `
@@ -24,17 +24,12 @@ async function requestHandler(request) {
             <title>JSPM Packages</title>
             <meta charset="UTF-8">
             <link rel="stylesheet" href="https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css" />
-            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&display=swap" />
             <link rel="stylesheet" href="./style.css" />
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap" />
             ${head.join("\n")}
           </head>
           <body>
-          <main>
-            <jspm-packages-featured>
-              <h1>Featured Packages</h1>
-              ${body}
-            </jspm-packages-featured>
-          </main>
+            ${body}
             ${footer.join("\n")}
           </body>
         </html>`;
@@ -104,10 +99,9 @@ async function requestHandler(request) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content=${description}>
         <link rel="stylesheet" href="https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&display=swap" />
-        <link rel="stylesheet" href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css" />
         <link rel="stylesheet" href="./style.css" />
-        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap" />
+        <link rel="stylesheet" href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css" />
         ${head.join("\n")}
         <srcipt src="https://ga.jspm.io/npm:prismjs@1.25.0/prism.js"></script>
       </head>

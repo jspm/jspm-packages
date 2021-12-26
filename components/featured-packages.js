@@ -1,25 +1,53 @@
-import { jsx, Suspense, Component } from "nano-jsx";
+import { jsx, Component, Helmet } from "nano-jsx";
+import { Header } from "./header.js";
+import { Footer } from "./footer.js";
+import { getRecentPackages } from "../utils.js";
 
 export class FeaturedPackages extends Component {
-  static fetchPackages = () => [];
+  static async fetchPackages() {
+    const result = await getRecentPackages();
+    return result?.objects || [];
+  }
 
   render() {
+    const { packages = [] } = this.props;
     return jsx`
-        <${Suspense} cache packages=${
-      FeaturedPackages.fetchPackages || fetchPackages
-    } fallback=${jsx`<div>Loading....</div>`}>
-            <${PackageList} />
-        </${Suspense}>`;
+      <div>
+        <${Header} />
+        List of some of featured packages
+        <ul class="list-style">
+          ${packages.map((item) => {
+            const { name, description, version } = item.package;
+            return jsx`
+            <li class="package-wrapper">
+              <div class="package-name">
+                ${name}
+              </div>
+              ${description}
+            </li>`;
+          })}
+        </ul>
+        <${Footer} />
+        <${Helmet}>
+          <style>
+            .list-style {
+              list-style: none;
+              padding-left: 0px;
+            }
+            
+            .package-wrapper {
+              font-weight: 200;
+              margin-top: var(--dl-space-space-oneandhalfunits);
+            }
+
+            .package-name {
+              font-size: var(--dl-space-space-oneandhalfunits);
+              font-family: 'Inter';
+              font-weight: 400;
+              margin-bottom: var(--dl-space-space-unit);
+            }
+          </style>
+        </${Helmet}>
+      </div>`;
   }
 }
-
-const PackageList = async ({ packages = [] }) => {
-  return jsx`
-    <ul>
-       ${packages.map((item) => {
-         //  console.log(item.package.name);
-         return jsx`<li>Some name </li>`;
-       })}
-    </ul>
-    `;
-};
