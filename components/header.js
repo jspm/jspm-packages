@@ -1,10 +1,21 @@
-import { jsx, Helmet } from "nano-jsx";
+import { jsx, Helmet, Component } from "nano-jsx";
 
-export const Header = () => {
-  return jsx`
-    <div>
-    <div class="header-header">
-      <div class="header-container">
+export class Header extends Component {
+  name = "";
+
+  hadleChange = (ev) => {
+    this.name = ev.target.value;
+    this.handleSearch();
+  };
+
+  handleSearch = () => {
+    console.log(this.name);
+  };
+
+  render() {
+    return jsx`
+    <div class="header-header" id="app-header">
+      <div class="header-scontainer">
         <div class="header-logo">
           <img
             alt="image"
@@ -20,8 +31,9 @@ export const Header = () => {
             placeholder="Search for packages..."
             autocomplete="on"
             class="header-textinput search_input"
+            onChange=${this.hadleChange}
           />
-          <button class="search_button"><span>Search</span></button>
+          <button class="search_button" onClick=${this.handleSearch}><span>Search</span></button>
         </div>
       </div>
       <div class="header-container1">
@@ -35,8 +47,9 @@ export const Header = () => {
         />
       </div>
     </div>
+
     <${Helmet}>
-        <style>
+      <style data-page-name="header">
         .search_button {
             color: var(--dl-color-gray-black);
             display: inline-block;
@@ -153,6 +166,10 @@ export const Header = () => {
           }
         </style>
     </${Helmet}>
-  </div>
+
+    <${Helmet} footer>
+      <script type="module" src="./hydrations/header.js"></script>
+    </${Helmet}>
     `;
-};
+  }
+}

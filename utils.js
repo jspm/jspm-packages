@@ -10,11 +10,10 @@ export const getRecentPackages = async () => {
   const maintenance = getRandomFloat(0, 1.0);
   const quality = getRandomFloat(0.5, 1.0);
   const popularity = getRandomFloat(0.3, 1.0);
+  const url = `https://registry.npmjs.org/-/v1/search?text=not:insecure&maintenance=${maintenance}&quality=${quality}&popularity=${popularity}`;
 
-  const { default: recentPackages } = await import(
-    `https://registry.npmjs.org/-/v1/search?text=not:insecure&maintenance=${maintenance}&quality=${quality}&popularity=${popularity}`,
-    { assert: { type: "json" } }
-  );
+  const result = await fetch(url);
+  const recentPackages = await result.json();
 
   return recentPackages;
 };

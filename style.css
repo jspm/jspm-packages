@@ -110,6 +110,7 @@ body {
   font-size: var(--dl-space-space-unit);
   margin-right: auto;
   margin-left: auto;
+  padding: 3rem;
 }
 
 jspm-package, jspm-packages-featured {

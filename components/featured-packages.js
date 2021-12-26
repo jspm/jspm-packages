@@ -12,7 +12,7 @@ export class FeaturedPackages extends Component {
   render() {
     const { packages = [] } = this.props;
     return jsx`
-      <div>
+      <div id="featured-packages">
         <${Header} />
         List of some of featured packages
         <ul class="list-style">
@@ -21,7 +21,7 @@ export class FeaturedPackages extends Component {
             return jsx`
             <li class="package-wrapper">
               <div class="package-name">
-                ${name}
+                ${name} <span class="package-version">${version}</span>
               </div>
               ${description}
             </li>`;
@@ -40,11 +40,16 @@ export class FeaturedPackages extends Component {
               margin-top: var(--dl-space-space-oneandhalfunits);
             }
 
+            .package-version {
+              font-weight: 200;
+              font-size: var(--dl-space-space-unit);
+            }
+
             .package-name {
               font-size: var(--dl-space-space-oneandhalfunits);
               font-family: 'Inter';
               font-weight: 400;
-              margin-bottom: var(--dl-space-space-unit);
+              margin-bottom: var(--dl-space-space-halfunit);
             }
           </style>
         </${Helmet}>

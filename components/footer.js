@@ -54,7 +54,7 @@ export const Footer = () => {
       </footer>
     </div>
     <${Helmet}> 
-        <style>
+        <style data-page-name="footer">
         .footer-container {
             width: 100%;
             display: flex;
