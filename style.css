@@ -9,6 +9,13 @@
   --step-3: clamp(2.27rem, 2.01rem + 1.29vw, 2.93rem);
   --step-4: clamp(2.72rem, 2.36rem + 1.83vw, 3.66rem);
   --step-5: clamp(3.27rem, 2.75rem + 2.56vw, 4.58rem);
+  --dl-color-gray-500: #595959;
+  --dl-color-gray-700: #999999;
+  --dl-color-gray-900: #D9D9D9;
+  --dl-color-jspm-200: #fdf5e2ff;
+  --dl-color-jspm-300: #ffe4adff;
+  --dl-color-jspm-400: #ffbf76ff;
+  --dl-color-jspm-500: #f69220ff;
 }
 
 jspm-package-content-grid {
@@ -19,6 +26,7 @@ jspm-package-content-grid {
   align-items: start;
   justify-content: center;
 }
+
 jspm-package-name,
 jspm-package-version,
 jspm-package-description,
@@ -26,6 +34,7 @@ jspm-package-license,
 jspm-package-file {
   display: block;
 }
+
 jspm-package-header {
   display: flex;
   margin-bottom: var(--step-5);
@@ -38,6 +47,7 @@ jspm-package-name h1 {
 jspm-package-name h1 a {
   color: black;
 }
+
 h1 {
   font-family: "Bebas Neue", cursive;
   font-family: "Abril Fatface", cursive;
@@ -73,7 +83,7 @@ code {
   font-size: var(--step--2);
 }
 body {
-  font-family: "Vollkorn", serif;
+  font-family: "Inter", sans-serif;
   font-size: var(--step--1);
 }
 jspm-package, jspm-packages-featured {

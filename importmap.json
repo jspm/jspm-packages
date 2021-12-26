@@ -1,0 +1,10 @@
+{
+    "imports": {
+        "he": "https://ga.jspm.io/npm:he@1.2.0/he.js",
+        "marked": "https://ga.jspm.io/npm:marked@4.0.8/lib/marked.esm.js",
+        "nano-jsx": "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js",
+        "prismjs": "https://ga.jspm.io/npm:prismjs@1.25.0/prism.js",
+        "emoji": "https://deno.land/x/emoji@0.1.2/mod.ts",
+        "dompurify": "https://ga.jspm.io/npm:dompurify@2.3.4/dist/purify.js"
+    }
+}
