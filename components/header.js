@@ -15,8 +15,8 @@ export class Header extends Component {
   render() {
     return jsx`
     <div class="header-header" id="app-header">
-      <div class="header-scontainer">
-        <div class="header-logo">
+      <div class="header-container">
+        <a href="/" class="header-logo">
           <img
             alt="image"
             src="https://jspm-registry.teleporthq.app/playground_assets/jspm.png"
@@ -106,7 +106,14 @@ export class Header extends Component {
             margin-right: var(--dl-space-space-unit);
             flex-direction: row;
             justify-content: center;
+            text-decoration: none;
+            color: var(--dl-color-gray-black);
           }
+
+          .header-logo:visited {
+            text-decoration: none;
+          }
+
           .header-image {
             width: 32px;
             object-fit: cover;
@@ -149,6 +156,9 @@ export class Header extends Component {
             }
             .header-container {
               margin-bottom: var(--dl-space-space-unit);
+            }
+            .header-container1 {
+              margin-top: var(--dl-space-space-unit);
             }
           }
           @media(max-width: 479px) {

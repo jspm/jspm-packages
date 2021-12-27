@@ -1,7 +1,9 @@
-import { jsx } from "https://ga.jspm.io/npm:nano-jsx@0.0.25/lib/index.js";
+import { jsx } from "nano-jsx";
 import { Logo } from "./logo.js";
 
-export const PackageHeader = ({ homepage, name, version, description }) => {
+export const PackageHeader = (props) => {
+  const { homepage, name, version, description } = props;
+
   return jsx`
    <jspm-package-header>
       <${Logo} name=${name} version=${version} />

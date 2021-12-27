@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.118.0/http/server.ts";
 import { parse, relative } from "https://deno.land/std@0.119.0/path/mod.ts";
 import { Helmet, jsx, renderSSR } from "nano-jsx";
+import { Package } from "./components/package.js";
 import { FeaturedPackages } from "./components/featured-packages.js";
 import { pageServingHeaders, renderMarkdownContent } from "./utils.js";
 const importMap = JSON.parse(Deno.readTextFileSync("./importmap.json"));
@@ -112,40 +113,46 @@ async function requestHandler(request) {
           )
           .text();
 
-        const readmeHTML = renderMarkdownContent(readmeFileContent);
+        try {
+          const readmeHTML = renderMarkdownContent(readmeFileContent);
+          const app = renderSSR(
+            jsx`<${Package} name=${name} description=${description} version=${version} homepage=${homepage} license=${license} files=${files} exports=${exports} readme=${readmeHTML} keywords=${keywords} />`
+          );
+          const { body, head, footer } = Helmet.SSR(app);
+          /* Hack to SSR readme :! */
+          const pieces = body.split("<package-readme-placeholder>");
 
-        const app = renderSSR(
-          jsx`<${Package} name=${name} description=${description} version=${version} homepage=${homepage} license=${license} files=${files} exports=${exports} readme=${readmeHTML} keywords=${keywords} />`
-        );
+          const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <title>${name}@${version} - JSPM</title>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta name="description" content=${description}>
+          <link rel="stylesheet" href="https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css" />
+          <link rel="stylesheet" href="./style.css" />
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap" />
+          <link rel="stylesheet" href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css" />
+          ${head.join("\n")}
+          <srcipt src="https://ga.jspm.io/npm:prismjs@1.25.0/prism.js"></script>
+        </head>
+        <body>
+          ${pieces[0]}
+          ${readmeHTML}
+          ${pieces[1]}
+          ${footer.join("\n")}
+        </body>
+      </html>`;
 
-        const { body, head, footer } = Helmet.SSR(app);
-
-        // const css = await Deno.readTextFile('./style.css');
-
-        const html = `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <title>${name}@${version} - JSPM</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content=${description}>
-        <link rel="stylesheet" href="https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css" />
-        <link rel="stylesheet" href="./style.css" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap" />
-        <link rel="stylesheet" href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css" />
-        ${head.join("\n")}
-        <srcipt src="https://ga.jspm.io/npm:prismjs@1.25.0/prism.js"></script>
-      </head>
-      <body>
-        ${body}
-        ${footer.join("\n")}
-      </body>
-    </html>`;
-
-        return new Response(html, {
-          headers: pageServingHeaders,
-        });
+          return new Response(html, {
+            headers: pageServingHeaders,
+          });
+        } catch (e) {
+          console.error(`Failed in generating package-page ${name}@${version}`);
+          console.error(e);
+          return new Response("500", { status: 500 });
+        }
       }
     }
 

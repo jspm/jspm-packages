@@ -40,12 +40,19 @@
 }
 
 jspm-package-content-grid {
-  display: grid;
-  grid-template-columns: 5fr 2fr;
-  grid-column-gap: 20px;
-  grid-row-gap: 20px;
-  align-items: start;
-  justify-content: center;
+  display: flex;
+  flex-direction: row;
+}
+
+jspm-package-readme {
+  display: block;
+  flex-grow: 5;
+  width: 800px;
+}
+
+jspm-package-aside {
+  flex-grow: 3;
+  padding-left: var(--dl-space-space-unit);
 }
 
 jspm-package-name,
@@ -58,7 +65,6 @@ jspm-package-file {
 
 jspm-package-header {
   display: flex;
-  margin-bottom: var(--step-5);
   font-family: "Major Mono Display", monospace;
 }
 
@@ -90,13 +96,14 @@ h2 {
   font-size: var(--step-3);
 }
 h3 {
-  font-weight: 400;
+  font-weight: 800;
 }
 h4 {
   font-size: var(--step-1);
 }
 pre {
   border: dotted 1px grey;
+  overflow-x: scroll;
   padding: 10px;
 }
 code {
@@ -110,7 +117,6 @@ body {
   font-size: var(--dl-space-space-unit);
   margin-right: auto;
   margin-left: auto;
-  padding: 3rem;
 }
 
 jspm-package, jspm-packages-featured {
@@ -121,6 +127,7 @@ jspm-package, jspm-packages-featured {
 a {
     cursor: pointer;
     color: crimson;
+    text-decoration: none;
 }
 * { box-sizing: border-box; }
 

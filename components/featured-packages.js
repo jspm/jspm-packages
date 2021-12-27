@@ -12,30 +12,34 @@ export class FeaturedPackages extends Component {
   render() {
     const { packages = [] } = this.props;
     return jsx`
-      <div id="featured-packages">
+      <div class="featured-packages-wrapper"  id="featured-packages">
         <${Header} />
         List of some of featured packages
         <ul class="list-style">
           ${packages.map((item) => {
             const { name, description, version } = item.package;
             return jsx`
-            <li class="package-wrapper">
-              <div class="package-name">
+            <li class="package-item-wrapper">
+              <a class="package-name" href="/package/${name}@${version}">
                 ${name} <span class="package-version">${version}</span>
-              </div>
+              </a>
               ${description}
             </li>`;
           })}
         </ul>
         <${Footer} />
         <${Helmet}>
-          <style>
+          <style data-page-name="featured-packages">
+            .featured-packages-wrapper {
+              padding: var(--dl-space-space-oneandhalfunits);
+            }
+
             .list-style {
               list-style: none;
               padding-left: 0px;
             }
             
-            .package-wrapper {
+            .package-item-wrapper {
               font-weight: 200;
               margin-top: var(--dl-space-space-oneandhalfunits);
             }
@@ -46,6 +50,7 @@ export class FeaturedPackages extends Component {
             }
 
             .package-name {
+              display: block;
               font-size: var(--dl-space-space-oneandhalfunits);
               font-family: 'Inter';
               font-weight: 400;
