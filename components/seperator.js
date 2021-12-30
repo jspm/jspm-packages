@@ -1,6 +1,9 @@
-import { jsx, Helmet } from "nano-jsx";
+import {
+  jsx,
+  Helmet,
+} from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
 
-export const Seperator = () => {
+function Seperator() {
   return jsx`
     <div class="seperator-seperator">
       <div class="seperator-container"></div>
@@ -58,4 +61,6 @@ export const Seperator = () => {
         </style>
     </${Helmet}>
   `;
-};
+}
+
+export { Seperator };

@@ -1,7 +1,7 @@
-import { jsx } from "nano-jsx";
+import { jsx } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
 import { Seperator } from "./seperator.js";
 
-export const Aside = ({ license, files }) => {
+function Aside({ license, files }) {
   return jsx`<jspm-package-aside>
   <aside>
         <div>
@@ -16,4 +16,6 @@ export const Aside = ({ license, files }) => {
         </jspm-package-files>
       </aside>
   </jspm-package-aside>`;
-};
+}
+
+export { Aside };

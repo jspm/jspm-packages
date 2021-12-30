@@ -1,19 +1,10 @@
-import { jsx, Helmet, Component } from "nano-jsx";
+import {
+  jsx,
+  Helmet,
+} from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
 
-export class Header extends Component {
-  name = "";
-
-  hadleChange = (ev) => {
-    this.name = ev.target.value;
-    this.handleSearch();
-  };
-
-  handleSearch = () => {
-    console.log(this.name);
-  };
-
-  render() {
-    return jsx`
+function Header() {
+  return jsx`
     <div class="header-header" id="app-header">
       <div class="header-container">
         <a href="/" class="header-logo">
@@ -31,9 +22,8 @@ export class Header extends Component {
             placeholder="Search for packages..."
             autocomplete="on"
             class="header-textinput search_input"
-            onChange=${this.hadleChange}
           />
-          <button class="search_button" onClick=${this.handleSearch}><span>Search</span></button>
+          <button class="search_button"><span>Search</span></button>
         </div>
       </div>
       <div class="header-container1">
@@ -176,10 +166,7 @@ export class Header extends Component {
           }
         </style>
     </${Helmet}>
-
-    <${Helmet} footer>
-      <script type="module" src="./hydrations/header.js"></script>
-    </${Helmet}>
     `;
-  }
 }
+
+export { Header };

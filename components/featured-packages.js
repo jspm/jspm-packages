@@ -1,17 +1,12 @@
-import { jsx, Component, Helmet } from "nano-jsx";
+import {
+  jsx,
+  Helmet,
+} from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
-import { getRecentPackages } from "../utils.js";
 
-export class FeaturedPackages extends Component {
-  static async fetchPackages() {
-    const result = await getRecentPackages();
-    return result?.objects || [];
-  }
-
-  render() {
-    const { packages = [] } = this.props;
-    return jsx`
+function FeaturedPackages({ packages = [] }) {
+  return jsx`
       <div class="featured-packages-wrapper"  id="featured-packages">
         <${Header} />
         List of some of featured packages
@@ -59,5 +54,6 @@ export class FeaturedPackages extends Component {
           </style>
         </${Helmet}>
       </div>`;
-  }
 }
+
+export { FeaturedPackages };

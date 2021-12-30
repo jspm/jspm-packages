@@ -1,6 +1,6 @@
-import { jsx } from "nano-jsx";
+import { jsx } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
 
-export const Logo = ({ name, version }) => {
+function Logo({ name, version }) {
   return jsx`
     <jspm-package-logo>
       <div class="scene">
@@ -15,4 +15,6 @@ export const Logo = ({ name, version }) => {
   </div>
   </jspm-package-logo>
       `;
-};
+}
+
+export { Logo };

@@ -1,6 +1,9 @@
-import { jsx, Helmet } from "nano-jsx";
+import {
+  jsx,
+  Helmet,
+} from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
 
-export const Footer = () => {
+function Footer() {
   return jsx`
     <div>
     <div class="footer-container">
@@ -255,4 +258,6 @@ export const Footer = () => {
     </${Helmet}>
   </div>
     `;
-};
+}
+
+export { Footer };

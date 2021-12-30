@@ -1,11 +1,11 @@
-import { jsx } from "nano-jsx";
+import { jsx } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
 import { PackageHeader } from "./package-header.js";
 import { Readme } from "./readme.js";
 import { Aside } from "./aside.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
 
-export const Package = (props) => {
+function Package(props) {
   const {
     name,
     description,
@@ -30,4 +30,6 @@ export const Package = (props) => {
         </jspm-package-content-grid>
       </jspm-package>
       <${Footer} />`;
-};
+}
+
+export { Package };
