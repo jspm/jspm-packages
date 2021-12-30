@@ -1,4 +1,10 @@
 /* @link https://utopia.fyi/type/calculator?c=320,21,1.2,1140,24,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l */
+/*
+  https://codesandbox.io/s/xewcm?file=/style.css:2541-2862
+  https://play.teleporthq.io/projects/jspm-registry
+
+  for css-references
+*/
 
 :root {
   --step--2: clamp(0.91rem, 0.89rem + 0.1vw, 0.96rem);
@@ -9,16 +15,46 @@
   --step-3: clamp(2.27rem, 2.01rem + 1.29vw, 2.93rem);
   --step-4: clamp(2.72rem, 2.36rem + 1.83vw, 3.66rem);
   --step-5: clamp(3.27rem, 2.75rem + 2.56vw, 4.58rem);
+  --dl-color-gray-black: #000000;
+  --dl-color-gray-white: #FFFFFF;
+  --dl-color-gray-500: #595959;
+  --dl-color-gray-700: #999999;
+  --dl-color-gray-900: #D9D9D9;
+  --dl-color-jspm-200: #fdf5e2ff;
+  --dl-color-jspm-300: #ffe4adff;
+  --dl-color-jspm-400: #ffbf76ff;
+  --dl-color-jspm-500: #f69220ff;
+  --dl-color-jspm-placeholder: #fbf6f5ff;
+  --dl-color-primary-js-primary: #ffc95dff;
+  --dl-space-space-halfunit: 8px;
+  --dl-space-space-unit: 16px;
+  --dl-space-space-oneandhalfunits: 24px;
+  --dl-space-space-sixunits: 96px;
+  --dl-space-space-twounits: 32px;
+  --dl-space-space-fiveunits: 80px;
+  --dl-space-space-fourunits: 64px;
+  --dl-space-space-threeunits: 48px;
+  --dl-radius-radius-radius2: 2px;
+  --dl-radius-radius-radius4: 4px;
+  --dl-radius-radius-radius8: 8px;
 }
 
 jspm-package-content-grid {
-  display: grid;
-  grid-template-columns: 5fr 2fr;
-  grid-column-gap: 20px;
-  grid-row-gap: 20px;
-  align-items: start;
-  justify-content: center;
+  display: flex;
+  flex-direction: row;
 }
+
+jspm-package-readme {
+  display: block;
+  flex-grow: 5;
+  width: 800px;
+}
+
+jspm-package-aside {
+  flex-grow: 3;
+  padding-left: var(--dl-space-space-unit);
+}
+
 jspm-package-name,
 jspm-package-version,
 jspm-package-description,
@@ -26,29 +62,30 @@ jspm-package-license,
 jspm-package-file {
   display: block;
 }
+
 jspm-package-header {
   display: flex;
-  margin-bottom: var(--step-5);
   font-family: "Major Mono Display", monospace;
 }
+
 jspm-package-name h1 {
   font-family: "Major Mono Display", monospace;
   font-size: var(--step-5);
 }
+
 jspm-package-name h1 a {
   color: black;
 }
+
 h1 {
-  font-family: "Bebas Neue", cursive;
-  font-family: "Abril Fatface", cursive;
-  font-size: var(--step-4);
+  font-size: var(--dl-space-space-twounits);
 }
+
 h1 a {
   text-decoration: none;
 }
 
 h2,
-h3,
 h4,
 h5,
 h6 {
@@ -59,31 +96,38 @@ h2 {
   font-size: var(--step-3);
 }
 h3 {
-  font-size: var(--step-2);
+  font-weight: 800;
 }
 h4 {
   font-size: var(--step-1);
 }
 pre {
   border: dotted 1px grey;
+  overflow-x: scroll;
   padding: 10px;
 }
 code {
   font-family: "Source Code Pro", monospace;
   font-size: var(--step--2);
 }
+
 body {
-  font-family: "Vollkorn", serif;
-  font-size: var(--step--1);
+  max-width: 1140px;
+  font-family: "Inter", sans-serif;
+  font-size: var(--dl-space-space-unit);
+  margin-right: auto;
+  margin-left: auto;
 }
+
 jspm-package, jspm-packages-featured {
   display: block;
-  max-width: 1140px;
   margin: 0 auto;
 }
+
 a {
     cursor: pointer;
     color: crimson;
+    text-decoration: none;
 }
 * { box-sizing: border-box; }
 

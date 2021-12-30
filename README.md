@@ -1,1 +1,1 @@
-`deno run -A --watch --unstable server.js `
+`deno run -A --watch --unstable server.js`
