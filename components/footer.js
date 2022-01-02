@@ -5,7 +5,6 @@ import {
 
 function Footer() {
   return jsx`
-    <div>
     <div class="footer-container">
       <footer class="footer-footer">
         <div class="footer-container1">
@@ -77,6 +76,8 @@ function Footer() {
             flex-direction: column;
             padding-bottom: var(--dl-space-space-twounits);
             justify-content: space-between;
+            background-color: var(--dl-color-gray-900);
+            margin-top: var(--dl-space-space-unit);
           }
           .footer-container1 {
             width: 100%;
@@ -96,6 +97,7 @@ function Footer() {
             margin-right: 5rem;
             flex-direction: row;
             justify-content: space-between;
+            flex-wrap: wrap;
           }
           .footer-product-container {
             flex: 0 0 auto;
@@ -256,7 +258,6 @@ function Footer() {
           }          
         </style>
     </${Helmet}>
-  </div>
     `;
 }
 

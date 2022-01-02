@@ -90,6 +90,7 @@ function Header() {
             flex-direction: row;
             justify-content: center;
           }
+
           .header-logo {
             display: flex;
             align-items: center;
@@ -150,6 +151,9 @@ function Header() {
             .header-container1 {
               margin-top: var(--dl-space-space-unit);
             }
+            .header-container {
+              width: 100%;
+            }
           }
           @media(max-width: 479px) {
             .header-container {
@@ -162,6 +166,9 @@ function Header() {
             }
             .header-search {
               margin-bottom: var(--dl-space-space-unit);
+            }
+            .header-textinput {
+              width: auto;
             }
           }
         </style>

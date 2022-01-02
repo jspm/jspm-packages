@@ -7,9 +7,8 @@ import { Footer } from "./footer.js";
 
 function FeaturedPackages({ packages = [] }) {
   return jsx`
-      <div class="featured-packages-wrapper"  id="featured-packages">
+      <div id="featured-packages">
         <${Header} />
-        List of some of featured packages
         <ul class="list-style">
           ${packages.map((item) => {
             const { name, description, version } = item.package;
@@ -18,20 +17,18 @@ function FeaturedPackages({ packages = [] }) {
               <a class="package-name" href="/package/${name}@${version}">
                 ${name} <span class="package-version">${version}</span>
               </a>
-              ${description}
+              <span class="description">${description}</span>
             </li>`;
           })}
         </ul>
         <${Footer} />
         <${Helmet}>
           <style data-page-name="featured-packages">
-            .featured-packages-wrapper {
-              padding: var(--dl-space-space-oneandhalfunits);
-            }
-
             .list-style {
               list-style: none;
-              padding-left: 0px;
+              padding-left: var(--dl-space-space-unit);
+              margin: 0px;
+              width: 100%;
             }
             
             .package-item-wrapper {
@@ -51,6 +48,14 @@ function FeaturedPackages({ packages = [] }) {
               font-weight: 400;
               margin-bottom: var(--dl-space-space-halfunit);
             }
+
+            .description {
+              overflow: hidden;
+              white-space: normal;
+              word-break: break-word;
+              line-height: 1.5;
+            }
+
           </style>
         </${Helmet}>
       </div>`;
