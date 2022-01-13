@@ -1,0 +1,33 @@
+version = 0.1
+
+[[task]]
+  name = "deno"
+  deps = ["build"]
+  run = "deno run -A server.js"
+
+[[task]]
+  name = "build"
+  deps = ["jsx", "copy-js", "jspm"]
+
+[[task]]
+  name = "jsx"
+  target = "lib/#.js"
+  deps = ["src/#.jsx"]
+  template = "swc"
+  [task.template-options.config]
+    "jsc.parser.jsx" = true
+    "jsc.transform.react.pragma" = "h"
+
+[[task]]
+  name = "copy-js"
+  target = "lib/#.js"
+  deps = ["src/#.js"]
+  run = "cp $DEP $TARGET"
+
+[[task]]
+  name = "jspm"
+  template = "jspm"
+  target = "lib/import-map-example.html"
+  deps = ["src/import-map-example.html"]
+  [task.template-options]
+    env = ["browser", "production"]

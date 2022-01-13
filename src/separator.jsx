@@ -1,18 +1,16 @@
-import {
-  jsx,
-  Helmet,
-} from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
+import { h, Helmet } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
 
-function Seperator() {
-  return jsx`
-    <div class="seperator-seperator">
-      <div class="seperator-container"></div>
-      <div class="seperator-container1"></div>
-      <div class="seperator-container2"></div>
-      <div class="seperator-container3"></div>
-    </div>
-    <${Helmet}>
-        <style data-page-name="seperator">
+export function Seperator() {
+  return (
+    <div>
+      <div class="seperator-seperator">
+        <div class="seperator-container"></div>
+        <div class="seperator-container1"></div>
+        <div class="seperator-container2"></div>
+        <div class="seperator-container3"></div>
+      </div>
+      <Helmet>
+        <style data-page-name="seperator">{`
         .seperator-seperator {
             flex: 0 0 auto;
             width: 100%;
@@ -58,9 +56,8 @@ function Seperator() {
             border-top-right-radius: var(--dl-radius-radius-radius8);
             border-bottom-right-radius: var(--dl-radius-radius-radius8);
           }
-        </style>
-    </${Helmet}>
-  `;
+        `}</style>
+      </Helmet>
+    </div>
+  );
 }
-
-export { Seperator };
