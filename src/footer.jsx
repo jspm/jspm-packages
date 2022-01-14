@@ -1,62 +1,60 @@
-import {
-  jsx,
-  Helmet,
-} from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
+import { h, Helmet } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
 
-function Footer() {
-  return jsx`
-    <div class="footer-container">
-      <footer class="footer-footer">
-        <div class="footer-container1">
-          <img
-            alt="image"
-            src="https://jspm-registry.teleporthq.app/playground_assets/jspm.png"
-            class="footer-image"
-          />
-          <div class="footer-container2">
-            <div class="footer-product-container">
-              <span class="footer-text">Docs</span>
-              <span class="footer-text01">Get Started</span>
-              <span class="footer-text02">Workspace</span>
-              <span class="footer-text03">.npmrc</span>
-            </div>
-            <div class="footer-company-container">
-              <span class="footer-text04">Community</span>
-              <span class="footer-text05">Getting Started</span>
-              <span class="footer-text06">Workspace</span>
-              <span class="footer-text07">.npmrc</span>
-            </div>
-            <div class="footer-company-container1">
-              <span class="footer-text08">Contributing</span>
-              <span class="footer-text09">Getting Started</span>
-              <span class="footer-text10">Workspace</span>
-              <span class="footer-text11">.npmrc</span>
-            </div>
-          </div>
-        </div>
-        <div class="footer-separator"></div>
-        <div class="footer-copyright">
-          <span class="footer-text12"><span>Copyright © 2015-2021</span></span>
-          <div class="footer-socials">
-            <span class="footer-text14">Follow Us</span>
-            <div class="footer-icon-group">
-              <img
-                alt="image"
-                src="https://jspm-registry.teleporthq.app/playground_assets/github.svg"
-                class="footer-image1"
-              />
-              <svg viewBox="0 0 950.8571428571428 1024" class="footer-icon">
-                <path
-                  d="M925.714 233.143c-25.143 36.571-56.571 69.143-92.571 95.429 0.571 8 0.571 16 0.571 24 0 244-185.714 525.143-525.143 525.143-104.571 0-201.714-30.286-283.429-82.857 14.857 1.714 29.143 2.286 44.571 2.286 86.286 0 165.714-29.143 229.143-78.857-81.143-1.714-149.143-54.857-172.571-128 11.429 1.714 22.857 2.857 34.857 2.857 16.571 0 33.143-2.286 48.571-6.286-84.571-17.143-148-91.429-148-181.143v-2.286c24.571 13.714 53.143 22.286 83.429 23.429-49.714-33.143-82.286-89.714-82.286-153.714 0-34.286 9.143-65.714 25.143-93.143 90.857 112 227.429 185.143 380.571 193.143-2.857-13.714-4.571-28-4.571-42.286 0-101.714 82.286-184.571 184.571-184.571 53.143 0 101.143 22.286 134.857 58.286 41.714-8 81.714-23.429 117.143-44.571-13.714 42.857-42.857 78.857-81.143 101.714 37.143-4 73.143-14.286 106.286-28.571z"
-                ></path>
-              </svg>
+export function Footer() {
+  return (
+    <div>
+      <div class="footer-container">
+        <footer class="footer-footer">
+          <div class="footer-container1">
+            <img
+              alt="image"
+              src="https://jspm-registry.teleporthq.app/playground_assets/jspm.png"
+              class="footer-image"
+            />
+            <div class="footer-container2">
+              <div class="footer-product-container">
+                <span class="footer-text">Docs</span>
+                <span class="footer-text01">Get Started</span>
+                <span class="footer-text02">Workspace</span>
+                <span class="footer-text03">.npmrc</span>
+              </div>
+              <div class="footer-company-container">
+                <span class="footer-text04">Community</span>
+                <span class="footer-text05">Getting Started</span>
+                <span class="footer-text06">Workspace</span>
+                <span class="footer-text07">.npmrc</span>
+              </div>
+              <div class="footer-company-container1">
+                <span class="footer-text08">Contributing</span>
+                <span class="footer-text09">Getting Started</span>
+                <span class="footer-text10">Workspace</span>
+                <span class="footer-text11">.npmrc</span>
+              </div>
             </div>
           </div>
-        </div>
-      </footer>
-    </div>
-    <${Helmet}> 
-        <style data-page-name="footer">
+          <div class="footer-separator"></div>
+          <div class="footer-copyright">
+            <span class="footer-text12"><span>Copyright © 2015-2021</span></span>
+            <div class="footer-socials">
+              <span class="footer-text14">Follow Us</span>
+              <div class="footer-icon-group">
+                <img
+                  alt="image"
+                  src="https://jspm-registry.teleporthq.app/playground_assets/github.svg"
+                  class="footer-image1"
+                />
+                <svg viewBox="0 0 950.8571428571428 1024" class="footer-icon">
+                  <path
+                    d="M925.714 233.143c-25.143 36.571-56.571 69.143-92.571 95.429 0.571 8 0.571 16 0.571 24 0 244-185.714 525.143-525.143 525.143-104.571 0-201.714-30.286-283.429-82.857 14.857 1.714 29.143 2.286 44.571 2.286 86.286 0 165.714-29.143 229.143-78.857-81.143-1.714-149.143-54.857-172.571-128 11.429 1.714 22.857 2.857 34.857 2.857 16.571 0 33.143-2.286 48.571-6.286-84.571-17.143-148-91.429-148-181.143v-2.286c24.571 13.714 53.143 22.286 83.429 23.429-49.714-33.143-82.286-89.714-82.286-153.714 0-34.286 9.143-65.714 25.143-93.143 90.857 112 227.429 185.143 380.571 193.143-2.857-13.714-4.571-28-4.571-42.286 0-101.714 82.286-184.571 184.571-184.571 53.143 0 101.143 22.286 134.857 58.286 41.714-8 81.714-23.429 117.143-44.571-13.714 42.857-42.857 78.857-81.143 101.714 37.143-4 73.143-14.286 106.286-28.571z"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+      <Helmet>
+        <style data-page-name="footer">{`
         .footer-container {
             width: 100%;
             display: flex;
@@ -256,9 +254,8 @@ function Footer() {
               text-align: center;
             }
           }          
-        </style>
-    </${Helmet}>
-    `;
+        `}</style>
+      </Helmet>
+    </div>
+  );
 }
-
-export { Footer };

@@ -4,8 +4,8 @@ import {
   jsx,
   renderSSR,
 } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
-import { Package } from "./components/package.js";
-import { FeaturedPackages } from "./components/featured-packages.js";
+import { Package } from "./lib/package.js";
+import { FeaturedPackages } from "./lib/featured-packages.js";
 import {
   getRecentPackages,
   pageServingHeaders,
