@@ -109,7 +109,6 @@ async function requestHandler(request) {
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap" />
           <link rel="stylesheet" href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css" />
           ${head.join("\n")}
-          <srcipt src="https://ga.jspm.io/npm:prismjs@1.25.0/prism.js@1.25.0/prism.js"></script>
         </head>
         <body>
           ${pieces[0]}
