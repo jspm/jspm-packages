@@ -1,5 +1,7 @@
 version = 0.1
 
+default-task = "deno"
+
 [[task]]
   name = "deno"
   deps = ["build"]
@@ -19,6 +21,10 @@ version = 0.1
     "jsc.transform.react.pragma" = "h"
 
 [[task]]
+  name = "clean"
+  run = "rm -rf deno.importmap lib server.js"
+
+[[task]]
   name = "copy-js"
   target = "lib/#.js"
   deps = ["src/#.js"]
@@ -33,20 +39,11 @@ version = 0.1
 
 [[task]]
   name = "generate-deno-importmap"
-  engine = "node"
-  run = """
-      import { writeFile } from 'fs/promises';
-      import { Generator } from "@jspm/generator";
-
-      async function main({subpath, inputMapFilePath}) {
-          const generator = new Generator({mapUrl: import.meta.url, env: ['production', 'production']});
-          await generator.traceInstall(subpath);
-          const importMap = JSON.stringify(generator.getMap(), null, 2);
-          await writeFile(process.env.TARGET || './deno.importmap', importMap);
-          return importMap;
-      }
-      await main({subpath: './server.jsx'});
-  """
+  template = "jspm"
+  target = "deno.importmap"
+  deps = ["server.jsx"]
+  [task.template-options]
+    env = ["deno", "production"]
 
 [[task]]
   name = "jspm"
