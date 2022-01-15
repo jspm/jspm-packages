@@ -2195,14 +2195,14 @@ function Package(props) {
         "data-page": "package-details"
     }, "\n        jspm-package-content {\n          display: flex;\n          flex-direction: row;\n          flex-wrap: wrap;\n        }\n        \n        jspm-package-readme {\n          display: block;\n          width: 800px;\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-package-aside {\n          width: 300px;\n          padding-left: var(--dl-space-space-unit);\n        }\n        \n        jspm-package-name,\n        jspm-package-version,\n        jspm-package-description,\n        jspm-package-license {\n          display: block;\n        }\n        \n        jspm-package-name h1 {\n          font-family: \"Major Mono Display\", monospace;\n          font-size: var(--step-5);\n        }\n        \n        jspm-package-name h1 a {\n          color: black;\n        }\n\n        @media(max-width: 767px) {\n          jspm-package-content {\n            justify-content: space-between;\n          }\n\n          jspm-package-readme {\n            width: 100%;\n          }\n        }\n        ")));
 }
-function FeaturedPackages(param) {
-    var _packages = param.packages, packages = _packages === void 0 ? [] : _packages;
+function FeaturedPackages(param1) {
+    var _packages = param1.packages, packages = _packages === void 0 ? [] : _packages;
     return Ct("div", {
         id: "featured-packages"
     }, Ct(Header, null), Ct("ul", {
         class: "list-style"
-    }, packages.map(function(item) {
-        var _package = item.package, name = _package.name, description = _package.description, version = _package.version;
+    }, packages.map(function(param) {
+        var name = param.name, description = param.description, version = param.version;
         return Ct("li", {
             class: "package-item-wrapper"
         }, Ct("a", {
@@ -30209,18 +30209,6 @@ class Renderer1 extends marked.Renderer {
         return `<a href="${href}" title="${title}" rel="noopener noreferrer">${text}</a>`;
     }
 }
-function getRandomFloat(min, max) {
-    return (Math.random() * (max - min) + min).toFixed(2);
-}
-async function getRecentPackages() {
-    const maintenance = getRandomFloat(0, 1);
-    const quality = getRandomFloat(0.5, 1);
-    const popularity = getRandomFloat(0.3, 1);
-    const url = `https://registry.npmjs.org/-/v1/search?text=not:insecure&maintenance=${maintenance}&quality=${quality}&popularity=${popularity}`;
-    const result = await fetch(url);
-    const recentPackages = await result.json();
-    return recentPackages;
-}
 const pageServingHeaders = {
     "content-type": "text/html; charset=UTF-8",
     "Cache-Control": "s-maxage=1500, public, immutable, stale-while-revalidate=1501",
@@ -30233,6 +30221,63 @@ function renderMarkdownContent(markdown, opts = {}) {
         renderer: new Renderer1()
     });
 }
+const featuredPackages = [
+    {
+        name: "svelte",
+        version: "3.46.2",
+        description: "Cybernetically enhanced web apps"
+    },
+    {
+        name: "lit",
+        version: "2.1.1",
+        description: "A library for building fast, lightweight web components"
+    },
+    {
+        name: "preact",
+        version: "10.6.4",
+        description: "Fast 3kb React-compatible Virtual DOM library."
+    },
+    {
+        name: "vue",
+        version: "2.6.14",
+        description: "Reactive, component-oriented view layer for modern web interfaces."
+    },
+    {
+        name: "react",
+        version: '17.0.2"',
+        description: "React is a JavaScript library for building user interfaces."
+    },
+    {
+        name: "lodash",
+        version: "4.17.21",
+        description: "Lodash modular utilities."
+    },
+    {
+        name: "@babel/core",
+        version: "7.16.7",
+        description: "Babel compiler core."
+    },
+    {
+        name: "rollup",
+        version: "2.64.0",
+        description: "Next-generation ES module bundler"
+    },
+    {
+        name: "@jspm/generator",
+        version: "1.0.0-beta.22",
+        description: 'Package Import Map Generation Tool"'
+    },
+    {
+        name: "@jspm/import-map",
+        version: "0.3.3",
+        description: "Package Import Map Utility"
+    },
+    {
+        name: "xstate",
+        version: "4.27.0",
+        description: 'Finite State Machines and Statecharts for the Modern Web."'
+    }
+];
 const importMeta = {
     url: "file:///Users/shukla001/@jspm/jspm-packages/server.jsx",
     main: import.meta.main
@@ -30264,9 +30309,8 @@ async function requestHandler(request) {
             });
         }
         if (pathname === "/") {
-            const { objects =[]  } = await getRecentPackages() || {};
             const indexPage = gt(Ct(FeaturedPackages, {
-                packages: objects
+                packages: featuredPackages
             }));
             const { body , head , footer  } = Lt.SSR(indexPage);
             const content = await Deno.readTextFile("./lib/shell.html");
