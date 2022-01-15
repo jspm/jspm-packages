@@ -1,4 +1,7 @@
+/// <reference lib="deno.ns" />
+/// <reference lib="deno.unstable" />
 /** @jsx h */
+
 import { serve } from "https://deno.land/std@0.121.0/http/server.ts";
 import { h, Helmet, renderSSR } from "nano-jsx";
 import { Package } from "./lib/package.js";
@@ -39,10 +42,7 @@ async function requestHandler(request) {
       const indexPage = renderSSR(<FeaturedPackages packages={objects} />);
       const { body, head, footer } = Helmet.SSR(indexPage);
 
-      const decoder = new TextDecoder("utf-8");
-      const shell = await Deno.readFile("./lib/shell.html");
-      const content = decoder.decode(shell);
-      //const content = await Deno.readFile("./lib/shell.html");
+      const content = await Deno.readTextFile("./lib/shell.html");
       const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content
         .split(/<!-- __[A-Z]*__ -->/i);
       const html = [
