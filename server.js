@@ -30269,7 +30269,9 @@ async function requestHandler(request) {
                 packages: objects
             }));
             const { body , head , footer  } = Lt.SSR(indexPage);
-            const content = await Deno.readTextFile("./lib/shell.html");
+            const decoder = new TextDecoder("utf-8");
+            const shell = await Deno.readFile("./lib/shell.html");
+            const content = decoder.decode(shell);
             const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content.split(/<!-- __[A-Z]*__ -->/i);
             const html = [
                 START,
