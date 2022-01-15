@@ -30244,7 +30244,7 @@ const featuredPackages = [
     },
     {
         name: "react",
-        version: '17.0.2"',
+        version: "17.0.2",
         description: "React is a JavaScript library for building user interfaces."
     },
     {
