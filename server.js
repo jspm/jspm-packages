@@ -30275,7 +30275,7 @@ const featuredPackages = [
     {
         name: "xstate",
         version: "4.27.0",
-        description: 'Finite State Machines and Statecharts for the Modern Web."'
+        description: "Finite State Machines and Statecharts for the Modern Web."
     }
 ];
 const importMeta = {
