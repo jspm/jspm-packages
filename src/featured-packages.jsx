@@ -7,8 +7,7 @@ function FeaturedPackages({ packages = [] }) {
     <div id="featured-packages">
       <Header />
       <ul class="list-style">
-        {packages.map((item) => {
-          const { name, description, version } = item.package;
+        {packages.map(({ name, description, version }) => {
           return (
             <li class="package-item-wrapper">
               <a class="package-name" href={`/package/${name}@${version}`}>

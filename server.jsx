@@ -4,11 +4,8 @@ import { serve } from "https://deno.land/std@0.121.0/http/server.ts";
 import { h, Helmet, renderSSR } from "nano-jsx";
 import { Package } from "./lib/package.js";
 import { FeaturedPackages } from "./lib/featured-packages.js";
-import {
-  getRecentPackages,
-  pageServingHeaders,
-  renderMarkdownContent,
-} from "./utils.js";
+import { pageServingHeaders, renderMarkdownContent } from "./utils.js";
+import { featuredPackages } from "./lib/featured-packages-list.js";
 
 const staticResources = {
   "/style.css": { path: "./style.css", contentType: "text/css; charset=utf-8" },
@@ -36,8 +33,7 @@ async function requestHandler(request) {
     }
 
     if (pathname === "/") {
-      const { objects = [] } = (await getRecentPackages()) || {};
-      const indexPage = renderSSR(<FeaturedPackages packages={objects} />);
+      const indexPage = renderSSR(<FeaturedPackages packages={featuredPackages} />);
       const { body, head, footer } = Helmet.SSR(indexPage);
 
       const content = await Deno.readTextFile("./lib/shell.html");
