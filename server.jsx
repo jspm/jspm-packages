@@ -1,5 +1,5 @@
 /** @jsx h */
-import { serve } from "https://deno.land/std@0.118.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.121.0/http/server.ts";
 import { h, Helmet, renderSSR } from "nano-jsx";
 import { Package } from "./lib/package.js";
 import { FeaturedPackages } from "./lib/featured-packages.js";
@@ -158,5 +158,5 @@ if (import.meta?.main) {
   console.log("Current Date: ", humanReadableDateTime);
   console.info(`Server Listening on http://localhost:8000`);
 
-  await serve(requestHandler);
+  serve(requestHandler);
 }

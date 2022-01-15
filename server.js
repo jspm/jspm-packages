@@ -30371,5 +30371,5 @@ if (importMeta?.main) {
     }).format(timestamp);
     console.log("Current Date: ", humanReadableDateTime);
     console.info(`Server Listening on http://localhost:8000`);
-    await serve(requestHandler);
+    serve(requestHandler);
 }
