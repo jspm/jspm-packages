@@ -1,6 +1,6 @@
-import he from "https://ga.jspm.io/npm:he@1.2.0/he.js";
-import Prism from "https://ga.jspm.io/npm:prismjs@1.25.0/prism.js";
-import { marked } from "https://ga.jspm.io/npm:marked@4.0.8/lib/marked.esm.js";
+import he from "he";
+import Prism from "prismjs";
+import { marked } from "marked";
 
 class Renderer extends marked.Renderer {
   heading(text, level, raw, slugger) {

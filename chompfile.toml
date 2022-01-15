@@ -7,7 +7,7 @@ version = 0.1
 
 [[task]]
   name = "build"
-  deps = ["jsx", "copy-js", "jspm"]
+  deps = ["jsx", "copy-js", "generate-deno-importmap", "generate-deno-bundle", "jspm"]
 
 [[task]]
   name = "jsx"
@@ -25,9 +25,32 @@ version = 0.1
   run = "cp $DEP $TARGET"
 
 [[task]]
+  name = "generate-deno-bundle"
+  run = """
+  deno bundle --import-map=deno.importmap --unstable server.jsx server.js
+  """
+
+[[task]]
+  name = "generate-deno-importmap"
+  engine = "node"
+  run = """
+      import { writeFile } from 'fs/promises';
+      import { Generator } from "@jspm/generator";
+
+      async function main({subpath, inputMapFilePath}) {
+          const generator = new Generator({mapUrl: import.meta.url, env: ['production', 'production']});
+          await generator.traceInstall(subpath);
+          const importMap = JSON.stringify(generator.getMap(), null, 2);
+          await writeFile(process.env.TARGET || './deno.importmap', importMap);
+          return importMap;
+      }
+      await main({subpath: './server.jsx'});
+  """
+
+[[task]]
   name = "jspm"
   template = "jspm"
-  target = "lib/import-map-example.html"
-  deps = ["src/import-map-example.html"]
+  target = "lib/shell.html"
+  deps = ["src/shell.html"]
   [task.template-options]
     env = ["browser", "production"]

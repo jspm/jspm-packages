@@ -1,0 +1,7 @@
+{
+    "deno.enable": true,
+    "deno.importMap": "deno.importmap",
+    "deno.lint": true,
+    "deno.suggest.completeFunctionCalls": true,
+    "deno.unstable": true
+}

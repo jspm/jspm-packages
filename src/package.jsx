@@ -1,11 +1,11 @@
-import { h, Helmet } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
+import { h, Helmet } from "nano-jsx";
 import { PackageHeader } from "./package-header.js";
 import { Readme } from "./readme.js";
 import { Aside } from "./aside.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
 
-export function Package(props) {
+function Package(props) {
   const {
     name,
     description,
@@ -22,22 +22,29 @@ export function Package(props) {
     <div>
       <Header />
       <jspm-package>
-        <PackageHeader homepage={homepage || ""} name={name} description={description} version={version} />
+        <PackageHeader
+          homepage={homepage || ""}
+          name={name}
+          description={description}
+          version={version}
+        />
         <jspm-package-content>
-          <Readme __html={readme}/>
+          <Readme __html={readme} />
           <Aside
             version={version}
             name={name}
             license={license}
             files={files}
             exports={exports}
-            keywords={keywords}/>
+            keywords={keywords}
+          />
         </jspm-package-content>
       </jspm-package>
       <Footer />
 
       <Helmet>
-        <style data-page="package-details">{`
+        <style data-page="package-details">
+          {`
         jspm-package-content {
           display: flex;
           flex-direction: row;
@@ -80,8 +87,11 @@ export function Package(props) {
             width: 100%;
           }
         }
-        `}</style>
+        `}
+        </style>
       </Helmet>
     </div>
   );
 }
+
+export { Package };

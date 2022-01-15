@@ -1,6 +1,6 @@
-import { h, Helmet } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
+import { h, Helmet } from "nano-jsx";
 
-export function Header() {
+function Header() {
   return (
     <div>
       <div class="header-header" id="app-header">
@@ -11,7 +11,9 @@ export function Header() {
             src="https://jspm-registry.teleporthq.app/playground_assets/jspm.png"
             class="header-image"
           />
-          <h1 class="jspmheaderlogo"><span>JSPM</span></h1>
+          <h1 class="jspmheaderlogo">
+            <span>JSPM</span>
+          </h1>
         </div>
         <div class="header-search">
           <input
@@ -21,13 +23,21 @@ export function Header() {
             autocomplete="on"
             class="header-textinput search_input"
           />
-          <button class="search_button"><span>Search</span></button>
+          <button class="search_button">
+            <span>Search</span>
+          </button>
         </div>
       </div>
       <div class="header-container1">
-        <span class="header-text1"><span>Generator</span></span>
-        <span class="header-text2"><span>Docs</span></span>
-        <span class="header-text3"><span>Faq</span></span>
+        <span class="header-text1">
+          <span>Generator</span>
+        </span>
+        <span class="header-text2">
+          <span>Docs</span>
+        </span>
+        <span class="header-text3">
+          <span>Faq</span>
+        </span>
         <img
           alt="image"
           src="https://jspm-registry.teleporthq.app/playground_assets/github.svg"
@@ -35,7 +45,8 @@ export function Header() {
         />
       </div>
       <Helmet>
-        <style data-page-name="header">{`
+        <style data-page-name="header">
+          {`
           .search_button {
               color: var(--dl-color-gray-black);
               display: inline-block;
@@ -167,8 +178,11 @@ export function Header() {
                 width: auto;
               }
             }
-          `}</style>
+          `}
+        </style>
       </Helmet>
     </div>
   );
 }
+
+export { Header };
