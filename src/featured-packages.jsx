@@ -1,8 +1,8 @@
-import { h, Helmet } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
+import { h, Helmet } from "nano-jsx";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
 
-export function FeaturedPackages({ packages = [] }) {
+function FeaturedPackages({ packages = [] }) {
   return (
     <div id="featured-packages">
       <Header />
@@ -21,7 +21,8 @@ export function FeaturedPackages({ packages = [] }) {
       </ul>
       <Footer />
       <Helmet>
-        <style data-page-name="featured-packages">{`
+        <style data-page-name="featured-packages">
+          {`
           .list-style {
             list-style: none;
             padding-left: var(--dl-space-space-unit);
@@ -54,9 +55,11 @@ export function FeaturedPackages({ packages = [] }) {
             line-height: 1.5;
           }
 
-        `}</style>
+        `}
+        </style>
       </Helmet>
     </div>
   );
 }
 
+export { FeaturedPackages };

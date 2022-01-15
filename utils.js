@@ -1,5 +1,5 @@
 import { emojify } from "https://deno.land/x/emoji@0.1.2/mod.ts";
-import { marked } from "https://ga.jspm.io/npm:marked@4.0.8/lib/marked.esm.js";
+import { marked } from "marked";
 import { Renderer } from "./lib/renderer.js";
 
 function getRandomFloat(min, max) {

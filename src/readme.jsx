@@ -1,9 +1,11 @@
-import { h, jsx } from "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js";
+import { h } from "nano-jsx";
 
-export function Readme() {
+function Readme() {
   return (
     <jspm-package-readme>
       <package-readme-placeholder></package-readme-placeholder>
     </jspm-package-readme>
   );
 }
+
+export { Readme };
