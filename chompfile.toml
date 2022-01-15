@@ -7,7 +7,7 @@ version = 0.1
 
 [[task]]
   name = "build"
-  deps = ["jsx", "copy-js", "generate-deno-importmap", "generate-deno-bundle", "jspm"]
+  deps = ["copy-js", "jsx", "jspm", "generate-deno-bundle"]
 
 [[task]]
   name = "jsx"
@@ -26,6 +26,7 @@ version = 0.1
 
 [[task]]
   name = "generate-deno-bundle"
+  deps = ["generate-deno-importmap"]
   run = """
   deno bundle --import-map=deno.importmap --unstable server.jsx server.js
   """

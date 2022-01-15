@@ -1,9 +1,5 @@
 /** @jsx h */
 import { serve } from "https://deno.land/std@0.118.0/http/server.ts";
-import {
-  contentType,
-  lookup,
-} from "https://deno.land/x/media_types@v2.11.1/mod.ts";
 import { h, Helmet, renderSSR } from "nano-jsx";
 import { Package } from "./lib/package.js";
 import { FeaturedPackages } from "./lib/featured-packages.js";
@@ -14,9 +10,15 @@ import {
 } from "./utils.js";
 
 const staticResources = {
-  "/style.css": "./style.css",
-  "/dom-main.js": "./lib/dom-main.js",
-  "/header.js": "./lib/header.js",
+  "/style.css": { path: "./style.css", contentType: "text/css; charset=utf-8" },
+  "/dom-main.js": {
+    path: "./lib/dom-main.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/header.js": {
+    path: "./lib/header.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
 };
 
 async function requestHandler(request) {
@@ -25,10 +27,10 @@ async function requestHandler(request) {
     const staticResource = staticResources[pathname];
 
     if (staticResource) {
-      const response = await Deno.readFile(staticResource);
+      const response = await Deno.readFile(staticResource.path);
 
       return new Response(response, {
-        headers: { "content-type": contentType(lookup(staticResource)) },
+        headers: { "content-type": staticResource.contentType },
       });
     }
 

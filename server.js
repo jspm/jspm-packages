@@ -1,17 +1,16 @@
-function delay(ms, options = {
-}) {
+function delay(ms, options = {}) {
     const { signal  } = options;
     if (signal?.aborted) {
         return Promise.reject(new DOMException("Delay was aborted.", "AbortError"));
     }
-    return new Promise((resolve3, reject)=>{
+    return new Promise((resolve, reject)=>{
         const abort = ()=>{
             clearTimeout(i2);
             reject(new DOMException("Delay was aborted.", "AbortError"));
         };
         const done = ()=>{
             signal?.removeEventListener("abort", abort);
-            resolve3();
+            resolve();
         };
         const i2 = setTimeout(done, ms);
         signal?.addEventListener("abort", abort, {
@@ -52,8 +51,7 @@ class Server {
             this.#untrackListener(listener);
             try {
                 listener.close();
-            } catch  {
-            }
+            } catch  {}
         }
     }
     async listenAndServe() {
@@ -88,8 +86,7 @@ class Server {
         for (const listener of this.#listeners){
             try {
                 listener.close();
-            } catch  {
-            }
+            } catch  {}
         }
         this.#listeners.clear();
         for (const httpConn of this.#httpConnections){
@@ -172,8 +169,7 @@ class Server {
         this.#untrackHttpConnection(httpConn2);
         try {
             httpConn2.close();
-        } catch  {
-        }
+        } catch  {}
     }
      #trackListener(listener1) {
         this.#listeners.add(listener1);
@@ -188,8 +184,7 @@ class Server {
         this.#httpConnections.delete(httpConn4);
     }
 }
-async function serve(handler, options = {
-}) {
+async function serve(handler, options = {}) {
     const server = new Server({
         port: options.port ?? 8000,
         hostname: options.hostname ?? "0.0.0.0",
@@ -202,9634 +197,13 @@ async function serve(handler, options = {
     }
     return await server.listenAndServe();
 }
-const osType = (()=>{
-    const { Deno  } = globalThis;
-    if (typeof Deno?.build?.os === "string") {
-        return Deno.build.os;
-    }
-    const { navigator  } = globalThis;
-    if (navigator?.appVersion?.includes?.("Win") ?? false) {
-        return "windows";
-    }
-    return "linux";
-})();
-const isWindows = osType === "windows";
-const CHAR_FORWARD_SLASH = 47;
-function assertPath(path2) {
-    if (typeof path2 !== "string") {
-        throw new TypeError(`Path must be a string. Received ${JSON.stringify(path2)}`);
-    }
-}
-function isPosixPathSeparator(code) {
-    return code === 47;
-}
-function isPathSeparator(code) {
-    return isPosixPathSeparator(code) || code === 92;
-}
-function isWindowsDeviceRoot(code) {
-    return code >= 97 && code <= 122 || code >= 65 && code <= 90;
-}
-function normalizeString(path3, allowAboveRoot, separator, isPathSeparator1) {
-    let res = "";
-    let lastSegmentLength = 0;
-    let lastSlash = -1;
-    let dots = 0;
-    let code;
-    for(let i3 = 0, len = path3.length; i3 <= len; ++i3){
-        if (i3 < len) code = path3.charCodeAt(i3);
-        else if (isPathSeparator1(code)) break;
-        else code = CHAR_FORWARD_SLASH;
-        if (isPathSeparator1(code)) {
-            if (lastSlash === i3 - 1 || dots === 1) {
-            } else if (lastSlash !== i3 - 1 && dots === 2) {
-                if (res.length < 2 || lastSegmentLength !== 2 || res.charCodeAt(res.length - 1) !== 46 || res.charCodeAt(res.length - 2) !== 46) {
-                    if (res.length > 2) {
-                        const lastSlashIndex = res.lastIndexOf(separator);
-                        if (lastSlashIndex === -1) {
-                            res = "";
-                            lastSegmentLength = 0;
-                        } else {
-                            res = res.slice(0, lastSlashIndex);
-                            lastSegmentLength = res.length - 1 - res.lastIndexOf(separator);
-                        }
-                        lastSlash = i3;
-                        dots = 0;
-                        continue;
-                    } else if (res.length === 2 || res.length === 1) {
-                        res = "";
-                        lastSegmentLength = 0;
-                        lastSlash = i3;
-                        dots = 0;
-                        continue;
-                    }
-                }
-                if (allowAboveRoot) {
-                    if (res.length > 0) res += `${separator}..`;
-                    else res = "..";
-                    lastSegmentLength = 2;
-                }
-            } else {
-                if (res.length > 0) res += separator + path3.slice(lastSlash + 1, i3);
-                else res = path3.slice(lastSlash + 1, i3);
-                lastSegmentLength = i3 - lastSlash - 1;
-            }
-            lastSlash = i3;
-            dots = 0;
-        } else if (code === 46 && dots !== -1) {
-            ++dots;
-        } else {
-            dots = -1;
-        }
-    }
-    return res;
-}
-function _format(sep3, pathObject) {
-    const dir = pathObject.dir || pathObject.root;
-    const base = pathObject.base || (pathObject.name || "") + (pathObject.ext || "");
-    if (!dir) return base;
-    if (dir === pathObject.root) return dir + base;
-    return dir + sep3 + base;
-}
-const WHITESPACE_ENCODINGS = {
-    "\u0009": "%09",
-    "\u000A": "%0A",
-    "\u000B": "%0B",
-    "\u000C": "%0C",
-    "\u000D": "%0D",
-    "\u0020": "%20"
-};
-function encodeWhitespace(string) {
-    return string.replaceAll(/[\s]/g, (c2)=>{
-        return WHITESPACE_ENCODINGS[c2] ?? c2;
-    });
-}
-class DenoStdInternalError extends Error {
-    constructor(message){
-        super(message);
-        this.name = "DenoStdInternalError";
-    }
-}
-function assert(expr, msg = "") {
-    if (!expr) {
-        throw new DenoStdInternalError(msg);
-    }
-}
-const sep = "\\";
-const delimiter = ";";
-function resolve(...pathSegments) {
-    let resolvedDevice = "";
-    let resolvedTail = "";
-    let resolvedAbsolute = false;
-    for(let i4 = pathSegments.length - 1; i4 >= -1; i4--){
-        let path4;
-        const { Deno  } = globalThis;
-        if (i4 >= 0) {
-            path4 = pathSegments[i4];
-        } else if (!resolvedDevice) {
-            if (typeof Deno?.cwd !== "function") {
-                throw new TypeError("Resolved a drive-letter-less path without a CWD.");
-            }
-            path4 = Deno.cwd();
-        } else {
-            if (typeof Deno?.env?.get !== "function" || typeof Deno?.cwd !== "function") {
-                throw new TypeError("Resolved a relative path without a CWD.");
-            }
-            path4 = Deno.cwd();
-            if (path4 === undefined || path4.slice(0, 3).toLowerCase() !== `${resolvedDevice.toLowerCase()}\\`) {
-                path4 = `${resolvedDevice}\\`;
-            }
-        }
-        assertPath(path4);
-        const len = path4.length;
-        if (len === 0) continue;
-        let rootEnd = 0;
-        let device = "";
-        let isAbsolute1 = false;
-        const code = path4.charCodeAt(0);
-        if (len > 1) {
-            if (isPathSeparator(code)) {
-                isAbsolute1 = true;
-                if (isPathSeparator(path4.charCodeAt(1))) {
-                    let j1 = 2;
-                    let last = j1;
-                    for(; j1 < len; ++j1){
-                        if (isPathSeparator(path4.charCodeAt(j1))) break;
-                    }
-                    if (j1 < len && j1 !== last) {
-                        const firstPart = path4.slice(last, j1);
-                        last = j1;
-                        for(; j1 < len; ++j1){
-                            if (!isPathSeparator(path4.charCodeAt(j1))) break;
-                        }
-                        if (j1 < len && j1 !== last) {
-                            last = j1;
-                            for(; j1 < len; ++j1){
-                                if (isPathSeparator(path4.charCodeAt(j1))) break;
-                            }
-                            if (j1 === len) {
-                                device = `\\\\${firstPart}\\${path4.slice(last)}`;
-                                rootEnd = j1;
-                            } else if (j1 !== last) {
-                                device = `\\\\${firstPart}\\${path4.slice(last, j1)}`;
-                                rootEnd = j1;
-                            }
-                        }
-                    }
-                } else {
-                    rootEnd = 1;
-                }
-            } else if (isWindowsDeviceRoot(code)) {
-                if (path4.charCodeAt(1) === 58) {
-                    device = path4.slice(0, 2);
-                    rootEnd = 2;
-                    if (len > 2) {
-                        if (isPathSeparator(path4.charCodeAt(2))) {
-                            isAbsolute1 = true;
-                            rootEnd = 3;
-                        }
-                    }
-                }
-            }
-        } else if (isPathSeparator(code)) {
-            rootEnd = 1;
-            isAbsolute1 = true;
-        }
-        if (device.length > 0 && resolvedDevice.length > 0 && device.toLowerCase() !== resolvedDevice.toLowerCase()) {
-            continue;
-        }
-        if (resolvedDevice.length === 0 && device.length > 0) {
-            resolvedDevice = device;
-        }
-        if (!resolvedAbsolute) {
-            resolvedTail = `${path4.slice(rootEnd)}\\${resolvedTail}`;
-            resolvedAbsolute = isAbsolute1;
-        }
-        if (resolvedAbsolute && resolvedDevice.length > 0) break;
-    }
-    resolvedTail = normalizeString(resolvedTail, !resolvedAbsolute, "\\", isPathSeparator);
-    return resolvedDevice + (resolvedAbsolute ? "\\" : "") + resolvedTail || ".";
-}
-function normalize(path5) {
-    assertPath(path5);
-    const len = path5.length;
-    if (len === 0) return ".";
-    let rootEnd = 0;
-    let device;
-    let isAbsolute2 = false;
-    const code = path5.charCodeAt(0);
-    if (len > 1) {
-        if (isPathSeparator(code)) {
-            isAbsolute2 = true;
-            if (isPathSeparator(path5.charCodeAt(1))) {
-                let j2 = 2;
-                let last = j2;
-                for(; j2 < len; ++j2){
-                    if (isPathSeparator(path5.charCodeAt(j2))) break;
-                }
-                if (j2 < len && j2 !== last) {
-                    const firstPart = path5.slice(last, j2);
-                    last = j2;
-                    for(; j2 < len; ++j2){
-                        if (!isPathSeparator(path5.charCodeAt(j2))) break;
-                    }
-                    if (j2 < len && j2 !== last) {
-                        last = j2;
-                        for(; j2 < len; ++j2){
-                            if (isPathSeparator(path5.charCodeAt(j2))) break;
-                        }
-                        if (j2 === len) {
-                            return `\\\\${firstPart}\\${path5.slice(last)}\\`;
-                        } else if (j2 !== last) {
-                            device = `\\\\${firstPart}\\${path5.slice(last, j2)}`;
-                            rootEnd = j2;
-                        }
-                    }
-                }
-            } else {
-                rootEnd = 1;
-            }
-        } else if (isWindowsDeviceRoot(code)) {
-            if (path5.charCodeAt(1) === 58) {
-                device = path5.slice(0, 2);
-                rootEnd = 2;
-                if (len > 2) {
-                    if (isPathSeparator(path5.charCodeAt(2))) {
-                        isAbsolute2 = true;
-                        rootEnd = 3;
-                    }
-                }
-            }
-        }
-    } else if (isPathSeparator(code)) {
-        return "\\";
-    }
-    let tail;
-    if (rootEnd < len) {
-        tail = normalizeString(path5.slice(rootEnd), !isAbsolute2, "\\", isPathSeparator);
-    } else {
-        tail = "";
-    }
-    if (tail.length === 0 && !isAbsolute2) tail = ".";
-    if (tail.length > 0 && isPathSeparator(path5.charCodeAt(len - 1))) {
-        tail += "\\";
-    }
-    if (device === undefined) {
-        if (isAbsolute2) {
-            if (tail.length > 0) return `\\${tail}`;
-            else return "\\";
-        } else if (tail.length > 0) {
-            return tail;
-        } else {
-            return "";
-        }
-    } else if (isAbsolute2) {
-        if (tail.length > 0) return `${device}\\${tail}`;
-        else return `${device}\\`;
-    } else if (tail.length > 0) {
-        return device + tail;
-    } else {
-        return device;
-    }
-}
-function isAbsolute(path6) {
-    assertPath(path6);
-    const len = path6.length;
-    if (len === 0) return false;
-    const code = path6.charCodeAt(0);
-    if (isPathSeparator(code)) {
-        return true;
-    } else if (isWindowsDeviceRoot(code)) {
-        if (len > 2 && path6.charCodeAt(1) === 58) {
-            if (isPathSeparator(path6.charCodeAt(2))) return true;
-        }
-    }
-    return false;
-}
-function join(...paths) {
-    const pathsCount = paths.length;
-    if (pathsCount === 0) return ".";
-    let joined;
-    let firstPart = null;
-    for(let i5 = 0; i5 < pathsCount; ++i5){
-        const path7 = paths[i5];
-        assertPath(path7);
-        if (path7.length > 0) {
-            if (joined === undefined) joined = firstPart = path7;
-            else joined += `\\${path7}`;
-        }
-    }
-    if (joined === undefined) return ".";
-    let needsReplace = true;
-    let slashCount = 0;
-    assert(firstPart != null);
-    if (isPathSeparator(firstPart.charCodeAt(0))) {
-        ++slashCount;
-        const firstLen = firstPart.length;
-        if (firstLen > 1) {
-            if (isPathSeparator(firstPart.charCodeAt(1))) {
-                ++slashCount;
-                if (firstLen > 2) {
-                    if (isPathSeparator(firstPart.charCodeAt(2))) ++slashCount;
-                    else {
-                        needsReplace = false;
-                    }
-                }
-            }
-        }
-    }
-    if (needsReplace) {
-        for(; slashCount < joined.length; ++slashCount){
-            if (!isPathSeparator(joined.charCodeAt(slashCount))) break;
-        }
-        if (slashCount >= 2) joined = `\\${joined.slice(slashCount)}`;
-    }
-    return normalize(joined);
-}
-function relative(from, to1) {
-    assertPath(from);
-    assertPath(to1);
-    if (from === to1) return "";
-    const fromOrig = resolve(from);
-    const toOrig = resolve(to1);
-    if (fromOrig === toOrig) return "";
-    from = fromOrig.toLowerCase();
-    to1 = toOrig.toLowerCase();
-    if (from === to1) return "";
-    let fromStart = 0;
-    let fromEnd = from.length;
-    for(; fromStart < fromEnd; ++fromStart){
-        if (from.charCodeAt(fromStart) !== 92) break;
-    }
-    for(; fromEnd - 1 > fromStart; --fromEnd){
-        if (from.charCodeAt(fromEnd - 1) !== 92) break;
-    }
-    const fromLen = fromEnd - fromStart;
-    let toStart = 0;
-    let toEnd = to1.length;
-    for(; toStart < toEnd; ++toStart){
-        if (to1.charCodeAt(toStart) !== 92) break;
-    }
-    for(; toEnd - 1 > toStart; --toEnd){
-        if (to1.charCodeAt(toEnd - 1) !== 92) break;
-    }
-    const toLen = toEnd - toStart;
-    const length = fromLen < toLen ? fromLen : toLen;
-    let lastCommonSep = -1;
-    let i6 = 0;
-    for(; i6 <= length; ++i6){
-        if (i6 === length) {
-            if (toLen > length) {
-                if (to1.charCodeAt(toStart + i6) === 92) {
-                    return toOrig.slice(toStart + i6 + 1);
-                } else if (i6 === 2) {
-                    return toOrig.slice(toStart + i6);
-                }
-            }
-            if (fromLen > length) {
-                if (from.charCodeAt(fromStart + i6) === 92) {
-                    lastCommonSep = i6;
-                } else if (i6 === 2) {
-                    lastCommonSep = 3;
-                }
-            }
-            break;
-        }
-        const fromCode = from.charCodeAt(fromStart + i6);
-        const toCode = to1.charCodeAt(toStart + i6);
-        if (fromCode !== toCode) break;
-        else if (fromCode === 92) lastCommonSep = i6;
-    }
-    if (i6 !== length && lastCommonSep === -1) {
-        return toOrig;
-    }
-    let out = "";
-    if (lastCommonSep === -1) lastCommonSep = 0;
-    for(i6 = fromStart + lastCommonSep + 1; i6 <= fromEnd; ++i6){
-        if (i6 === fromEnd || from.charCodeAt(i6) === 92) {
-            if (out.length === 0) out += "..";
-            else out += "\\..";
-        }
-    }
-    if (out.length > 0) {
-        return out + toOrig.slice(toStart + lastCommonSep, toEnd);
-    } else {
-        toStart += lastCommonSep;
-        if (toOrig.charCodeAt(toStart) === 92) ++toStart;
-        return toOrig.slice(toStart, toEnd);
-    }
-}
-function toNamespacedPath(path8) {
-    if (typeof path8 !== "string") return path8;
-    if (path8.length === 0) return "";
-    const resolvedPath = resolve(path8);
-    if (resolvedPath.length >= 3) {
-        if (resolvedPath.charCodeAt(0) === 92) {
-            if (resolvedPath.charCodeAt(1) === 92) {
-                const code = resolvedPath.charCodeAt(2);
-                if (code !== 63 && code !== 46) {
-                    return `\\\\?\\UNC\\${resolvedPath.slice(2)}`;
-                }
-            }
-        } else if (isWindowsDeviceRoot(resolvedPath.charCodeAt(0))) {
-            if (resolvedPath.charCodeAt(1) === 58 && resolvedPath.charCodeAt(2) === 92) {
-                return `\\\\?\\${resolvedPath}`;
-            }
-        }
-    }
-    return path8;
-}
-function dirname(path9) {
-    assertPath(path9);
-    const len = path9.length;
-    if (len === 0) return ".";
-    let rootEnd = -1;
-    let end = -1;
-    let matchedSlash = true;
-    let offset = 0;
-    const code = path9.charCodeAt(0);
-    if (len > 1) {
-        if (isPathSeparator(code)) {
-            rootEnd = offset = 1;
-            if (isPathSeparator(path9.charCodeAt(1))) {
-                let j3 = 2;
-                let last = j3;
-                for(; j3 < len; ++j3){
-                    if (isPathSeparator(path9.charCodeAt(j3))) break;
-                }
-                if (j3 < len && j3 !== last) {
-                    last = j3;
-                    for(; j3 < len; ++j3){
-                        if (!isPathSeparator(path9.charCodeAt(j3))) break;
-                    }
-                    if (j3 < len && j3 !== last) {
-                        last = j3;
-                        for(; j3 < len; ++j3){
-                            if (isPathSeparator(path9.charCodeAt(j3))) break;
-                        }
-                        if (j3 === len) {
-                            return path9;
-                        }
-                        if (j3 !== last) {
-                            rootEnd = offset = j3 + 1;
-                        }
-                    }
-                }
-            }
-        } else if (isWindowsDeviceRoot(code)) {
-            if (path9.charCodeAt(1) === 58) {
-                rootEnd = offset = 2;
-                if (len > 2) {
-                    if (isPathSeparator(path9.charCodeAt(2))) rootEnd = offset = 3;
-                }
-            }
-        }
-    } else if (isPathSeparator(code)) {
-        return path9;
-    }
-    for(let i7 = len - 1; i7 >= offset; --i7){
-        if (isPathSeparator(path9.charCodeAt(i7))) {
-            if (!matchedSlash) {
-                end = i7;
-                break;
-            }
-        } else {
-            matchedSlash = false;
-        }
-    }
-    if (end === -1) {
-        if (rootEnd === -1) return ".";
-        else end = rootEnd;
-    }
-    return path9.slice(0, end);
-}
-function basename(path10, ext = "") {
-    if (ext !== undefined && typeof ext !== "string") {
-        throw new TypeError('"ext" argument must be a string');
-    }
-    assertPath(path10);
-    let start = 0;
-    let end = -1;
-    let matchedSlash = true;
-    let i8;
-    if (path10.length >= 2) {
-        const drive = path10.charCodeAt(0);
-        if (isWindowsDeviceRoot(drive)) {
-            if (path10.charCodeAt(1) === 58) start = 2;
-        }
-    }
-    if (ext !== undefined && ext.length > 0 && ext.length <= path10.length) {
-        if (ext.length === path10.length && ext === path10) return "";
-        let extIdx = ext.length - 1;
-        let firstNonSlashEnd = -1;
-        for(i8 = path10.length - 1; i8 >= start; --i8){
-            const code = path10.charCodeAt(i8);
-            if (isPathSeparator(code)) {
-                if (!matchedSlash) {
-                    start = i8 + 1;
-                    break;
-                }
-            } else {
-                if (firstNonSlashEnd === -1) {
-                    matchedSlash = false;
-                    firstNonSlashEnd = i8 + 1;
-                }
-                if (extIdx >= 0) {
-                    if (code === ext.charCodeAt(extIdx)) {
-                        if (--extIdx === -1) {
-                            end = i8;
-                        }
-                    } else {
-                        extIdx = -1;
-                        end = firstNonSlashEnd;
-                    }
-                }
-            }
-        }
-        if (start === end) end = firstNonSlashEnd;
-        else if (end === -1) end = path10.length;
-        return path10.slice(start, end);
-    } else {
-        for(i8 = path10.length - 1; i8 >= start; --i8){
-            if (isPathSeparator(path10.charCodeAt(i8))) {
-                if (!matchedSlash) {
-                    start = i8 + 1;
-                    break;
-                }
-            } else if (end === -1) {
-                matchedSlash = false;
-                end = i8 + 1;
-            }
-        }
-        if (end === -1) return "";
-        return path10.slice(start, end);
-    }
-}
-function extname(path11) {
-    assertPath(path11);
-    let start = 0;
-    let startDot = -1;
-    let startPart = 0;
-    let end = -1;
-    let matchedSlash = true;
-    let preDotState = 0;
-    if (path11.length >= 2 && path11.charCodeAt(1) === 58 && isWindowsDeviceRoot(path11.charCodeAt(0))) {
-        start = startPart = 2;
-    }
-    for(let i9 = path11.length - 1; i9 >= start; --i9){
-        const code = path11.charCodeAt(i9);
-        if (isPathSeparator(code)) {
-            if (!matchedSlash) {
-                startPart = i9 + 1;
-                break;
-            }
-            continue;
-        }
-        if (end === -1) {
-            matchedSlash = false;
-            end = i9 + 1;
-        }
-        if (code === 46) {
-            if (startDot === -1) startDot = i9;
-            else if (preDotState !== 1) preDotState = 1;
-        } else if (startDot !== -1) {
-            preDotState = -1;
-        }
-    }
-    if (startDot === -1 || end === -1 || preDotState === 0 || preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
-        return "";
-    }
-    return path11.slice(startDot, end);
-}
-function format(pathObject) {
-    if (pathObject === null || typeof pathObject !== "object") {
-        throw new TypeError(`The "pathObject" argument must be of type Object. Received type ${typeof pathObject}`);
-    }
-    return _format("\\", pathObject);
-}
-function parse(path12) {
-    assertPath(path12);
-    const ret = {
-        root: "",
-        dir: "",
-        base: "",
-        ext: "",
-        name: ""
-    };
-    const len = path12.length;
-    if (len === 0) return ret;
-    let rootEnd = 0;
-    let code = path12.charCodeAt(0);
-    if (len > 1) {
-        if (isPathSeparator(code)) {
-            rootEnd = 1;
-            if (isPathSeparator(path12.charCodeAt(1))) {
-                let j4 = 2;
-                let last = j4;
-                for(; j4 < len; ++j4){
-                    if (isPathSeparator(path12.charCodeAt(j4))) break;
-                }
-                if (j4 < len && j4 !== last) {
-                    last = j4;
-                    for(; j4 < len; ++j4){
-                        if (!isPathSeparator(path12.charCodeAt(j4))) break;
-                    }
-                    if (j4 < len && j4 !== last) {
-                        last = j4;
-                        for(; j4 < len; ++j4){
-                            if (isPathSeparator(path12.charCodeAt(j4))) break;
-                        }
-                        if (j4 === len) {
-                            rootEnd = j4;
-                        } else if (j4 !== last) {
-                            rootEnd = j4 + 1;
-                        }
-                    }
-                }
-            }
-        } else if (isWindowsDeviceRoot(code)) {
-            if (path12.charCodeAt(1) === 58) {
-                rootEnd = 2;
-                if (len > 2) {
-                    if (isPathSeparator(path12.charCodeAt(2))) {
-                        if (len === 3) {
-                            ret.root = ret.dir = path12;
-                            return ret;
-                        }
-                        rootEnd = 3;
-                    }
-                } else {
-                    ret.root = ret.dir = path12;
-                    return ret;
-                }
-            }
-        }
-    } else if (isPathSeparator(code)) {
-        ret.root = ret.dir = path12;
-        return ret;
-    }
-    if (rootEnd > 0) ret.root = path12.slice(0, rootEnd);
-    let startDot = -1;
-    let startPart = rootEnd;
-    let end = -1;
-    let matchedSlash = true;
-    let i10 = path12.length - 1;
-    let preDotState = 0;
-    for(; i10 >= rootEnd; --i10){
-        code = path12.charCodeAt(i10);
-        if (isPathSeparator(code)) {
-            if (!matchedSlash) {
-                startPart = i10 + 1;
-                break;
-            }
-            continue;
-        }
-        if (end === -1) {
-            matchedSlash = false;
-            end = i10 + 1;
-        }
-        if (code === 46) {
-            if (startDot === -1) startDot = i10;
-            else if (preDotState !== 1) preDotState = 1;
-        } else if (startDot !== -1) {
-            preDotState = -1;
-        }
-    }
-    if (startDot === -1 || end === -1 || preDotState === 0 || preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
-        if (end !== -1) {
-            ret.base = ret.name = path12.slice(startPart, end);
-        }
-    } else {
-        ret.name = path12.slice(startPart, startDot);
-        ret.base = path12.slice(startPart, end);
-        ret.ext = path12.slice(startDot, end);
-    }
-    if (startPart > 0 && startPart !== rootEnd) {
-        ret.dir = path12.slice(0, startPart - 1);
-    } else ret.dir = ret.root;
-    return ret;
-}
-function fromFileUrl(url) {
-    url = url instanceof URL ? url : new URL(url);
-    if (url.protocol != "file:") {
-        throw new TypeError("Must be a file URL.");
-    }
-    let path13 = decodeURIComponent(url.pathname.replace(/\//g, "\\").replace(/%(?![0-9A-Fa-f]{2})/g, "%25")).replace(/^\\*([A-Za-z]:)(\\|$)/, "$1\\");
-    if (url.hostname != "") {
-        path13 = `\\\\${url.hostname}${path13}`;
-    }
-    return path13;
-}
-function toFileUrl(path14) {
-    if (!isAbsolute(path14)) {
-        throw new TypeError("Must be an absolute path.");
-    }
-    const [, hostname, pathname] = path14.match(/^(?:[/\\]{2}([^/\\]+)(?=[/\\](?:[^/\\]|$)))?(.*)/);
-    const url = new URL("file:///");
-    url.pathname = encodeWhitespace(pathname.replace(/%/g, "%25"));
-    if (hostname != null && hostname != "localhost") {
-        url.hostname = hostname;
-        if (!url.hostname) {
-            throw new TypeError("Invalid hostname.");
-        }
-    }
-    return url;
-}
-const mod = {
-    sep: sep,
-    delimiter: delimiter,
-    resolve: resolve,
-    normalize: normalize,
-    isAbsolute: isAbsolute,
-    join: join,
-    relative: relative,
-    toNamespacedPath: toNamespacedPath,
-    dirname: dirname,
-    basename: basename,
-    extname: extname,
-    format: format,
-    parse: parse,
-    fromFileUrl: fromFileUrl,
-    toFileUrl: toFileUrl
-};
-const sep1 = "/";
-const delimiter1 = ":";
-function resolve1(...pathSegments) {
-    let resolvedPath = "";
-    let resolvedAbsolute = false;
-    for(let i11 = pathSegments.length - 1; i11 >= -1 && !resolvedAbsolute; i11--){
-        let path15;
-        if (i11 >= 0) path15 = pathSegments[i11];
-        else {
-            const { Deno  } = globalThis;
-            if (typeof Deno?.cwd !== "function") {
-                throw new TypeError("Resolved a relative path without a CWD.");
-            }
-            path15 = Deno.cwd();
-        }
-        assertPath(path15);
-        if (path15.length === 0) {
-            continue;
-        }
-        resolvedPath = `${path15}/${resolvedPath}`;
-        resolvedAbsolute = path15.charCodeAt(0) === CHAR_FORWARD_SLASH;
-    }
-    resolvedPath = normalizeString(resolvedPath, !resolvedAbsolute, "/", isPosixPathSeparator);
-    if (resolvedAbsolute) {
-        if (resolvedPath.length > 0) return `/${resolvedPath}`;
-        else return "/";
-    } else if (resolvedPath.length > 0) return resolvedPath;
-    else return ".";
-}
-function normalize1(path16) {
-    assertPath(path16);
-    if (path16.length === 0) return ".";
-    const isAbsolute1 = path16.charCodeAt(0) === 47;
-    const trailingSeparator = path16.charCodeAt(path16.length - 1) === 47;
-    path16 = normalizeString(path16, !isAbsolute1, "/", isPosixPathSeparator);
-    if (path16.length === 0 && !isAbsolute1) path16 = ".";
-    if (path16.length > 0 && trailingSeparator) path16 += "/";
-    if (isAbsolute1) return `/${path16}`;
-    return path16;
-}
-function isAbsolute1(path17) {
-    assertPath(path17);
-    return path17.length > 0 && path17.charCodeAt(0) === 47;
-}
-function join1(...paths) {
-    if (paths.length === 0) return ".";
-    let joined;
-    for(let i12 = 0, len = paths.length; i12 < len; ++i12){
-        const path18 = paths[i12];
-        assertPath(path18);
-        if (path18.length > 0) {
-            if (!joined) joined = path18;
-            else joined += `/${path18}`;
-        }
-    }
-    if (!joined) return ".";
-    return normalize1(joined);
-}
-function relative1(from, to2) {
-    assertPath(from);
-    assertPath(to2);
-    if (from === to2) return "";
-    from = resolve1(from);
-    to2 = resolve1(to2);
-    if (from === to2) return "";
-    let fromStart = 1;
-    const fromEnd = from.length;
-    for(; fromStart < fromEnd; ++fromStart){
-        if (from.charCodeAt(fromStart) !== 47) break;
-    }
-    const fromLen = fromEnd - fromStart;
-    let toStart = 1;
-    const toEnd = to2.length;
-    for(; toStart < toEnd; ++toStart){
-        if (to2.charCodeAt(toStart) !== 47) break;
-    }
-    const toLen = toEnd - toStart;
-    const length = fromLen < toLen ? fromLen : toLen;
-    let lastCommonSep = -1;
-    let i13 = 0;
-    for(; i13 <= length; ++i13){
-        if (i13 === length) {
-            if (toLen > length) {
-                if (to2.charCodeAt(toStart + i13) === 47) {
-                    return to2.slice(toStart + i13 + 1);
-                } else if (i13 === 0) {
-                    return to2.slice(toStart + i13);
-                }
-            } else if (fromLen > length) {
-                if (from.charCodeAt(fromStart + i13) === 47) {
-                    lastCommonSep = i13;
-                } else if (i13 === 0) {
-                    lastCommonSep = 0;
-                }
-            }
-            break;
-        }
-        const fromCode = from.charCodeAt(fromStart + i13);
-        const toCode = to2.charCodeAt(toStart + i13);
-        if (fromCode !== toCode) break;
-        else if (fromCode === 47) lastCommonSep = i13;
-    }
-    let out = "";
-    for(i13 = fromStart + lastCommonSep + 1; i13 <= fromEnd; ++i13){
-        if (i13 === fromEnd || from.charCodeAt(i13) === 47) {
-            if (out.length === 0) out += "..";
-            else out += "/..";
-        }
-    }
-    if (out.length > 0) return out + to2.slice(toStart + lastCommonSep);
-    else {
-        toStart += lastCommonSep;
-        if (to2.charCodeAt(toStart) === 47) ++toStart;
-        return to2.slice(toStart);
-    }
-}
-function toNamespacedPath1(path19) {
-    return path19;
-}
-function dirname1(path20) {
-    assertPath(path20);
-    if (path20.length === 0) return ".";
-    const hasRoot = path20.charCodeAt(0) === 47;
-    let end = -1;
-    let matchedSlash = true;
-    for(let i14 = path20.length - 1; i14 >= 1; --i14){
-        if (path20.charCodeAt(i14) === 47) {
-            if (!matchedSlash) {
-                end = i14;
-                break;
-            }
-        } else {
-            matchedSlash = false;
-        }
-    }
-    if (end === -1) return hasRoot ? "/" : ".";
-    if (hasRoot && end === 1) return "//";
-    return path20.slice(0, end);
-}
-function basename1(path21, ext = "") {
-    if (ext !== undefined && typeof ext !== "string") {
-        throw new TypeError('"ext" argument must be a string');
-    }
-    assertPath(path21);
-    let start = 0;
-    let end = -1;
-    let matchedSlash = true;
-    let i15;
-    if (ext !== undefined && ext.length > 0 && ext.length <= path21.length) {
-        if (ext.length === path21.length && ext === path21) return "";
-        let extIdx = ext.length - 1;
-        let firstNonSlashEnd = -1;
-        for(i15 = path21.length - 1; i15 >= 0; --i15){
-            const code = path21.charCodeAt(i15);
-            if (code === 47) {
-                if (!matchedSlash) {
-                    start = i15 + 1;
-                    break;
-                }
-            } else {
-                if (firstNonSlashEnd === -1) {
-                    matchedSlash = false;
-                    firstNonSlashEnd = i15 + 1;
-                }
-                if (extIdx >= 0) {
-                    if (code === ext.charCodeAt(extIdx)) {
-                        if (--extIdx === -1) {
-                            end = i15;
-                        }
-                    } else {
-                        extIdx = -1;
-                        end = firstNonSlashEnd;
-                    }
-                }
-            }
-        }
-        if (start === end) end = firstNonSlashEnd;
-        else if (end === -1) end = path21.length;
-        return path21.slice(start, end);
-    } else {
-        for(i15 = path21.length - 1; i15 >= 0; --i15){
-            if (path21.charCodeAt(i15) === 47) {
-                if (!matchedSlash) {
-                    start = i15 + 1;
-                    break;
-                }
-            } else if (end === -1) {
-                matchedSlash = false;
-                end = i15 + 1;
-            }
-        }
-        if (end === -1) return "";
-        return path21.slice(start, end);
-    }
-}
-function extname1(path22) {
-    assertPath(path22);
-    let startDot = -1;
-    let startPart = 0;
-    let end = -1;
-    let matchedSlash = true;
-    let preDotState = 0;
-    for(let i16 = path22.length - 1; i16 >= 0; --i16){
-        const code = path22.charCodeAt(i16);
-        if (code === 47) {
-            if (!matchedSlash) {
-                startPart = i16 + 1;
-                break;
-            }
-            continue;
-        }
-        if (end === -1) {
-            matchedSlash = false;
-            end = i16 + 1;
-        }
-        if (code === 46) {
-            if (startDot === -1) startDot = i16;
-            else if (preDotState !== 1) preDotState = 1;
-        } else if (startDot !== -1) {
-            preDotState = -1;
-        }
-    }
-    if (startDot === -1 || end === -1 || preDotState === 0 || preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
-        return "";
-    }
-    return path22.slice(startDot, end);
-}
-function format1(pathObject) {
-    if (pathObject === null || typeof pathObject !== "object") {
-        throw new TypeError(`The "pathObject" argument must be of type Object. Received type ${typeof pathObject}`);
-    }
-    return _format("/", pathObject);
-}
-function parse1(path23) {
-    assertPath(path23);
-    const ret = {
-        root: "",
-        dir: "",
-        base: "",
-        ext: "",
-        name: ""
-    };
-    if (path23.length === 0) return ret;
-    const isAbsolute2 = path23.charCodeAt(0) === 47;
-    let start;
-    if (isAbsolute2) {
-        ret.root = "/";
-        start = 1;
-    } else {
-        start = 0;
-    }
-    let startDot = -1;
-    let startPart = 0;
-    let end = -1;
-    let matchedSlash = true;
-    let i17 = path23.length - 1;
-    let preDotState = 0;
-    for(; i17 >= start; --i17){
-        const code = path23.charCodeAt(i17);
-        if (code === 47) {
-            if (!matchedSlash) {
-                startPart = i17 + 1;
-                break;
-            }
-            continue;
-        }
-        if (end === -1) {
-            matchedSlash = false;
-            end = i17 + 1;
-        }
-        if (code === 46) {
-            if (startDot === -1) startDot = i17;
-            else if (preDotState !== 1) preDotState = 1;
-        } else if (startDot !== -1) {
-            preDotState = -1;
-        }
-    }
-    if (startDot === -1 || end === -1 || preDotState === 0 || preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
-        if (end !== -1) {
-            if (startPart === 0 && isAbsolute2) {
-                ret.base = ret.name = path23.slice(1, end);
-            } else {
-                ret.base = ret.name = path23.slice(startPart, end);
-            }
-        }
-    } else {
-        if (startPart === 0 && isAbsolute2) {
-            ret.name = path23.slice(1, startDot);
-            ret.base = path23.slice(1, end);
-        } else {
-            ret.name = path23.slice(startPart, startDot);
-            ret.base = path23.slice(startPart, end);
-        }
-        ret.ext = path23.slice(startDot, end);
-    }
-    if (startPart > 0) ret.dir = path23.slice(0, startPart - 1);
-    else if (isAbsolute2) ret.dir = "/";
-    return ret;
-}
-function fromFileUrl1(url) {
-    url = url instanceof URL ? url : new URL(url);
-    if (url.protocol != "file:") {
-        throw new TypeError("Must be a file URL.");
-    }
-    return decodeURIComponent(url.pathname.replace(/%(?![0-9A-Fa-f]{2})/g, "%25"));
-}
-function toFileUrl1(path24) {
-    if (!isAbsolute1(path24)) {
-        throw new TypeError("Must be an absolute path.");
-    }
-    const url = new URL("file:///");
-    url.pathname = encodeWhitespace(path24.replace(/%/g, "%25").replace(/\\/g, "%5C"));
-    return url;
-}
-const mod1 = {
-    sep: sep1,
-    delimiter: delimiter1,
-    resolve: resolve1,
-    normalize: normalize1,
-    isAbsolute: isAbsolute1,
-    join: join1,
-    relative: relative1,
-    toNamespacedPath: toNamespacedPath1,
-    dirname: dirname1,
-    basename: basename1,
-    extname: extname1,
-    format: format1,
-    parse: parse1,
-    fromFileUrl: fromFileUrl1,
-    toFileUrl: toFileUrl1
-};
-const path = isWindows ? mod : mod1;
-const { join: join2 , normalize: normalize2  } = path;
-const path1 = isWindows ? mod : mod1;
-const { basename: basename2 , delimiter: delimiter2 , dirname: dirname2 , extname: extname2 , format: format2 , fromFileUrl: fromFileUrl2 , isAbsolute: isAbsolute2 , join: join3 , normalize: normalize3 , parse: parse2 , relative: relative2 , resolve: resolve2 , sep: sep2 , toFileUrl: toFileUrl2 , toNamespacedPath: toNamespacedPath2 ,  } = path1;
-const db = JSON.parse(`{
-  "application/1d-interleaved-parityfec": {
-    "source": "iana"
-  },
-  "application/3gpdash-qoe-report+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/3gpp-ims+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/3gpphal+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/3gpphalforms+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/a2l": {
-    "source": "iana"
-  },
-  "application/ace+cbor": {
-    "source": "iana"
-  },
-  "application/activemessage": {
-    "source": "iana"
-  },
-  "application/activity+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-costmap+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-costmapfilter+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-directory+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-endpointcost+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-endpointcostparams+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-endpointprop+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-endpointpropparams+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-error+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-networkmap+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-networkmapfilter+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-updatestreamcontrol+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/alto-updatestreamparams+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/aml": {
-    "source": "iana"
-  },
-  "application/andrew-inset": {
-    "source": "iana",
-    "extensions": ["ez"]
-  },
-  "application/applefile": {
-    "source": "iana"
-  },
-  "application/applixware": {
-    "source": "apache",
-    "extensions": ["aw"]
-  },
-  "application/at+jwt": {
-    "source": "iana"
-  },
-  "application/atf": {
-    "source": "iana"
-  },
-  "application/atfx": {
-    "source": "iana"
-  },
-  "application/atom+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["atom"]
-  },
-  "application/atomcat+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["atomcat"]
-  },
-  "application/atomdeleted+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["atomdeleted"]
-  },
-  "application/atomicmail": {
-    "source": "iana"
-  },
-  "application/atomsvc+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["atomsvc"]
-  },
-  "application/atsc-dwd+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["dwd"]
-  },
-  "application/atsc-dynamic-event-message": {
-    "source": "iana"
-  },
-  "application/atsc-held+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["held"]
-  },
-  "application/atsc-rdt+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/atsc-rsat+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rsat"]
-  },
-  "application/atxml": {
-    "source": "iana"
-  },
-  "application/auth-policy+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/bacnet-xdd+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/batch-smtp": {
-    "source": "iana"
-  },
-  "application/bdoc": {
-    "compressible": false,
-    "extensions": ["bdoc"]
-  },
-  "application/beep+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/calendar+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/calendar+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xcs"]
-  },
-  "application/call-completion": {
-    "source": "iana"
-  },
-  "application/cals-1840": {
-    "source": "iana"
-  },
-  "application/captive+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/cbor": {
-    "source": "iana"
-  },
-  "application/cbor-seq": {
-    "source": "iana"
-  },
-  "application/cccex": {
-    "source": "iana"
-  },
-  "application/ccmp+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/ccxml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["ccxml"]
-  },
-  "application/cdfx+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["cdfx"]
-  },
-  "application/cdmi-capability": {
-    "source": "iana",
-    "extensions": ["cdmia"]
-  },
-  "application/cdmi-container": {
-    "source": "iana",
-    "extensions": ["cdmic"]
-  },
-  "application/cdmi-domain": {
-    "source": "iana",
-    "extensions": ["cdmid"]
-  },
-  "application/cdmi-object": {
-    "source": "iana",
-    "extensions": ["cdmio"]
-  },
-  "application/cdmi-queue": {
-    "source": "iana",
-    "extensions": ["cdmiq"]
-  },
-  "application/cdni": {
-    "source": "iana"
-  },
-  "application/cea": {
-    "source": "iana"
-  },
-  "application/cea-2018+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/cellml+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/cfw": {
-    "source": "iana"
-  },
-  "application/clr": {
-    "source": "iana"
-  },
-  "application/clue+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/clue_info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/cms": {
-    "source": "iana"
-  },
-  "application/cnrp+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/coap-group+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/coap-payload": {
-    "source": "iana"
-  },
-  "application/commonground": {
-    "source": "iana"
-  },
-  "application/conference-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/cose": {
-    "source": "iana"
-  },
-  "application/cose-key": {
-    "source": "iana"
-  },
-  "application/cose-key-set": {
-    "source": "iana"
-  },
-  "application/cpl+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/csrattrs": {
-    "source": "iana"
-  },
-  "application/csta+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/cstadata+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/csvm+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/cu-seeme": {
-    "source": "apache",
-    "extensions": ["cu"]
-  },
-  "application/cwt": {
-    "source": "iana"
-  },
-  "application/cybercash": {
-    "source": "iana"
-  },
-  "application/dart": {
-    "compressible": true
-  },
-  "application/dash+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["mpd"]
-  },
-  "application/dashdelta": {
-    "source": "iana"
-  },
-  "application/davmount+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["davmount"]
-  },
-  "application/dca-rft": {
-    "source": "iana"
-  },
-  "application/dcd": {
-    "source": "iana"
-  },
-  "application/dec-dx": {
-    "source": "iana"
-  },
-  "application/dialog-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/dicom": {
-    "source": "iana"
-  },
-  "application/dicom+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/dicom+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/dii": {
-    "source": "iana"
-  },
-  "application/dit": {
-    "source": "iana"
-  },
-  "application/dns": {
-    "source": "iana"
-  },
-  "application/dns+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/dns-message": {
-    "source": "iana"
-  },
-  "application/docbook+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["dbk"]
-  },
-  "application/dots+cbor": {
-    "source": "iana"
-  },
-  "application/dskpp+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/dssc+der": {
-    "source": "iana",
-    "extensions": ["dssc"]
-  },
-  "application/dssc+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xdssc"]
-  },
-  "application/dvcs": {
-    "source": "iana"
-  },
-  "application/ecmascript": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["es","ecma"]
-  },
-  "application/edi-consent": {
-    "source": "iana"
-  },
-  "application/edi-x12": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/edifact": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/efi": {
-    "source": "iana"
-  },
-  "application/elm+json": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/elm+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/emergencycalldata.cap+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/emergencycalldata.comment+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/emergencycalldata.control+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/emergencycalldata.deviceinfo+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/emergencycalldata.ecall.msd": {
-    "source": "iana"
-  },
-  "application/emergencycalldata.providerinfo+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/emergencycalldata.serviceinfo+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/emergencycalldata.subscriberinfo+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/emergencycalldata.veds+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/emma+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["emma"]
-  },
-  "application/emotionml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["emotionml"]
-  },
-  "application/encaprtp": {
-    "source": "iana"
-  },
-  "application/epp+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/epub+zip": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["epub"]
-  },
-  "application/eshop": {
-    "source": "iana"
-  },
-  "application/exi": {
-    "source": "iana",
-    "extensions": ["exi"]
-  },
-  "application/expect-ct-report+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/express": {
-    "source": "iana",
-    "extensions": ["exp"]
-  },
-  "application/fastinfoset": {
-    "source": "iana"
-  },
-  "application/fastsoap": {
-    "source": "iana"
-  },
-  "application/fdt+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["fdt"]
-  },
-  "application/fhir+json": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/fhir+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/fido.trusted-apps+json": {
-    "compressible": true
-  },
-  "application/fits": {
-    "source": "iana"
-  },
-  "application/flexfec": {
-    "source": "iana"
-  },
-  "application/font-sfnt": {
-    "source": "iana"
-  },
-  "application/font-tdpfr": {
-    "source": "iana",
-    "extensions": ["pfr"]
-  },
-  "application/font-woff": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/framework-attributes+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/geo+json": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["geojson"]
-  },
-  "application/geo+json-seq": {
-    "source": "iana"
-  },
-  "application/geopackage+sqlite3": {
-    "source": "iana"
-  },
-  "application/geoxacml+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/gltf-buffer": {
-    "source": "iana"
-  },
-  "application/gml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["gml"]
-  },
-  "application/gpx+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["gpx"]
-  },
-  "application/gxf": {
-    "source": "apache",
-    "extensions": ["gxf"]
-  },
-  "application/gzip": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["gz"]
-  },
-  "application/h224": {
-    "source": "iana"
-  },
-  "application/held+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/hjson": {
-    "extensions": ["hjson"]
-  },
-  "application/http": {
-    "source": "iana"
-  },
-  "application/hyperstudio": {
-    "source": "iana",
-    "extensions": ["stk"]
-  },
-  "application/ibe-key-request+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/ibe-pkg-reply+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/ibe-pp-data": {
-    "source": "iana"
-  },
-  "application/iges": {
-    "source": "iana"
-  },
-  "application/im-iscomposing+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/index": {
-    "source": "iana"
-  },
-  "application/index.cmd": {
-    "source": "iana"
-  },
-  "application/index.obj": {
-    "source": "iana"
-  },
-  "application/index.response": {
-    "source": "iana"
-  },
-  "application/index.vnd": {
-    "source": "iana"
-  },
-  "application/inkml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["ink","inkml"]
-  },
-  "application/iotp": {
-    "source": "iana"
-  },
-  "application/ipfix": {
-    "source": "iana",
-    "extensions": ["ipfix"]
-  },
-  "application/ipp": {
-    "source": "iana"
-  },
-  "application/isup": {
-    "source": "iana"
-  },
-  "application/its+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["its"]
-  },
-  "application/java-archive": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["jar","war","ear"]
-  },
-  "application/java-serialized-object": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["ser"]
-  },
-  "application/java-vm": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["class"]
-  },
-  "application/javascript": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true,
-    "extensions": ["js","mjs"]
-  },
-  "application/jf2feed+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/jose": {
-    "source": "iana"
-  },
-  "application/jose+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/jrd+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/jscalendar+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/json": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true,
-    "extensions": ["json","map"]
-  },
-  "application/json-patch+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/json-seq": {
-    "source": "iana"
-  },
-  "application/json5": {
-    "extensions": ["json5"]
-  },
-  "application/jsonml+json": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["jsonml"]
-  },
-  "application/jwk+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/jwk-set+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/jwt": {
-    "source": "iana"
-  },
-  "application/kpml-request+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/kpml-response+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/ld+json": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["jsonld"]
-  },
-  "application/lgr+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["lgr"]
-  },
-  "application/link-format": {
-    "source": "iana"
-  },
-  "application/load-control+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/lost+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["lostxml"]
-  },
-  "application/lostsync+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/lpf+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/lxf": {
-    "source": "iana"
-  },
-  "application/mac-binhex40": {
-    "source": "iana",
-    "extensions": ["hqx"]
-  },
-  "application/mac-compactpro": {
-    "source": "apache",
-    "extensions": ["cpt"]
-  },
-  "application/macwriteii": {
-    "source": "iana"
-  },
-  "application/mads+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["mads"]
-  },
-  "application/manifest+json": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true,
-    "extensions": ["webmanifest"]
-  },
-  "application/marc": {
-    "source": "iana",
-    "extensions": ["mrc"]
-  },
-  "application/marcxml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["mrcx"]
-  },
-  "application/mathematica": {
-    "source": "iana",
-    "extensions": ["ma","nb","mb"]
-  },
-  "application/mathml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["mathml"]
-  },
-  "application/mathml-content+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mathml-presentation+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-associated-procedure-description+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-deregister+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-envelope+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-msk+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-msk-response+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-protection-description+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-reception-report+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-register+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-register-response+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-schedule+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbms-user-service-description+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mbox": {
-    "source": "iana",
-    "extensions": ["mbox"]
-  },
-  "application/media-policy-dataset+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/media_control+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mediaservercontrol+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["mscml"]
-  },
-  "application/merge-patch+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/metalink+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["metalink"]
-  },
-  "application/metalink4+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["meta4"]
-  },
-  "application/mets+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["mets"]
-  },
-  "application/mf4": {
-    "source": "iana"
-  },
-  "application/mikey": {
-    "source": "iana"
-  },
-  "application/mipc": {
-    "source": "iana"
-  },
-  "application/missing-blocks+cbor-seq": {
-    "source": "iana"
-  },
-  "application/mmt-aei+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["maei"]
-  },
-  "application/mmt-usd+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["musd"]
-  },
-  "application/mods+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["mods"]
-  },
-  "application/moss-keys": {
-    "source": "iana"
-  },
-  "application/moss-signature": {
-    "source": "iana"
-  },
-  "application/mosskey-data": {
-    "source": "iana"
-  },
-  "application/mosskey-request": {
-    "source": "iana"
-  },
-  "application/mp21": {
-    "source": "iana",
-    "extensions": ["m21","mp21"]
-  },
-  "application/mp4": {
-    "source": "iana",
-    "extensions": ["mp4s","m4p"]
-  },
-  "application/mpeg4-generic": {
-    "source": "iana"
-  },
-  "application/mpeg4-iod": {
-    "source": "iana"
-  },
-  "application/mpeg4-iod-xmt": {
-    "source": "iana"
-  },
-  "application/mrb-consumer+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/mrb-publish+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/msc-ivr+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/msc-mixer+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/msword": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["doc","dot"]
-  },
-  "application/mud+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/multipart-core": {
-    "source": "iana"
-  },
-  "application/mxf": {
-    "source": "iana",
-    "extensions": ["mxf"]
-  },
-  "application/n-quads": {
-    "source": "iana",
-    "extensions": ["nq"]
-  },
-  "application/n-triples": {
-    "source": "iana",
-    "extensions": ["nt"]
-  },
-  "application/nasdata": {
-    "source": "iana"
-  },
-  "application/news-checkgroups": {
-    "source": "iana",
-    "charset": "US-ASCII"
-  },
-  "application/news-groupinfo": {
-    "source": "iana",
-    "charset": "US-ASCII"
-  },
-  "application/news-transmission": {
-    "source": "iana"
-  },
-  "application/nlsml+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/node": {
-    "source": "iana",
-    "extensions": ["cjs"]
-  },
-  "application/nss": {
-    "source": "iana"
-  },
-  "application/oauth-authz-req+jwt": {
-    "source": "iana"
-  },
-  "application/ocsp-request": {
-    "source": "iana"
-  },
-  "application/ocsp-response": {
-    "source": "iana"
-  },
-  "application/octet-stream": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["bin","dms","lrf","mar","so","dist","distz","pkg","bpk","dump","elc","deploy","exe","dll","deb","dmg","iso","img","msi","msp","msm","buffer"]
-  },
-  "application/oda": {
-    "source": "iana",
-    "extensions": ["oda"]
-  },
-  "application/odm+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/odx": {
-    "source": "iana"
-  },
-  "application/oebps-package+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["opf"]
-  },
-  "application/ogg": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["ogx"]
-  },
-  "application/omdoc+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["omdoc"]
-  },
-  "application/onenote": {
-    "source": "apache",
-    "extensions": ["onetoc","onetoc2","onetmp","onepkg"]
-  },
-  "application/opc-nodeset+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/oscore": {
-    "source": "iana"
-  },
-  "application/oxps": {
-    "source": "iana",
-    "extensions": ["oxps"]
-  },
-  "application/p21": {
-    "source": "iana"
-  },
-  "application/p21+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/p2p-overlay+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["relo"]
-  },
-  "application/parityfec": {
-    "source": "iana"
-  },
-  "application/passport": {
-    "source": "iana"
-  },
-  "application/patch-ops-error+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xer"]
-  },
-  "application/pdf": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["pdf"]
-  },
-  "application/pdx": {
-    "source": "iana"
-  },
-  "application/pem-certificate-chain": {
-    "source": "iana"
-  },
-  "application/pgp-encrypted": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["pgp"]
-  },
-  "application/pgp-keys": {
-    "source": "iana"
-  },
-  "application/pgp-signature": {
-    "source": "iana",
-    "extensions": ["asc","sig"]
-  },
-  "application/pics-rules": {
-    "source": "apache",
-    "extensions": ["prf"]
-  },
-  "application/pidf+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/pidf-diff+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/pkcs10": {
-    "source": "iana",
-    "extensions": ["p10"]
-  },
-  "application/pkcs12": {
-    "source": "iana"
-  },
-  "application/pkcs7-mime": {
-    "source": "iana",
-    "extensions": ["p7m","p7c"]
-  },
-  "application/pkcs7-signature": {
-    "source": "iana",
-    "extensions": ["p7s"]
-  },
-  "application/pkcs8": {
-    "source": "iana",
-    "extensions": ["p8"]
-  },
-  "application/pkcs8-encrypted": {
-    "source": "iana"
-  },
-  "application/pkix-attr-cert": {
-    "source": "iana",
-    "extensions": ["ac"]
-  },
-  "application/pkix-cert": {
-    "source": "iana",
-    "extensions": ["cer"]
-  },
-  "application/pkix-crl": {
-    "source": "iana",
-    "extensions": ["crl"]
-  },
-  "application/pkix-pkipath": {
-    "source": "iana",
-    "extensions": ["pkipath"]
-  },
-  "application/pkixcmp": {
-    "source": "iana",
-    "extensions": ["pki"]
-  },
-  "application/pls+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["pls"]
-  },
-  "application/poc-settings+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/postscript": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["ai","eps","ps"]
-  },
-  "application/ppsp-tracker+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/problem+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/problem+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/provenance+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["provx"]
-  },
-  "application/prs.alvestrand.titrax-sheet": {
-    "source": "iana"
-  },
-  "application/prs.cww": {
-    "source": "iana",
-    "extensions": ["cww"]
-  },
-  "application/prs.cyn": {
-    "source": "iana",
-    "charset": "7-BIT"
-  },
-  "application/prs.hpub+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/prs.nprend": {
-    "source": "iana"
-  },
-  "application/prs.plucker": {
-    "source": "iana"
-  },
-  "application/prs.rdf-xml-crypt": {
-    "source": "iana"
-  },
-  "application/prs.xsf+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/pskc+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["pskcxml"]
-  },
-  "application/pvd+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/qsig": {
-    "source": "iana"
-  },
-  "application/raml+yaml": {
-    "compressible": true,
-    "extensions": ["raml"]
-  },
-  "application/raptorfec": {
-    "source": "iana"
-  },
-  "application/rdap+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/rdf+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rdf","owl"]
-  },
-  "application/reginfo+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rif"]
-  },
-  "application/relax-ng-compact-syntax": {
-    "source": "iana",
-    "extensions": ["rnc"]
-  },
-  "application/remote-printing": {
-    "source": "iana"
-  },
-  "application/reputon+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/resource-lists+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rl"]
-  },
-  "application/resource-lists-diff+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rld"]
-  },
-  "application/rfc+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/riscos": {
-    "source": "iana"
-  },
-  "application/rlmi+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/rls-services+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rs"]
-  },
-  "application/route-apd+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rapd"]
-  },
-  "application/route-s-tsid+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["sls"]
-  },
-  "application/route-usd+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rusd"]
-  },
-  "application/rpki-ghostbusters": {
-    "source": "iana",
-    "extensions": ["gbr"]
-  },
-  "application/rpki-manifest": {
-    "source": "iana",
-    "extensions": ["mft"]
-  },
-  "application/rpki-publication": {
-    "source": "iana"
-  },
-  "application/rpki-roa": {
-    "source": "iana",
-    "extensions": ["roa"]
-  },
-  "application/rpki-updown": {
-    "source": "iana"
-  },
-  "application/rsd+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["rsd"]
-  },
-  "application/rss+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["rss"]
-  },
-  "application/rtf": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rtf"]
-  },
-  "application/rtploopback": {
-    "source": "iana"
-  },
-  "application/rtx": {
-    "source": "iana"
-  },
-  "application/samlassertion+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/samlmetadata+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/sarif+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/sarif-external-properties+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/sbe": {
-    "source": "iana"
-  },
-  "application/sbml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["sbml"]
-  },
-  "application/scaip+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/scim+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/scvp-cv-request": {
-    "source": "iana",
-    "extensions": ["scq"]
-  },
-  "application/scvp-cv-response": {
-    "source": "iana",
-    "extensions": ["scs"]
-  },
-  "application/scvp-vp-request": {
-    "source": "iana",
-    "extensions": ["spq"]
-  },
-  "application/scvp-vp-response": {
-    "source": "iana",
-    "extensions": ["spp"]
-  },
-  "application/sdp": {
-    "source": "iana",
-    "extensions": ["sdp"]
-  },
-  "application/secevent+jwt": {
-    "source": "iana"
-  },
-  "application/senml+cbor": {
-    "source": "iana"
-  },
-  "application/senml+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/senml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["senmlx"]
-  },
-  "application/senml-etch+cbor": {
-    "source": "iana"
-  },
-  "application/senml-etch+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/senml-exi": {
-    "source": "iana"
-  },
-  "application/sensml+cbor": {
-    "source": "iana"
-  },
-  "application/sensml+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/sensml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["sensmlx"]
-  },
-  "application/sensml-exi": {
-    "source": "iana"
-  },
-  "application/sep+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/sep-exi": {
-    "source": "iana"
-  },
-  "application/session-info": {
-    "source": "iana"
-  },
-  "application/set-payment": {
-    "source": "iana"
-  },
-  "application/set-payment-initiation": {
-    "source": "iana",
-    "extensions": ["setpay"]
-  },
-  "application/set-registration": {
-    "source": "iana"
-  },
-  "application/set-registration-initiation": {
-    "source": "iana",
-    "extensions": ["setreg"]
-  },
-  "application/sgml": {
-    "source": "iana"
-  },
-  "application/sgml-open-catalog": {
-    "source": "iana"
-  },
-  "application/shf+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["shf"]
-  },
-  "application/sieve": {
-    "source": "iana",
-    "extensions": ["siv","sieve"]
-  },
-  "application/simple-filter+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/simple-message-summary": {
-    "source": "iana"
-  },
-  "application/simplesymbolcontainer": {
-    "source": "iana"
-  },
-  "application/sipc": {
-    "source": "iana"
-  },
-  "application/slate": {
-    "source": "iana"
-  },
-  "application/smil": {
-    "source": "iana"
-  },
-  "application/smil+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["smi","smil"]
-  },
-  "application/smpte336m": {
-    "source": "iana"
-  },
-  "application/soap+fastinfoset": {
-    "source": "iana"
-  },
-  "application/soap+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/sparql-query": {
-    "source": "iana",
-    "extensions": ["rq"]
-  },
-  "application/sparql-results+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["srx"]
-  },
-  "application/spdx+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/spirits-event+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/sql": {
-    "source": "iana"
-  },
-  "application/srgs": {
-    "source": "iana",
-    "extensions": ["gram"]
-  },
-  "application/srgs+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["grxml"]
-  },
-  "application/sru+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["sru"]
-  },
-  "application/ssdl+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["ssdl"]
-  },
-  "application/ssml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["ssml"]
-  },
-  "application/stix+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/swid+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["swidtag"]
-  },
-  "application/tamp-apex-update": {
-    "source": "iana"
-  },
-  "application/tamp-apex-update-confirm": {
-    "source": "iana"
-  },
-  "application/tamp-community-update": {
-    "source": "iana"
-  },
-  "application/tamp-community-update-confirm": {
-    "source": "iana"
-  },
-  "application/tamp-error": {
-    "source": "iana"
-  },
-  "application/tamp-sequence-adjust": {
-    "source": "iana"
-  },
-  "application/tamp-sequence-adjust-confirm": {
-    "source": "iana"
-  },
-  "application/tamp-status-query": {
-    "source": "iana"
-  },
-  "application/tamp-status-response": {
-    "source": "iana"
-  },
-  "application/tamp-update": {
-    "source": "iana"
-  },
-  "application/tamp-update-confirm": {
-    "source": "iana"
-  },
-  "application/tar": {
-    "compressible": true
-  },
-  "application/taxii+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/td+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/tei+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["tei","teicorpus"]
-  },
-  "application/tetra_isi": {
-    "source": "iana"
-  },
-  "application/thraud+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["tfi"]
-  },
-  "application/timestamp-query": {
-    "source": "iana"
-  },
-  "application/timestamp-reply": {
-    "source": "iana"
-  },
-  "application/timestamped-data": {
-    "source": "iana",
-    "extensions": ["tsd"]
-  },
-  "application/tlsrpt+gzip": {
-    "source": "iana"
-  },
-  "application/tlsrpt+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/tnauthlist": {
-    "source": "iana"
-  },
-  "application/token-introspection+jwt": {
-    "source": "iana"
-  },
-  "application/toml": {
-    "compressible": true,
-    "extensions": ["toml"]
-  },
-  "application/trickle-ice-sdpfrag": {
-    "source": "iana"
-  },
-  "application/trig": {
-    "source": "iana",
-    "extensions": ["trig"]
-  },
-  "application/ttml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["ttml"]
-  },
-  "application/tve-trigger": {
-    "source": "iana"
-  },
-  "application/tzif": {
-    "source": "iana"
-  },
-  "application/tzif-leap": {
-    "source": "iana"
-  },
-  "application/ubjson": {
-    "compressible": false,
-    "extensions": ["ubj"]
-  },
-  "application/ulpfec": {
-    "source": "iana"
-  },
-  "application/urc-grpsheet+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/urc-ressheet+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rsheet"]
-  },
-  "application/urc-targetdesc+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["td"]
-  },
-  "application/urc-uisocketdesc+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vcard+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vcard+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vemmi": {
-    "source": "iana"
-  },
-  "application/vividence.scriptfile": {
-    "source": "apache"
-  },
-  "application/vnd.1000minds.decision-model+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["1km"]
-  },
-  "application/vnd.3gpp-prose+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp-prose-pc3ch+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp-v2x-local-service-information": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.5gnas": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.access-transfer-events+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.bsf+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.gmop+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.gtpc": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.interworking-data": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.lpp": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.mc-signalling-ear": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.mcdata-affiliation-command+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcdata-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcdata-payload": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.mcdata-service-config+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcdata-signalling": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.mcdata-ue-config+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcdata-user-profile+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-affiliation-command+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-floor-request+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-location-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-mbms-usage-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-service-config+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-signed+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-ue-config+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-ue-init-config+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcptt-user-profile+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcvideo-affiliation-command+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcvideo-affiliation-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcvideo-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcvideo-location-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcvideo-mbms-usage-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcvideo-service-config+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcvideo-transmission-request+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcvideo-ue-config+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mcvideo-user-profile+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.mid-call+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.ngap": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.pfcp": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.pic-bw-large": {
-    "source": "iana",
-    "extensions": ["plb"]
-  },
-  "application/vnd.3gpp.pic-bw-small": {
-    "source": "iana",
-    "extensions": ["psb"]
-  },
-  "application/vnd.3gpp.pic-bw-var": {
-    "source": "iana",
-    "extensions": ["pvb"]
-  },
-  "application/vnd.3gpp.s1ap": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.sms": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp.sms+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.srvcc-ext+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.srvcc-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.state-and-event-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp.ussd+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp2.bcmcsinfo+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.3gpp2.sms": {
-    "source": "iana"
-  },
-  "application/vnd.3gpp2.tcap": {
-    "source": "iana",
-    "extensions": ["tcap"]
-  },
-  "application/vnd.3lightssoftware.imagescal": {
-    "source": "iana"
-  },
-  "application/vnd.3m.post-it-notes": {
-    "source": "iana",
-    "extensions": ["pwn"]
-  },
-  "application/vnd.accpac.simply.aso": {
-    "source": "iana",
-    "extensions": ["aso"]
-  },
-  "application/vnd.accpac.simply.imp": {
-    "source": "iana",
-    "extensions": ["imp"]
-  },
-  "application/vnd.acucobol": {
-    "source": "iana",
-    "extensions": ["acu"]
-  },
-  "application/vnd.acucorp": {
-    "source": "iana",
-    "extensions": ["atc","acutc"]
-  },
-  "application/vnd.adobe.air-application-installer-package+zip": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["air"]
-  },
-  "application/vnd.adobe.flash.movie": {
-    "source": "iana"
-  },
-  "application/vnd.adobe.formscentral.fcdt": {
-    "source": "iana",
-    "extensions": ["fcdt"]
-  },
-  "application/vnd.adobe.fxp": {
-    "source": "iana",
-    "extensions": ["fxp","fxpl"]
-  },
-  "application/vnd.adobe.partial-upload": {
-    "source": "iana"
-  },
-  "application/vnd.adobe.xdp+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xdp"]
-  },
-  "application/vnd.adobe.xfdf": {
-    "source": "iana",
-    "extensions": ["xfdf"]
-  },
-  "application/vnd.aether.imp": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.afplinedata": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.afplinedata-pagedef": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.cmoca-cmresource": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.foca-charset": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.foca-codedfont": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.foca-codepage": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.modca": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.modca-cmtable": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.modca-formdef": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.modca-mediummap": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.modca-objectcontainer": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.modca-overlay": {
-    "source": "iana"
-  },
-  "application/vnd.afpc.modca-pagesegment": {
-    "source": "iana"
-  },
-  "application/vnd.age": {
-    "source": "iana",
-    "extensions": ["age"]
-  },
-  "application/vnd.ah-barcode": {
-    "source": "iana"
-  },
-  "application/vnd.ahead.space": {
-    "source": "iana",
-    "extensions": ["ahead"]
-  },
-  "application/vnd.airzip.filesecure.azf": {
-    "source": "iana",
-    "extensions": ["azf"]
-  },
-  "application/vnd.airzip.filesecure.azs": {
-    "source": "iana",
-    "extensions": ["azs"]
-  },
-  "application/vnd.amadeus+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.amazon.ebook": {
-    "source": "apache",
-    "extensions": ["azw"]
-  },
-  "application/vnd.amazon.mobi8-ebook": {
-    "source": "iana"
-  },
-  "application/vnd.americandynamics.acc": {
-    "source": "iana",
-    "extensions": ["acc"]
-  },
-  "application/vnd.amiga.ami": {
-    "source": "iana",
-    "extensions": ["ami"]
-  },
-  "application/vnd.amundsen.maze+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.android.ota": {
-    "source": "iana"
-  },
-  "application/vnd.android.package-archive": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["apk"]
-  },
-  "application/vnd.anki": {
-    "source": "iana"
-  },
-  "application/vnd.anser-web-certificate-issue-initiation": {
-    "source": "iana",
-    "extensions": ["cii"]
-  },
-  "application/vnd.anser-web-funds-transfer-initiation": {
-    "source": "apache",
-    "extensions": ["fti"]
-  },
-  "application/vnd.antix.game-component": {
-    "source": "iana",
-    "extensions": ["atx"]
-  },
-  "application/vnd.apache.arrow.file": {
-    "source": "iana"
-  },
-  "application/vnd.apache.arrow.stream": {
-    "source": "iana"
-  },
-  "application/vnd.apache.thrift.binary": {
-    "source": "iana"
-  },
-  "application/vnd.apache.thrift.compact": {
-    "source": "iana"
-  },
-  "application/vnd.apache.thrift.json": {
-    "source": "iana"
-  },
-  "application/vnd.api+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.aplextor.warrp+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.apothekende.reservation+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.apple.installer+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["mpkg"]
-  },
-  "application/vnd.apple.keynote": {
-    "source": "iana",
-    "extensions": ["key"]
-  },
-  "application/vnd.apple.mpegurl": {
-    "source": "iana",
-    "extensions": ["m3u8"]
-  },
-  "application/vnd.apple.numbers": {
-    "source": "iana",
-    "extensions": ["numbers"]
-  },
-  "application/vnd.apple.pages": {
-    "source": "iana",
-    "extensions": ["pages"]
-  },
-  "application/vnd.apple.pkpass": {
-    "compressible": false,
-    "extensions": ["pkpass"]
-  },
-  "application/vnd.arastra.swi": {
-    "source": "iana"
-  },
-  "application/vnd.aristanetworks.swi": {
-    "source": "iana",
-    "extensions": ["swi"]
-  },
-  "application/vnd.artisan+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.artsquare": {
-    "source": "iana"
-  },
-  "application/vnd.astraea-software.iota": {
-    "source": "iana",
-    "extensions": ["iota"]
-  },
-  "application/vnd.audiograph": {
-    "source": "iana",
-    "extensions": ["aep"]
-  },
-  "application/vnd.autopackage": {
-    "source": "iana"
-  },
-  "application/vnd.avalon+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.avistar+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.balsamiq.bmml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["bmml"]
-  },
-  "application/vnd.balsamiq.bmpr": {
-    "source": "iana"
-  },
-  "application/vnd.banana-accounting": {
-    "source": "iana"
-  },
-  "application/vnd.bbf.usp.error": {
-    "source": "iana"
-  },
-  "application/vnd.bbf.usp.msg": {
-    "source": "iana"
-  },
-  "application/vnd.bbf.usp.msg+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.bekitzur-stech+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.bint.med-content": {
-    "source": "iana"
-  },
-  "application/vnd.biopax.rdf+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.blink-idb-value-wrapper": {
-    "source": "iana"
-  },
-  "application/vnd.blueice.multipass": {
-    "source": "iana",
-    "extensions": ["mpm"]
-  },
-  "application/vnd.bluetooth.ep.oob": {
-    "source": "iana"
-  },
-  "application/vnd.bluetooth.le.oob": {
-    "source": "iana"
-  },
-  "application/vnd.bmi": {
-    "source": "iana",
-    "extensions": ["bmi"]
-  },
-  "application/vnd.bpf": {
-    "source": "iana"
-  },
-  "application/vnd.bpf3": {
-    "source": "iana"
-  },
-  "application/vnd.businessobjects": {
-    "source": "iana",
-    "extensions": ["rep"]
-  },
-  "application/vnd.byu.uapi+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.cab-jscript": {
-    "source": "iana"
-  },
-  "application/vnd.canon-cpdl": {
-    "source": "iana"
-  },
-  "application/vnd.canon-lips": {
-    "source": "iana"
-  },
-  "application/vnd.capasystems-pg+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.cendio.thinlinc.clientconf": {
-    "source": "iana"
-  },
-  "application/vnd.century-systems.tcp_stream": {
-    "source": "iana"
-  },
-  "application/vnd.chemdraw+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["cdxml"]
-  },
-  "application/vnd.chess-pgn": {
-    "source": "iana"
-  },
-  "application/vnd.chipnuts.karaoke-mmd": {
-    "source": "iana",
-    "extensions": ["mmd"]
-  },
-  "application/vnd.ciedi": {
-    "source": "iana"
-  },
-  "application/vnd.cinderella": {
-    "source": "iana",
-    "extensions": ["cdy"]
-  },
-  "application/vnd.cirpack.isdn-ext": {
-    "source": "iana"
-  },
-  "application/vnd.citationstyles.style+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["csl"]
-  },
-  "application/vnd.claymore": {
-    "source": "iana",
-    "extensions": ["cla"]
-  },
-  "application/vnd.cloanto.rp9": {
-    "source": "iana",
-    "extensions": ["rp9"]
-  },
-  "application/vnd.clonk.c4group": {
-    "source": "iana",
-    "extensions": ["c4g","c4d","c4f","c4p","c4u"]
-  },
-  "application/vnd.cluetrust.cartomobile-config": {
-    "source": "iana",
-    "extensions": ["c11amc"]
-  },
-  "application/vnd.cluetrust.cartomobile-config-pkg": {
-    "source": "iana",
-    "extensions": ["c11amz"]
-  },
-  "application/vnd.coffeescript": {
-    "source": "iana"
-  },
-  "application/vnd.collabio.xodocuments.document": {
-    "source": "iana"
-  },
-  "application/vnd.collabio.xodocuments.document-template": {
-    "source": "iana"
-  },
-  "application/vnd.collabio.xodocuments.presentation": {
-    "source": "iana"
-  },
-  "application/vnd.collabio.xodocuments.presentation-template": {
-    "source": "iana"
-  },
-  "application/vnd.collabio.xodocuments.spreadsheet": {
-    "source": "iana"
-  },
-  "application/vnd.collabio.xodocuments.spreadsheet-template": {
-    "source": "iana"
-  },
-  "application/vnd.collection+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.collection.doc+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.collection.next+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.comicbook+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.comicbook-rar": {
-    "source": "iana"
-  },
-  "application/vnd.commerce-battelle": {
-    "source": "iana"
-  },
-  "application/vnd.commonspace": {
-    "source": "iana",
-    "extensions": ["csp"]
-  },
-  "application/vnd.contact.cmsg": {
-    "source": "iana",
-    "extensions": ["cdbcmsg"]
-  },
-  "application/vnd.coreos.ignition+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.cosmocaller": {
-    "source": "iana",
-    "extensions": ["cmc"]
-  },
-  "application/vnd.crick.clicker": {
-    "source": "iana",
-    "extensions": ["clkx"]
-  },
-  "application/vnd.crick.clicker.keyboard": {
-    "source": "iana",
-    "extensions": ["clkk"]
-  },
-  "application/vnd.crick.clicker.palette": {
-    "source": "iana",
-    "extensions": ["clkp"]
-  },
-  "application/vnd.crick.clicker.template": {
-    "source": "iana",
-    "extensions": ["clkt"]
-  },
-  "application/vnd.crick.clicker.wordbank": {
-    "source": "iana",
-    "extensions": ["clkw"]
-  },
-  "application/vnd.criticaltools.wbs+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["wbs"]
-  },
-  "application/vnd.cryptii.pipe+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.crypto-shade-file": {
-    "source": "iana"
-  },
-  "application/vnd.cryptomator.encrypted": {
-    "source": "iana"
-  },
-  "application/vnd.cryptomator.vault": {
-    "source": "iana"
-  },
-  "application/vnd.ctc-posml": {
-    "source": "iana",
-    "extensions": ["pml"]
-  },
-  "application/vnd.ctct.ws+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.cups-pdf": {
-    "source": "iana"
-  },
-  "application/vnd.cups-postscript": {
-    "source": "iana"
-  },
-  "application/vnd.cups-ppd": {
-    "source": "iana",
-    "extensions": ["ppd"]
-  },
-  "application/vnd.cups-raster": {
-    "source": "iana"
-  },
-  "application/vnd.cups-raw": {
-    "source": "iana"
-  },
-  "application/vnd.curl": {
-    "source": "iana"
-  },
-  "application/vnd.curl.car": {
-    "source": "apache",
-    "extensions": ["car"]
-  },
-  "application/vnd.curl.pcurl": {
-    "source": "apache",
-    "extensions": ["pcurl"]
-  },
-  "application/vnd.cyan.dean.root+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.cybank": {
-    "source": "iana"
-  },
-  "application/vnd.cyclonedx+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.cyclonedx+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.d2l.coursepackage1p0+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.d3m-dataset": {
-    "source": "iana"
-  },
-  "application/vnd.d3m-problem": {
-    "source": "iana"
-  },
-  "application/vnd.dart": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["dart"]
-  },
-  "application/vnd.data-vision.rdz": {
-    "source": "iana",
-    "extensions": ["rdz"]
-  },
-  "application/vnd.datapackage+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dataresource+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dbf": {
-    "source": "iana",
-    "extensions": ["dbf"]
-  },
-  "application/vnd.debian.binary-package": {
-    "source": "iana"
-  },
-  "application/vnd.dece.data": {
-    "source": "iana",
-    "extensions": ["uvf","uvvf","uvd","uvvd"]
-  },
-  "application/vnd.dece.ttml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["uvt","uvvt"]
-  },
-  "application/vnd.dece.unspecified": {
-    "source": "iana",
-    "extensions": ["uvx","uvvx"]
-  },
-  "application/vnd.dece.zip": {
-    "source": "iana",
-    "extensions": ["uvz","uvvz"]
-  },
-  "application/vnd.denovo.fcselayout-link": {
-    "source": "iana",
-    "extensions": ["fe_launch"]
-  },
-  "application/vnd.desmume.movie": {
-    "source": "iana"
-  },
-  "application/vnd.dir-bi.plate-dl-nosuffix": {
-    "source": "iana"
-  },
-  "application/vnd.dm.delegation+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dna": {
-    "source": "iana",
-    "extensions": ["dna"]
-  },
-  "application/vnd.document+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dolby.mlp": {
-    "source": "apache",
-    "extensions": ["mlp"]
-  },
-  "application/vnd.dolby.mobile.1": {
-    "source": "iana"
-  },
-  "application/vnd.dolby.mobile.2": {
-    "source": "iana"
-  },
-  "application/vnd.doremir.scorecloud-binary-document": {
-    "source": "iana"
-  },
-  "application/vnd.dpgraph": {
-    "source": "iana",
-    "extensions": ["dpg"]
-  },
-  "application/vnd.dreamfactory": {
-    "source": "iana",
-    "extensions": ["dfac"]
-  },
-  "application/vnd.drive+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ds-keypoint": {
-    "source": "apache",
-    "extensions": ["kpxx"]
-  },
-  "application/vnd.dtg.local": {
-    "source": "iana"
-  },
-  "application/vnd.dtg.local.flash": {
-    "source": "iana"
-  },
-  "application/vnd.dtg.local.html": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.ait": {
-    "source": "iana",
-    "extensions": ["ait"]
-  },
-  "application/vnd.dvb.dvbisl+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dvb.dvbj": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.esgcontainer": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.ipdcdftnotifaccess": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.ipdcesgaccess": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.ipdcesgaccess2": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.ipdcesgpdd": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.ipdcroaming": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.iptv.alfec-base": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.iptv.alfec-enhancement": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.notif-aggregate-root+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dvb.notif-container+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dvb.notif-generic+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dvb.notif-ia-msglist+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dvb.notif-ia-registration-request+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dvb.notif-ia-registration-response+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dvb.notif-init+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.dvb.pfr": {
-    "source": "iana"
-  },
-  "application/vnd.dvb.service": {
-    "source": "iana",
-    "extensions": ["svc"]
-  },
-  "application/vnd.dxr": {
-    "source": "iana"
-  },
-  "application/vnd.dynageo": {
-    "source": "iana",
-    "extensions": ["geo"]
-  },
-  "application/vnd.dzr": {
-    "source": "iana"
-  },
-  "application/vnd.easykaraoke.cdgdownload": {
-    "source": "iana"
-  },
-  "application/vnd.ecdis-update": {
-    "source": "iana"
-  },
-  "application/vnd.ecip.rlp": {
-    "source": "iana"
-  },
-  "application/vnd.ecowin.chart": {
-    "source": "iana",
-    "extensions": ["mag"]
-  },
-  "application/vnd.ecowin.filerequest": {
-    "source": "iana"
-  },
-  "application/vnd.ecowin.fileupdate": {
-    "source": "iana"
-  },
-  "application/vnd.ecowin.series": {
-    "source": "iana"
-  },
-  "application/vnd.ecowin.seriesrequest": {
-    "source": "iana"
-  },
-  "application/vnd.ecowin.seriesupdate": {
-    "source": "iana"
-  },
-  "application/vnd.efi.img": {
-    "source": "iana"
-  },
-  "application/vnd.efi.iso": {
-    "source": "iana"
-  },
-  "application/vnd.emclient.accessrequest+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.enliven": {
-    "source": "iana",
-    "extensions": ["nml"]
-  },
-  "application/vnd.enphase.envoy": {
-    "source": "iana"
-  },
-  "application/vnd.eprints.data+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.epson.esf": {
-    "source": "iana",
-    "extensions": ["esf"]
-  },
-  "application/vnd.epson.msf": {
-    "source": "iana",
-    "extensions": ["msf"]
-  },
-  "application/vnd.epson.quickanime": {
-    "source": "iana",
-    "extensions": ["qam"]
-  },
-  "application/vnd.epson.salt": {
-    "source": "iana",
-    "extensions": ["slt"]
-  },
-  "application/vnd.epson.ssf": {
-    "source": "iana",
-    "extensions": ["ssf"]
-  },
-  "application/vnd.ericsson.quickcall": {
-    "source": "iana"
-  },
-  "application/vnd.espass-espass+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.eszigno3+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["es3","et3"]
-  },
-  "application/vnd.etsi.aoc+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.asic-e+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.etsi.asic-s+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.etsi.cug+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.iptvcommand+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.iptvdiscovery+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.iptvprofile+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.iptvsad-bc+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.iptvsad-cod+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.iptvsad-npvr+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.iptvservice+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.iptvsync+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.iptvueprofile+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.mcid+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.mheg5": {
-    "source": "iana"
-  },
-  "application/vnd.etsi.overload-control-policy-dataset+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.pstn+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.sci+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.simservs+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.timestamp-token": {
-    "source": "iana"
-  },
-  "application/vnd.etsi.tsl+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.etsi.tsl.der": {
-    "source": "iana"
-  },
-  "application/vnd.eudora.data": {
-    "source": "iana"
-  },
-  "application/vnd.evolv.ecig.profile": {
-    "source": "iana"
-  },
-  "application/vnd.evolv.ecig.settings": {
-    "source": "iana"
-  },
-  "application/vnd.evolv.ecig.theme": {
-    "source": "iana"
-  },
-  "application/vnd.exstream-empower+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.exstream-package": {
-    "source": "iana"
-  },
-  "application/vnd.ezpix-album": {
-    "source": "iana",
-    "extensions": ["ez2"]
-  },
-  "application/vnd.ezpix-package": {
-    "source": "iana",
-    "extensions": ["ez3"]
-  },
-  "application/vnd.f-secure.mobile": {
-    "source": "iana"
-  },
-  "application/vnd.fastcopy-disk-image": {
-    "source": "iana"
-  },
-  "application/vnd.fdf": {
-    "source": "iana",
-    "extensions": ["fdf"]
-  },
-  "application/vnd.fdsn.mseed": {
-    "source": "iana",
-    "extensions": ["mseed"]
-  },
-  "application/vnd.fdsn.seed": {
-    "source": "iana",
-    "extensions": ["seed","dataless"]
-  },
-  "application/vnd.ffsns": {
-    "source": "iana"
-  },
-  "application/vnd.ficlab.flb+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.filmit.zfc": {
-    "source": "iana"
-  },
-  "application/vnd.fints": {
-    "source": "iana"
-  },
-  "application/vnd.firemonkeys.cloudcell": {
-    "source": "iana"
-  },
-  "application/vnd.flographit": {
-    "source": "iana",
-    "extensions": ["gph"]
-  },
-  "application/vnd.fluxtime.clip": {
-    "source": "iana",
-    "extensions": ["ftc"]
-  },
-  "application/vnd.font-fontforge-sfd": {
-    "source": "iana"
-  },
-  "application/vnd.framemaker": {
-    "source": "iana",
-    "extensions": ["fm","frame","maker","book"]
-  },
-  "application/vnd.frogans.fnc": {
-    "source": "iana",
-    "extensions": ["fnc"]
-  },
-  "application/vnd.frogans.ltf": {
-    "source": "iana",
-    "extensions": ["ltf"]
-  },
-  "application/vnd.fsc.weblaunch": {
-    "source": "iana",
-    "extensions": ["fsc"]
-  },
-  "application/vnd.fujifilm.fb.docuworks": {
-    "source": "iana"
-  },
-  "application/vnd.fujifilm.fb.docuworks.binder": {
-    "source": "iana"
-  },
-  "application/vnd.fujifilm.fb.docuworks.container": {
-    "source": "iana"
-  },
-  "application/vnd.fujifilm.fb.jfi+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.fujitsu.oasys": {
-    "source": "iana",
-    "extensions": ["oas"]
-  },
-  "application/vnd.fujitsu.oasys2": {
-    "source": "iana",
-    "extensions": ["oa2"]
-  },
-  "application/vnd.fujitsu.oasys3": {
-    "source": "iana",
-    "extensions": ["oa3"]
-  },
-  "application/vnd.fujitsu.oasysgp": {
-    "source": "iana",
-    "extensions": ["fg5"]
-  },
-  "application/vnd.fujitsu.oasysprs": {
-    "source": "iana",
-    "extensions": ["bh2"]
-  },
-  "application/vnd.fujixerox.art-ex": {
-    "source": "iana"
-  },
-  "application/vnd.fujixerox.art4": {
-    "source": "iana"
-  },
-  "application/vnd.fujixerox.ddd": {
-    "source": "iana",
-    "extensions": ["ddd"]
-  },
-  "application/vnd.fujixerox.docuworks": {
-    "source": "iana",
-    "extensions": ["xdw"]
-  },
-  "application/vnd.fujixerox.docuworks.binder": {
-    "source": "iana",
-    "extensions": ["xbd"]
-  },
-  "application/vnd.fujixerox.docuworks.container": {
-    "source": "iana"
-  },
-  "application/vnd.fujixerox.hbpl": {
-    "source": "iana"
-  },
-  "application/vnd.fut-misnet": {
-    "source": "iana"
-  },
-  "application/vnd.futoin+cbor": {
-    "source": "iana"
-  },
-  "application/vnd.futoin+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.fuzzysheet": {
-    "source": "iana",
-    "extensions": ["fzs"]
-  },
-  "application/vnd.genomatix.tuxedo": {
-    "source": "iana",
-    "extensions": ["txd"]
-  },
-  "application/vnd.gentics.grd+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.geo+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.geocube+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.geogebra.file": {
-    "source": "iana",
-    "extensions": ["ggb"]
-  },
-  "application/vnd.geogebra.slides": {
-    "source": "iana"
-  },
-  "application/vnd.geogebra.tool": {
-    "source": "iana",
-    "extensions": ["ggt"]
-  },
-  "application/vnd.geometry-explorer": {
-    "source": "iana",
-    "extensions": ["gex","gre"]
-  },
-  "application/vnd.geonext": {
-    "source": "iana",
-    "extensions": ["gxt"]
-  },
-  "application/vnd.geoplan": {
-    "source": "iana",
-    "extensions": ["g2w"]
-  },
-  "application/vnd.geospace": {
-    "source": "iana",
-    "extensions": ["g3w"]
-  },
-  "application/vnd.gerber": {
-    "source": "iana"
-  },
-  "application/vnd.globalplatform.card-content-mgt": {
-    "source": "iana"
-  },
-  "application/vnd.globalplatform.card-content-mgt-response": {
-    "source": "iana"
-  },
-  "application/vnd.gmx": {
-    "source": "iana",
-    "extensions": ["gmx"]
-  },
-  "application/vnd.google-apps.document": {
-    "compressible": false,
-    "extensions": ["gdoc"]
-  },
-  "application/vnd.google-apps.presentation": {
-    "compressible": false,
-    "extensions": ["gslides"]
-  },
-  "application/vnd.google-apps.spreadsheet": {
-    "compressible": false,
-    "extensions": ["gsheet"]
-  },
-  "application/vnd.google-earth.kml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["kml"]
-  },
-  "application/vnd.google-earth.kmz": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["kmz"]
-  },
-  "application/vnd.gov.sk.e-form+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.gov.sk.e-form+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.gov.sk.xmldatacontainer+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.grafeq": {
-    "source": "iana",
-    "extensions": ["gqf","gqs"]
-  },
-  "application/vnd.gridmp": {
-    "source": "iana"
-  },
-  "application/vnd.groove-account": {
-    "source": "iana",
-    "extensions": ["gac"]
-  },
-  "application/vnd.groove-help": {
-    "source": "iana",
-    "extensions": ["ghf"]
-  },
-  "application/vnd.groove-identity-message": {
-    "source": "iana",
-    "extensions": ["gim"]
-  },
-  "application/vnd.groove-injector": {
-    "source": "iana",
-    "extensions": ["grv"]
-  },
-  "application/vnd.groove-tool-message": {
-    "source": "iana",
-    "extensions": ["gtm"]
-  },
-  "application/vnd.groove-tool-template": {
-    "source": "iana",
-    "extensions": ["tpl"]
-  },
-  "application/vnd.groove-vcard": {
-    "source": "iana",
-    "extensions": ["vcg"]
-  },
-  "application/vnd.hal+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.hal+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["hal"]
-  },
-  "application/vnd.handheld-entertainment+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["zmm"]
-  },
-  "application/vnd.hbci": {
-    "source": "iana",
-    "extensions": ["hbci"]
-  },
-  "application/vnd.hc+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.hcl-bireports": {
-    "source": "iana"
-  },
-  "application/vnd.hdt": {
-    "source": "iana"
-  },
-  "application/vnd.heroku+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.hhe.lesson-player": {
-    "source": "iana",
-    "extensions": ["les"]
-  },
-  "application/vnd.hp-hpgl": {
-    "source": "iana",
-    "extensions": ["hpgl"]
-  },
-  "application/vnd.hp-hpid": {
-    "source": "iana",
-    "extensions": ["hpid"]
-  },
-  "application/vnd.hp-hps": {
-    "source": "iana",
-    "extensions": ["hps"]
-  },
-  "application/vnd.hp-jlyt": {
-    "source": "iana",
-    "extensions": ["jlt"]
-  },
-  "application/vnd.hp-pcl": {
-    "source": "iana",
-    "extensions": ["pcl"]
-  },
-  "application/vnd.hp-pclxl": {
-    "source": "iana",
-    "extensions": ["pclxl"]
-  },
-  "application/vnd.httphone": {
-    "source": "iana"
-  },
-  "application/vnd.hydrostatix.sof-data": {
-    "source": "iana",
-    "extensions": ["sfd-hdstx"]
-  },
-  "application/vnd.hyper+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.hyper-item+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.hyperdrive+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.hzn-3d-crossword": {
-    "source": "iana"
-  },
-  "application/vnd.ibm.afplinedata": {
-    "source": "iana"
-  },
-  "application/vnd.ibm.electronic-media": {
-    "source": "iana"
-  },
-  "application/vnd.ibm.minipay": {
-    "source": "iana",
-    "extensions": ["mpy"]
-  },
-  "application/vnd.ibm.modcap": {
-    "source": "iana",
-    "extensions": ["afp","listafp","list3820"]
-  },
-  "application/vnd.ibm.rights-management": {
-    "source": "iana",
-    "extensions": ["irm"]
-  },
-  "application/vnd.ibm.secure-container": {
-    "source": "iana",
-    "extensions": ["sc"]
-  },
-  "application/vnd.iccprofile": {
-    "source": "iana",
-    "extensions": ["icc","icm"]
-  },
-  "application/vnd.ieee.1905": {
-    "source": "iana"
-  },
-  "application/vnd.igloader": {
-    "source": "iana",
-    "extensions": ["igl"]
-  },
-  "application/vnd.imagemeter.folder+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.imagemeter.image+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.immervision-ivp": {
-    "source": "iana",
-    "extensions": ["ivp"]
-  },
-  "application/vnd.immervision-ivu": {
-    "source": "iana",
-    "extensions": ["ivu"]
-  },
-  "application/vnd.ims.imsccv1p1": {
-    "source": "iana"
-  },
-  "application/vnd.ims.imsccv1p2": {
-    "source": "iana"
-  },
-  "application/vnd.ims.imsccv1p3": {
-    "source": "iana"
-  },
-  "application/vnd.ims.lis.v2.result+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ims.lti.v2.toolconsumerprofile+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ims.lti.v2.toolproxy+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ims.lti.v2.toolproxy.id+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ims.lti.v2.toolsettings+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ims.lti.v2.toolsettings.simple+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.informedcontrol.rms+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.informix-visionary": {
-    "source": "iana"
-  },
-  "application/vnd.infotech.project": {
-    "source": "iana"
-  },
-  "application/vnd.infotech.project+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.innopath.wamp.notification": {
-    "source": "iana"
-  },
-  "application/vnd.insors.igm": {
-    "source": "iana",
-    "extensions": ["igm"]
-  },
-  "application/vnd.intercon.formnet": {
-    "source": "iana",
-    "extensions": ["xpw","xpx"]
-  },
-  "application/vnd.intergeo": {
-    "source": "iana",
-    "extensions": ["i2g"]
-  },
-  "application/vnd.intertrust.digibox": {
-    "source": "iana"
-  },
-  "application/vnd.intertrust.nncp": {
-    "source": "iana"
-  },
-  "application/vnd.intu.qbo": {
-    "source": "iana",
-    "extensions": ["qbo"]
-  },
-  "application/vnd.intu.qfx": {
-    "source": "iana",
-    "extensions": ["qfx"]
-  },
-  "application/vnd.iptc.g2.catalogitem+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.iptc.g2.conceptitem+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.iptc.g2.knowledgeitem+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.iptc.g2.newsitem+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.iptc.g2.newsmessage+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.iptc.g2.packageitem+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.iptc.g2.planningitem+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ipunplugged.rcprofile": {
-    "source": "iana",
-    "extensions": ["rcprofile"]
-  },
-  "application/vnd.irepository.package+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["irp"]
-  },
-  "application/vnd.is-xpr": {
-    "source": "iana",
-    "extensions": ["xpr"]
-  },
-  "application/vnd.isac.fcs": {
-    "source": "iana",
-    "extensions": ["fcs"]
-  },
-  "application/vnd.iso11783-10+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.jam": {
-    "source": "iana",
-    "extensions": ["jam"]
-  },
-  "application/vnd.japannet-directory-service": {
-    "source": "iana"
-  },
-  "application/vnd.japannet-jpnstore-wakeup": {
-    "source": "iana"
-  },
-  "application/vnd.japannet-payment-wakeup": {
-    "source": "iana"
-  },
-  "application/vnd.japannet-registration": {
-    "source": "iana"
-  },
-  "application/vnd.japannet-registration-wakeup": {
-    "source": "iana"
-  },
-  "application/vnd.japannet-setstore-wakeup": {
-    "source": "iana"
-  },
-  "application/vnd.japannet-verification": {
-    "source": "iana"
-  },
-  "application/vnd.japannet-verification-wakeup": {
-    "source": "iana"
-  },
-  "application/vnd.jcp.javame.midlet-rms": {
-    "source": "iana",
-    "extensions": ["rms"]
-  },
-  "application/vnd.jisp": {
-    "source": "iana",
-    "extensions": ["jisp"]
-  },
-  "application/vnd.joost.joda-archive": {
-    "source": "iana",
-    "extensions": ["joda"]
-  },
-  "application/vnd.jsk.isdn-ngn": {
-    "source": "iana"
-  },
-  "application/vnd.kahootz": {
-    "source": "iana",
-    "extensions": ["ktz","ktr"]
-  },
-  "application/vnd.kde.karbon": {
-    "source": "iana",
-    "extensions": ["karbon"]
-  },
-  "application/vnd.kde.kchart": {
-    "source": "iana",
-    "extensions": ["chrt"]
-  },
-  "application/vnd.kde.kformula": {
-    "source": "iana",
-    "extensions": ["kfo"]
-  },
-  "application/vnd.kde.kivio": {
-    "source": "iana",
-    "extensions": ["flw"]
-  },
-  "application/vnd.kde.kontour": {
-    "source": "iana",
-    "extensions": ["kon"]
-  },
-  "application/vnd.kde.kpresenter": {
-    "source": "iana",
-    "extensions": ["kpr","kpt"]
-  },
-  "application/vnd.kde.kspread": {
-    "source": "iana",
-    "extensions": ["ksp"]
-  },
-  "application/vnd.kde.kword": {
-    "source": "iana",
-    "extensions": ["kwd","kwt"]
-  },
-  "application/vnd.kenameaapp": {
-    "source": "iana",
-    "extensions": ["htke"]
-  },
-  "application/vnd.kidspiration": {
-    "source": "iana",
-    "extensions": ["kia"]
-  },
-  "application/vnd.kinar": {
-    "source": "iana",
-    "extensions": ["kne","knp"]
-  },
-  "application/vnd.koan": {
-    "source": "iana",
-    "extensions": ["skp","skd","skt","skm"]
-  },
-  "application/vnd.kodak-descriptor": {
-    "source": "iana",
-    "extensions": ["sse"]
-  },
-  "application/vnd.las": {
-    "source": "iana"
-  },
-  "application/vnd.las.las+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.las.las+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["lasxml"]
-  },
-  "application/vnd.laszip": {
-    "source": "iana"
-  },
-  "application/vnd.leap+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.liberty-request+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.llamagraphics.life-balance.desktop": {
-    "source": "iana",
-    "extensions": ["lbd"]
-  },
-  "application/vnd.llamagraphics.life-balance.exchange+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["lbe"]
-  },
-  "application/vnd.logipipe.circuit+zip": {
-    "source": "iana",
-    "compressible": false
-  },
-  "application/vnd.loom": {
-    "source": "iana"
-  },
-  "application/vnd.lotus-1-2-3": {
-    "source": "iana",
-    "extensions": ["123"]
-  },
-  "application/vnd.lotus-approach": {
-    "source": "iana",
-    "extensions": ["apr"]
-  },
-  "application/vnd.lotus-freelance": {
-    "source": "iana",
-    "extensions": ["pre"]
-  },
-  "application/vnd.lotus-notes": {
-    "source": "iana",
-    "extensions": ["nsf"]
-  },
-  "application/vnd.lotus-organizer": {
-    "source": "iana",
-    "extensions": ["org"]
-  },
-  "application/vnd.lotus-screencam": {
-    "source": "iana",
-    "extensions": ["scm"]
-  },
-  "application/vnd.lotus-wordpro": {
-    "source": "iana",
-    "extensions": ["lwp"]
-  },
-  "application/vnd.macports.portpkg": {
-    "source": "iana",
-    "extensions": ["portpkg"]
-  },
-  "application/vnd.mapbox-vector-tile": {
-    "source": "iana",
-    "extensions": ["mvt"]
-  },
-  "application/vnd.marlin.drm.actiontoken+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.marlin.drm.conftoken+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.marlin.drm.license+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.marlin.drm.mdcf": {
-    "source": "iana"
-  },
-  "application/vnd.mason+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.maxmind.maxmind-db": {
-    "source": "iana"
-  },
-  "application/vnd.mcd": {
-    "source": "iana",
-    "extensions": ["mcd"]
-  },
-  "application/vnd.medcalcdata": {
-    "source": "iana",
-    "extensions": ["mc1"]
-  },
-  "application/vnd.mediastation.cdkey": {
-    "source": "iana",
-    "extensions": ["cdkey"]
-  },
-  "application/vnd.meridian-slingshot": {
-    "source": "iana"
-  },
-  "application/vnd.mfer": {
-    "source": "iana",
-    "extensions": ["mwf"]
-  },
-  "application/vnd.mfmp": {
-    "source": "iana",
-    "extensions": ["mfm"]
-  },
-  "application/vnd.micro+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.micrografx.flo": {
-    "source": "iana",
-    "extensions": ["flo"]
-  },
-  "application/vnd.micrografx.igx": {
-    "source": "iana",
-    "extensions": ["igx"]
-  },
-  "application/vnd.microsoft.portable-executable": {
-    "source": "iana"
-  },
-  "application/vnd.microsoft.windows.thumbnail-cache": {
-    "source": "iana"
-  },
-  "application/vnd.miele+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.mif": {
-    "source": "iana",
-    "extensions": ["mif"]
-  },
-  "application/vnd.minisoft-hp3000-save": {
-    "source": "iana"
-  },
-  "application/vnd.mitsubishi.misty-guard.trustweb": {
-    "source": "iana"
-  },
-  "application/vnd.mobius.daf": {
-    "source": "iana",
-    "extensions": ["daf"]
-  },
-  "application/vnd.mobius.dis": {
-    "source": "iana",
-    "extensions": ["dis"]
-  },
-  "application/vnd.mobius.mbk": {
-    "source": "iana",
-    "extensions": ["mbk"]
-  },
-  "application/vnd.mobius.mqy": {
-    "source": "iana",
-    "extensions": ["mqy"]
-  },
-  "application/vnd.mobius.msl": {
-    "source": "iana",
-    "extensions": ["msl"]
-  },
-  "application/vnd.mobius.plc": {
-    "source": "iana",
-    "extensions": ["plc"]
-  },
-  "application/vnd.mobius.txf": {
-    "source": "iana",
-    "extensions": ["txf"]
-  },
-  "application/vnd.mophun.application": {
-    "source": "iana",
-    "extensions": ["mpn"]
-  },
-  "application/vnd.mophun.certificate": {
-    "source": "iana",
-    "extensions": ["mpc"]
-  },
-  "application/vnd.motorola.flexsuite": {
-    "source": "iana"
-  },
-  "application/vnd.motorola.flexsuite.adsi": {
-    "source": "iana"
-  },
-  "application/vnd.motorola.flexsuite.fis": {
-    "source": "iana"
-  },
-  "application/vnd.motorola.flexsuite.gotap": {
-    "source": "iana"
-  },
-  "application/vnd.motorola.flexsuite.kmr": {
-    "source": "iana"
-  },
-  "application/vnd.motorola.flexsuite.ttc": {
-    "source": "iana"
-  },
-  "application/vnd.motorola.flexsuite.wem": {
-    "source": "iana"
-  },
-  "application/vnd.motorola.iprm": {
-    "source": "iana"
-  },
-  "application/vnd.mozilla.xul+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xul"]
-  },
-  "application/vnd.ms-3mfdocument": {
-    "source": "iana"
-  },
-  "application/vnd.ms-artgalry": {
-    "source": "iana",
-    "extensions": ["cil"]
-  },
-  "application/vnd.ms-asf": {
-    "source": "iana"
-  },
-  "application/vnd.ms-cab-compressed": {
-    "source": "iana",
-    "extensions": ["cab"]
-  },
-  "application/vnd.ms-color.iccprofile": {
-    "source": "apache"
-  },
-  "application/vnd.ms-excel": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["xls","xlm","xla","xlc","xlt","xlw"]
-  },
-  "application/vnd.ms-excel.addin.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["xlam"]
-  },
-  "application/vnd.ms-excel.sheet.binary.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["xlsb"]
-  },
-  "application/vnd.ms-excel.sheet.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["xlsm"]
-  },
-  "application/vnd.ms-excel.template.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["xltm"]
-  },
-  "application/vnd.ms-fontobject": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["eot"]
-  },
-  "application/vnd.ms-htmlhelp": {
-    "source": "iana",
-    "extensions": ["chm"]
-  },
-  "application/vnd.ms-ims": {
-    "source": "iana",
-    "extensions": ["ims"]
-  },
-  "application/vnd.ms-lrm": {
-    "source": "iana",
-    "extensions": ["lrm"]
-  },
-  "application/vnd.ms-office.activex+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ms-officetheme": {
-    "source": "iana",
-    "extensions": ["thmx"]
-  },
-  "application/vnd.ms-opentype": {
-    "source": "apache",
-    "compressible": true
-  },
-  "application/vnd.ms-outlook": {
-    "compressible": false,
-    "extensions": ["msg"]
-  },
-  "application/vnd.ms-package.obfuscated-opentype": {
-    "source": "apache"
-  },
-  "application/vnd.ms-pki.seccat": {
-    "source": "apache",
-    "extensions": ["cat"]
-  },
-  "application/vnd.ms-pki.stl": {
-    "source": "apache",
-    "extensions": ["stl"]
-  },
-  "application/vnd.ms-playready.initiator+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ms-powerpoint": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["ppt","pps","pot"]
-  },
-  "application/vnd.ms-powerpoint.addin.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["ppam"]
-  },
-  "application/vnd.ms-powerpoint.presentation.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["pptm"]
-  },
-  "application/vnd.ms-powerpoint.slide.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["sldm"]
-  },
-  "application/vnd.ms-powerpoint.slideshow.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["ppsm"]
-  },
-  "application/vnd.ms-powerpoint.template.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["potm"]
-  },
-  "application/vnd.ms-printdevicecapabilities+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ms-printing.printticket+xml": {
-    "source": "apache",
-    "compressible": true
-  },
-  "application/vnd.ms-printschematicket+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ms-project": {
-    "source": "iana",
-    "extensions": ["mpp","mpt"]
-  },
-  "application/vnd.ms-tnef": {
-    "source": "iana"
-  },
-  "application/vnd.ms-windows.devicepairing": {
-    "source": "iana"
-  },
-  "application/vnd.ms-windows.nwprinting.oob": {
-    "source": "iana"
-  },
-  "application/vnd.ms-windows.printerpairing": {
-    "source": "iana"
-  },
-  "application/vnd.ms-windows.wsd.oob": {
-    "source": "iana"
-  },
-  "application/vnd.ms-wmdrm.lic-chlg-req": {
-    "source": "iana"
-  },
-  "application/vnd.ms-wmdrm.lic-resp": {
-    "source": "iana"
-  },
-  "application/vnd.ms-wmdrm.meter-chlg-req": {
-    "source": "iana"
-  },
-  "application/vnd.ms-wmdrm.meter-resp": {
-    "source": "iana"
-  },
-  "application/vnd.ms-word.document.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["docm"]
-  },
-  "application/vnd.ms-word.template.macroenabled.12": {
-    "source": "iana",
-    "extensions": ["dotm"]
-  },
-  "application/vnd.ms-works": {
-    "source": "iana",
-    "extensions": ["wps","wks","wcm","wdb"]
-  },
-  "application/vnd.ms-wpl": {
-    "source": "iana",
-    "extensions": ["wpl"]
-  },
-  "application/vnd.ms-xpsdocument": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["xps"]
-  },
-  "application/vnd.msa-disk-image": {
-    "source": "iana"
-  },
-  "application/vnd.mseq": {
-    "source": "iana",
-    "extensions": ["mseq"]
-  },
-  "application/vnd.msign": {
-    "source": "iana"
-  },
-  "application/vnd.multiad.creator": {
-    "source": "iana"
-  },
-  "application/vnd.multiad.creator.cif": {
-    "source": "iana"
-  },
-  "application/vnd.music-niff": {
-    "source": "iana"
-  },
-  "application/vnd.musician": {
-    "source": "iana",
-    "extensions": ["mus"]
-  },
-  "application/vnd.muvee.style": {
-    "source": "iana",
-    "extensions": ["msty"]
-  },
-  "application/vnd.mynfc": {
-    "source": "iana",
-    "extensions": ["taglet"]
-  },
-  "application/vnd.nacamar.ybrid+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.ncd.control": {
-    "source": "iana"
-  },
-  "application/vnd.ncd.reference": {
-    "source": "iana"
-  },
-  "application/vnd.nearst.inv+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.nebumind.line": {
-    "source": "iana"
-  },
-  "application/vnd.nervana": {
-    "source": "iana"
-  },
-  "application/vnd.netfpx": {
-    "source": "iana"
-  },
-  "application/vnd.neurolanguage.nlu": {
-    "source": "iana",
-    "extensions": ["nlu"]
-  },
-  "application/vnd.nimn": {
-    "source": "iana"
-  },
-  "application/vnd.nintendo.nitro.rom": {
-    "source": "iana"
-  },
-  "application/vnd.nintendo.snes.rom": {
-    "source": "iana"
-  },
-  "application/vnd.nitf": {
-    "source": "iana",
-    "extensions": ["ntf","nitf"]
-  },
-  "application/vnd.noblenet-directory": {
-    "source": "iana",
-    "extensions": ["nnd"]
-  },
-  "application/vnd.noblenet-sealer": {
-    "source": "iana",
-    "extensions": ["nns"]
-  },
-  "application/vnd.noblenet-web": {
-    "source": "iana",
-    "extensions": ["nnw"]
-  },
-  "application/vnd.nokia.catalogs": {
-    "source": "iana"
-  },
-  "application/vnd.nokia.conml+wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.nokia.conml+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.nokia.iptv.config+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.nokia.isds-radio-presets": {
-    "source": "iana"
-  },
-  "application/vnd.nokia.landmark+wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.nokia.landmark+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.nokia.landmarkcollection+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.nokia.n-gage.ac+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["ac"]
-  },
-  "application/vnd.nokia.n-gage.data": {
-    "source": "iana",
-    "extensions": ["ngdat"]
-  },
-  "application/vnd.nokia.n-gage.symbian.install": {
-    "source": "iana",
-    "extensions": ["n-gage"]
-  },
-  "application/vnd.nokia.ncd": {
-    "source": "iana"
-  },
-  "application/vnd.nokia.pcd+wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.nokia.pcd+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.nokia.radio-preset": {
-    "source": "iana",
-    "extensions": ["rpst"]
-  },
-  "application/vnd.nokia.radio-presets": {
-    "source": "iana",
-    "extensions": ["rpss"]
-  },
-  "application/vnd.novadigm.edm": {
-    "source": "iana",
-    "extensions": ["edm"]
-  },
-  "application/vnd.novadigm.edx": {
-    "source": "iana",
-    "extensions": ["edx"]
-  },
-  "application/vnd.novadigm.ext": {
-    "source": "iana",
-    "extensions": ["ext"]
-  },
-  "application/vnd.ntt-local.content-share": {
-    "source": "iana"
-  },
-  "application/vnd.ntt-local.file-transfer": {
-    "source": "iana"
-  },
-  "application/vnd.ntt-local.ogw_remote-access": {
-    "source": "iana"
-  },
-  "application/vnd.ntt-local.sip-ta_remote": {
-    "source": "iana"
-  },
-  "application/vnd.ntt-local.sip-ta_tcp_stream": {
-    "source": "iana"
-  },
-  "application/vnd.oasis.opendocument.chart": {
-    "source": "iana",
-    "extensions": ["odc"]
-  },
-  "application/vnd.oasis.opendocument.chart-template": {
-    "source": "iana",
-    "extensions": ["otc"]
-  },
-  "application/vnd.oasis.opendocument.database": {
-    "source": "iana",
-    "extensions": ["odb"]
-  },
-  "application/vnd.oasis.opendocument.formula": {
-    "source": "iana",
-    "extensions": ["odf"]
-  },
-  "application/vnd.oasis.opendocument.formula-template": {
-    "source": "iana",
-    "extensions": ["odft"]
-  },
-  "application/vnd.oasis.opendocument.graphics": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["odg"]
-  },
-  "application/vnd.oasis.opendocument.graphics-template": {
-    "source": "iana",
-    "extensions": ["otg"]
-  },
-  "application/vnd.oasis.opendocument.image": {
-    "source": "iana",
-    "extensions": ["odi"]
-  },
-  "application/vnd.oasis.opendocument.image-template": {
-    "source": "iana",
-    "extensions": ["oti"]
-  },
-  "application/vnd.oasis.opendocument.presentation": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["odp"]
-  },
-  "application/vnd.oasis.opendocument.presentation-template": {
-    "source": "iana",
-    "extensions": ["otp"]
-  },
-  "application/vnd.oasis.opendocument.spreadsheet": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["ods"]
-  },
-  "application/vnd.oasis.opendocument.spreadsheet-template": {
-    "source": "iana",
-    "extensions": ["ots"]
-  },
-  "application/vnd.oasis.opendocument.text": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["odt"]
-  },
-  "application/vnd.oasis.opendocument.text-master": {
-    "source": "iana",
-    "extensions": ["odm"]
-  },
-  "application/vnd.oasis.opendocument.text-template": {
-    "source": "iana",
-    "extensions": ["ott"]
-  },
-  "application/vnd.oasis.opendocument.text-web": {
-    "source": "iana",
-    "extensions": ["oth"]
-  },
-  "application/vnd.obn": {
-    "source": "iana"
-  },
-  "application/vnd.ocf+cbor": {
-    "source": "iana"
-  },
-  "application/vnd.oci.image.manifest.v1+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oftn.l10n+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oipf.contentaccessdownload+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oipf.contentaccessstreaming+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oipf.cspg-hexbinary": {
-    "source": "iana"
-  },
-  "application/vnd.oipf.dae.svg+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oipf.dae.xhtml+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oipf.mippvcontrolmessage+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oipf.pae.gem": {
-    "source": "iana"
-  },
-  "application/vnd.oipf.spdiscovery+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oipf.spdlist+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oipf.ueprofile+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oipf.userprofile+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.olpc-sugar": {
-    "source": "iana",
-    "extensions": ["xo"]
-  },
-  "application/vnd.oma-scws-config": {
-    "source": "iana"
-  },
-  "application/vnd.oma-scws-http-request": {
-    "source": "iana"
-  },
-  "application/vnd.oma-scws-http-response": {
-    "source": "iana"
-  },
-  "application/vnd.oma.bcast.associated-procedure-parameter+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.bcast.drm-trigger+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.bcast.imd+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.bcast.ltkm": {
-    "source": "iana"
-  },
-  "application/vnd.oma.bcast.notification+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.bcast.provisioningtrigger": {
-    "source": "iana"
-  },
-  "application/vnd.oma.bcast.sgboot": {
-    "source": "iana"
-  },
-  "application/vnd.oma.bcast.sgdd+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.bcast.sgdu": {
-    "source": "iana"
-  },
-  "application/vnd.oma.bcast.simple-symbol-container": {
-    "source": "iana"
-  },
-  "application/vnd.oma.bcast.smartcard-trigger+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.bcast.sprov+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.bcast.stkm": {
-    "source": "iana"
-  },
-  "application/vnd.oma.cab-address-book+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.cab-feature-handler+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.cab-pcc+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.cab-subs-invite+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.cab-user-prefs+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.dcd": {
-    "source": "iana"
-  },
-  "application/vnd.oma.dcdc": {
-    "source": "iana"
-  },
-  "application/vnd.oma.dd2+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["dd2"]
-  },
-  "application/vnd.oma.drm.risd+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.group-usage-list+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.lwm2m+cbor": {
-    "source": "iana"
-  },
-  "application/vnd.oma.lwm2m+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.lwm2m+tlv": {
-    "source": "iana"
-  },
-  "application/vnd.oma.pal+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.poc.detailed-progress-report+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.poc.final-report+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.poc.groups+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.poc.invocation-descriptor+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.poc.optimized-progress-report+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.push": {
-    "source": "iana"
-  },
-  "application/vnd.oma.scidm.messages+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oma.xcap-directory+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.omads-email+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/vnd.omads-file+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/vnd.omads-folder+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/vnd.omaloc-supl-init": {
-    "source": "iana"
-  },
-  "application/vnd.onepager": {
-    "source": "iana"
-  },
-  "application/vnd.onepagertamp": {
-    "source": "iana"
-  },
-  "application/vnd.onepagertamx": {
-    "source": "iana"
-  },
-  "application/vnd.onepagertat": {
-    "source": "iana"
-  },
-  "application/vnd.onepagertatp": {
-    "source": "iana"
-  },
-  "application/vnd.onepagertatx": {
-    "source": "iana"
-  },
-  "application/vnd.openblox.game+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["obgx"]
-  },
-  "application/vnd.openblox.game-binary": {
-    "source": "iana"
-  },
-  "application/vnd.openeye.oeb": {
-    "source": "iana"
-  },
-  "application/vnd.openofficeorg.extension": {
-    "source": "apache",
-    "extensions": ["oxt"]
-  },
-  "application/vnd.openstreetmap.data+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["osm"]
-  },
-  "application/vnd.opentimestamps.ots": {
-    "source": "iana"
-  },
-  "application/vnd.openxmlformats-officedocument.custom-properties+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.customxmlproperties+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.drawing+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.drawingml.chart+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.drawingml.chartshapes+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.drawingml.diagramcolors+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.drawingml.diagramdata+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.drawingml.diagramlayout+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.drawingml.diagramstyle+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.extended-properties+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.commentauthors+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.comments+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.handoutmaster+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.notesmaster+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.notesslide+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["pptx"]
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.presprops+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.slide": {
-    "source": "iana",
-    "extensions": ["sldx"]
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.slide+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.slidelayout+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.slidemaster+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.slideshow": {
-    "source": "iana",
-    "extensions": ["ppsx"]
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.slideupdateinfo+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.tablestyles+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.tags+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.template": {
-    "source": "iana",
-    "extensions": ["potx"]
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.template.main+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.presentationml.viewprops+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.calcchain+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.chartsheet+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.dialogsheet+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.externallink+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.pivotcachedefinition+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.pivotcacherecords+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.pivottable+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.querytable+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.revisionheaders+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.revisionlog+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedstrings+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["xlsx"]
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheetmetadata+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.tablesinglecells+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.template": {
-    "source": "iana",
-    "extensions": ["xltx"]
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.usernames+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.volatiledependencies+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.theme+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.themeoverride+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.vmldrawing": {
-    "source": "iana"
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["docx"]
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.fonttable+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.template": {
-    "source": "iana",
-    "extensions": ["dotx"]
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.websettings+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-package.core-properties+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.openxmlformats-package.relationships+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oracle.resource+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.orange.indata": {
-    "source": "iana"
-  },
-  "application/vnd.osa.netdeploy": {
-    "source": "iana"
-  },
-  "application/vnd.osgeo.mapguide.package": {
-    "source": "iana",
-    "extensions": ["mgp"]
-  },
-  "application/vnd.osgi.bundle": {
-    "source": "iana"
-  },
-  "application/vnd.osgi.dp": {
-    "source": "iana",
-    "extensions": ["dp"]
-  },
-  "application/vnd.osgi.subsystem": {
-    "source": "iana",
-    "extensions": ["esa"]
-  },
-  "application/vnd.otps.ct-kip+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.oxli.countgraph": {
-    "source": "iana"
-  },
-  "application/vnd.pagerduty+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.palm": {
-    "source": "iana",
-    "extensions": ["pdb","pqa","oprc"]
-  },
-  "application/vnd.panoply": {
-    "source": "iana"
-  },
-  "application/vnd.paos.xml": {
-    "source": "iana"
-  },
-  "application/vnd.patentdive": {
-    "source": "iana"
-  },
-  "application/vnd.patientecommsdoc": {
-    "source": "iana"
-  },
-  "application/vnd.pawaafile": {
-    "source": "iana",
-    "extensions": ["paw"]
-  },
-  "application/vnd.pcos": {
-    "source": "iana"
-  },
-  "application/vnd.pg.format": {
-    "source": "iana",
-    "extensions": ["str"]
-  },
-  "application/vnd.pg.osasli": {
-    "source": "iana",
-    "extensions": ["ei6"]
-  },
-  "application/vnd.piaccess.application-licence": {
-    "source": "iana"
-  },
-  "application/vnd.picsel": {
-    "source": "iana",
-    "extensions": ["efif"]
-  },
-  "application/vnd.pmi.widget": {
-    "source": "iana",
-    "extensions": ["wg"]
-  },
-  "application/vnd.poc.group-advertisement+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.pocketlearn": {
-    "source": "iana",
-    "extensions": ["plf"]
-  },
-  "application/vnd.powerbuilder6": {
-    "source": "iana",
-    "extensions": ["pbd"]
-  },
-  "application/vnd.powerbuilder6-s": {
-    "source": "iana"
-  },
-  "application/vnd.powerbuilder7": {
-    "source": "iana"
-  },
-  "application/vnd.powerbuilder7-s": {
-    "source": "iana"
-  },
-  "application/vnd.powerbuilder75": {
-    "source": "iana"
-  },
-  "application/vnd.powerbuilder75-s": {
-    "source": "iana"
-  },
-  "application/vnd.preminet": {
-    "source": "iana"
-  },
-  "application/vnd.previewsystems.box": {
-    "source": "iana",
-    "extensions": ["box"]
-  },
-  "application/vnd.proteus.magazine": {
-    "source": "iana",
-    "extensions": ["mgz"]
-  },
-  "application/vnd.psfs": {
-    "source": "iana"
-  },
-  "application/vnd.publishare-delta-tree": {
-    "source": "iana",
-    "extensions": ["qps"]
-  },
-  "application/vnd.pvi.ptid1": {
-    "source": "iana",
-    "extensions": ["ptid"]
-  },
-  "application/vnd.pwg-multiplexed": {
-    "source": "iana"
-  },
-  "application/vnd.pwg-xhtml-print+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.qualcomm.brew-app-res": {
-    "source": "iana"
-  },
-  "application/vnd.quarantainenet": {
-    "source": "iana"
-  },
-  "application/vnd.quark.quarkxpress": {
-    "source": "iana",
-    "extensions": ["qxd","qxt","qwd","qwt","qxl","qxb"]
-  },
-  "application/vnd.quobject-quoxdocument": {
-    "source": "iana"
-  },
-  "application/vnd.radisys.moml+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-audit+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-audit-conf+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-audit-conn+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-audit-dialog+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-audit-stream+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-conf+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-dialog+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-dialog-base+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-dialog-fax-detect+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-dialog-fax-sendrecv+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-dialog-group+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-dialog-speech+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.radisys.msml-dialog-transform+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.rainstor.data": {
-    "source": "iana"
-  },
-  "application/vnd.rapid": {
-    "source": "iana"
-  },
-  "application/vnd.rar": {
-    "source": "iana",
-    "extensions": ["rar"]
-  },
-  "application/vnd.realvnc.bed": {
-    "source": "iana",
-    "extensions": ["bed"]
-  },
-  "application/vnd.recordare.musicxml": {
-    "source": "iana",
-    "extensions": ["mxl"]
-  },
-  "application/vnd.recordare.musicxml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["musicxml"]
-  },
-  "application/vnd.renlearn.rlprint": {
-    "source": "iana"
-  },
-  "application/vnd.resilient.logic": {
-    "source": "iana"
-  },
-  "application/vnd.restful+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.rig.cryptonote": {
-    "source": "iana",
-    "extensions": ["cryptonote"]
-  },
-  "application/vnd.rim.cod": {
-    "source": "apache",
-    "extensions": ["cod"]
-  },
-  "application/vnd.rn-realmedia": {
-    "source": "apache",
-    "extensions": ["rm"]
-  },
-  "application/vnd.rn-realmedia-vbr": {
-    "source": "apache",
-    "extensions": ["rmvb"]
-  },
-  "application/vnd.route66.link66+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["link66"]
-  },
-  "application/vnd.rs-274x": {
-    "source": "iana"
-  },
-  "application/vnd.ruckus.download": {
-    "source": "iana"
-  },
-  "application/vnd.s3sms": {
-    "source": "iana"
-  },
-  "application/vnd.sailingtracker.track": {
-    "source": "iana",
-    "extensions": ["st"]
-  },
-  "application/vnd.sar": {
-    "source": "iana"
-  },
-  "application/vnd.sbm.cid": {
-    "source": "iana"
-  },
-  "application/vnd.sbm.mid2": {
-    "source": "iana"
-  },
-  "application/vnd.scribus": {
-    "source": "iana"
-  },
-  "application/vnd.sealed.3df": {
-    "source": "iana"
-  },
-  "application/vnd.sealed.csf": {
-    "source": "iana"
-  },
-  "application/vnd.sealed.doc": {
-    "source": "iana"
-  },
-  "application/vnd.sealed.eml": {
-    "source": "iana"
-  },
-  "application/vnd.sealed.mht": {
-    "source": "iana"
-  },
-  "application/vnd.sealed.net": {
-    "source": "iana"
-  },
-  "application/vnd.sealed.ppt": {
-    "source": "iana"
-  },
-  "application/vnd.sealed.tiff": {
-    "source": "iana"
-  },
-  "application/vnd.sealed.xls": {
-    "source": "iana"
-  },
-  "application/vnd.sealedmedia.softseal.html": {
-    "source": "iana"
-  },
-  "application/vnd.sealedmedia.softseal.pdf": {
-    "source": "iana"
-  },
-  "application/vnd.seemail": {
-    "source": "iana",
-    "extensions": ["see"]
-  },
-  "application/vnd.seis+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.sema": {
-    "source": "iana",
-    "extensions": ["sema"]
-  },
-  "application/vnd.semd": {
-    "source": "iana",
-    "extensions": ["semd"]
-  },
-  "application/vnd.semf": {
-    "source": "iana",
-    "extensions": ["semf"]
-  },
-  "application/vnd.shade-save-file": {
-    "source": "iana"
-  },
-  "application/vnd.shana.informed.formdata": {
-    "source": "iana",
-    "extensions": ["ifm"]
-  },
-  "application/vnd.shana.informed.formtemplate": {
-    "source": "iana",
-    "extensions": ["itp"]
-  },
-  "application/vnd.shana.informed.interchange": {
-    "source": "iana",
-    "extensions": ["iif"]
-  },
-  "application/vnd.shana.informed.package": {
-    "source": "iana",
-    "extensions": ["ipk"]
-  },
-  "application/vnd.shootproof+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.shopkick+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.shp": {
-    "source": "iana"
-  },
-  "application/vnd.shx": {
-    "source": "iana"
-  },
-  "application/vnd.sigrok.session": {
-    "source": "iana"
-  },
-  "application/vnd.simtech-mindmapper": {
-    "source": "iana",
-    "extensions": ["twd","twds"]
-  },
-  "application/vnd.siren+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.smaf": {
-    "source": "iana",
-    "extensions": ["mmf"]
-  },
-  "application/vnd.smart.notebook": {
-    "source": "iana"
-  },
-  "application/vnd.smart.teacher": {
-    "source": "iana",
-    "extensions": ["teacher"]
-  },
-  "application/vnd.snesdev-page-table": {
-    "source": "iana"
-  },
-  "application/vnd.software602.filler.form+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["fo"]
-  },
-  "application/vnd.software602.filler.form-xml-zip": {
-    "source": "iana"
-  },
-  "application/vnd.solent.sdkm+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["sdkm","sdkd"]
-  },
-  "application/vnd.spotfire.dxp": {
-    "source": "iana",
-    "extensions": ["dxp"]
-  },
-  "application/vnd.spotfire.sfs": {
-    "source": "iana",
-    "extensions": ["sfs"]
-  },
-  "application/vnd.sqlite3": {
-    "source": "iana"
-  },
-  "application/vnd.sss-cod": {
-    "source": "iana"
-  },
-  "application/vnd.sss-dtf": {
-    "source": "iana"
-  },
-  "application/vnd.sss-ntf": {
-    "source": "iana"
-  },
-  "application/vnd.stardivision.calc": {
-    "source": "apache",
-    "extensions": ["sdc"]
-  },
-  "application/vnd.stardivision.draw": {
-    "source": "apache",
-    "extensions": ["sda"]
-  },
-  "application/vnd.stardivision.impress": {
-    "source": "apache",
-    "extensions": ["sdd"]
-  },
-  "application/vnd.stardivision.math": {
-    "source": "apache",
-    "extensions": ["smf"]
-  },
-  "application/vnd.stardivision.writer": {
-    "source": "apache",
-    "extensions": ["sdw","vor"]
-  },
-  "application/vnd.stardivision.writer-global": {
-    "source": "apache",
-    "extensions": ["sgl"]
-  },
-  "application/vnd.stepmania.package": {
-    "source": "iana",
-    "extensions": ["smzip"]
-  },
-  "application/vnd.stepmania.stepchart": {
-    "source": "iana",
-    "extensions": ["sm"]
-  },
-  "application/vnd.street-stream": {
-    "source": "iana"
-  },
-  "application/vnd.sun.wadl+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["wadl"]
-  },
-  "application/vnd.sun.xml.calc": {
-    "source": "apache",
-    "extensions": ["sxc"]
-  },
-  "application/vnd.sun.xml.calc.template": {
-    "source": "apache",
-    "extensions": ["stc"]
-  },
-  "application/vnd.sun.xml.draw": {
-    "source": "apache",
-    "extensions": ["sxd"]
-  },
-  "application/vnd.sun.xml.draw.template": {
-    "source": "apache",
-    "extensions": ["std"]
-  },
-  "application/vnd.sun.xml.impress": {
-    "source": "apache",
-    "extensions": ["sxi"]
-  },
-  "application/vnd.sun.xml.impress.template": {
-    "source": "apache",
-    "extensions": ["sti"]
-  },
-  "application/vnd.sun.xml.math": {
-    "source": "apache",
-    "extensions": ["sxm"]
-  },
-  "application/vnd.sun.xml.writer": {
-    "source": "apache",
-    "extensions": ["sxw"]
-  },
-  "application/vnd.sun.xml.writer.global": {
-    "source": "apache",
-    "extensions": ["sxg"]
-  },
-  "application/vnd.sun.xml.writer.template": {
-    "source": "apache",
-    "extensions": ["stw"]
-  },
-  "application/vnd.sus-calendar": {
-    "source": "iana",
-    "extensions": ["sus","susp"]
-  },
-  "application/vnd.svd": {
-    "source": "iana",
-    "extensions": ["svd"]
-  },
-  "application/vnd.swiftview-ics": {
-    "source": "iana"
-  },
-  "application/vnd.sycle+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.symbian.install": {
-    "source": "apache",
-    "extensions": ["sis","sisx"]
-  },
-  "application/vnd.syncml+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true,
-    "extensions": ["xsm"]
-  },
-  "application/vnd.syncml.dm+wbxml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "extensions": ["bdm"]
-  },
-  "application/vnd.syncml.dm+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true,
-    "extensions": ["xdm"]
-  },
-  "application/vnd.syncml.dm.notification": {
-    "source": "iana"
-  },
-  "application/vnd.syncml.dmddf+wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.syncml.dmddf+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true,
-    "extensions": ["ddf"]
-  },
-  "application/vnd.syncml.dmtnds+wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.syncml.dmtnds+xml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true
-  },
-  "application/vnd.syncml.ds.notification": {
-    "source": "iana"
-  },
-  "application/vnd.tableschema+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.tao.intent-module-archive": {
-    "source": "iana",
-    "extensions": ["tao"]
-  },
-  "application/vnd.tcpdump.pcap": {
-    "source": "iana",
-    "extensions": ["pcap","cap","dmp"]
-  },
-  "application/vnd.think-cell.ppttc+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.tmd.mediaflex.api+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.tml": {
-    "source": "iana"
-  },
-  "application/vnd.tmobile-livetv": {
-    "source": "iana",
-    "extensions": ["tmo"]
-  },
-  "application/vnd.tri.onesource": {
-    "source": "iana"
-  },
-  "application/vnd.trid.tpt": {
-    "source": "iana",
-    "extensions": ["tpt"]
-  },
-  "application/vnd.triscape.mxs": {
-    "source": "iana",
-    "extensions": ["mxs"]
-  },
-  "application/vnd.trueapp": {
-    "source": "iana",
-    "extensions": ["tra"]
-  },
-  "application/vnd.truedoc": {
-    "source": "iana"
-  },
-  "application/vnd.ubisoft.webplayer": {
-    "source": "iana"
-  },
-  "application/vnd.ufdl": {
-    "source": "iana",
-    "extensions": ["ufd","ufdl"]
-  },
-  "application/vnd.uiq.theme": {
-    "source": "iana",
-    "extensions": ["utz"]
-  },
-  "application/vnd.umajin": {
-    "source": "iana",
-    "extensions": ["umj"]
-  },
-  "application/vnd.unity": {
-    "source": "iana",
-    "extensions": ["unityweb"]
-  },
-  "application/vnd.uoml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["uoml"]
-  },
-  "application/vnd.uplanet.alert": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.alert-wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.bearer-choice": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.bearer-choice-wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.cacheop": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.cacheop-wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.channel": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.channel-wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.list": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.list-wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.listcmd": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.listcmd-wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.uplanet.signal": {
-    "source": "iana"
-  },
-  "application/vnd.uri-map": {
-    "source": "iana"
-  },
-  "application/vnd.valve.source.material": {
-    "source": "iana"
-  },
-  "application/vnd.vcx": {
-    "source": "iana",
-    "extensions": ["vcx"]
-  },
-  "application/vnd.vd-study": {
-    "source": "iana"
-  },
-  "application/vnd.vectorworks": {
-    "source": "iana"
-  },
-  "application/vnd.vel+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.verimatrix.vcas": {
-    "source": "iana"
-  },
-  "application/vnd.veritone.aion+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.veryant.thin": {
-    "source": "iana"
-  },
-  "application/vnd.ves.encrypted": {
-    "source": "iana"
-  },
-  "application/vnd.vidsoft.vidconference": {
-    "source": "iana"
-  },
-  "application/vnd.visio": {
-    "source": "iana",
-    "extensions": ["vsd","vst","vss","vsw"]
-  },
-  "application/vnd.visionary": {
-    "source": "iana",
-    "extensions": ["vis"]
-  },
-  "application/vnd.vividence.scriptfile": {
-    "source": "iana"
-  },
-  "application/vnd.vsf": {
-    "source": "iana",
-    "extensions": ["vsf"]
-  },
-  "application/vnd.wap.sic": {
-    "source": "iana"
-  },
-  "application/vnd.wap.slc": {
-    "source": "iana"
-  },
-  "application/vnd.wap.wbxml": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "extensions": ["wbxml"]
-  },
-  "application/vnd.wap.wmlc": {
-    "source": "iana",
-    "extensions": ["wmlc"]
-  },
-  "application/vnd.wap.wmlscriptc": {
-    "source": "iana",
-    "extensions": ["wmlsc"]
-  },
-  "application/vnd.webturbo": {
-    "source": "iana",
-    "extensions": ["wtb"]
-  },
-  "application/vnd.wfa.dpp": {
-    "source": "iana"
-  },
-  "application/vnd.wfa.p2p": {
-    "source": "iana"
-  },
-  "application/vnd.wfa.wsc": {
-    "source": "iana"
-  },
-  "application/vnd.windows.devicepairing": {
-    "source": "iana"
-  },
-  "application/vnd.wmc": {
-    "source": "iana"
-  },
-  "application/vnd.wmf.bootstrap": {
-    "source": "iana"
-  },
-  "application/vnd.wolfram.mathematica": {
-    "source": "iana"
-  },
-  "application/vnd.wolfram.mathematica.package": {
-    "source": "iana"
-  },
-  "application/vnd.wolfram.player": {
-    "source": "iana",
-    "extensions": ["nbp"]
-  },
-  "application/vnd.wordperfect": {
-    "source": "iana",
-    "extensions": ["wpd"]
-  },
-  "application/vnd.wqd": {
-    "source": "iana",
-    "extensions": ["wqd"]
-  },
-  "application/vnd.wrq-hp3000-labelled": {
-    "source": "iana"
-  },
-  "application/vnd.wt.stf": {
-    "source": "iana",
-    "extensions": ["stf"]
-  },
-  "application/vnd.wv.csp+wbxml": {
-    "source": "iana"
-  },
-  "application/vnd.wv.csp+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.wv.ssp+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.xacml+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.xara": {
-    "source": "iana",
-    "extensions": ["xar"]
-  },
-  "application/vnd.xfdl": {
-    "source": "iana",
-    "extensions": ["xfdl"]
-  },
-  "application/vnd.xfdl.webform": {
-    "source": "iana"
-  },
-  "application/vnd.xmi+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vnd.xmpie.cpkg": {
-    "source": "iana"
-  },
-  "application/vnd.xmpie.dpkg": {
-    "source": "iana"
-  },
-  "application/vnd.xmpie.plan": {
-    "source": "iana"
-  },
-  "application/vnd.xmpie.ppkg": {
-    "source": "iana"
-  },
-  "application/vnd.xmpie.xlim": {
-    "source": "iana"
-  },
-  "application/vnd.yamaha.hv-dic": {
-    "source": "iana",
-    "extensions": ["hvd"]
-  },
-  "application/vnd.yamaha.hv-script": {
-    "source": "iana",
-    "extensions": ["hvs"]
-  },
-  "application/vnd.yamaha.hv-voice": {
-    "source": "iana",
-    "extensions": ["hvp"]
-  },
-  "application/vnd.yamaha.openscoreformat": {
-    "source": "iana",
-    "extensions": ["osf"]
-  },
-  "application/vnd.yamaha.openscoreformat.osfpvg+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["osfpvg"]
-  },
-  "application/vnd.yamaha.remote-setup": {
-    "source": "iana"
-  },
-  "application/vnd.yamaha.smaf-audio": {
-    "source": "iana",
-    "extensions": ["saf"]
-  },
-  "application/vnd.yamaha.smaf-phrase": {
-    "source": "iana",
-    "extensions": ["spf"]
-  },
-  "application/vnd.yamaha.through-ngn": {
-    "source": "iana"
-  },
-  "application/vnd.yamaha.tunnel-udpencap": {
-    "source": "iana"
-  },
-  "application/vnd.yaoweme": {
-    "source": "iana"
-  },
-  "application/vnd.yellowriver-custom-menu": {
-    "source": "iana",
-    "extensions": ["cmp"]
-  },
-  "application/vnd.youtube.yt": {
-    "source": "iana"
-  },
-  "application/vnd.zul": {
-    "source": "iana",
-    "extensions": ["zir","zirz"]
-  },
-  "application/vnd.zzazz.deck+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["zaz"]
-  },
-  "application/voicexml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["vxml"]
-  },
-  "application/voucher-cms+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/vq-rtcpxr": {
-    "source": "iana"
-  },
-  "application/wasm": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["wasm"]
-  },
-  "application/watcherinfo+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/webpush-options+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/whoispp-query": {
-    "source": "iana"
-  },
-  "application/whoispp-response": {
-    "source": "iana"
-  },
-  "application/widget": {
-    "source": "iana",
-    "extensions": ["wgt"]
-  },
-  "application/winhlp": {
-    "source": "apache",
-    "extensions": ["hlp"]
-  },
-  "application/wita": {
-    "source": "iana"
-  },
-  "application/wordperfect5.1": {
-    "source": "iana"
-  },
-  "application/wsdl+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["wsdl"]
-  },
-  "application/wspolicy+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["wspolicy"]
-  },
-  "application/x-7z-compressed": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["7z"]
-  },
-  "application/x-abiword": {
-    "source": "apache",
-    "extensions": ["abw"]
-  },
-  "application/x-ace-compressed": {
-    "source": "apache",
-    "extensions": ["ace"]
-  },
-  "application/x-amf": {
-    "source": "apache"
-  },
-  "application/x-apple-diskimage": {
-    "source": "apache",
-    "extensions": ["dmg"]
-  },
-  "application/x-arj": {
-    "compressible": false,
-    "extensions": ["arj"]
-  },
-  "application/x-authorware-bin": {
-    "source": "apache",
-    "extensions": ["aab","x32","u32","vox"]
-  },
-  "application/x-authorware-map": {
-    "source": "apache",
-    "extensions": ["aam"]
-  },
-  "application/x-authorware-seg": {
-    "source": "apache",
-    "extensions": ["aas"]
-  },
-  "application/x-bcpio": {
-    "source": "apache",
-    "extensions": ["bcpio"]
-  },
-  "application/x-bdoc": {
-    "compressible": false,
-    "extensions": ["bdoc"]
-  },
-  "application/x-bittorrent": {
-    "source": "apache",
-    "extensions": ["torrent"]
-  },
-  "application/x-blorb": {
-    "source": "apache",
-    "extensions": ["blb","blorb"]
-  },
-  "application/x-bzip": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["bz"]
-  },
-  "application/x-bzip2": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["bz2","boz"]
-  },
-  "application/x-cbr": {
-    "source": "apache",
-    "extensions": ["cbr","cba","cbt","cbz","cb7"]
-  },
-  "application/x-cdlink": {
-    "source": "apache",
-    "extensions": ["vcd"]
-  },
-  "application/x-cfs-compressed": {
-    "source": "apache",
-    "extensions": ["cfs"]
-  },
-  "application/x-chat": {
-    "source": "apache",
-    "extensions": ["chat"]
-  },
-  "application/x-chess-pgn": {
-    "source": "apache",
-    "extensions": ["pgn"]
-  },
-  "application/x-chrome-extension": {
-    "extensions": ["crx"]
-  },
-  "application/x-cocoa": {
-    "source": "nginx",
-    "extensions": ["cco"]
-  },
-  "application/x-compress": {
-    "source": "apache"
-  },
-  "application/x-conference": {
-    "source": "apache",
-    "extensions": ["nsc"]
-  },
-  "application/x-cpio": {
-    "source": "apache",
-    "extensions": ["cpio"]
-  },
-  "application/x-csh": {
-    "source": "apache",
-    "extensions": ["csh"]
-  },
-  "application/x-deb": {
-    "compressible": false
-  },
-  "application/x-debian-package": {
-    "source": "apache",
-    "extensions": ["deb","udeb"]
-  },
-  "application/x-dgc-compressed": {
-    "source": "apache",
-    "extensions": ["dgc"]
-  },
-  "application/x-director": {
-    "source": "apache",
-    "extensions": ["dir","dcr","dxr","cst","cct","cxt","w3d","fgd","swa"]
-  },
-  "application/x-doom": {
-    "source": "apache",
-    "extensions": ["wad"]
-  },
-  "application/x-dtbncx+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["ncx"]
-  },
-  "application/x-dtbook+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["dtb"]
-  },
-  "application/x-dtbresource+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["res"]
-  },
-  "application/x-dvi": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["dvi"]
-  },
-  "application/x-envoy": {
-    "source": "apache",
-    "extensions": ["evy"]
-  },
-  "application/x-eva": {
-    "source": "apache",
-    "extensions": ["eva"]
-  },
-  "application/x-font-bdf": {
-    "source": "apache",
-    "extensions": ["bdf"]
-  },
-  "application/x-font-dos": {
-    "source": "apache"
-  },
-  "application/x-font-framemaker": {
-    "source": "apache"
-  },
-  "application/x-font-ghostscript": {
-    "source": "apache",
-    "extensions": ["gsf"]
-  },
-  "application/x-font-libgrx": {
-    "source": "apache"
-  },
-  "application/x-font-linux-psf": {
-    "source": "apache",
-    "extensions": ["psf"]
-  },
-  "application/x-font-pcf": {
-    "source": "apache",
-    "extensions": ["pcf"]
-  },
-  "application/x-font-snf": {
-    "source": "apache",
-    "extensions": ["snf"]
-  },
-  "application/x-font-speedo": {
-    "source": "apache"
-  },
-  "application/x-font-sunos-news": {
-    "source": "apache"
-  },
-  "application/x-font-type1": {
-    "source": "apache",
-    "extensions": ["pfa","pfb","pfm","afm"]
-  },
-  "application/x-font-vfont": {
-    "source": "apache"
-  },
-  "application/x-freearc": {
-    "source": "apache",
-    "extensions": ["arc"]
-  },
-  "application/x-futuresplash": {
-    "source": "apache",
-    "extensions": ["spl"]
-  },
-  "application/x-gca-compressed": {
-    "source": "apache",
-    "extensions": ["gca"]
-  },
-  "application/x-glulx": {
-    "source": "apache",
-    "extensions": ["ulx"]
-  },
-  "application/x-gnumeric": {
-    "source": "apache",
-    "extensions": ["gnumeric"]
-  },
-  "application/x-gramps-xml": {
-    "source": "apache",
-    "extensions": ["gramps"]
-  },
-  "application/x-gtar": {
-    "source": "apache",
-    "extensions": ["gtar"]
-  },
-  "application/x-gzip": {
-    "source": "apache"
-  },
-  "application/x-hdf": {
-    "source": "apache",
-    "extensions": ["hdf"]
-  },
-  "application/x-httpd-php": {
-    "compressible": true,
-    "extensions": ["php"]
-  },
-  "application/x-install-instructions": {
-    "source": "apache",
-    "extensions": ["install"]
-  },
-  "application/x-iso9660-image": {
-    "source": "apache",
-    "extensions": ["iso"]
-  },
-  "application/x-iwork-keynote-sffkey": {
-    "extensions": ["key"]
-  },
-  "application/x-iwork-numbers-sffnumbers": {
-    "extensions": ["numbers"]
-  },
-  "application/x-iwork-pages-sffpages": {
-    "extensions": ["pages"]
-  },
-  "application/x-java-archive-diff": {
-    "source": "nginx",
-    "extensions": ["jardiff"]
-  },
-  "application/x-java-jnlp-file": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["jnlp"]
-  },
-  "application/x-javascript": {
-    "compressible": true
-  },
-  "application/x-keepass2": {
-    "extensions": ["kdbx"]
-  },
-  "application/x-latex": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["latex"]
-  },
-  "application/x-lua-bytecode": {
-    "extensions": ["luac"]
-  },
-  "application/x-lzh-compressed": {
-    "source": "apache",
-    "extensions": ["lzh","lha"]
-  },
-  "application/x-makeself": {
-    "source": "nginx",
-    "extensions": ["run"]
-  },
-  "application/x-mie": {
-    "source": "apache",
-    "extensions": ["mie"]
-  },
-  "application/x-mobipocket-ebook": {
-    "source": "apache",
-    "extensions": ["prc","mobi"]
-  },
-  "application/x-mpegurl": {
-    "compressible": false
-  },
-  "application/x-ms-application": {
-    "source": "apache",
-    "extensions": ["application"]
-  },
-  "application/x-ms-shortcut": {
-    "source": "apache",
-    "extensions": ["lnk"]
-  },
-  "application/x-ms-wmd": {
-    "source": "apache",
-    "extensions": ["wmd"]
-  },
-  "application/x-ms-wmz": {
-    "source": "apache",
-    "extensions": ["wmz"]
-  },
-  "application/x-ms-xbap": {
-    "source": "apache",
-    "extensions": ["xbap"]
-  },
-  "application/x-msaccess": {
-    "source": "apache",
-    "extensions": ["mdb"]
-  },
-  "application/x-msbinder": {
-    "source": "apache",
-    "extensions": ["obd"]
-  },
-  "application/x-mscardfile": {
-    "source": "apache",
-    "extensions": ["crd"]
-  },
-  "application/x-msclip": {
-    "source": "apache",
-    "extensions": ["clp"]
-  },
-  "application/x-msdos-program": {
-    "extensions": ["exe"]
-  },
-  "application/x-msdownload": {
-    "source": "apache",
-    "extensions": ["exe","dll","com","bat","msi"]
-  },
-  "application/x-msmediaview": {
-    "source": "apache",
-    "extensions": ["mvb","m13","m14"]
-  },
-  "application/x-msmetafile": {
-    "source": "apache",
-    "extensions": ["wmf","wmz","emf","emz"]
-  },
-  "application/x-msmoney": {
-    "source": "apache",
-    "extensions": ["mny"]
-  },
-  "application/x-mspublisher": {
-    "source": "apache",
-    "extensions": ["pub"]
-  },
-  "application/x-msschedule": {
-    "source": "apache",
-    "extensions": ["scd"]
-  },
-  "application/x-msterminal": {
-    "source": "apache",
-    "extensions": ["trm"]
-  },
-  "application/x-mswrite": {
-    "source": "apache",
-    "extensions": ["wri"]
-  },
-  "application/x-netcdf": {
-    "source": "apache",
-    "extensions": ["nc","cdf"]
-  },
-  "application/x-ns-proxy-autoconfig": {
-    "compressible": true,
-    "extensions": ["pac"]
-  },
-  "application/x-nzb": {
-    "source": "apache",
-    "extensions": ["nzb"]
-  },
-  "application/x-perl": {
-    "source": "nginx",
-    "extensions": ["pl","pm"]
-  },
-  "application/x-pilot": {
-    "source": "nginx",
-    "extensions": ["prc","pdb"]
-  },
-  "application/x-pkcs12": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["p12","pfx"]
-  },
-  "application/x-pkcs7-certificates": {
-    "source": "apache",
-    "extensions": ["p7b","spc"]
-  },
-  "application/x-pkcs7-certreqresp": {
-    "source": "apache",
-    "extensions": ["p7r"]
-  },
-  "application/x-pki-message": {
-    "source": "iana"
-  },
-  "application/x-rar-compressed": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["rar"]
-  },
-  "application/x-redhat-package-manager": {
-    "source": "nginx",
-    "extensions": ["rpm"]
-  },
-  "application/x-research-info-systems": {
-    "source": "apache",
-    "extensions": ["ris"]
-  },
-  "application/x-sea": {
-    "source": "nginx",
-    "extensions": ["sea"]
-  },
-  "application/x-sh": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["sh"]
-  },
-  "application/x-shar": {
-    "source": "apache",
-    "extensions": ["shar"]
-  },
-  "application/x-shockwave-flash": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["swf"]
-  },
-  "application/x-silverlight-app": {
-    "source": "apache",
-    "extensions": ["xap"]
-  },
-  "application/x-sql": {
-    "source": "apache",
-    "extensions": ["sql"]
-  },
-  "application/x-stuffit": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["sit"]
-  },
-  "application/x-stuffitx": {
-    "source": "apache",
-    "extensions": ["sitx"]
-  },
-  "application/x-subrip": {
-    "source": "apache",
-    "extensions": ["srt"]
-  },
-  "application/x-sv4cpio": {
-    "source": "apache",
-    "extensions": ["sv4cpio"]
-  },
-  "application/x-sv4crc": {
-    "source": "apache",
-    "extensions": ["sv4crc"]
-  },
-  "application/x-t3vm-image": {
-    "source": "apache",
-    "extensions": ["t3"]
-  },
-  "application/x-tads": {
-    "source": "apache",
-    "extensions": ["gam"]
-  },
-  "application/x-tar": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["tar"]
-  },
-  "application/x-tcl": {
-    "source": "apache",
-    "extensions": ["tcl","tk"]
-  },
-  "application/x-tex": {
-    "source": "apache",
-    "extensions": ["tex"]
-  },
-  "application/x-tex-tfm": {
-    "source": "apache",
-    "extensions": ["tfm"]
-  },
-  "application/x-texinfo": {
-    "source": "apache",
-    "extensions": ["texinfo","texi"]
-  },
-  "application/x-tgif": {
-    "source": "apache",
-    "extensions": ["obj"]
-  },
-  "application/x-ustar": {
-    "source": "apache",
-    "extensions": ["ustar"]
-  },
-  "application/x-virtualbox-hdd": {
-    "compressible": true,
-    "extensions": ["hdd"]
-  },
-  "application/x-virtualbox-ova": {
-    "compressible": true,
-    "extensions": ["ova"]
-  },
-  "application/x-virtualbox-ovf": {
-    "compressible": true,
-    "extensions": ["ovf"]
-  },
-  "application/x-virtualbox-vbox": {
-    "compressible": true,
-    "extensions": ["vbox"]
-  },
-  "application/x-virtualbox-vbox-extpack": {
-    "compressible": false,
-    "extensions": ["vbox-extpack"]
-  },
-  "application/x-virtualbox-vdi": {
-    "compressible": true,
-    "extensions": ["vdi"]
-  },
-  "application/x-virtualbox-vhd": {
-    "compressible": true,
-    "extensions": ["vhd"]
-  },
-  "application/x-virtualbox-vmdk": {
-    "compressible": true,
-    "extensions": ["vmdk"]
-  },
-  "application/x-wais-source": {
-    "source": "apache",
-    "extensions": ["src"]
-  },
-  "application/x-web-app-manifest+json": {
-    "compressible": true,
-    "extensions": ["webapp"]
-  },
-  "application/x-www-form-urlencoded": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/x-x509-ca-cert": {
-    "source": "iana",
-    "extensions": ["der","crt","pem"]
-  },
-  "application/x-x509-ca-ra-cert": {
-    "source": "iana"
-  },
-  "application/x-x509-next-ca-cert": {
-    "source": "iana"
-  },
-  "application/x-xfig": {
-    "source": "apache",
-    "extensions": ["fig"]
-  },
-  "application/x-xliff+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["xlf"]
-  },
-  "application/x-xpinstall": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["xpi"]
-  },
-  "application/x-xz": {
-    "source": "apache",
-    "extensions": ["xz"]
-  },
-  "application/x-zmachine": {
-    "source": "apache",
-    "extensions": ["z1","z2","z3","z4","z5","z6","z7","z8"]
-  },
-  "application/x400-bp": {
-    "source": "iana"
-  },
-  "application/xacml+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/xaml+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["xaml"]
-  },
-  "application/xcap-att+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xav"]
-  },
-  "application/xcap-caps+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xca"]
-  },
-  "application/xcap-diff+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xdf"]
-  },
-  "application/xcap-el+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xel"]
-  },
-  "application/xcap-error+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/xcap-ns+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xns"]
-  },
-  "application/xcon-conference-info+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/xcon-conference-info-diff+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/xenc+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xenc"]
-  },
-  "application/xhtml+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xhtml","xht"]
-  },
-  "application/xhtml-voice+xml": {
-    "source": "apache",
-    "compressible": true
-  },
-  "application/xliff+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xlf"]
-  },
-  "application/xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xml","xsl","xsd","rng"]
-  },
-  "application/xml-dtd": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["dtd"]
-  },
-  "application/xml-external-parsed-entity": {
-    "source": "iana"
-  },
-  "application/xml-patch+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/xmpp+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/xop+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xop"]
-  },
-  "application/xproc+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["xpl"]
-  },
-  "application/xslt+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xsl","xslt"]
-  },
-  "application/xspf+xml": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["xspf"]
-  },
-  "application/xv+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["mxml","xhvml","xvml","xvm"]
-  },
-  "application/yang": {
-    "source": "iana",
-    "extensions": ["yang"]
-  },
-  "application/yang-data+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/yang-data+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/yang-patch+json": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/yang-patch+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "application/yin+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["yin"]
-  },
-  "application/zip": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["zip"]
-  },
-  "application/zlib": {
-    "source": "iana"
-  },
-  "application/zstd": {
-    "source": "iana"
-  },
-  "audio/1d-interleaved-parityfec": {
-    "source": "iana"
-  },
-  "audio/32kadpcm": {
-    "source": "iana"
-  },
-  "audio/3gpp": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["3gpp"]
-  },
-  "audio/3gpp2": {
-    "source": "iana"
-  },
-  "audio/aac": {
-    "source": "iana"
-  },
-  "audio/ac3": {
-    "source": "iana"
-  },
-  "audio/adpcm": {
-    "source": "apache",
-    "extensions": ["adp"]
-  },
-  "audio/amr": {
-    "source": "iana",
-    "extensions": ["amr"]
-  },
-  "audio/amr-wb": {
-    "source": "iana"
-  },
-  "audio/amr-wb+": {
-    "source": "iana"
-  },
-  "audio/aptx": {
-    "source": "iana"
-  },
-  "audio/asc": {
-    "source": "iana"
-  },
-  "audio/atrac-advanced-lossless": {
-    "source": "iana"
-  },
-  "audio/atrac-x": {
-    "source": "iana"
-  },
-  "audio/atrac3": {
-    "source": "iana"
-  },
-  "audio/basic": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["au","snd"]
-  },
-  "audio/bv16": {
-    "source": "iana"
-  },
-  "audio/bv32": {
-    "source": "iana"
-  },
-  "audio/clearmode": {
-    "source": "iana"
-  },
-  "audio/cn": {
-    "source": "iana"
-  },
-  "audio/dat12": {
-    "source": "iana"
-  },
-  "audio/dls": {
-    "source": "iana"
-  },
-  "audio/dsr-es201108": {
-    "source": "iana"
-  },
-  "audio/dsr-es202050": {
-    "source": "iana"
-  },
-  "audio/dsr-es202211": {
-    "source": "iana"
-  },
-  "audio/dsr-es202212": {
-    "source": "iana"
-  },
-  "audio/dv": {
-    "source": "iana"
-  },
-  "audio/dvi4": {
-    "source": "iana"
-  },
-  "audio/eac3": {
-    "source": "iana"
-  },
-  "audio/encaprtp": {
-    "source": "iana"
-  },
-  "audio/evrc": {
-    "source": "iana"
-  },
-  "audio/evrc-qcp": {
-    "source": "iana"
-  },
-  "audio/evrc0": {
-    "source": "iana"
-  },
-  "audio/evrc1": {
-    "source": "iana"
-  },
-  "audio/evrcb": {
-    "source": "iana"
-  },
-  "audio/evrcb0": {
-    "source": "iana"
-  },
-  "audio/evrcb1": {
-    "source": "iana"
-  },
-  "audio/evrcnw": {
-    "source": "iana"
-  },
-  "audio/evrcnw0": {
-    "source": "iana"
-  },
-  "audio/evrcnw1": {
-    "source": "iana"
-  },
-  "audio/evrcwb": {
-    "source": "iana"
-  },
-  "audio/evrcwb0": {
-    "source": "iana"
-  },
-  "audio/evrcwb1": {
-    "source": "iana"
-  },
-  "audio/evs": {
-    "source": "iana"
-  },
-  "audio/flexfec": {
-    "source": "iana"
-  },
-  "audio/fwdred": {
-    "source": "iana"
-  },
-  "audio/g711-0": {
-    "source": "iana"
-  },
-  "audio/g719": {
-    "source": "iana"
-  },
-  "audio/g722": {
-    "source": "iana"
-  },
-  "audio/g7221": {
-    "source": "iana"
-  },
-  "audio/g723": {
-    "source": "iana"
-  },
-  "audio/g726-16": {
-    "source": "iana"
-  },
-  "audio/g726-24": {
-    "source": "iana"
-  },
-  "audio/g726-32": {
-    "source": "iana"
-  },
-  "audio/g726-40": {
-    "source": "iana"
-  },
-  "audio/g728": {
-    "source": "iana"
-  },
-  "audio/g729": {
-    "source": "iana"
-  },
-  "audio/g7291": {
-    "source": "iana"
-  },
-  "audio/g729d": {
-    "source": "iana"
-  },
-  "audio/g729e": {
-    "source": "iana"
-  },
-  "audio/gsm": {
-    "source": "iana"
-  },
-  "audio/gsm-efr": {
-    "source": "iana"
-  },
-  "audio/gsm-hr-08": {
-    "source": "iana"
-  },
-  "audio/ilbc": {
-    "source": "iana"
-  },
-  "audio/ip-mr_v2.5": {
-    "source": "iana"
-  },
-  "audio/isac": {
-    "source": "apache"
-  },
-  "audio/l16": {
-    "source": "iana"
-  },
-  "audio/l20": {
-    "source": "iana"
-  },
-  "audio/l24": {
-    "source": "iana",
-    "compressible": false
-  },
-  "audio/l8": {
-    "source": "iana"
-  },
-  "audio/lpc": {
-    "source": "iana"
-  },
-  "audio/melp": {
-    "source": "iana"
-  },
-  "audio/melp1200": {
-    "source": "iana"
-  },
-  "audio/melp2400": {
-    "source": "iana"
-  },
-  "audio/melp600": {
-    "source": "iana"
-  },
-  "audio/mhas": {
-    "source": "iana"
-  },
-  "audio/midi": {
-    "source": "apache",
-    "extensions": ["mid","midi","kar","rmi"]
-  },
-  "audio/mobile-xmf": {
-    "source": "iana",
-    "extensions": ["mxmf"]
-  },
-  "audio/mp3": {
-    "compressible": false,
-    "extensions": ["mp3"]
-  },
-  "audio/mp4": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["m4a","mp4a"]
-  },
-  "audio/mp4a-latm": {
-    "source": "iana"
-  },
-  "audio/mpa": {
-    "source": "iana"
-  },
-  "audio/mpa-robust": {
-    "source": "iana"
-  },
-  "audio/mpeg": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["mpga","mp2","mp2a","mp3","m2a","m3a"]
-  },
-  "audio/mpeg4-generic": {
-    "source": "iana"
-  },
-  "audio/musepack": {
-    "source": "apache"
-  },
-  "audio/ogg": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["oga","ogg","spx","opus"]
-  },
-  "audio/opus": {
-    "source": "iana"
-  },
-  "audio/parityfec": {
-    "source": "iana"
-  },
-  "audio/pcma": {
-    "source": "iana"
-  },
-  "audio/pcma-wb": {
-    "source": "iana"
-  },
-  "audio/pcmu": {
-    "source": "iana"
-  },
-  "audio/pcmu-wb": {
-    "source": "iana"
-  },
-  "audio/prs.sid": {
-    "source": "iana"
-  },
-  "audio/qcelp": {
-    "source": "iana"
-  },
-  "audio/raptorfec": {
-    "source": "iana"
-  },
-  "audio/red": {
-    "source": "iana"
-  },
-  "audio/rtp-enc-aescm128": {
-    "source": "iana"
-  },
-  "audio/rtp-midi": {
-    "source": "iana"
-  },
-  "audio/rtploopback": {
-    "source": "iana"
-  },
-  "audio/rtx": {
-    "source": "iana"
-  },
-  "audio/s3m": {
-    "source": "apache",
-    "extensions": ["s3m"]
-  },
-  "audio/scip": {
-    "source": "iana"
-  },
-  "audio/silk": {
-    "source": "apache",
-    "extensions": ["sil"]
-  },
-  "audio/smv": {
-    "source": "iana"
-  },
-  "audio/smv-qcp": {
-    "source": "iana"
-  },
-  "audio/smv0": {
-    "source": "iana"
-  },
-  "audio/sofa": {
-    "source": "iana"
-  },
-  "audio/sp-midi": {
-    "source": "iana"
-  },
-  "audio/speex": {
-    "source": "iana"
-  },
-  "audio/t140c": {
-    "source": "iana"
-  },
-  "audio/t38": {
-    "source": "iana"
-  },
-  "audio/telephone-event": {
-    "source": "iana"
-  },
-  "audio/tetra_acelp": {
-    "source": "iana"
-  },
-  "audio/tetra_acelp_bb": {
-    "source": "iana"
-  },
-  "audio/tone": {
-    "source": "iana"
-  },
-  "audio/tsvcis": {
-    "source": "iana"
-  },
-  "audio/uemclip": {
-    "source": "iana"
-  },
-  "audio/ulpfec": {
-    "source": "iana"
-  },
-  "audio/usac": {
-    "source": "iana"
-  },
-  "audio/vdvi": {
-    "source": "iana"
-  },
-  "audio/vmr-wb": {
-    "source": "iana"
-  },
-  "audio/vnd.3gpp.iufp": {
-    "source": "iana"
-  },
-  "audio/vnd.4sb": {
-    "source": "iana"
-  },
-  "audio/vnd.audiokoz": {
-    "source": "iana"
-  },
-  "audio/vnd.celp": {
-    "source": "iana"
-  },
-  "audio/vnd.cisco.nse": {
-    "source": "iana"
-  },
-  "audio/vnd.cmles.radio-events": {
-    "source": "iana"
-  },
-  "audio/vnd.cns.anp1": {
-    "source": "iana"
-  },
-  "audio/vnd.cns.inf1": {
-    "source": "iana"
-  },
-  "audio/vnd.dece.audio": {
-    "source": "iana",
-    "extensions": ["uva","uvva"]
-  },
-  "audio/vnd.digital-winds": {
-    "source": "iana",
-    "extensions": ["eol"]
-  },
-  "audio/vnd.dlna.adts": {
-    "source": "iana"
-  },
-  "audio/vnd.dolby.heaac.1": {
-    "source": "iana"
-  },
-  "audio/vnd.dolby.heaac.2": {
-    "source": "iana"
-  },
-  "audio/vnd.dolby.mlp": {
-    "source": "iana"
-  },
-  "audio/vnd.dolby.mps": {
-    "source": "iana"
-  },
-  "audio/vnd.dolby.pl2": {
-    "source": "iana"
-  },
-  "audio/vnd.dolby.pl2x": {
-    "source": "iana"
-  },
-  "audio/vnd.dolby.pl2z": {
-    "source": "iana"
-  },
-  "audio/vnd.dolby.pulse.1": {
-    "source": "iana"
-  },
-  "audio/vnd.dra": {
-    "source": "iana",
-    "extensions": ["dra"]
-  },
-  "audio/vnd.dts": {
-    "source": "iana",
-    "extensions": ["dts"]
-  },
-  "audio/vnd.dts.hd": {
-    "source": "iana",
-    "extensions": ["dtshd"]
-  },
-  "audio/vnd.dts.uhd": {
-    "source": "iana"
-  },
-  "audio/vnd.dvb.file": {
-    "source": "iana"
-  },
-  "audio/vnd.everad.plj": {
-    "source": "iana"
-  },
-  "audio/vnd.hns.audio": {
-    "source": "iana"
-  },
-  "audio/vnd.lucent.voice": {
-    "source": "iana",
-    "extensions": ["lvp"]
-  },
-  "audio/vnd.ms-playready.media.pya": {
-    "source": "iana",
-    "extensions": ["pya"]
-  },
-  "audio/vnd.nokia.mobile-xmf": {
-    "source": "iana"
-  },
-  "audio/vnd.nortel.vbk": {
-    "source": "iana"
-  },
-  "audio/vnd.nuera.ecelp4800": {
-    "source": "iana",
-    "extensions": ["ecelp4800"]
-  },
-  "audio/vnd.nuera.ecelp7470": {
-    "source": "iana",
-    "extensions": ["ecelp7470"]
-  },
-  "audio/vnd.nuera.ecelp9600": {
-    "source": "iana",
-    "extensions": ["ecelp9600"]
-  },
-  "audio/vnd.octel.sbc": {
-    "source": "iana"
-  },
-  "audio/vnd.presonus.multitrack": {
-    "source": "iana"
-  },
-  "audio/vnd.qcelp": {
-    "source": "iana"
-  },
-  "audio/vnd.rhetorex.32kadpcm": {
-    "source": "iana"
-  },
-  "audio/vnd.rip": {
-    "source": "iana",
-    "extensions": ["rip"]
-  },
-  "audio/vnd.rn-realaudio": {
-    "compressible": false
-  },
-  "audio/vnd.sealedmedia.softseal.mpeg": {
-    "source": "iana"
-  },
-  "audio/vnd.vmx.cvsd": {
-    "source": "iana"
-  },
-  "audio/vnd.wave": {
-    "compressible": false
-  },
-  "audio/vorbis": {
-    "source": "iana",
-    "compressible": false
-  },
-  "audio/vorbis-config": {
-    "source": "iana"
-  },
-  "audio/wav": {
-    "compressible": false,
-    "extensions": ["wav"]
-  },
-  "audio/wave": {
-    "compressible": false,
-    "extensions": ["wav"]
-  },
-  "audio/webm": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["weba"]
-  },
-  "audio/x-aac": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["aac"]
-  },
-  "audio/x-aiff": {
-    "source": "apache",
-    "extensions": ["aif","aiff","aifc"]
-  },
-  "audio/x-caf": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["caf"]
-  },
-  "audio/x-flac": {
-    "source": "apache",
-    "extensions": ["flac"]
-  },
-  "audio/x-m4a": {
-    "source": "nginx",
-    "extensions": ["m4a"]
-  },
-  "audio/x-matroska": {
-    "source": "apache",
-    "extensions": ["mka"]
-  },
-  "audio/x-mpegurl": {
-    "source": "apache",
-    "extensions": ["m3u"]
-  },
-  "audio/x-ms-wax": {
-    "source": "apache",
-    "extensions": ["wax"]
-  },
-  "audio/x-ms-wma": {
-    "source": "apache",
-    "extensions": ["wma"]
-  },
-  "audio/x-pn-realaudio": {
-    "source": "apache",
-    "extensions": ["ram","ra"]
-  },
-  "audio/x-pn-realaudio-plugin": {
-    "source": "apache",
-    "extensions": ["rmp"]
-  },
-  "audio/x-realaudio": {
-    "source": "nginx",
-    "extensions": ["ra"]
-  },
-  "audio/x-tta": {
-    "source": "apache"
-  },
-  "audio/x-wav": {
-    "source": "apache",
-    "extensions": ["wav"]
-  },
-  "audio/xm": {
-    "source": "apache",
-    "extensions": ["xm"]
-  },
-  "chemical/x-cdx": {
-    "source": "apache",
-    "extensions": ["cdx"]
-  },
-  "chemical/x-cif": {
-    "source": "apache",
-    "extensions": ["cif"]
-  },
-  "chemical/x-cmdf": {
-    "source": "apache",
-    "extensions": ["cmdf"]
-  },
-  "chemical/x-cml": {
-    "source": "apache",
-    "extensions": ["cml"]
-  },
-  "chemical/x-csml": {
-    "source": "apache",
-    "extensions": ["csml"]
-  },
-  "chemical/x-pdb": {
-    "source": "apache"
-  },
-  "chemical/x-xyz": {
-    "source": "apache",
-    "extensions": ["xyz"]
-  },
-  "font/collection": {
-    "source": "iana",
-    "extensions": ["ttc"]
-  },
-  "font/otf": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["otf"]
-  },
-  "font/sfnt": {
-    "source": "iana"
-  },
-  "font/ttf": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["ttf"]
-  },
-  "font/woff": {
-    "source": "iana",
-    "extensions": ["woff"]
-  },
-  "font/woff2": {
-    "source": "iana",
-    "extensions": ["woff2"]
-  },
-  "image/aces": {
-    "source": "iana",
-    "extensions": ["exr"]
-  },
-  "image/apng": {
-    "compressible": false,
-    "extensions": ["apng"]
-  },
-  "image/avci": {
-    "source": "iana"
-  },
-  "image/avcs": {
-    "source": "iana"
-  },
-  "image/avif": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["avif"]
-  },
-  "image/bmp": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["bmp"]
-  },
-  "image/cgm": {
-    "source": "iana",
-    "extensions": ["cgm"]
-  },
-  "image/dicom-rle": {
-    "source": "iana",
-    "extensions": ["drle"]
-  },
-  "image/emf": {
-    "source": "iana",
-    "extensions": ["emf"]
-  },
-  "image/fits": {
-    "source": "iana",
-    "extensions": ["fits"]
-  },
-  "image/g3fax": {
-    "source": "iana",
-    "extensions": ["g3"]
-  },
-  "image/gif": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["gif"]
-  },
-  "image/heic": {
-    "source": "iana",
-    "extensions": ["heic"]
-  },
-  "image/heic-sequence": {
-    "source": "iana",
-    "extensions": ["heics"]
-  },
-  "image/heif": {
-    "source": "iana",
-    "extensions": ["heif"]
-  },
-  "image/heif-sequence": {
-    "source": "iana",
-    "extensions": ["heifs"]
-  },
-  "image/hej2k": {
-    "source": "iana",
-    "extensions": ["hej2"]
-  },
-  "image/hsj2": {
-    "source": "iana",
-    "extensions": ["hsj2"]
-  },
-  "image/ief": {
-    "source": "iana",
-    "extensions": ["ief"]
-  },
-  "image/jls": {
-    "source": "iana",
-    "extensions": ["jls"]
-  },
-  "image/jp2": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["jp2","jpg2"]
-  },
-  "image/jpeg": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["jpeg","jpg","jpe"]
-  },
-  "image/jph": {
-    "source": "iana",
-    "extensions": ["jph"]
-  },
-  "image/jphc": {
-    "source": "iana",
-    "extensions": ["jhc"]
-  },
-  "image/jpm": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["jpm"]
-  },
-  "image/jpx": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["jpx","jpf"]
-  },
-  "image/jxr": {
-    "source": "iana",
-    "extensions": ["jxr"]
-  },
-  "image/jxra": {
-    "source": "iana",
-    "extensions": ["jxra"]
-  },
-  "image/jxrs": {
-    "source": "iana",
-    "extensions": ["jxrs"]
-  },
-  "image/jxs": {
-    "source": "iana",
-    "extensions": ["jxs"]
-  },
-  "image/jxsc": {
-    "source": "iana",
-    "extensions": ["jxsc"]
-  },
-  "image/jxsi": {
-    "source": "iana",
-    "extensions": ["jxsi"]
-  },
-  "image/jxss": {
-    "source": "iana",
-    "extensions": ["jxss"]
-  },
-  "image/ktx": {
-    "source": "iana",
-    "extensions": ["ktx"]
-  },
-  "image/ktx2": {
-    "source": "iana",
-    "extensions": ["ktx2"]
-  },
-  "image/naplps": {
-    "source": "iana"
-  },
-  "image/pjpeg": {
-    "compressible": false
-  },
-  "image/png": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["png"]
-  },
-  "image/prs.btif": {
-    "source": "iana",
-    "extensions": ["btif"]
-  },
-  "image/prs.pti": {
-    "source": "iana",
-    "extensions": ["pti"]
-  },
-  "image/pwg-raster": {
-    "source": "iana"
-  },
-  "image/sgi": {
-    "source": "apache",
-    "extensions": ["sgi"]
-  },
-  "image/svg+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["svg","svgz"]
-  },
-  "image/t38": {
-    "source": "iana",
-    "extensions": ["t38"]
-  },
-  "image/tiff": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["tif","tiff"]
-  },
-  "image/tiff-fx": {
-    "source": "iana",
-    "extensions": ["tfx"]
-  },
-  "image/vnd.adobe.photoshop": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["psd"]
-  },
-  "image/vnd.airzip.accelerator.azv": {
-    "source": "iana",
-    "extensions": ["azv"]
-  },
-  "image/vnd.cns.inf2": {
-    "source": "iana"
-  },
-  "image/vnd.dece.graphic": {
-    "source": "iana",
-    "extensions": ["uvi","uvvi","uvg","uvvg"]
-  },
-  "image/vnd.djvu": {
-    "source": "iana",
-    "extensions": ["djvu","djv"]
-  },
-  "image/vnd.dvb.subtitle": {
-    "source": "iana",
-    "extensions": ["sub"]
-  },
-  "image/vnd.dwg": {
-    "source": "iana",
-    "extensions": ["dwg"]
-  },
-  "image/vnd.dxf": {
-    "source": "iana",
-    "extensions": ["dxf"]
-  },
-  "image/vnd.fastbidsheet": {
-    "source": "iana",
-    "extensions": ["fbs"]
-  },
-  "image/vnd.fpx": {
-    "source": "iana",
-    "extensions": ["fpx"]
-  },
-  "image/vnd.fst": {
-    "source": "iana",
-    "extensions": ["fst"]
-  },
-  "image/vnd.fujixerox.edmics-mmr": {
-    "source": "iana",
-    "extensions": ["mmr"]
-  },
-  "image/vnd.fujixerox.edmics-rlc": {
-    "source": "iana",
-    "extensions": ["rlc"]
-  },
-  "image/vnd.globalgraphics.pgb": {
-    "source": "iana"
-  },
-  "image/vnd.microsoft.icon": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["ico"]
-  },
-  "image/vnd.mix": {
-    "source": "iana"
-  },
-  "image/vnd.mozilla.apng": {
-    "source": "iana"
-  },
-  "image/vnd.ms-dds": {
-    "compressible": true,
-    "extensions": ["dds"]
-  },
-  "image/vnd.ms-modi": {
-    "source": "iana",
-    "extensions": ["mdi"]
-  },
-  "image/vnd.ms-photo": {
-    "source": "apache",
-    "extensions": ["wdp"]
-  },
-  "image/vnd.net-fpx": {
-    "source": "iana",
-    "extensions": ["npx"]
-  },
-  "image/vnd.pco.b16": {
-    "source": "iana",
-    "extensions": ["b16"]
-  },
-  "image/vnd.radiance": {
-    "source": "iana"
-  },
-  "image/vnd.sealed.png": {
-    "source": "iana"
-  },
-  "image/vnd.sealedmedia.softseal.gif": {
-    "source": "iana"
-  },
-  "image/vnd.sealedmedia.softseal.jpg": {
-    "source": "iana"
-  },
-  "image/vnd.svf": {
-    "source": "iana"
-  },
-  "image/vnd.tencent.tap": {
-    "source": "iana",
-    "extensions": ["tap"]
-  },
-  "image/vnd.valve.source.texture": {
-    "source": "iana",
-    "extensions": ["vtf"]
-  },
-  "image/vnd.wap.wbmp": {
-    "source": "iana",
-    "extensions": ["wbmp"]
-  },
-  "image/vnd.xiff": {
-    "source": "iana",
-    "extensions": ["xif"]
-  },
-  "image/vnd.zbrush.pcx": {
-    "source": "iana",
-    "extensions": ["pcx"]
-  },
-  "image/webp": {
-    "source": "apache",
-    "extensions": ["webp"]
-  },
-  "image/wmf": {
-    "source": "iana",
-    "extensions": ["wmf"]
-  },
-  "image/x-3ds": {
-    "source": "apache",
-    "extensions": ["3ds"]
-  },
-  "image/x-cmu-raster": {
-    "source": "apache",
-    "extensions": ["ras"]
-  },
-  "image/x-cmx": {
-    "source": "apache",
-    "extensions": ["cmx"]
-  },
-  "image/x-freehand": {
-    "source": "apache",
-    "extensions": ["fh","fhc","fh4","fh5","fh7"]
-  },
-  "image/x-icon": {
-    "source": "apache",
-    "compressible": true,
-    "extensions": ["ico"]
-  },
-  "image/x-jng": {
-    "source": "nginx",
-    "extensions": ["jng"]
-  },
-  "image/x-mrsid-image": {
-    "source": "apache",
-    "extensions": ["sid"]
-  },
-  "image/x-ms-bmp": {
-    "source": "nginx",
-    "compressible": true,
-    "extensions": ["bmp"]
-  },
-  "image/x-pcx": {
-    "source": "apache",
-    "extensions": ["pcx"]
-  },
-  "image/x-pict": {
-    "source": "apache",
-    "extensions": ["pic","pct"]
-  },
-  "image/x-portable-anymap": {
-    "source": "apache",
-    "extensions": ["pnm"]
-  },
-  "image/x-portable-bitmap": {
-    "source": "apache",
-    "extensions": ["pbm"]
-  },
-  "image/x-portable-graymap": {
-    "source": "apache",
-    "extensions": ["pgm"]
-  },
-  "image/x-portable-pixmap": {
-    "source": "apache",
-    "extensions": ["ppm"]
-  },
-  "image/x-rgb": {
-    "source": "apache",
-    "extensions": ["rgb"]
-  },
-  "image/x-tga": {
-    "source": "apache",
-    "extensions": ["tga"]
-  },
-  "image/x-xbitmap": {
-    "source": "apache",
-    "extensions": ["xbm"]
-  },
-  "image/x-xcf": {
-    "compressible": false
-  },
-  "image/x-xpixmap": {
-    "source": "apache",
-    "extensions": ["xpm"]
-  },
-  "image/x-xwindowdump": {
-    "source": "apache",
-    "extensions": ["xwd"]
-  },
-  "message/cpim": {
-    "source": "iana"
-  },
-  "message/delivery-status": {
-    "source": "iana"
-  },
-  "message/disposition-notification": {
-    "source": "iana",
-    "extensions": [
-      "disposition-notification"
-    ]
-  },
-  "message/external-body": {
-    "source": "iana"
-  },
-  "message/feedback-report": {
-    "source": "iana"
-  },
-  "message/global": {
-    "source": "iana",
-    "extensions": ["u8msg"]
-  },
-  "message/global-delivery-status": {
-    "source": "iana",
-    "extensions": ["u8dsn"]
-  },
-  "message/global-disposition-notification": {
-    "source": "iana",
-    "extensions": ["u8mdn"]
-  },
-  "message/global-headers": {
-    "source": "iana",
-    "extensions": ["u8hdr"]
-  },
-  "message/http": {
-    "source": "iana",
-    "compressible": false
-  },
-  "message/imdn+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "message/news": {
-    "source": "iana"
-  },
-  "message/partial": {
-    "source": "iana",
-    "compressible": false
-  },
-  "message/rfc822": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["eml","mime"]
-  },
-  "message/s-http": {
-    "source": "iana"
-  },
-  "message/sip": {
-    "source": "iana"
-  },
-  "message/sipfrag": {
-    "source": "iana"
-  },
-  "message/tracking-status": {
-    "source": "iana"
-  },
-  "message/vnd.si.simp": {
-    "source": "iana"
-  },
-  "message/vnd.wfa.wsc": {
-    "source": "iana",
-    "extensions": ["wsc"]
-  },
-  "model/3mf": {
-    "source": "iana",
-    "extensions": ["3mf"]
-  },
-  "model/e57": {
-    "source": "iana"
-  },
-  "model/gltf+json": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["gltf"]
-  },
-  "model/gltf-binary": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["glb"]
-  },
-  "model/iges": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["igs","iges"]
-  },
-  "model/mesh": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["msh","mesh","silo"]
-  },
-  "model/mtl": {
-    "source": "iana",
-    "extensions": ["mtl"]
-  },
-  "model/obj": {
-    "source": "iana",
-    "extensions": ["obj"]
-  },
-  "model/step": {
-    "source": "iana"
-  },
-  "model/step+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["stpx"]
-  },
-  "model/step+zip": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["stpz"]
-  },
-  "model/step-xml+zip": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["stpxz"]
-  },
-  "model/stl": {
-    "source": "iana",
-    "extensions": ["stl"]
-  },
-  "model/vnd.collada+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["dae"]
-  },
-  "model/vnd.dwf": {
-    "source": "iana",
-    "extensions": ["dwf"]
-  },
-  "model/vnd.flatland.3dml": {
-    "source": "iana"
-  },
-  "model/vnd.gdl": {
-    "source": "iana",
-    "extensions": ["gdl"]
-  },
-  "model/vnd.gs-gdl": {
-    "source": "apache"
-  },
-  "model/vnd.gs.gdl": {
-    "source": "iana"
-  },
-  "model/vnd.gtw": {
-    "source": "iana",
-    "extensions": ["gtw"]
-  },
-  "model/vnd.moml+xml": {
-    "source": "iana",
-    "compressible": true
-  },
-  "model/vnd.mts": {
-    "source": "iana",
-    "extensions": ["mts"]
-  },
-  "model/vnd.opengex": {
-    "source": "iana",
-    "extensions": ["ogex"]
-  },
-  "model/vnd.parasolid.transmit.binary": {
-    "source": "iana",
-    "extensions": ["x_b"]
-  },
-  "model/vnd.parasolid.transmit.text": {
-    "source": "iana",
-    "extensions": ["x_t"]
-  },
-  "model/vnd.pytha.pyox": {
-    "source": "iana"
-  },
-  "model/vnd.rosette.annotated-data-model": {
-    "source": "iana"
-  },
-  "model/vnd.sap.vds": {
-    "source": "iana",
-    "extensions": ["vds"]
-  },
-  "model/vnd.usdz+zip": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["usdz"]
-  },
-  "model/vnd.valve.source.compiled-map": {
-    "source": "iana",
-    "extensions": ["bsp"]
-  },
-  "model/vnd.vtu": {
-    "source": "iana",
-    "extensions": ["vtu"]
-  },
-  "model/vrml": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["wrl","vrml"]
-  },
-  "model/x3d+binary": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["x3db","x3dbz"]
-  },
-  "model/x3d+fastinfoset": {
-    "source": "iana",
-    "extensions": ["x3db"]
-  },
-  "model/x3d+vrml": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["x3dv","x3dvz"]
-  },
-  "model/x3d+xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["x3d","x3dz"]
-  },
-  "model/x3d-vrml": {
-    "source": "iana",
-    "extensions": ["x3dv"]
-  },
-  "multipart/alternative": {
-    "source": "iana",
-    "compressible": false
-  },
-  "multipart/appledouble": {
-    "source": "iana"
-  },
-  "multipart/byteranges": {
-    "source": "iana"
-  },
-  "multipart/digest": {
-    "source": "iana"
-  },
-  "multipart/encrypted": {
-    "source": "iana",
-    "compressible": false
-  },
-  "multipart/form-data": {
-    "source": "iana",
-    "compressible": false
-  },
-  "multipart/header-set": {
-    "source": "iana"
-  },
-  "multipart/mixed": {
-    "source": "iana"
-  },
-  "multipart/multilingual": {
-    "source": "iana"
-  },
-  "multipart/parallel": {
-    "source": "iana"
-  },
-  "multipart/related": {
-    "source": "iana",
-    "compressible": false
-  },
-  "multipart/report": {
-    "source": "iana"
-  },
-  "multipart/signed": {
-    "source": "iana",
-    "compressible": false
-  },
-  "multipart/vnd.bint.med-plus": {
-    "source": "iana"
-  },
-  "multipart/voice-message": {
-    "source": "iana"
-  },
-  "multipart/x-mixed-replace": {
-    "source": "iana"
-  },
-  "text/1d-interleaved-parityfec": {
-    "source": "iana"
-  },
-  "text/cache-manifest": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["appcache","manifest"]
-  },
-  "text/calendar": {
-    "source": "iana",
-    "extensions": ["ics","ifb"]
-  },
-  "text/calender": {
-    "compressible": true
-  },
-  "text/cmd": {
-    "compressible": true
-  },
-  "text/coffeescript": {
-    "extensions": ["coffee","litcoffee"]
-  },
-  "text/cql": {
-    "source": "iana"
-  },
-  "text/cql-expression": {
-    "source": "iana"
-  },
-  "text/cql-identifier": {
-    "source": "iana"
-  },
-  "text/css": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true,
-    "extensions": ["css"]
-  },
-  "text/csv": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["csv"]
-  },
-  "text/csv-schema": {
-    "source": "iana"
-  },
-  "text/directory": {
-    "source": "iana"
-  },
-  "text/dns": {
-    "source": "iana"
-  },
-  "text/ecmascript": {
-    "source": "iana"
-  },
-  "text/encaprtp": {
-    "source": "iana"
-  },
-  "text/enriched": {
-    "source": "iana"
-  },
-  "text/fhirpath": {
-    "source": "iana"
-  },
-  "text/flexfec": {
-    "source": "iana"
-  },
-  "text/fwdred": {
-    "source": "iana"
-  },
-  "text/gff3": {
-    "source": "iana"
-  },
-  "text/grammar-ref-list": {
-    "source": "iana"
-  },
-  "text/html": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["html","htm","shtml"]
-  },
-  "text/jade": {
-    "extensions": ["jade"]
-  },
-  "text/javascript": {
-    "source": "iana",
-    "compressible": true
-  },
-  "text/jcr-cnd": {
-    "source": "iana"
-  },
-  "text/jsx": {
-    "compressible": true,
-    "extensions": ["jsx"]
-  },
-  "text/less": {
-    "compressible": true,
-    "extensions": ["less"]
-  },
-  "text/markdown": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["markdown","md"]
-  },
-  "text/mathml": {
-    "source": "nginx",
-    "extensions": ["mml"]
-  },
-  "text/mdx": {
-    "compressible": true,
-    "extensions": ["mdx"]
-  },
-  "text/mizar": {
-    "source": "iana"
-  },
-  "text/n3": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true,
-    "extensions": ["n3"]
-  },
-  "text/parameters": {
-    "source": "iana",
-    "charset": "UTF-8"
-  },
-  "text/parityfec": {
-    "source": "iana"
-  },
-  "text/plain": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["txt","text","conf","def","list","log","in","ini"]
-  },
-  "text/provenance-notation": {
-    "source": "iana",
-    "charset": "UTF-8"
-  },
-  "text/prs.fallenstein.rst": {
-    "source": "iana"
-  },
-  "text/prs.lines.tag": {
-    "source": "iana",
-    "extensions": ["dsc"]
-  },
-  "text/prs.prop.logic": {
-    "source": "iana"
-  },
-  "text/raptorfec": {
-    "source": "iana"
-  },
-  "text/red": {
-    "source": "iana"
-  },
-  "text/rfc822-headers": {
-    "source": "iana"
-  },
-  "text/richtext": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rtx"]
-  },
-  "text/rtf": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["rtf"]
-  },
-  "text/rtp-enc-aescm128": {
-    "source": "iana"
-  },
-  "text/rtploopback": {
-    "source": "iana"
-  },
-  "text/rtx": {
-    "source": "iana"
-  },
-  "text/sgml": {
-    "source": "iana",
-    "extensions": ["sgml","sgm"]
-  },
-  "text/shaclc": {
-    "source": "iana"
-  },
-  "text/shex": {
-    "source": "iana",
-    "extensions": ["shex"]
-  },
-  "text/slim": {
-    "extensions": ["slim","slm"]
-  },
-  "text/spdx": {
-    "source": "iana",
-    "extensions": ["spdx"]
-  },
-  "text/strings": {
-    "source": "iana"
-  },
-  "text/stylus": {
-    "extensions": ["stylus","styl"]
-  },
-  "text/t140": {
-    "source": "iana"
-  },
-  "text/tab-separated-values": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["tsv"]
-  },
-  "text/troff": {
-    "source": "iana",
-    "extensions": ["t","tr","roff","man","me","ms"]
-  },
-  "text/turtle": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "extensions": ["ttl"]
-  },
-  "text/ulpfec": {
-    "source": "iana"
-  },
-  "text/uri-list": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["uri","uris","urls"]
-  },
-  "text/vcard": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["vcard"]
-  },
-  "text/vnd.a": {
-    "source": "iana"
-  },
-  "text/vnd.abc": {
-    "source": "iana"
-  },
-  "text/vnd.ascii-art": {
-    "source": "iana"
-  },
-  "text/vnd.curl": {
-    "source": "iana",
-    "extensions": ["curl"]
-  },
-  "text/vnd.curl.dcurl": {
-    "source": "apache",
-    "extensions": ["dcurl"]
-  },
-  "text/vnd.curl.mcurl": {
-    "source": "apache",
-    "extensions": ["mcurl"]
-  },
-  "text/vnd.curl.scurl": {
-    "source": "apache",
-    "extensions": ["scurl"]
-  },
-  "text/vnd.debian.copyright": {
-    "source": "iana",
-    "charset": "UTF-8"
-  },
-  "text/vnd.dmclientscript": {
-    "source": "iana"
-  },
-  "text/vnd.dvb.subtitle": {
-    "source": "iana",
-    "extensions": ["sub"]
-  },
-  "text/vnd.esmertec.theme-descriptor": {
-    "source": "iana",
-    "charset": "UTF-8"
-  },
-  "text/vnd.familysearch.gedcom": {
-    "source": "iana",
-    "extensions": ["ged"]
-  },
-  "text/vnd.ficlab.flt": {
-    "source": "iana"
-  },
-  "text/vnd.fly": {
-    "source": "iana",
-    "extensions": ["fly"]
-  },
-  "text/vnd.fmi.flexstor": {
-    "source": "iana",
-    "extensions": ["flx"]
-  },
-  "text/vnd.gml": {
-    "source": "iana"
-  },
-  "text/vnd.graphviz": {
-    "source": "iana",
-    "extensions": ["gv"]
-  },
-  "text/vnd.hans": {
-    "source": "iana"
-  },
-  "text/vnd.hgl": {
-    "source": "iana"
-  },
-  "text/vnd.in3d.3dml": {
-    "source": "iana",
-    "extensions": ["3dml"]
-  },
-  "text/vnd.in3d.spot": {
-    "source": "iana",
-    "extensions": ["spot"]
-  },
-  "text/vnd.iptc.newsml": {
-    "source": "iana"
-  },
-  "text/vnd.iptc.nitf": {
-    "source": "iana"
-  },
-  "text/vnd.latex-z": {
-    "source": "iana"
-  },
-  "text/vnd.motorola.reflex": {
-    "source": "iana"
-  },
-  "text/vnd.ms-mediapackage": {
-    "source": "iana"
-  },
-  "text/vnd.net2phone.commcenter.command": {
-    "source": "iana"
-  },
-  "text/vnd.radisys.msml-basic-layout": {
-    "source": "iana"
-  },
-  "text/vnd.senx.warpscript": {
-    "source": "iana"
-  },
-  "text/vnd.si.uricatalogue": {
-    "source": "iana"
-  },
-  "text/vnd.sosi": {
-    "source": "iana"
-  },
-  "text/vnd.sun.j2me.app-descriptor": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "extensions": ["jad"]
-  },
-  "text/vnd.trolltech.linguist": {
-    "source": "iana",
-    "charset": "UTF-8"
-  },
-  "text/vnd.wap.si": {
-    "source": "iana"
-  },
-  "text/vnd.wap.sl": {
-    "source": "iana"
-  },
-  "text/vnd.wap.wml": {
-    "source": "iana",
-    "extensions": ["wml"]
-  },
-  "text/vnd.wap.wmlscript": {
-    "source": "iana",
-    "extensions": ["wmls"]
-  },
-  "text/vtt": {
-    "source": "iana",
-    "charset": "UTF-8",
-    "compressible": true,
-    "extensions": ["vtt"]
-  },
-  "text/x-asm": {
-    "source": "apache",
-    "extensions": ["s","asm"]
-  },
-  "text/x-c": {
-    "source": "apache",
-    "extensions": ["c","cc","cxx","cpp","h","hh","dic"]
-  },
-  "text/x-component": {
-    "source": "nginx",
-    "extensions": ["htc"]
-  },
-  "text/x-fortran": {
-    "source": "apache",
-    "extensions": ["f","for","f77","f90"]
-  },
-  "text/x-gwt-rpc": {
-    "compressible": true
-  },
-  "text/x-handlebars-template": {
-    "extensions": ["hbs"]
-  },
-  "text/x-java-source": {
-    "source": "apache",
-    "extensions": ["java"]
-  },
-  "text/x-jquery-tmpl": {
-    "compressible": true
-  },
-  "text/x-lua": {
-    "extensions": ["lua"]
-  },
-  "text/x-markdown": {
-    "compressible": true,
-    "extensions": ["mkd"]
-  },
-  "text/x-nfo": {
-    "source": "apache",
-    "extensions": ["nfo"]
-  },
-  "text/x-opml": {
-    "source": "apache",
-    "extensions": ["opml"]
-  },
-  "text/x-org": {
-    "compressible": true,
-    "extensions": ["org"]
-  },
-  "text/x-pascal": {
-    "source": "apache",
-    "extensions": ["p","pas"]
-  },
-  "text/x-processing": {
-    "compressible": true,
-    "extensions": ["pde"]
-  },
-  "text/x-sass": {
-    "extensions": ["sass"]
-  },
-  "text/x-scss": {
-    "extensions": ["scss"]
-  },
-  "text/x-setext": {
-    "source": "apache",
-    "extensions": ["etx"]
-  },
-  "text/x-sfv": {
-    "source": "apache",
-    "extensions": ["sfv"]
-  },
-  "text/x-suse-ymp": {
-    "compressible": true,
-    "extensions": ["ymp"]
-  },
-  "text/x-uuencode": {
-    "source": "apache",
-    "extensions": ["uu"]
-  },
-  "text/x-vcalendar": {
-    "source": "apache",
-    "extensions": ["vcs"]
-  },
-  "text/x-vcard": {
-    "source": "apache",
-    "extensions": ["vcf"]
-  },
-  "text/xml": {
-    "source": "iana",
-    "compressible": true,
-    "extensions": ["xml"]
-  },
-  "text/xml-external-parsed-entity": {
-    "source": "iana"
-  },
-  "text/yaml": {
-    "compressible": true,
-    "extensions": ["yaml","yml"]
-  },
-  "video/1d-interleaved-parityfec": {
-    "source": "iana"
-  },
-  "video/3gpp": {
-    "source": "iana",
-    "extensions": ["3gp","3gpp"]
-  },
-  "video/3gpp-tt": {
-    "source": "iana"
-  },
-  "video/3gpp2": {
-    "source": "iana",
-    "extensions": ["3g2"]
-  },
-  "video/av1": {
-    "source": "iana"
-  },
-  "video/bmpeg": {
-    "source": "iana"
-  },
-  "video/bt656": {
-    "source": "iana"
-  },
-  "video/celb": {
-    "source": "iana"
-  },
-  "video/dv": {
-    "source": "iana"
-  },
-  "video/encaprtp": {
-    "source": "iana"
-  },
-  "video/ffv1": {
-    "source": "iana"
-  },
-  "video/flexfec": {
-    "source": "iana"
-  },
-  "video/h261": {
-    "source": "iana",
-    "extensions": ["h261"]
-  },
-  "video/h263": {
-    "source": "iana",
-    "extensions": ["h263"]
-  },
-  "video/h263-1998": {
-    "source": "iana"
-  },
-  "video/h263-2000": {
-    "source": "iana"
-  },
-  "video/h264": {
-    "source": "iana",
-    "extensions": ["h264"]
-  },
-  "video/h264-rcdo": {
-    "source": "iana"
-  },
-  "video/h264-svc": {
-    "source": "iana"
-  },
-  "video/h265": {
-    "source": "iana"
-  },
-  "video/iso.segment": {
-    "source": "iana",
-    "extensions": ["m4s"]
-  },
-  "video/jpeg": {
-    "source": "iana",
-    "extensions": ["jpgv"]
-  },
-  "video/jpeg2000": {
-    "source": "iana"
-  },
-  "video/jpm": {
-    "source": "apache",
-    "extensions": ["jpm","jpgm"]
-  },
-  "video/jxsv": {
-    "source": "iana"
-  },
-  "video/mj2": {
-    "source": "iana",
-    "extensions": ["mj2","mjp2"]
-  },
-  "video/mp1s": {
-    "source": "iana"
-  },
-  "video/mp2p": {
-    "source": "iana"
-  },
-  "video/mp2t": {
-    "source": "iana",
-    "extensions": ["ts"]
-  },
-  "video/mp4": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["mp4","mp4v","mpg4"]
-  },
-  "video/mp4v-es": {
-    "source": "iana"
-  },
-  "video/mpeg": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["mpeg","mpg","mpe","m1v","m2v"]
-  },
-  "video/mpeg4-generic": {
-    "source": "iana"
-  },
-  "video/mpv": {
-    "source": "iana"
-  },
-  "video/nv": {
-    "source": "iana"
-  },
-  "video/ogg": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["ogv"]
-  },
-  "video/parityfec": {
-    "source": "iana"
-  },
-  "video/pointer": {
-    "source": "iana"
-  },
-  "video/quicktime": {
-    "source": "iana",
-    "compressible": false,
-    "extensions": ["qt","mov"]
-  },
-  "video/raptorfec": {
-    "source": "iana"
-  },
-  "video/raw": {
-    "source": "iana"
-  },
-  "video/rtp-enc-aescm128": {
-    "source": "iana"
-  },
-  "video/rtploopback": {
-    "source": "iana"
-  },
-  "video/rtx": {
-    "source": "iana"
-  },
-  "video/scip": {
-    "source": "iana"
-  },
-  "video/smpte291": {
-    "source": "iana"
-  },
-  "video/smpte292m": {
-    "source": "iana"
-  },
-  "video/ulpfec": {
-    "source": "iana"
-  },
-  "video/vc1": {
-    "source": "iana"
-  },
-  "video/vc2": {
-    "source": "iana"
-  },
-  "video/vnd.cctv": {
-    "source": "iana"
-  },
-  "video/vnd.dece.hd": {
-    "source": "iana",
-    "extensions": ["uvh","uvvh"]
-  },
-  "video/vnd.dece.mobile": {
-    "source": "iana",
-    "extensions": ["uvm","uvvm"]
-  },
-  "video/vnd.dece.mp4": {
-    "source": "iana"
-  },
-  "video/vnd.dece.pd": {
-    "source": "iana",
-    "extensions": ["uvp","uvvp"]
-  },
-  "video/vnd.dece.sd": {
-    "source": "iana",
-    "extensions": ["uvs","uvvs"]
-  },
-  "video/vnd.dece.video": {
-    "source": "iana",
-    "extensions": ["uvv","uvvv"]
-  },
-  "video/vnd.directv.mpeg": {
-    "source": "iana"
-  },
-  "video/vnd.directv.mpeg-tts": {
-    "source": "iana"
-  },
-  "video/vnd.dlna.mpeg-tts": {
-    "source": "iana"
-  },
-  "video/vnd.dvb.file": {
-    "source": "iana",
-    "extensions": ["dvb"]
-  },
-  "video/vnd.fvt": {
-    "source": "iana",
-    "extensions": ["fvt"]
-  },
-  "video/vnd.hns.video": {
-    "source": "iana"
-  },
-  "video/vnd.iptvforum.1dparityfec-1010": {
-    "source": "iana"
-  },
-  "video/vnd.iptvforum.1dparityfec-2005": {
-    "source": "iana"
-  },
-  "video/vnd.iptvforum.2dparityfec-1010": {
-    "source": "iana"
-  },
-  "video/vnd.iptvforum.2dparityfec-2005": {
-    "source": "iana"
-  },
-  "video/vnd.iptvforum.ttsavc": {
-    "source": "iana"
-  },
-  "video/vnd.iptvforum.ttsmpeg2": {
-    "source": "iana"
-  },
-  "video/vnd.motorola.video": {
-    "source": "iana"
-  },
-  "video/vnd.motorola.videop": {
-    "source": "iana"
-  },
-  "video/vnd.mpegurl": {
-    "source": "iana",
-    "extensions": ["mxu","m4u"]
-  },
-  "video/vnd.ms-playready.media.pyv": {
-    "source": "iana",
-    "extensions": ["pyv"]
-  },
-  "video/vnd.nokia.interleaved-multimedia": {
-    "source": "iana"
-  },
-  "video/vnd.nokia.mp4vr": {
-    "source": "iana"
-  },
-  "video/vnd.nokia.videovoip": {
-    "source": "iana"
-  },
-  "video/vnd.objectvideo": {
-    "source": "iana"
-  },
-  "video/vnd.radgamettools.bink": {
-    "source": "iana"
-  },
-  "video/vnd.radgamettools.smacker": {
-    "source": "iana"
-  },
-  "video/vnd.sealed.mpeg1": {
-    "source": "iana"
-  },
-  "video/vnd.sealed.mpeg4": {
-    "source": "iana"
-  },
-  "video/vnd.sealed.swf": {
-    "source": "iana"
-  },
-  "video/vnd.sealedmedia.softseal.mov": {
-    "source": "iana"
-  },
-  "video/vnd.uvvu.mp4": {
-    "source": "iana",
-    "extensions": ["uvu","uvvu"]
-  },
-  "video/vnd.vivo": {
-    "source": "iana",
-    "extensions": ["viv"]
-  },
-  "video/vnd.youtube.yt": {
-    "source": "iana"
-  },
-  "video/vp8": {
-    "source": "iana"
-  },
-  "video/vp9": {
-    "source": "iana"
-  },
-  "video/webm": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["webm"]
-  },
-  "video/x-f4v": {
-    "source": "apache",
-    "extensions": ["f4v"]
-  },
-  "video/x-fli": {
-    "source": "apache",
-    "extensions": ["fli"]
-  },
-  "video/x-flv": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["flv"]
-  },
-  "video/x-m4v": {
-    "source": "apache",
-    "extensions": ["m4v"]
-  },
-  "video/x-matroska": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["mkv","mk3d","mks"]
-  },
-  "video/x-mng": {
-    "source": "apache",
-    "extensions": ["mng"]
-  },
-  "video/x-ms-asf": {
-    "source": "apache",
-    "extensions": ["asf","asx"]
-  },
-  "video/x-ms-vob": {
-    "source": "apache",
-    "extensions": ["vob"]
-  },
-  "video/x-ms-wm": {
-    "source": "apache",
-    "extensions": ["wm"]
-  },
-  "video/x-ms-wmv": {
-    "source": "apache",
-    "compressible": false,
-    "extensions": ["wmv"]
-  },
-  "video/x-ms-wmx": {
-    "source": "apache",
-    "extensions": ["wmx"]
-  },
-  "video/x-ms-wvx": {
-    "source": "apache",
-    "extensions": ["wvx"]
-  },
-  "video/x-msvideo": {
-    "source": "apache",
-    "extensions": ["avi"]
-  },
-  "video/x-sgi-movie": {
-    "source": "apache",
-    "extensions": ["movie"]
-  },
-  "video/x-smv": {
-    "source": "apache",
-    "extensions": ["smv"]
-  },
-  "x-conference/x-cooltalk": {
-    "source": "apache",
-    "extensions": ["ice"]
-  },
-  "x-shader/x-fragment": {
-    "compressible": true
-  },
-  "x-shader/x-vertex": {
-    "compressible": true
-  }
-}`);
-const EXTRACT_TYPE_REGEXP = /^\s*([^;\s]*)(?:;|\s|$)/;
-const TEXT_TYPE_REGEXP = /^text\//i;
-const extensions = new Map();
-const types = new Map();
-function populateMaps(extensions1, types1) {
-    const preference = [
-        "nginx",
-        "apache",
-        undefined,
-        "iana"
-    ];
-    for (const type of Object.keys(db)){
-        const mime = db[type];
-        const exts = mime.extensions;
-        if (!exts || !exts.length) {
-            continue;
-        }
-        extensions1.set(type, exts);
-        for (const ext of exts){
-            const current = types1.get(ext);
-            if (current) {
-                const from = preference.indexOf(db[current].source);
-                const to3 = preference.indexOf(mime.source);
-                if (current !== "application/octet-stream" && (from > to3 || from === to3 && current.substr(0, 12) === "application/")) {
-                    continue;
-                }
-            }
-            types1.set(ext, type);
-        }
-    }
-}
-populateMaps(extensions, types);
-function charset(type) {
-    const m1 = EXTRACT_TYPE_REGEXP.exec(type);
-    if (!m1) {
-        return undefined;
-    }
-    const [match] = m1;
-    const mime = db[match.toLowerCase()];
-    if (mime && mime.charset) {
-        return mime.charset;
-    }
-    if (TEXT_TYPE_REGEXP.test(match)) {
-        return "UTF-8";
-    }
-    return undefined;
-}
-function lookup(path25) {
-    const extension1 = extname2("x." + path25).toLowerCase().substr(1);
-    return types.get(extension1);
-}
-function contentType(str) {
-    let mime = str.includes("/") ? str : lookup(str);
-    if (!mime) {
-        return undefined;
-    }
-    if (!mime.includes("charset")) {
-        const cs = charset(mime);
-        if (cs) {
-            mime += `; charset=${cs.toLowerCase()}`;
-        }
-    }
-    return mime;
-}
-var t = {
-};
+var t = {};
 Object.defineProperty(t, "__esModule", {
     value: true
 });
 t.VERSION = void 0;
 t.VERSION = "0.0.27";
-var n = {
-};
+var n = {};
 Object.defineProperty(n, "__esModule", {
     value: true
 });
@@ -9882,8 +256,7 @@ const printVersion$1 = ()=>{
     console.log(`%c %c %c %c %c ${e7} %c http://nanojsx.io`, "background: #ff0000", "background: #ffff00", "background: #00ff00", "background: #00ffff", "color: #fff; background: #000000;", "background: none");
 };
 n.printVersion = printVersion$1;
-var s = {
-};
+var s = {};
 Object.defineProperty(s, "__esModule", {
     value: true
 });
@@ -9975,8 +348,7 @@ class HTMLElementSSR {
         while(null !== (n4 = e17.exec(this.innerHTML)))t12.push(n4[0].replace(/[\s]+/gm, " "));
         return t12;
     }
-    addEventListener(e, t, n) {
-    }
+    addEventListener(e, t, n) {}
 }
 s.HTMLElementSSR = HTMLElementSSR;
 class DocumentSSR {
@@ -9993,15 +365,13 @@ class DocumentSSR {
     createTextNode(e19) {
         return (0, o.escapeHtml)(e19);
     }
-    querySelector(e) {
-    }
+    querySelector(e) {}
 }
 s.DocumentSSR = DocumentSSR;
 const documentSSR = ()=>new DocumentSSR
 ;
 s.documentSSR = documentSSR;
-var i = {
-};
+var i = {};
 Object.defineProperty(i, "__esModule", {
     value: true
 });
@@ -10086,8 +456,7 @@ const _render = (e29)=>{
     if (e29 && e29.component && e29.component.isClass) return renderClassComponent(e29);
     if (e29.isClass) return renderClassComponent({
         component: e29,
-        props: {
-        }
+        props: {}
     });
     if (e29.component && "function" === typeof e29.component) return renderFunctionalComponent(e29);
     if (Array.isArray(e29)) return e29.map((e30)=>(0, i._render)(e30)
@@ -10127,8 +496,7 @@ const h$1 = (e35, t22, ...n12)=>{
         const r9 = _nano.customElements.get(e35);
         const s2 = (0, i._render)({
             component: r9,
-            props: Object.assign(Object.assign({
-            }, t22), {
+            props: Object.assign(Object.assign({}, t22), {
                 children: n12
             })
         });
@@ -10146,8 +514,7 @@ const h$1 = (e35, t22, ...n12)=>{
     }
     if ("string" !== typeof e35) return {
         component: e35,
-        props: Object.assign(Object.assign({
-        }, t22), {
+        props: Object.assign(Object.assign({}, t22), {
             children: n12
         })
     };
@@ -10157,25 +524,25 @@ const h$1 = (e35, t22, ...n12)=>{
     ;
     for(const e34 in t22){
         if ("style" === e34 && "object" === typeof t22[e34]) {
-            const n13 = Object.keys(t22[e34]).map((n14)=>`${n14}:${t22[e34][n14]}`
+            const n13 = Object.keys(t22[e34]).map((n16)=>`${n16}:${t22[e34][n16]}`
             ).join(";").replace(/[A-Z]/g, (e39)=>`-${e39.toLowerCase()}`
             );
             t22[e34] = `${n13};`;
         }
         if ("ref" === e34) r10 = t22[e34];
-        else if (isEvent(s3, e34.toLowerCase())) s3.addEventListener(e34.toLowerCase().substring(2), (n15)=>t22[e34](n15)
+        else if (isEvent(s3, e34.toLowerCase())) s3.addEventListener(e34.toLowerCase().substring(2), (n17)=>t22[e34](n17)
         );
         else if ("dangerouslySetInnerHTML" === e34 && t22[e34].__html) if ((0, i.isSSR)()) s3.innerHTML = t22[e34].__html;
         else {
-            const n16 = document.createElement("fragment");
-            n16.innerHTML = t22[e34].__html;
-            s3.appendChild(n16);
+            const n18 = document.createElement("fragment");
+            n18.innerHTML = t22[e34].__html;
+            s3.appendChild(n18);
         }
         else if ("innerHTML" === e34 && t22[e34].__dangerousHtml) if ((0, i.isSSR)()) s3.innerHTML = t22[e34].__dangerousHtml;
         else {
-            const n17 = document.createElement("fragment");
-            n17.innerHTML = t22[e34].__dangerousHtml;
-            s3.appendChild(n17);
+            const n19 = document.createElement("fragment");
+            n19.innerHTML = t22[e34].__dangerousHtml;
+            s3.appendChild(n19);
         }
         else /className/i.test(e34) ? console.warn('You can use "class" instead of "className".') : "undefined" !== typeof t22[e34] && s3.setAttribute(e34, t22[e34]);
     }
@@ -10189,8 +556,7 @@ const h$1 = (e35, t22, ...n12)=>{
     return s3;
 };
 i.h = h$1;
-var c = {
-};
+var c = {};
 Object.defineProperty(c, "__esModule", {
     value: true
 });
@@ -10200,8 +566,7 @@ const _clearState = ()=>{
     c._state.clear();
 };
 c._clearState = _clearState;
-var l = {
-};
+var l = {};
 Object.defineProperty(l, "__esModule", {
     value: true
 });
@@ -10214,8 +579,7 @@ class Component$1 {
         this._elements = [];
         this._skipUnmount = false;
         this._hasUnmounted = false;
-        this.props = e40 || {
-        };
+        this.props = e40 || {};
         this.id = this._getHash();
     }
     static get isClass() {
@@ -10225,9 +589,8 @@ class Component$1 {
         return true;
     }
     setState(e41, t25 = false) {
-        const n18 = "object" === typeof e41 && null !== e41;
-        n18 && void 0 !== this.state ? this.state = Object.assign(Object.assign({
-        }, this.state), e41) : this.state = e41;
+        const n20 = "object" === typeof e41 && null !== e41;
+        n20 && void 0 !== this.state ? this.state = Object.assign(Object.assign({}, this.state), e41) : this.state = e41;
         t25 && this.update();
     }
     set state(e42) {
@@ -10265,23 +628,19 @@ class Component$1 {
             this._hasUnmounted = true;
         }
     }
-    willMount() {
-    }
-    didMount() {
-    }
-    didUnmount() {
-    }
-    render(e) {
-    }
+    willMount() {}
+    didMount() {}
+    didUnmount() {}
+    render(e) {}
     update(e46) {
         this._skipUnmount = true;
         const t26 = [
             ...this.elements
         ];
         this._elements = [];
-        let n19 = this.render(e46);
-        n19 = (0, d._render)(n19);
-        this.elements = n19;
+        let n21 = this.render(e46);
+        n21 = (0, d._render)(n21);
+        this.elements = n21;
         const r11 = t26[0].parentElement;
         r11 || console.warn("Component needs a parent element to get updated!");
         this.elements.forEach((e47)=>{
@@ -10297,12 +656,10 @@ class Component$1 {
             this.elements[0].isConnected || this._didUnmount();
         });
     }
-    _getHash() {
-    }
+    _getHash() {}
 }
 l.Component = Component$1;
-var p = {
-};
+var p = {};
 Object.defineProperty(p, "__esModule", {
     value: true
 });
@@ -10312,37 +669,37 @@ const m = i;
 class Helmet$1 extends f.Component {
     static SSR(e50) {
         const t28 = /(<helmet\b[^>]*>)((.|\n)*?)(<\/helmet>)/gm;
-        const n20 = [];
+        const n22 = [];
         const r12 = [];
         if ("undefined" !== typeof document && document.head) {
             let e49 = [];
             e49 = [].slice.call(document.head.children);
-            for(let t27 = 0; t27 < e49.length; t27++)-1 === n20.indexOf(e49[t27]) && n20.push(e49[t27]);
+            for(let t27 = 0; t27 < e49.length; t27++)-1 === n22.indexOf(e49[t27]) && n22.push(e49[t27]);
         }
         let s4;
         while(null !== (s4 = t28.exec(e50))){
             const e51 = s4[1];
             const t29 = s4[2];
             const o4 = e51.includes('data-placement="head"');
-            o4 && !n20.includes(t29) ? n20.push(t29) : o4 || r12.includes(t29) || r12.push(t29);
+            o4 && !n22.includes(t29) ? n22.push(t29) : o4 || r12.includes(t29) || r12.push(t29);
         }
         const o5 = e50.replace(t28, "");
         return {
             body: o5,
-            head: n20,
+            head: n22,
             footer: r12
         };
     }
     didMount() {
         this.props.children.forEach((e53)=>{
-            var t30, n21, r14, s5;
+            var t30, n23, r14, s5;
             const o6 = this.props.footer ? document.body : document.head;
             const i1 = e53.tagName;
             let a1 = [];
             a1.push(e53.innerText);
             for(let r13 = 0; r13 < e53.attributes.length; r13++){
                 a1.push(null === (t30 = e53.attributes.item(r13)) || void 0 === t30 ? void 0 : t30.name.toLowerCase());
-                a1.push(null === (n21 = e53.attributes.item(r13)) || void 0 === n21 ? void 0 : n21.value.toLowerCase());
+                a1.push(null === (n23 = e53.attributes.item(r13)) || void 0 === n23 ? void 0 : n23.value.toLowerCase());
             }
             if ("HTML" === i1 || "BODY" === i1) {
                 const e54 = document.getElementsByTagName(i1)[0];
@@ -10352,8 +709,8 @@ class Helmet$1 extends f.Component {
             if ("TITLE" === i1) {
                 const t32 = document.getElementsByTagName("TITLE");
                 if (t32.length > 0) {
-                    const n22 = e53;
-                    t32[0].text = n22.text;
+                    const n24 = e53;
+                    t32[0].text = n24.text;
                 } else {
                     const t33 = (0, m.h)("title", null, e53.innerHTML);
                     (0, m.appendChildren)(o6, [
@@ -10368,9 +725,9 @@ class Helmet$1 extends f.Component {
             for(let e52 = 0; e52 < l1.length; e52++){
                 let t34 = [];
                 t34.push(l1[e52].innerText);
-                for(let n23 = 0; n23 < l1[e52].attributes.length; n23++){
-                    t34.push(null === (r14 = l1[e52].attributes.item(n23)) || void 0 === r14 ? void 0 : r14.name.toLowerCase());
-                    t34.push(null === (s5 = l1[e52].attributes.item(n23)) || void 0 === s5 ? void 0 : s5.value.toLowerCase());
+                for(let n25 = 0; n25 < l1[e52].attributes.length; n25++){
+                    t34.push(null === (r14 = l1[e52].attributes.item(n25)) || void 0 === r14 ? void 0 : r14.name.toLowerCase());
+                    t34.push(null === (s5 = l1[e52].attributes.item(n25)) || void 0 === s5 ? void 0 : s5.value.toLowerCase());
                 }
                 t34 = t34.sort();
                 a1.length > 0 && t34.length > 0 && JSON.stringify(a1) === JSON.stringify(t34) && (c1 = true);
@@ -10389,17 +746,15 @@ class Helmet$1 extends f.Component {
     }
 }
 p.Helmet = Helmet$1;
-var g = {
-};
+var g = {};
 var b = g && g.__rest || function(e56, t35) {
-    var n24 = {
-    };
-    for(var r15 in e56)Object.prototype.hasOwnProperty.call(e56, r15) && t35.indexOf(r15) < 0 && (n24[r15] = e56[r15]);
+    var n26 = {};
+    for(var r15 in e56)Object.prototype.hasOwnProperty.call(e56, r15) && t35.indexOf(r15) < 0 && (n26[r15] = e56[r15]);
     if (null != e56 && "function" === typeof Object.getOwnPropertySymbols) {
         var s6 = 0;
-        for(r15 = Object.getOwnPropertySymbols(e56); s6 < r15.length; s6++)t35.indexOf(r15[s6]) < 0 && Object.prototype.propertyIsEnumerable.call(e56, r15[s6]) && (n24[r15[s6]] = e56[r15[s6]]);
+        for(r15 = Object.getOwnPropertySymbols(e56); s6 < r15.length; s6++)t35.indexOf(r15[s6]) < 0 && Object.prototype.propertyIsEnumerable.call(e56, r15[s6]) && (n26[r15[s6]] = e56[r15[s6]]);
     }
-    return n24;
+    return n26;
 };
 Object.defineProperty(g, "__esModule", {
     value: true
@@ -10410,9 +765,9 @@ const v = i;
 class Img$1 extends y.Component {
     constructor(e57){
         super(e57);
-        const { src: t36 , key: n25  } = e57;
+        const { src: t36 , key: n27  } = e57;
         this.id = `${(0, v.strToHash)(t36)}-${(0, v.strToHash)(JSON.stringify(e57))}`;
-        n25 && (this.id += `key-${n25}`);
+        n27 && (this.id += `key-${n27}`);
         this.state || this.setState({
             isLoaded: false,
             image: void 0
@@ -10431,8 +786,7 @@ class Img$1 extends y.Component {
             e59.forEach((e60)=>{
                 if (e60.isIntersecting) {
                     t38.disconnect();
-                    this.state.image = (0, v.h)("img", Object.assign({
-                    }, i2));
+                    this.state.image = (0, v.h)("img", Object.assign({}, i2));
                     if (this.state.image.complete) {
                         this.state.isLoaded = true;
                         this.update();
@@ -10451,7 +805,7 @@ class Img$1 extends y.Component {
         a2.observe(this.elements[0]);
     }
     render() {
-        const e61 = this.props, { src: t39 , placeholder: n26 , children: r , lazy: s7 = true , key: o , ref: i  } = e61, a3 = b(e61, [
+        const e61 = this.props, { src: t39 , placeholder: n28 , children: r , lazy: s7 = true , key: o , ref: i  } = e61, a3 = b(e61, [
             "src",
             "placeholder",
             "children",
@@ -10466,13 +820,12 @@ class Img$1 extends y.Component {
             return this.state.image;
         }
         if (this.state.isLoaded) return this.state.image;
-        if (n26 && "string" === typeof n26) return (0, v.h)("img", Object.assign({
-            src: n26
+        if (n28 && "string" === typeof n28) return (0, v.h)("img", Object.assign({
+            src: n28
         }, a3));
-        if (n26 && "function" === typeof n26) return n26();
+        if (n28 && "function" === typeof n28) return n28();
         {
-            const e62 = {
-            };
+            const e62 = {};
             a3.width && (e62.width = `${a3.width}px`);
             a3.height && (e62.height = `${a3.height}px`);
             const { width: t , height: n  } = a3, r16 = b(a3, [
@@ -10486,8 +839,7 @@ class Img$1 extends y.Component {
     }
 }
 g.Img = Img$1;
-var _ = {
-};
+var _ = {};
 Object.defineProperty(_, "__esModule", {
     value: true
 });
@@ -10495,17 +847,15 @@ _.Fragment = void 0;
 const Fragment$1 = (e63)=>e63.children
 ;
 _.Fragment = Fragment$1;
-var S = {
-};
+var S = {};
 var O = S && S.__rest || function(e64, t40) {
-    var n27 = {
-    };
-    for(var r17 in e64)Object.prototype.hasOwnProperty.call(e64, r17) && t40.indexOf(r17) < 0 && (n27[r17] = e64[r17]);
+    var n29 = {};
+    for(var r17 in e64)Object.prototype.hasOwnProperty.call(e64, r17) && t40.indexOf(r17) < 0 && (n29[r17] = e64[r17]);
     if (null != e64 && "function" === typeof Object.getOwnPropertySymbols) {
         var s8 = 0;
-        for(r17 = Object.getOwnPropertySymbols(e64); s8 < r17.length; s8++)t40.indexOf(r17[s8]) < 0 && Object.prototype.propertyIsEnumerable.call(e64, r17[s8]) && (n27[r17[s8]] = e64[r17[s8]]);
+        for(r17 = Object.getOwnPropertySymbols(e64); s8 < r17.length; s8++)t40.indexOf(r17[s8]) < 0 && Object.prototype.propertyIsEnumerable.call(e64, r17[s8]) && (n29[r17[s8]] = e64[r17[s8]]);
     }
-    return n27;
+    return n29;
 };
 Object.defineProperty(S, "__esModule", {
     value: true
@@ -10541,7 +891,7 @@ class Link$2 extends j.Component {
     addPrefetch() {
         let e68 = false;
         const t42 = document.getElementsByTagName("link");
-        for(let n28 = 0; n28 < t42.length; n28++)"prefetch" === t42[n28].getAttribute("rel") && t42[n28].getAttribute("href") === this.props.href && (e68 = true);
+        for(let n30 = 0; n30 < t42.length; n30++)"prefetch" === t42[n30].getAttribute("rel") && t42[n30].getAttribute("href") === this.props.href && (e68 = true);
         if (!e68) {
             const e69 = (0, C.h)("link", {
                 rel: "prefetch",
@@ -10552,21 +902,21 @@ class Link$2 extends j.Component {
         }
     }
     didMount() {
-        const { href: e70 , prefetch: t43 , delay: n29 = 0 , back: r18 = false  } = this.props;
+        const { href: e70 , prefetch: t43 , delay: n31 = 0 , back: r18 = false  } = this.props;
         r18 && this.elements[0].addEventListener("click", (e71)=>{
             e71.preventDefault();
             const t44 = e71.target;
             t44.href === document.referrer ? window.history.back() : window.location.href = t44.href;
         });
-        n29 > 0 && this.elements[0].addEventListener("click", (t45)=>{
+        n31 > 0 && this.elements[0].addEventListener("click", (t45)=>{
             t45.preventDefault();
             setTimeout(()=>window.location.href = e70
-            , n29);
+            , n31);
         });
         t43 && ("hover" === t43 ? this.prefetchOnHover() : "visible" === t43 ? this.prefetchOnVisible() : this.addPrefetch());
     }
     render() {
-        const e72 = this.props, { children: t46 , prefetch: n30 , back: r , ref: s  } = e72, o7 = O(e72, [
+        const e72 = this.props, { children: t46 , prefetch: n32 , back: r , ref: s  } = e72, o7 = O(e72, [
             "children",
             "prefetch",
             "back",
@@ -10574,9 +924,8 @@ class Link$2 extends j.Component {
         ]);
         this.props.href || console.warn('Please add "href" to <Link>');
         1 !== t46.length && console.warn("Please add ONE child to <Link> (<Link>child</Link>)");
-        const i3 = (0, C.h)("a", Object.assign({
-        }, o7), ...t46);
-        if (true !== n30 || "undefined" !== typeof window && window.document) return i3;
+        const i3 = (0, C.h)("a", Object.assign({}, o7), ...t46);
+        if (true !== n32 || "undefined" !== typeof window && window.document) return i3;
         {
             const e73 = (0, C.h)("link", {
                 rel: "prefetch",
@@ -10592,17 +941,15 @@ class Link$2 extends j.Component {
     }
 }
 S.Link = Link$2;
-var P = {
-};
+var P = {};
 var E = P && P.__rest || function(e74, t48) {
-    var n31 = {
-    };
-    for(var r19 in e74)Object.prototype.hasOwnProperty.call(e74, r19) && t48.indexOf(r19) < 0 && (n31[r19] = e74[r19]);
+    var n33 = {};
+    for(var r19 in e74)Object.prototype.hasOwnProperty.call(e74, r19) && t48.indexOf(r19) < 0 && (n33[r19] = e74[r19]);
     if (null != e74 && "function" === typeof Object.getOwnPropertySymbols) {
         var s9 = 0;
-        for(r19 = Object.getOwnPropertySymbols(e74); s9 < r19.length; s9++)t48.indexOf(r19[s9]) < 0 && Object.prototype.propertyIsEnumerable.call(e74, r19[s9]) && (n31[r19[s9]] = e74[r19[s9]]);
+        for(r19 = Object.getOwnPropertySymbols(e74); s9 < r19.length; s9++)t48.indexOf(r19[s9]) < 0 && Object.prototype.propertyIsEnumerable.call(e74, r19[s9]) && (n33[r19[s9]] = e74[r19[s9]]);
     }
-    return n31;
+    return n33;
 };
 Object.defineProperty(P, "__esModule", {
     value: true
@@ -10616,21 +963,19 @@ const register = (e75)=>L.push(e75)
 const unregister = (e76)=>L.splice(L.indexOf(e76), 1)
 ;
 const historyPush = (e77)=>{
-    window.history.pushState({
-    }, "", e77);
+    window.history.pushState({}, "", e77);
     L.forEach((e78)=>e78.handleChanges()
     );
     window.dispatchEvent(new Event("pushstate"));
 };
 const historyReplace = (e79)=>{
-    window.history.replaceState({
-    }, "", e79);
+    window.history.replaceState({}, "", e79);
     L.forEach((e80)=>e80.handleChanges()
     );
     window.dispatchEvent(new Event("replacestate"));
 };
 const matchPath = (e81, t49)=>{
-    const { exact: n33 = false , regex: r20  } = t49;
+    const { exact: n35 = false , regex: r20  } = t49;
     let { path: s10  } = t49;
     if (!s10) return {
         path: null,
@@ -10638,24 +983,22 @@ const matchPath = (e81, t49)=>{
         isExact: true
     };
     let o8;
-    let i4 = {
-    };
+    let i4 = {};
     if (s10.includes("/:")) {
         const t50 = s10.split("/");
-        const n32 = e81.split("/");
+        const n34 = e81.split("/");
         t50.forEach((e82, s)=>{
             if (/^:/.test(e82)) {
                 const o9 = e82.slice(1);
-                const a5 = n32[s];
+                const a5 = n34[s];
                 if (r20 && r20[o9]) {
                     const e83 = r20[o9].test(a5);
                     if (!e83) return null;
                 }
-                i4 = Object.assign(Object.assign({
-                }, i4), {
+                i4 = Object.assign(Object.assign({}, i4), {
                     [o9]: a5
                 });
-                t50[s] = n32[s];
+                t50[s] = n34[s];
             }
         });
         s10 = t50.join("/");
@@ -10667,7 +1010,7 @@ const matchPath = (e81, t49)=>{
     if (!o8) return null;
     const a4 = o8[0];
     const c2 = e81 === a4;
-    return n33 && !c2 ? null : {
+    return n35 && !c2 ? null : {
         path: s10,
         url: a4,
         isExact: c2,
@@ -10704,15 +1047,15 @@ class Switch extends M.Component {
         };
         for(let e84 = 0; e84 < this.props.children.length; e84++){
             const t51 = this.props.children[e84];
-            const { path: n34 , exact: r21 , regex: s11  } = t51.props;
+            const { path: n36 , exact: r21 , regex: s11  } = t51.props;
             const o10 = (0, P.matchPath)((0, R.isSSR)() ? _nano.location.pathname : window.location.pathname, {
-                path: n34,
+                path: n36,
                 exact: r21,
                 regex: s11
             });
             if (o10) {
                 this.match.index = e84;
-                this.match.path = n34;
+                this.match.path = n36;
                 return;
             }
         }
@@ -10731,30 +1074,26 @@ class Switch extends M.Component {
             const { path: t52  } = e85.props;
             this.path = t52;
             this.index = this.match.index;
-            const n35 = (0, R._render)(e85);
-            return (0, R.h)("div", {
-            }, (0, R._render)(n35));
+            const n37 = (0, R._render)(e85);
+            return (0, R.h)("div", {}, (0, R._render)(n37));
         }
-        return this.props.fallback ? (0, R.h)("div", {
-        }, (0, R._render)(this.props.fallback)) : (0, R.h)("div", {
-        }, "not found");
+        return this.props.fallback ? (0, R.h)("div", {}, (0, R._render)(this.props.fallback)) : (0, R.h)("div", {}, "not found");
     }
 }
 P.Switch = Switch;
 class Routes extends Switch {
 }
 P.Routes = Routes;
-const Route = ({ path: e86 , regex: t53 , children: n36  })=>{
-    n36.forEach((n37)=>{
-        n37.props && (n37.props = Object.assign(Object.assign({
-        }, n37.props), {
+const Route = ({ path: e86 , regex: t53 , children: n38  })=>{
+    n38.forEach((n39)=>{
+        n39.props && (n39.props = Object.assign(Object.assign({}, n39.props), {
             route: {
                 path: e86,
                 regex: t53
             }
         }));
     });
-    return n36;
+    return n38;
 };
 P.Route = Route;
 const to = (e87, t54 = false)=>{
@@ -10762,14 +1101,14 @@ const to = (e87, t54 = false)=>{
 };
 P.to = to;
 const Link$1 = (e88)=>{
-    var { to: t55 , replace: n38 , children: r22  } = e88, s12 = E(e88, [
+    var { to: t55 , replace: n40 , children: r22  } = e88, s12 = E(e88, [
         "to",
         "replace",
         "children"
     ]);
     const handleClick = (e89)=>{
         e89.preventDefault();
-        n38 ? historyReplace(t55) : historyPush(t55);
+        n40 ? historyReplace(t55) : historyPush(t55);
     };
     return (0, R.h)("a", Object.assign({
         href: t55,
@@ -10810,15 +1149,14 @@ const Listener = ()=>{
     return k;
 };
 P.Listener = Listener;
-var T = {
-};
-var N = T && T.__awaiter || function(e93, t58, n39, r23) {
+var T = {};
+var N = T && T.__awaiter || function(e93, t58, n41, r23) {
     function adopt(e94) {
-        return e94 instanceof n39 ? e94 : new n39(function(t59) {
+        return e94 instanceof n41 ? e94 : new n41(function(t59) {
             t59(e94);
         });
     }
-    return new (n39 || (n39 = Promise))(function(n40, s13) {
+    return new (n41 || (n41 = Promise))(function(n42, s13) {
         function fulfilled(e95) {
             try {
                 step(r23.next(e95));
@@ -10834,20 +1172,19 @@ var N = T && T.__awaiter || function(e93, t58, n39, r23) {
             }
         }
         function step(e99) {
-            e99.done ? n40(e99.value) : adopt(e99.value).then(fulfilled, rejected);
+            e99.done ? n42(e99.value) : adopt(e99.value).then(fulfilled, rejected);
         }
         step((r23 = r23.apply(e93, t58 || [])).next());
     });
 };
 var I = T && T.__rest || function(e100, t60) {
-    var n41 = {
-    };
-    for(var r24 in e100)Object.prototype.hasOwnProperty.call(e100, r24) && t60.indexOf(r24) < 0 && (n41[r24] = e100[r24]);
+    var n43 = {};
+    for(var r24 in e100)Object.prototype.hasOwnProperty.call(e100, r24) && t60.indexOf(r24) < 0 && (n43[r24] = e100[r24]);
     if (null != e100 && "function" === typeof Object.getOwnPropertySymbols) {
         var s14 = 0;
-        for(r24 = Object.getOwnPropertySymbols(e100); s14 < r24.length; s14++)t60.indexOf(r24[s14]) < 0 && Object.prototype.propertyIsEnumerable.call(e100, r24[s14]) && (n41[r24[s14]] = e100[r24[s14]]);
+        for(r24 = Object.getOwnPropertySymbols(e100); s14 < r24.length; s14++)t60.indexOf(r24[s14]) < 0 && Object.prototype.propertyIsEnumerable.call(e100, r24[s14]) && (n43[r24[s14]] = e100[r24[s14]]);
     }
-    return n41;
+    return n43;
 };
 Object.defineProperty(T, "__esModule", {
     value: true
@@ -10876,8 +1213,7 @@ class Suspense$1 extends H.Component {
                 "fallback",
                 "cache"
             ]);
-            r25 && (this.initState = {
-            });
+            r25 && (this.initState = {});
             if (this.loadFromCache(r25)) return;
             const o12 = Object.values(s15).map((e103)=>e103()
             );
@@ -10907,24 +1243,20 @@ class Suspense$1 extends H.Component {
         }
         return t63;
     }
-    prepareData(e107, t64, n42) {
+    prepareData(e107, t64, n44) {
         const r26 = Object.keys(e107).reduce((e108, r27, s)=>{
-            n42 && (this.state = Object.assign(Object.assign({
-            }, this.state), {
+            n44 && (this.state = Object.assign(Object.assign({}, this.state), {
                 [r27]: t64[s]
             }));
-            return Object.assign(Object.assign({
-            }, e108), {
+            return Object.assign(Object.assign({}, e108), {
                 [r27]: t64[s]
             });
-        }, {
-        });
+        }, {});
         return r26;
     }
     addDataToChildren(e109) {
         this.props.children.forEach((t65)=>{
-            t65.props && (t65.props = Object.assign(Object.assign({
-            }, t65.props), e109));
+            t65.props && (t65.props = Object.assign(Object.assign({}, t65.props), e109));
         });
     }
     render() {
@@ -10940,8 +1272,7 @@ class Suspense$1 extends H.Component {
     }
 }
 T.Suspense = Suspense$1;
-var A = {
-};
+var A = {};
 Object.defineProperty(A, "__esModule", {
     value: true
 });
@@ -10982,19 +1313,18 @@ class Visible$1 extends D.Component {
     }
 }
 A.Visible = Visible$1;
-var z = {
-};
-var U = z && z.__createBinding || (Object.create ? function(e114, t67, n43, r28) {
-    void 0 === r28 && (r28 = n43);
+var z = {};
+var U = z && z.__createBinding || (Object.create ? function(e114, t67, n45, r28) {
+    void 0 === r28 && (r28 = n45);
     Object.defineProperty(e114, r28, {
         enumerable: true,
         get: function() {
-            return t67[n43];
+            return t67[n45];
         }
     });
-} : function(e115, t68, n44, r29) {
-    void 0 === r29 && (r29 = n44);
-    e115[r29] = t68[n44];
+} : function(e115, t68, n46, r29) {
+    void 0 === r29 && (r29 = n46);
+    e115[r29] = t68[n46];
 });
 var F = z && z.__setModuleDefault || (Object.create ? function(e116, t69) {
     Object.defineProperty(e116, "default", {
@@ -11006,9 +1336,8 @@ var F = z && z.__setModuleDefault || (Object.create ? function(e116, t69) {
 });
 var B = z && z.__importStar || function(e118) {
     if (e118 && e118.__esModule) return e118;
-    var t71 = {
-    };
-    if (null != e118) for(var n45 in e118)"default" !== n45 && Object.prototype.hasOwnProperty.call(e118, n45) && U(t71, e118, n45);
+    var t71 = {};
+    if (null != e118) for(var n47 in e118)"default" !== n47 && Object.prototype.hasOwnProperty.call(e118, n47) && U(t71, e118, n47);
     F(t71, e118);
     return t71;
 };
@@ -11052,8 +1381,7 @@ Object.defineProperty(z, "Visible", {
         return Y.Visible;
     }
 });
-var X = {
-};
+var X = {};
 Object.defineProperty(X, "__esModule", {
     value: true
 });
@@ -11067,11 +1395,11 @@ const initGlobalVar = ()=>{
     const t72 = {
         pathname: "/"
     };
-    const n46 = e119 ? (0, K.documentSSR)() : window.document;
+    const n48 = e119 ? (0, K.documentSSR)() : window.document;
     globalThis._nano = {
         isSSR: e119,
         location: t72,
-        document: n46,
+        document: n48,
         customElements: new Map
     };
 };
@@ -11083,10 +1411,9 @@ const initSSR = (e120 = "/")=>{
     globalThis.document = _nano.document = (0, G.isSSR)() ? (0, K.documentSSR)() : window.document;
 };
 X.initSSR = initSSR;
-const renderSSR$1 = (e121, t73 = {
-})=>{
-    const { pathname: n47 , clearState: r30 = true  } = t73;
-    (0, X.initSSR)(n47);
+const renderSSR$1 = (e121, t73 = {})=>{
+    const { pathname: n49 , clearState: r30 = true  } = t73;
+    (0, X.initSSR)(n49);
     r30 && Q._state.clear();
     return (0, G.render)(e121, null, true).join("");
 };
@@ -11095,15 +1422,13 @@ const clearState = ()=>{
     Q._state.clear();
 };
 X.clearState = clearState;
-var te = {
-};
+var te = {};
 Object.defineProperty(te, "__esModule", {
     value: true
 });
 te.MINI = void 0;
 te.MINI = false;
-var ne = {
-};
+var ne = {};
 Object.defineProperty(ne, "__esModule", {
     value: true
 });
@@ -11119,14 +1444,14 @@ const ue = 6;
 const de = 0;
 const treeify = (e122, t74)=>{
     const _treeify = (e123)=>{
-        let n49 = "";
+        let n51 = "";
         let r31 = null;
         const s17 = [];
         const o14 = [];
         for(let i8 = 1; i8 < e123.length; i8++){
             const a7 = e123[i8++];
             const c3 = e123[i8] ? t74[e123[i8++] - 1] : e123[++i8];
-            if (a7 === 3) n49 = c3;
+            if (a7 === 3) n51 = c3;
             else if (a7 === 4) {
                 s17.push(c3);
                 r31 = null;
@@ -11141,29 +1466,27 @@ const treeify = (e122, t74)=>{
             } else a7 === 6 ? r31[e123[++i8]].push(c3) : a7 === 2 ? o14.push(_treeify(c3)) : a7 === 0 && o14.push(c3);
         }
         return {
-            tag: n49,
+            tag: n51,
             props: s17,
             children: o14
         };
     };
-    const { children: n48  } = _treeify(e122);
-    return n48.length > 1 ? n48 : n48[0];
+    const { children: n50  } = _treeify(e122);
+    return n50.length > 1 ? n50 : n50[0];
 };
 ne.treeify = treeify;
-const evaluate = (e124, t75, n50, r32)=>{
+const evaluate = (e124, t75, n52, r32)=>{
     let s18;
     t75[0] = 0;
     for(let o15 = 1; o15 < t75.length; o15++){
         const i9 = t75[o15++];
-        const a8 = t75[o15] ? (t75[0] |= i9 ? 1 : 2, n50[t75[o15++]]) : t75[++o15];
+        const a8 = t75[o15] ? (t75[0] |= i9 ? 1 : 2, n52[t75[o15++]]) : t75[++o15];
         if (i9 === 3) r32[0] = a8;
-        else if (i9 === 4) r32[1] = Object.assign(r32[1] || {
-        }, a8);
-        else if (i9 === 5) (r32[1] = r32[1] || {
-        })[t75[++o15]] = a8;
+        else if (i9 === 4) r32[1] = Object.assign(r32[1] || {}, a8);
+        else if (i9 === 5) (r32[1] = r32[1] || {})[t75[++o15]] = a8;
         else if (i9 === 6) r32[1][t75[++o15]] += `${a8}`;
         else if (i9) {
-            s18 = e124.apply(a8, (0, ne.evaluate)(e124, a8, n50, [
+            s18 = e124.apply(a8, (0, ne.evaluate)(e124, a8, n52, [
                 "",
                 null
             ]));
@@ -11179,7 +1502,7 @@ const evaluate = (e124, t75, n50, r32)=>{
 };
 ne.evaluate = evaluate;
 const build = function(e125, ...t77) {
-    const n51 = [
+    const n53 = [
         e125,
         ...t77
     ];
@@ -11193,19 +1516,16 @@ const build = function(e125, ...t77) {
     let c4;
     let l2;
     const commit = (e126)=>{
-        if (s19 === 1 && (e126 || (o16 = o16.replace(/^\s*\n\s*|\s*\n\s*$/g, "")))) re.MINI ? a9.push(e126 ? n51[e126] : o16) : a9.push(0, e126, o16);
+        if (s19 === 1 && (e126 || (o16 = o16.replace(/^\s*\n\s*|\s*\n\s*$/g, "")))) re.MINI ? a9.push(e126 ? n53[e126] : o16) : a9.push(0, e126, o16);
         else if (s19 === 3 && (e126 || o16)) {
-            re.MINI ? a9[1] = e126 ? n51[e126] : o16 : a9.push(3, e126, o16);
+            re.MINI ? a9[1] = e126 ? n53[e126] : o16 : a9.push(3, e126, o16);
             s19 = ie;
-        } else if (s19 === 2 && "..." === o16 && e126) re.MINI ? a9[2] = Object.assign(a9[2] || {
-        }, n51[e126]) : a9.push(4, e126, 0);
-        else if (s19 === 2 && o16 && !e126) re.MINI ? (a9[2] = a9[2] || {
-        })[o16] = true : a9.push(5, 0, true, o16);
+        } else if (s19 === 2 && "..." === o16 && e126) re.MINI ? a9[2] = Object.assign(a9[2] || {}, n53[e126]) : a9.push(4, e126, 0);
+        else if (s19 === 2 && o16 && !e126) re.MINI ? (a9[2] = a9[2] || {})[o16] = true : a9.push(5, 0, true, o16);
         else if (s19 >= 5) if (re.MINI) if (s19 === 5) {
-            (a9[2] = a9[2] || {
-            })[l2] = e126 ? o16 ? o16 + n51[e126] : n51[e126] : o16;
+            (a9[2] = a9[2] || {})[l2] = e126 ? o16 ? o16 + n53[e126] : n53[e126] : o16;
             s19 = ue;
-        } else (e126 || o16) && (a9[2][l2] += e126 ? o16 + n51[e126] : o16);
+        } else (e126 || o16) && (a9[2][l2] += e126 ? o16 + n53[e126] : o16);
         else {
             if (o16 || !e126 && s19 === 5) {
                 a9.push(s19, 0, o16, l2);
@@ -11223,8 +1543,8 @@ const build = function(e125, ...t77) {
             s19 === 1 && commit();
             commit(t76);
         }
-        for(let n52 = 0; n52 < e125[t76].length; n52++){
-            c4 = e125[t76][n52];
+        for(let n54 = 0; n54 < e125[t76].length; n54++){
+            c4 = e125[t76][n54];
             if (s19 === 1) if ("<" === c4) {
                 commit();
                 a9 = re.MINI ? [
@@ -11249,7 +1569,7 @@ const build = function(e125, ...t77) {
                 s19 = le;
                 l2 = o16;
                 o16 = "";
-            } else if ("/" === c4 && (s19 < 5 || ">" === e125[t76][n52 + 1])) {
+            } else if ("/" === c4 && (s19 < 5 || ">" === e125[t76][n54 + 1])) {
                 commit();
                 s19 === 3 && (a9 = a9[0]);
                 s19 = a9;
@@ -11270,8 +1590,7 @@ const build = function(e125, ...t77) {
     return re.MINI ? a9.length > 2 ? a9.slice(1) : a9[1] : a9;
 };
 ne.build = build;
-var be = {
-};
+var be = {};
 Object.defineProperty(be, "__esModule", {
     value: true
 });
@@ -11288,8 +1607,7 @@ const regular = function(e127) {
     return t78.length > 1 ? t78 : t78[0];
 };
 be.default = ye.MINI ? ve.build : regular;
-var Se = {
-};
+var Se = {};
 var Oe = Se && Se.__importDefault || function(e128) {
     return e128 && e128.__esModule ? e128 : {
         default: e128
@@ -11300,8 +1618,7 @@ Object.defineProperty(Se, "__esModule", {
 });
 const je = Oe(be);
 Se.default = je.default;
-var we = {
-};
+var we = {};
 var Ce = we && we.__importDefault || function(e129) {
     return e129 && e129.__esModule ? e129 : {
         default: e129
@@ -11315,35 +1632,33 @@ const xe = i;
 const Pe = Ce(Se);
 const Ee = Pe.default.bind(xe.h);
 we.jsx = Ee;
-var Me = {
-};
+var Me = {};
 Object.defineProperty(Me, "__esModule", {
     value: true
 });
 Me.hydrateLazy = void 0;
 const Re = i;
 const Le = A;
-const hydrateLazy$1 = (e130, t79 = null, n53 = true)=>{
+const hydrateLazy$1 = (e130, t79 = null, n55 = true)=>{
     const r34 = (0, Re.h)(Le.Visible, null, e130);
-    return (0, Re.hydrate)(r34, t79, n53);
+    return (0, Re.hydrate)(r34, t79, n55);
 };
 Me.hydrateLazy = hydrateLazy$1;
-var ke = {
-};
+var ke = {};
 Object.defineProperty(ke, "__esModule", {
     value: true
 });
 ke.Store = void 0;
 const Te = i;
 class Store$1 {
-    constructor(e131, t80 = "", n54 = "memory"){
+    constructor(e131, t80 = "", n56 = "memory"){
         this._listeners = new Map;
-        (0, Te.isSSR)() && (n54 = "memory");
+        (0, Te.isSSR)() && (n56 = "memory");
         this._id = t80;
-        this._storage = n54;
+        this._storage = n56;
         this._state = this._prevState = e131;
-        if ("memory" === n54 || !n54) return;
-        const r35 = "local" === n54 ? localStorage : sessionStorage;
+        if ("memory" === n56 || !n56) return;
+        const r35 = "local" === n56 ? localStorage : sessionStorage;
         const s20 = r35.getItem(this._id);
         s20 ? this._state = this._prevState = JSON.parse(s20) : r35.setItem(this._id, JSON.stringify(e131));
     }
@@ -11390,8 +1705,7 @@ class Store$1 {
     }
 }
 ke.Store = Store$1;
-var Ne = {
-};
+var Ne = {};
 Object.defineProperty(Ne, "__esModule", {
     value: true
 });
@@ -11405,8 +1719,7 @@ const createContext$1 = (e138)=>{
         },
         Consumer: (e140)=>({
                 component: e140.children[0](t84),
-                props: Object.assign(Object.assign({
-                }, e140), {
+                props: Object.assign(Object.assign({}, e140), {
                     context: t84
                 })
             })
@@ -11422,17 +1735,15 @@ const useContext$1 = (e142)=>{
     if (t85 && "function" === typeof t85.get) return t85.get();
 };
 Ne.useContext = useContext$1;
-var Ie = {
-};
+var Ie = {};
 var He = Ie && Ie.__rest || function(e143, t86) {
-    var n55 = {
-    };
-    for(var r36 in e143)Object.prototype.hasOwnProperty.call(e143, r36) && t86.indexOf(r36) < 0 && (n55[r36] = e143[r36]);
+    var n57 = {};
+    for(var r36 in e143)Object.prototype.hasOwnProperty.call(e143, r36) && t86.indexOf(r36) < 0 && (n57[r36] = e143[r36]);
     if (null != e143 && "function" === typeof Object.getOwnPropertySymbols) {
         var s21 = 0;
-        for(r36 = Object.getOwnPropertySymbols(e143); s21 < r36.length; s21++)t86.indexOf(r36[s21]) < 0 && Object.prototype.propertyIsEnumerable.call(e143, r36[s21]) && (n55[r36[s21]] = e143[r36[s21]]);
+        for(r36 = Object.getOwnPropertySymbols(e143); s21 < r36.length; s21++)t86.indexOf(r36[s21]) < 0 && Object.prototype.propertyIsEnumerable.call(e143, r36[s21]) && (n57[r36[s21]] = e143[r36[s21]]);
     }
-    return n55;
+    return n57;
 };
 Object.defineProperty(Ie, "__esModule", {
     value: true
@@ -11445,7 +1756,7 @@ const De = p;
 const withStyles$1 = (...e144)=>(t87)=>{
         class _class extends Ae.Component {
             render() {
-                const n56 = this.props, { children: r37  } = n56, s22 = He(n56, [
+                const n58 = this.props, { children: r37  } = n58, s22 = He(n58, [
                     "children"
                 ]);
                 const o17 = [];
@@ -11456,13 +1767,11 @@ const withStyles$1 = (...e144)=>(t87)=>{
                         const t88 = e145();
                         "string" === typeof t88 && o17.push((0, $e.h)(De.Helmet, null, (0, $e.h)("style", null, t88)));
                     } else if ("object" === typeof e145) {
-                        const n57 = null === (t89 = e145.toString) || void 0 === t89 ? void 0 : t89.call(e145);
-                        "string" === typeof n57 && o17.push((0, $e.h)(De.Helmet, null, (0, $e.h)("style", null, n57)));
+                        const n59 = null === (t89 = e145.toString) || void 0 === t89 ? void 0 : t89.call(e145);
+                        "string" === typeof n59 && o17.push((0, $e.h)(De.Helmet, null, (0, $e.h)("style", null, n59)));
                     }
                 });
-                const i11 = r37 && r37.length > 0 ? (0, $e.h)(t87, Object.assign({
-                }, s22), r37) : (0, $e.h)(t87, Object.assign({
-                }, this.props));
+                const i11 = r37 && r37.length > 0 ? (0, $e.h)(t87, Object.assign({}, s22), r37) : (0, $e.h)(t87, Object.assign({}, this.props));
                 return (0, $e.h)(Ve.Fragment, null, ...o17, i11);
             }
         }
@@ -11470,50 +1779,45 @@ const withStyles$1 = (...e144)=>(t87)=>{
     }
 ;
 Ie.withStyles = withStyles$1;
-var ze = {
-};
+var ze = {};
 Object.defineProperty(ze, "__esModule", {
     value: true
 });
 ze.defineAsCustomElements = void 0;
 const Ue = i;
-const defineAsCustomElementsSSR = (e146, t90, n = [], r = {
-})=>{
+const defineAsCustomElementsSSR = (e146, t90, n = [], r = {})=>{
     /^[a-zA-Z0-9]+-[a-zA-Z0-9]+$/.test(t90) ? _nano.customElements.set(t90, e146) : console.log(`Error: WebComponent name "${t90}" is invalid.`);
 };
-const defineAsCustomElements$1 = function(e147, t91, n58, { mode: r38 = "closed" , delegatesFocus: s23 = false  } = {
-}) {
-    (0, Ue.isSSR)() ? defineAsCustomElementsSSR(e147, t91, n58) : customElements.define(t91, class extends HTMLElement {
+const defineAsCustomElements$1 = function(e147, t91, n60, { mode: r38 = "closed" , delegatesFocus: s23 = false  } = {}) {
+    (0, Ue.isSSR)() ? defineAsCustomElementsSSR(e147, t91, n60) : customElements.define(t91, class extends HTMLElement {
         constructor(){
             super();
             const t92 = this.attachShadow({
                 mode: r38,
                 delegatesFocus: s23
             });
-            let n59;
+            let n61;
             const o18 = Array.from(this.children).map((e148)=>(0, Ue.render)(e148)
             );
             const i12 = (0, Ue.h)("div", null, (0, Ue._render)({
                 component: e147,
                 props: {
                     children: o18,
-                    ref: (e149)=>n59 = e149
+                    ref: (e149)=>n61 = e149
                 }
             }));
-            this.component = n59;
+            this.component = n61;
             this.isFunctionalComponent = !e147.isClass;
-            this.functionalComponentsProps = {
-            };
+            this.functionalComponentsProps = {};
             t92.append(i12);
             this.isFunctionalComponent || (this.component.updatePropsValue = (e, t93)=>{
-                this.component.props || (this.component.props = {
-                });
+                this.component.props || (this.component.props = {});
                 this.component.props[e] = t93;
                 this.component[e] = t93;
             });
         }
         static get observedAttributes() {
-            return n58;
+            return n60;
         }
         removeChildren() {
             var e151;
@@ -11526,14 +1830,14 @@ const defineAsCustomElements$1 = function(e147, t91, n58, { mode: r38 = "closed"
             if (this.isFunctionalComponent) {
                 this.removeChildren();
                 this.functionalComponentsProps[t95] = r39;
-                const n60 = (0, Ue.h)("div", null, (0, Ue._render)({
+                const n62 = (0, Ue.h)("div", null, (0, Ue._render)({
                     component: e147,
                     props: Object.assign({
                         children: [],
                         ref: (e152)=>this.component = e152
                     }, this.functionalComponentsProps)
                 }));
-                this.shadowRoot.append(n60);
+                this.shadowRoot.append(n62);
             } else {
                 this.component.updatePropsValue(t95, r39);
                 this.component.update();
@@ -11542,22 +1846,21 @@ const defineAsCustomElements$1 = function(e147, t91, n58, { mode: r38 = "closed"
     });
 };
 ze.defineAsCustomElements = defineAsCustomElements$1;
-var Fe = {
-};
-var Be = Fe && Fe.__createBinding || (Object.create ? function(e153, t96, n61, r40) {
-    void 0 === r40 && (r40 = n61);
+var Fe = {};
+var Be = Fe && Fe.__createBinding || (Object.create ? function(e153, t96, n63, r40) {
+    void 0 === r40 && (r40 = n63);
     Object.defineProperty(e153, r40, {
         enumerable: true,
         get: function() {
-            return t96[n61];
+            return t96[n63];
         }
     });
-} : function(e154, t97, n62, r41) {
-    void 0 === r41 && (r41 = n62);
-    e154[r41] = t97[n62];
+} : function(e154, t97, n64, r41) {
+    void 0 === r41 && (r41 = n64);
+    e154[r41] = t97[n64];
 });
 var Je = Fe && Fe.__exportStar || function(e155, t98) {
-    for(var n63 in e155)"default" === n63 || Object.prototype.hasOwnProperty.call(t98, n63) || Be(t98, e155, n63);
+    for(var n65 in e155)"default" === n65 || Object.prototype.hasOwnProperty.call(t98, n65) || Be(t98, e155, n65);
 };
 Object.defineProperty(Fe, "__esModule", {
     value: true
@@ -33293,8 +23596,8 @@ function get(alias) {
 }
 function emojify(str) {
     if (!str) return "";
-    return str.split(reEmojiName).map((s2, i18)=>{
-        if (i18 % 2 === 0) return s2;
+    return str.split(reEmojiName).map((s2, i3)=>{
+        if (i3 % 2 === 0) return s2;
         let emoji5 = get(s2);
         if (!emoji5) emoji5 = wrapColons(s2);
         return emoji5;
@@ -33340,8 +23643,8 @@ const i1 = {
 };
 const getEscapeReplacement = (e)=>i1[e]
 ;
-function escape(e1, i19) {
-    if (i19) {
+function escape(e1, i11) {
+    if (i11) {
         if (t1.test(e1)) return e1.replace(n1, getEscapeReplacement);
     } else if (r1.test(e1)) return e1.replace(s1, getEscapeReplacement);
     return e1;
@@ -33388,8 +23691,7 @@ function cleanUrl(e4, t5, n2) {
     }
     return n2;
 }
-const h1 = {
-};
+const h1 = {};
 const p1 = /^[^:]+:\/*[^/]*$/;
 const u1 = /^([^:]+:)[\s\S]*$/;
 const g1 = /^([^:]+:\/*[^/]*)[\s\S]*$/;
@@ -33400,8 +23702,7 @@ function resolveUrl(e6, t6) {
     return "//" === t6.substring(0, 2) ? n3 ? t6 : e6.replace(u1, "$1") + t6 : "/" === t6.charAt(0) ? n3 ? t6 : e6.replace(g1, "$1") + t6 : e6 + t6;
 }
 const d1 = {
-    exec: function noopTest() {
-    }
+    exec: function noopTest() {}
 };
 function merge(e7) {
     let t7, n4, r2 = 1;
@@ -33655,13 +23956,13 @@ class Tokenizer {
             for(l2 = 0; l2 < x1; l2++){
                 this.lexer.state.top = false;
                 f1.items[l2].tokens = this.lexer.blockTokens(f1.items[l2].text, []);
-                const e28 = f1.items[l2].tokens.filter((e29)=>"space" === e29.type
+                const e28 = f1.items[l2].tokens.filter((e31)=>"space" === e31.type
                 );
-                const t26 = e28.every((e31)=>{
-                    const t27 = e31.raw.split("");
+                const t26 = e28.every((e33)=>{
+                    const t29 = e33.raw.split("");
                     let n16 = 0;
-                    for (const e30 of t27){
-                        "\n" === e30 && (n16 += 1);
+                    for (const e32 of t29){
+                        "\n" === e32 && (n16 += 1);
                         if (n16 > 1) return true;
                     }
                     return false;
@@ -33674,192 +23975,192 @@ class Tokenizer {
             return f1;
         }
     }
-    html(e32) {
-        const t28 = this.rules.block.html.exec(e32);
-        if (t28) {
-            const e33 = {
+    html(e34) {
+        const t30 = this.rules.block.html.exec(e34);
+        if (t30) {
+            const e35 = {
                 type: "html",
-                raw: t28[0],
-                pre: !this.options.sanitizer && ("pre" === t28[1] || "script" === t28[1] || "style" === t28[1]),
-                text: t28[0]
+                raw: t30[0],
+                pre: !this.options.sanitizer && ("pre" === t30[1] || "script" === t30[1] || "style" === t30[1]),
+                text: t30[0]
             };
             if (this.options.sanitize) {
-                e33.type = "paragraph";
-                e33.text = this.options.sanitizer ? this.options.sanitizer(t28[0]) : escape(t28[0]);
-                e33.tokens = [];
-                this.lexer.inline(e33.text, e33.tokens);
+                e35.type = "paragraph";
+                e35.text = this.options.sanitizer ? this.options.sanitizer(t30[0]) : escape(t30[0]);
+                e35.tokens = [];
+                this.lexer.inline(e35.text, e35.tokens);
             }
-            return e33;
+            return e35;
         }
     }
-    def(e34) {
-        const t29 = this.rules.block.def.exec(e34);
-        if (t29) {
-            t29[3] && (t29[3] = t29[3].substring(1, t29[3].length - 1));
-            const e35 = t29[1].toLowerCase().replace(/\s+/g, " ");
+    def(e36) {
+        const t31 = this.rules.block.def.exec(e36);
+        if (t31) {
+            t31[3] && (t31[3] = t31[3].substring(1, t31[3].length - 1));
+            const e37 = t31[1].toLowerCase().replace(/\s+/g, " ");
             return {
                 type: "def",
-                tag: e35,
-                raw: t29[0],
-                href: t29[2],
-                title: t29[3]
+                tag: e37,
+                raw: t31[0],
+                href: t31[2],
+                title: t31[3]
             };
         }
     }
-    table(e36) {
-        const t30 = this.rules.block.table.exec(e36);
-        if (t30) {
-            const e37 = {
+    table(e38) {
+        const t32 = this.rules.block.table.exec(e38);
+        if (t32) {
+            const e39 = {
                 type: "table",
-                header: splitCells(t30[1]).map((e38)=>({
-                        text: e38
+                header: splitCells(t32[1]).map((e41)=>({
+                        text: e41
                     })
                 ),
-                align: t30[2].replace(/^ *|\| *$/g, "").split(/ *\| */),
-                rows: t30[3] ? t30[3].replace(/\n[ \t]*$/, "").split("\n") : []
+                align: t32[2].replace(/^ *|\| *$/g, "").split(/ *\| */),
+                rows: t32[3] ? t32[3].replace(/\n[ \t]*$/, "").split("\n") : []
             };
-            if (e37.header.length === e37.align.length) {
-                e37.raw = t30[0];
-                let n17 = e37.align.length;
+            if (e39.header.length === e39.align.length) {
+                e39.raw = t32[0];
+                let n17 = e39.align.length;
                 let r10, s7, i5, l3;
-                for(r10 = 0; r10 < n17; r10++)/^ *-+: *$/.test(e37.align[r10]) ? e37.align[r10] = "right" : /^ *:-+: *$/.test(e37.align[r10]) ? e37.align[r10] = "center" : /^ *:-+ *$/.test(e37.align[r10]) ? e37.align[r10] = "left" : e37.align[r10] = null;
-                n17 = e37.rows.length;
-                for(r10 = 0; r10 < n17; r10++)e37.rows[r10] = splitCells(e37.rows[r10], e37.header.length).map((e39)=>({
-                        text: e39
+                for(r10 = 0; r10 < n17; r10++)/^ *-+: *$/.test(e39.align[r10]) ? e39.align[r10] = "right" : /^ *:-+: *$/.test(e39.align[r10]) ? e39.align[r10] = "center" : /^ *:-+ *$/.test(e39.align[r10]) ? e39.align[r10] = "left" : e39.align[r10] = null;
+                n17 = e39.rows.length;
+                for(r10 = 0; r10 < n17; r10++)e39.rows[r10] = splitCells(e39.rows[r10], e39.header.length).map((e42)=>({
+                        text: e42
                     })
                 );
-                n17 = e37.header.length;
+                n17 = e39.header.length;
                 for(s7 = 0; s7 < n17; s7++){
-                    e37.header[s7].tokens = [];
-                    this.lexer.inlineTokens(e37.header[s7].text, e37.header[s7].tokens);
+                    e39.header[s7].tokens = [];
+                    this.lexer.inlineTokens(e39.header[s7].text, e39.header[s7].tokens);
                 }
-                n17 = e37.rows.length;
+                n17 = e39.rows.length;
                 for(s7 = 0; s7 < n17; s7++){
-                    l3 = e37.rows[s7];
+                    l3 = e39.rows[s7];
                     for(i5 = 0; i5 < l3.length; i5++){
                         l3[i5].tokens = [];
                         this.lexer.inlineTokens(l3[i5].text, l3[i5].tokens);
                     }
                 }
-                return e37;
+                return e39;
             }
         }
     }
-    lheading(e40) {
-        const t31 = this.rules.block.lheading.exec(e40);
-        if (t31) {
-            const e41 = {
-                type: "heading",
-                raw: t31[0],
-                depth: "=" === t31[2].charAt(0) ? 1 : 2,
-                text: t31[1],
-                tokens: []
-            };
-            this.lexer.inline(e41.text, e41.tokens);
-            return e41;
-        }
-    }
-    paragraph(e42) {
-        const t32 = this.rules.block.paragraph.exec(e42);
-        if (t32) {
-            const e43 = {
-                type: "paragraph",
-                raw: t32[0],
-                text: "\n" === t32[1].charAt(t32[1].length - 1) ? t32[1].slice(0, -1) : t32[1],
-                tokens: []
-            };
-            this.lexer.inline(e43.text, e43.tokens);
-            return e43;
-        }
-    }
-    text(e44) {
-        const t33 = this.rules.block.text.exec(e44);
+    lheading(e43) {
+        const t33 = this.rules.block.lheading.exec(e43);
         if (t33) {
-            const e45 = {
-                type: "text",
+            const e44 = {
+                type: "heading",
                 raw: t33[0],
-                text: t33[0],
+                depth: "=" === t33[2].charAt(0) ? 1 : 2,
+                text: t33[1],
                 tokens: []
             };
-            this.lexer.inline(e45.text, e45.tokens);
-            return e45;
+            this.lexer.inline(e44.text, e44.tokens);
+            return e44;
         }
     }
-    escape(e46) {
-        const t34 = this.rules.inline.escape.exec(e46);
-        if (t34) return {
+    paragraph(e45) {
+        const t34 = this.rules.block.paragraph.exec(e45);
+        if (t34) {
+            const e46 = {
+                type: "paragraph",
+                raw: t34[0],
+                text: "\n" === t34[1].charAt(t34[1].length - 1) ? t34[1].slice(0, -1) : t34[1],
+                tokens: []
+            };
+            this.lexer.inline(e46.text, e46.tokens);
+            return e46;
+        }
+    }
+    text(e47) {
+        const t35 = this.rules.block.text.exec(e47);
+        if (t35) {
+            const e48 = {
+                type: "text",
+                raw: t35[0],
+                text: t35[0],
+                tokens: []
+            };
+            this.lexer.inline(e48.text, e48.tokens);
+            return e48;
+        }
+    }
+    escape(e49) {
+        const t36 = this.rules.inline.escape.exec(e49);
+        if (t36) return {
             type: "escape",
-            raw: t34[0],
-            text: escape(t34[1])
+            raw: t36[0],
+            text: escape(t36[1])
         };
     }
-    tag(e47) {
-        const t35 = this.rules.inline.tag.exec(e47);
-        if (t35) {
-            !this.lexer.state.inLink && /^<a /i.test(t35[0]) ? this.lexer.state.inLink = true : this.lexer.state.inLink && /^<\/a>/i.test(t35[0]) && (this.lexer.state.inLink = false);
-            !this.lexer.state.inRawBlock && /^<(pre|code|kbd|script)(\s|>)/i.test(t35[0]) ? this.lexer.state.inRawBlock = true : this.lexer.state.inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(t35[0]) && (this.lexer.state.inRawBlock = false);
+    tag(e50) {
+        const t37 = this.rules.inline.tag.exec(e50);
+        if (t37) {
+            !this.lexer.state.inLink && /^<a /i.test(t37[0]) ? this.lexer.state.inLink = true : this.lexer.state.inLink && /^<\/a>/i.test(t37[0]) && (this.lexer.state.inLink = false);
+            !this.lexer.state.inRawBlock && /^<(pre|code|kbd|script)(\s|>)/i.test(t37[0]) ? this.lexer.state.inRawBlock = true : this.lexer.state.inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(t37[0]) && (this.lexer.state.inRawBlock = false);
             return {
                 type: this.options.sanitize ? "text" : "html",
-                raw: t35[0],
+                raw: t37[0],
                 inLink: this.lexer.state.inLink,
                 inRawBlock: this.lexer.state.inRawBlock,
-                text: this.options.sanitize ? this.options.sanitizer ? this.options.sanitizer(t35[0]) : escape(t35[0]) : t35[0]
+                text: this.options.sanitize ? this.options.sanitizer ? this.options.sanitizer(t37[0]) : escape(t37[0]) : t37[0]
             };
         }
     }
-    link(e48) {
-        const t36 = this.rules.inline.link.exec(e48);
-        if (t36) {
-            const e49 = t36[2].trim();
-            if (!this.options.pedantic && /^</.test(e49)) {
-                if (!/>$/.test(e49)) return;
-                const t37 = rtrim(e49.slice(0, -1), "\\");
-                if ((e49.length - t37.length) % 2 === 0) return;
+    link(e51) {
+        const t38 = this.rules.inline.link.exec(e51);
+        if (t38) {
+            const e52 = t38[2].trim();
+            if (!this.options.pedantic && /^</.test(e52)) {
+                if (!/>$/.test(e52)) return;
+                const t39 = rtrim(e52.slice(0, -1), "\\");
+                if ((e52.length - t39.length) % 2 === 0) return;
             } else {
-                const e50 = findClosingBracket(t36[2], "()");
-                if (e50 > -1) {
-                    const n18 = 0 === t36[0].indexOf("!") ? 5 : 4;
-                    const r11 = n18 + t36[1].length + e50;
-                    t36[2] = t36[2].substring(0, e50);
-                    t36[0] = t36[0].substring(0, r11).trim();
-                    t36[3] = "";
+                const e53 = findClosingBracket(t38[2], "()");
+                if (e53 > -1) {
+                    const n18 = 0 === t38[0].indexOf("!") ? 5 : 4;
+                    const r11 = n18 + t38[1].length + e53;
+                    t38[2] = t38[2].substring(0, e53);
+                    t38[0] = t38[0].substring(0, r11).trim();
+                    t38[3] = "";
                 }
             }
-            let n19 = t36[2];
+            let n19 = t38[2];
             let r12 = "";
             if (this.options.pedantic) {
-                const e51 = /^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(n19);
-                if (e51) {
-                    n19 = e51[1];
-                    r12 = e51[3];
+                const e54 = /^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(n19);
+                if (e54) {
+                    n19 = e54[1];
+                    r12 = e54[3];
                 }
-            } else r12 = t36[3] ? t36[3].slice(1, -1) : "";
+            } else r12 = t38[3] ? t38[3].slice(1, -1) : "";
             n19 = n19.trim();
-            /^</.test(n19) && (n19 = this.options.pedantic && !/>$/.test(e49) ? n19.slice(1) : n19.slice(1, -1));
-            return outputLink(t36, {
+            /^</.test(n19) && (n19 = this.options.pedantic && !/>$/.test(e52) ? n19.slice(1) : n19.slice(1, -1));
+            return outputLink(t38, {
                 href: n19 ? n19.replace(this.rules.inline._escapes, "$1") : n19,
                 title: r12 ? r12.replace(this.rules.inline._escapes, "$1") : r12
-            }, t36[0], this.lexer);
+            }, t38[0], this.lexer);
         }
     }
-    reflink(e52, t38) {
+    reflink(e55, t40) {
         let n20;
-        if ((n20 = this.rules.inline.reflink.exec(e52)) || (n20 = this.rules.inline.nolink.exec(e52))) {
-            let e53 = (n20[2] || n20[1]).replace(/\s+/g, " ");
-            e53 = t38[e53.toLowerCase()];
-            if (!e53 || !e53.href) {
-                const e54 = n20[0].charAt(0);
+        if ((n20 = this.rules.inline.reflink.exec(e55)) || (n20 = this.rules.inline.nolink.exec(e55))) {
+            let e56 = (n20[2] || n20[1]).replace(/\s+/g, " ");
+            e56 = t40[e56.toLowerCase()];
+            if (!e56 || !e56.href) {
+                const e57 = n20[0].charAt(0);
                 return {
                     type: "text",
-                    raw: e54,
-                    text: e54
+                    raw: e57,
+                    text: e57
                 };
             }
-            return outputLink(n20, e53, n20[0], this.lexer);
+            return outputLink(n20, e56, n20[0], this.lexer);
         }
     }
-    emStrong(e55, t39, n21 = "") {
-        let r13 = this.rules.inline.emStrong.lDelim.exec(e55);
+    emStrong(e58, t41, n21 = "") {
+        let r13 = this.rules.inline.emStrong.lDelim.exec(e58);
         if (!r13) return;
         if (r13[3] && n21.match(/[\p{L}\p{N}]/u)) return;
         const s8 = r13[1] || r13[2] || "";
@@ -33868,8 +24169,8 @@ class Tokenizer {
             let s9, i6, l4 = n22, a2 = 0;
             const o2 = "*" === r13[0][0] ? this.rules.inline.emStrong.rDelimAst : this.rules.inline.emStrong.rDelimUnd;
             o2.lastIndex = 0;
-            t39 = t39.slice(-1 * e55.length + n22);
-            while(null != (r13 = o2.exec(t39))){
+            t41 = t41.slice(-1 * e58.length + n22);
+            while(null != (r13 = o2.exec(t41))){
                 s9 = r13[1] || r13[2] || r13[3] || r13[4] || r13[5] || r13[6];
                 if (!s9) continue;
                 i6 = s9.length;
@@ -33885,121 +24186,121 @@ class Tokenizer {
                 if (l4 > 0) continue;
                 i6 = Math.min(i6, i6 + l4 + a2);
                 if (Math.min(n22, i6) % 2) {
-                    const t40 = e55.slice(1, n22 + r13.index + i6);
+                    const t42 = e58.slice(1, n22 + r13.index + i6);
                     return {
                         type: "em",
-                        raw: e55.slice(0, n22 + r13.index + i6 + 1),
-                        text: t40,
-                        tokens: this.lexer.inlineTokens(t40, [])
+                        raw: e58.slice(0, n22 + r13.index + i6 + 1),
+                        text: t42,
+                        tokens: this.lexer.inlineTokens(t42, [])
                     };
                 }
-                const t41 = e55.slice(2, n22 + r13.index + i6 - 1);
+                const t43 = e58.slice(2, n22 + r13.index + i6 - 1);
                 return {
                     type: "strong",
-                    raw: e55.slice(0, n22 + r13.index + i6 + 1),
-                    text: t41,
-                    tokens: this.lexer.inlineTokens(t41, [])
+                    raw: e58.slice(0, n22 + r13.index + i6 + 1),
+                    text: t43,
+                    tokens: this.lexer.inlineTokens(t43, [])
                 };
             }
         }
     }
-    codespan(e56) {
-        const t42 = this.rules.inline.code.exec(e56);
-        if (t42) {
-            let e57 = t42[2].replace(/\n/g, " ");
-            const n23 = /[^ ]/.test(e57);
-            const r14 = /^ /.test(e57) && / $/.test(e57);
-            n23 && r14 && (e57 = e57.substring(1, e57.length - 1));
-            e57 = escape(e57, true);
+    codespan(e59) {
+        const t44 = this.rules.inline.code.exec(e59);
+        if (t44) {
+            let e60 = t44[2].replace(/\n/g, " ");
+            const n23 = /[^ ]/.test(e60);
+            const r14 = /^ /.test(e60) && / $/.test(e60);
+            n23 && r14 && (e60 = e60.substring(1, e60.length - 1));
+            e60 = escape(e60, true);
             return {
                 type: "codespan",
-                raw: t42[0],
-                text: e57
+                raw: t44[0],
+                text: e60
             };
         }
     }
-    br(e58) {
-        const t43 = this.rules.inline.br.exec(e58);
-        if (t43) return {
+    br(e61) {
+        const t45 = this.rules.inline.br.exec(e61);
+        if (t45) return {
             type: "br",
-            raw: t43[0]
+            raw: t45[0]
         };
     }
-    del(e59) {
-        const t44 = this.rules.inline.del.exec(e59);
-        if (t44) return {
+    del(e62) {
+        const t46 = this.rules.inline.del.exec(e62);
+        if (t46) return {
             type: "del",
-            raw: t44[0],
-            text: t44[2],
-            tokens: this.lexer.inlineTokens(t44[2], [])
+            raw: t46[0],
+            text: t46[2],
+            tokens: this.lexer.inlineTokens(t46[2], [])
         };
     }
-    autolink(e60, t45) {
-        const n24 = this.rules.inline.autolink.exec(e60);
+    autolink(e63, t47) {
+        const n24 = this.rules.inline.autolink.exec(e63);
         if (n24) {
-            let e61, r15;
+            let e64, r15;
             if ("@" === n24[2]) {
-                e61 = escape(this.options.mangle ? t45(n24[1]) : n24[1]);
-                r15 = "mailto:" + e61;
+                e64 = escape(this.options.mangle ? t47(n24[1]) : n24[1]);
+                r15 = "mailto:" + e64;
             } else {
-                e61 = escape(n24[1]);
-                r15 = e61;
+                e64 = escape(n24[1]);
+                r15 = e64;
             }
             return {
                 type: "link",
                 raw: n24[0],
-                text: e61,
+                text: e64,
                 href: r15,
                 tokens: [
                     {
                         type: "text",
-                        raw: e61,
-                        text: e61
+                        raw: e64,
+                        text: e64
                     }
                 ]
             };
         }
     }
-    url(e62, t46) {
+    url(e65, t48) {
         let n25;
-        if (n25 = this.rules.inline.url.exec(e62)) {
-            let e63, r16;
+        if (n25 = this.rules.inline.url.exec(e65)) {
+            let e66, r16;
             if ("@" === n25[2]) {
-                e63 = escape(this.options.mangle ? t46(n25[0]) : n25[0]);
-                r16 = "mailto:" + e63;
+                e66 = escape(this.options.mangle ? t48(n25[0]) : n25[0]);
+                r16 = "mailto:" + e66;
             } else {
-                let t47;
+                let t49;
                 do {
-                    t47 = n25[0];
+                    t49 = n25[0];
                     n25[0] = this.rules.inline._backpedal.exec(n25[0])[0];
-                }while (t47 !== n25[0])
-                e63 = escape(n25[0]);
-                r16 = "www." === n25[1] ? "http://" + e63 : e63;
+                }while (t49 !== n25[0])
+                e66 = escape(n25[0]);
+                r16 = "www." === n25[1] ? "http://" + e66 : e66;
             }
             return {
                 type: "link",
                 raw: n25[0],
-                text: e63,
+                text: e66,
                 href: r16,
                 tokens: [
                     {
                         type: "text",
-                        raw: e63,
-                        text: e63
+                        raw: e66,
+                        text: e66
                     }
                 ]
             };
         }
     }
-    inlineText(e64, t48) {
-        const n26 = this.rules.inline.text.exec(e64);
+    inlineText(e67, t50) {
+        const n26 = this.rules.inline.text.exec(e67);
         if (n26) {
-            let e65;
-            e65 = this.lexer.state.inRawBlock ? this.options.sanitize ? this.options.sanitizer ? this.options.sanitizer(n26[0]) : escape(n26[0]) : n26[0] : escape(this.options.smartypants ? t48(n26[0]) : n26[0]);
+            let e68;
+            e68 = this.lexer.state.inRawBlock ? this.options.sanitize ? this.options.sanitizer ? this.options.sanitizer(n26[0]) : escape(n26[0]) : n26[0] : escape(this.options.smartypants ? t50(n26[0]) : n26[0]);
             return {
                 type: "text",
                 raw: n26[0],
-                text: e65
+                text: e68
             };
         }
     }
@@ -34030,16 +24331,13 @@ k1._comment = /<!--(?!-?>)[\s\S]*?(?:-->|$)/;
 k1.html = edit(k1.html, "i").replace("comment", k1._comment).replace("tag", k1._tag).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex();
 k1.paragraph = edit(k1._paragraph).replace("hr", k1.hr).replace("heading", " {0,3}#{1,6} ").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", k1._tag).getRegex();
 k1.blockquote = edit(k1.blockquote).replace("paragraph", k1.paragraph).getRegex();
-k1.normal = merge({
-}, k1);
-k1.gfm = merge({
-}, k1.normal, {
+k1.normal = merge({}, k1);
+k1.gfm = merge({}, k1.normal, {
     table: "^ *([^\\n ].*\\|.*)\\n {0,3}(?:\\| *)?(:?-+:? *(?:\\| *:?-+:? *)*)(?:\\| *)?(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)"
 });
 k1.gfm.table = edit(k1.gfm.table).replace("hr", k1.hr).replace("heading", " {0,3}#{1,6} ").replace("blockquote", " {0,3}>").replace("code", " {4}[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", k1._tag).getRegex();
 k1.gfm.paragraph = edit(k1._paragraph).replace("hr", k1.hr).replace("heading", " {0,3}#{1,6} ").replace("|lheading", "").replace("table", k1.gfm.table).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", k1._tag).getRegex();
-k1.pedantic = merge({
-}, k1.normal, {
+k1.pedantic = merge({}, k1.normal, {
     html: edit("^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:\"[^\"]*\"|'[^']*'|\\s[^'\"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))").replace("comment", k1._comment).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(),
     def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/,
     heading: /^(#{1,6})(.*)(?:\n+|$)/,
@@ -34087,10 +24385,8 @@ f1.link = edit(f1.link).replace("label", f1._label).replace("href", f1._href).re
 f1.reflink = edit(f1.reflink).replace("label", f1._label).replace("ref", k1._label).getRegex();
 f1.nolink = edit(f1.nolink).replace("ref", k1._label).getRegex();
 f1.reflinkSearch = edit(f1.reflinkSearch, "g").replace("reflink", f1.reflink).replace("nolink", f1.nolink).getRegex();
-f1.normal = merge({
-}, f1);
-f1.pedantic = merge({
-}, f1.normal, {
+f1.normal = merge({}, f1);
+f1.pedantic = merge({}, f1.normal, {
     strong: {
         start: /^__|\*\*/,
         middle: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
@@ -34106,8 +24402,7 @@ f1.pedantic = merge({
     link: edit(/^!?\[(label)\]\((.*?)\)/).replace("label", f1._label).getRegex(),
     reflink: edit(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", f1._label).getRegex()
 });
-f1.gfm = merge({
-}, f1.normal, {
+f1.gfm = merge({}, f1.normal, {
     escape: edit(f1.escape).replace("])", "~|])").getRegex(),
     _extended_email: /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/,
     url: /^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/,
@@ -34116,29 +24411,28 @@ f1.gfm = merge({
     text: /^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/
 });
 f1.gfm.url = edit(f1.gfm.url, "i").replace("email", f1.gfm._extended_email).getRegex();
-f1.breaks = merge({
-}, f1.gfm, {
+f1.breaks = merge({}, f1.gfm, {
     br: edit(f1.br).replace("{2,}", "*").getRegex(),
     text: edit(f1.gfm.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex()
 });
-function smartypants(e66) {
-    return e66.replace(/---/g, "—").replace(/--/g, "–").replace(/(^|[-\u2014/(\[{"\s])'/g, "$1‘").replace(/'/g, "’").replace(/(^|[-\u2014/(\[{\u2018\s])"/g, "$1“").replace(/"/g, "”").replace(/\.{3}/g, "…");
+function smartypants(e69) {
+    return e69.replace(/---/g, "—").replace(/--/g, "–").replace(/(^|[-\u2014/(\[{"\s])'/g, "$1‘").replace(/'/g, "’").replace(/(^|[-\u2014/(\[{\u2018\s])"/g, "$1“").replace(/"/g, "”").replace(/\.{3}/g, "…");
 }
-function mangle(e67) {
-    let t49, n27, r17 = "";
-    const s10 = e67.length;
-    for(t49 = 0; t49 < s10; t49++){
-        n27 = e67.charCodeAt(t49);
+function mangle(e70) {
+    let t51, n27, r17 = "";
+    const s10 = e70.length;
+    for(t51 = 0; t51 < s10; t51++){
+        n27 = e70.charCodeAt(t51);
         Math.random() > 0.5 && (n27 = "x" + n27.toString(16));
         r17 += "&#" + n27 + ";";
     }
     return r17;
 }
 class Lexer {
-    constructor(t50){
+    constructor(t52){
         this.tokens = [];
         this.tokens.links = Object.create(null);
-        this.options = t50 || e;
+        this.options = t52 || e;
         this.options.tokenizer = this.options.tokenizer || new Tokenizer;
         this.tokenizer = this.options.tokenizer;
         this.tokenizer.options = this.options;
@@ -34168,66 +24462,66 @@ class Lexer {
             inline: f1
         };
     }
-    static lex(e68, t51) {
-        const n29 = new Lexer(t51);
-        return n29.lex(e68);
+    static lex(e71, t53) {
+        const n29 = new Lexer(t53);
+        return n29.lex(e71);
     }
-    static lexInline(e69, t52) {
-        const n30 = new Lexer(t52);
-        return n30.inlineTokens(e69);
+    static lexInline(e72, t54) {
+        const n30 = new Lexer(t54);
+        return n30.inlineTokens(e72);
     }
-    lex(e70) {
-        e70 = e70.replace(/\r\n|\r/g, "\n").replace(/\t/g, "    ");
-        this.blockTokens(e70, this.tokens);
-        let t53;
-        while(t53 = this.inlineQueue.shift())this.inlineTokens(t53.src, t53.tokens);
+    lex(e73) {
+        e73 = e73.replace(/\r\n|\r/g, "\n").replace(/\t/g, "    ");
+        this.blockTokens(e73, this.tokens);
+        let t55;
+        while(t55 = this.inlineQueue.shift())this.inlineTokens(t55.src, t55.tokens);
         return this.tokens;
     }
-    blockTokens(e71, t54 = []) {
-        this.options.pedantic && (e71 = e71.replace(/^ +$/gm, ""));
+    blockTokens(e74, t56 = []) {
+        this.options.pedantic && (e74 = e74.replace(/^ +$/gm, ""));
         let n31, r18, s11, i7;
-        while(e71)if (!(this.options.extensions && this.options.extensions.block && this.options.extensions.block.some((r19)=>{
+        while(e74)if (!(this.options.extensions && this.options.extensions.block && this.options.extensions.block.some((r19)=>{
             if (n31 = r19.call({
                 lexer: this
-            }, e71, t54)) {
-                e71 = e71.substring(n31.raw.length);
-                t54.push(n31);
+            }, e74, t56)) {
+                e74 = e74.substring(n31.raw.length);
+                t56.push(n31);
                 return true;
             }
             return false;
-        }))) if (n31 = this.tokenizer.space(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            1 === n31.raw.length && t54.length > 0 ? t54[t54.length - 1].raw += "\n" : t54.push(n31);
-        } else if (n31 = this.tokenizer.code(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            r18 = t54[t54.length - 1];
-            if (!r18 || "paragraph" !== r18.type && "text" !== r18.type) t54.push(n31);
+        }))) if (n31 = this.tokenizer.space(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            1 === n31.raw.length && t56.length > 0 ? t56[t56.length - 1].raw += "\n" : t56.push(n31);
+        } else if (n31 = this.tokenizer.code(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            r18 = t56[t56.length - 1];
+            if (!r18 || "paragraph" !== r18.type && "text" !== r18.type) t56.push(n31);
             else {
                 r18.raw += "\n" + n31.raw;
                 r18.text += "\n" + n31.text;
                 this.inlineQueue[this.inlineQueue.length - 1].src = r18.text;
             }
-        } else if (n31 = this.tokenizer.fences(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            t54.push(n31);
-        } else if (n31 = this.tokenizer.heading(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            t54.push(n31);
-        } else if (n31 = this.tokenizer.hr(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            t54.push(n31);
-        } else if (n31 = this.tokenizer.blockquote(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            t54.push(n31);
-        } else if (n31 = this.tokenizer.list(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            t54.push(n31);
-        } else if (n31 = this.tokenizer.html(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            t54.push(n31);
-        } else if (n31 = this.tokenizer.def(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            r18 = t54[t54.length - 1];
+        } else if (n31 = this.tokenizer.fences(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            t56.push(n31);
+        } else if (n31 = this.tokenizer.heading(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            t56.push(n31);
+        } else if (n31 = this.tokenizer.hr(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            t56.push(n31);
+        } else if (n31 = this.tokenizer.blockquote(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            t56.push(n31);
+        } else if (n31 = this.tokenizer.list(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            t56.push(n31);
+        } else if (n31 = this.tokenizer.html(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            t56.push(n31);
+        } else if (n31 = this.tokenizer.def(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            r18 = t56[t56.length - 1];
             if (!r18 || "paragraph" !== r18.type && "text" !== r18.type) this.tokens.links[n31.tag] || (this.tokens.links[n31.tag] = {
                 href: n31.href,
                 title: n31.title
@@ -34237,266 +24531,266 @@ class Lexer {
                 r18.text += "\n" + n31.raw;
                 this.inlineQueue[this.inlineQueue.length - 1].src = r18.text;
             }
-        } else if (n31 = this.tokenizer.table(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            t54.push(n31);
-        } else if (n31 = this.tokenizer.lheading(e71)) {
-            e71 = e71.substring(n31.raw.length);
-            t54.push(n31);
+        } else if (n31 = this.tokenizer.table(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            t56.push(n31);
+        } else if (n31 = this.tokenizer.lheading(e74)) {
+            e74 = e74.substring(n31.raw.length);
+            t56.push(n31);
         } else {
-            s11 = e71;
+            s11 = e74;
             if (this.options.extensions && this.options.extensions.startBlock) {
-                let t55 = Infinity;
-                const n32 = e71.slice(1);
+                let t57 = Infinity;
+                const n32 = e74.slice(1);
                 let r20;
-                this.options.extensions.startBlock.forEach(function(e72) {
-                    r20 = e72.call({
+                this.options.extensions.startBlock.forEach(function(e75) {
+                    r20 = e75.call({
                         lexer: this
                     }, n32);
-                    "number" === typeof r20 && r20 >= 0 && (t55 = Math.min(t55, r20));
+                    "number" === typeof r20 && r20 >= 0 && (t57 = Math.min(t57, r20));
                 });
-                t55 < Infinity && t55 >= 0 && (s11 = e71.substring(0, t55 + 1));
+                t57 < Infinity && t57 >= 0 && (s11 = e74.substring(0, t57 + 1));
             }
             if (this.state.top && (n31 = this.tokenizer.paragraph(s11))) {
-                r18 = t54[t54.length - 1];
+                r18 = t56[t56.length - 1];
                 if (i7 && "paragraph" === r18.type) {
                     r18.raw += "\n" + n31.raw;
                     r18.text += "\n" + n31.text;
                     this.inlineQueue.pop();
                     this.inlineQueue[this.inlineQueue.length - 1].src = r18.text;
-                } else t54.push(n31);
-                i7 = s11.length !== e71.length;
-                e71 = e71.substring(n31.raw.length);
-            } else if (n31 = this.tokenizer.text(e71)) {
-                e71 = e71.substring(n31.raw.length);
-                r18 = t54[t54.length - 1];
+                } else t56.push(n31);
+                i7 = s11.length !== e74.length;
+                e74 = e74.substring(n31.raw.length);
+            } else if (n31 = this.tokenizer.text(e74)) {
+                e74 = e74.substring(n31.raw.length);
+                r18 = t56[t56.length - 1];
                 if (r18 && "text" === r18.type) {
                     r18.raw += "\n" + n31.raw;
                     r18.text += "\n" + n31.text;
                     this.inlineQueue.pop();
                     this.inlineQueue[this.inlineQueue.length - 1].src = r18.text;
-                } else t54.push(n31);
-            } else if (e71) {
-                const t56 = "Infinite loop on byte: " + e71.charCodeAt(0);
+                } else t56.push(n31);
+            } else if (e74) {
+                const t58 = "Infinite loop on byte: " + e74.charCodeAt(0);
                 if (this.options.silent) {
-                    console.error(t56);
+                    console.error(t58);
                     break;
                 }
-                throw new Error(t56);
+                throw new Error(t58);
             }
         }
         this.state.top = true;
-        return t54;
+        return t56;
     }
-    inline(e73, t57) {
+    inline(e76, t59) {
         this.inlineQueue.push({
-            src: e73,
-            tokens: t57
+            src: e76,
+            tokens: t59
         });
     }
-    inlineTokens(e74, t58 = []) {
+    inlineTokens(e77, t60 = []) {
         let n33, r21, s12;
-        let i8 = e74;
+        let i8 = e77;
         let l5;
         let a3, o3;
         if (this.tokens.links) {
-            const e75 = Object.keys(this.tokens.links);
-            if (e75.length > 0) while(null != (l5 = this.tokenizer.rules.inline.reflinkSearch.exec(i8)))e75.includes(l5[0].slice(l5[0].lastIndexOf("[") + 1, -1)) && (i8 = i8.slice(0, l5.index) + "[" + repeatString("a", l5[0].length - 2) + "]" + i8.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex));
+            const e78 = Object.keys(this.tokens.links);
+            if (e78.length > 0) while(null != (l5 = this.tokenizer.rules.inline.reflinkSearch.exec(i8)))e78.includes(l5[0].slice(l5[0].lastIndexOf("[") + 1, -1)) && (i8 = i8.slice(0, l5.index) + "[" + repeatString("a", l5[0].length - 2) + "]" + i8.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex));
         }
         while(null != (l5 = this.tokenizer.rules.inline.blockSkip.exec(i8)))i8 = i8.slice(0, l5.index) + "[" + repeatString("a", l5[0].length - 2) + "]" + i8.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);
         while(null != (l5 = this.tokenizer.rules.inline.escapedEmSt.exec(i8)))i8 = i8.slice(0, l5.index) + "++" + i8.slice(this.tokenizer.rules.inline.escapedEmSt.lastIndex);
-        while(e74){
+        while(e77){
             a3 || (o3 = "");
             a3 = false;
             if (!(this.options.extensions && this.options.extensions.inline && this.options.extensions.inline.some((r22)=>{
                 if (n33 = r22.call({
                     lexer: this
-                }, e74, t58)) {
-                    e74 = e74.substring(n33.raw.length);
-                    t58.push(n33);
+                }, e77, t60)) {
+                    e77 = e77.substring(n33.raw.length);
+                    t60.push(n33);
                     return true;
                 }
                 return false;
-            }))) if (n33 = this.tokenizer.escape(e74)) {
-                e74 = e74.substring(n33.raw.length);
-                t58.push(n33);
-            } else if (n33 = this.tokenizer.tag(e74)) {
-                e74 = e74.substring(n33.raw.length);
-                r21 = t58[t58.length - 1];
+            }))) if (n33 = this.tokenizer.escape(e77)) {
+                e77 = e77.substring(n33.raw.length);
+                t60.push(n33);
+            } else if (n33 = this.tokenizer.tag(e77)) {
+                e77 = e77.substring(n33.raw.length);
+                r21 = t60[t60.length - 1];
                 if (r21 && "text" === n33.type && "text" === r21.type) {
                     r21.raw += n33.raw;
                     r21.text += n33.text;
-                } else t58.push(n33);
-            } else if (n33 = this.tokenizer.link(e74)) {
-                e74 = e74.substring(n33.raw.length);
-                t58.push(n33);
-            } else if (n33 = this.tokenizer.reflink(e74, this.tokens.links)) {
-                e74 = e74.substring(n33.raw.length);
-                r21 = t58[t58.length - 1];
+                } else t60.push(n33);
+            } else if (n33 = this.tokenizer.link(e77)) {
+                e77 = e77.substring(n33.raw.length);
+                t60.push(n33);
+            } else if (n33 = this.tokenizer.reflink(e77, this.tokens.links)) {
+                e77 = e77.substring(n33.raw.length);
+                r21 = t60[t60.length - 1];
                 if (r21 && "text" === n33.type && "text" === r21.type) {
                     r21.raw += n33.raw;
                     r21.text += n33.text;
-                } else t58.push(n33);
-            } else if (n33 = this.tokenizer.emStrong(e74, i8, o3)) {
-                e74 = e74.substring(n33.raw.length);
-                t58.push(n33);
-            } else if (n33 = this.tokenizer.codespan(e74)) {
-                e74 = e74.substring(n33.raw.length);
-                t58.push(n33);
-            } else if (n33 = this.tokenizer.br(e74)) {
-                e74 = e74.substring(n33.raw.length);
-                t58.push(n33);
-            } else if (n33 = this.tokenizer.del(e74)) {
-                e74 = e74.substring(n33.raw.length);
-                t58.push(n33);
-            } else if (n33 = this.tokenizer.autolink(e74, mangle)) {
-                e74 = e74.substring(n33.raw.length);
-                t58.push(n33);
-            } else if (this.state.inLink || !(n33 = this.tokenizer.url(e74, mangle))) {
-                s12 = e74;
+                } else t60.push(n33);
+            } else if (n33 = this.tokenizer.emStrong(e77, i8, o3)) {
+                e77 = e77.substring(n33.raw.length);
+                t60.push(n33);
+            } else if (n33 = this.tokenizer.codespan(e77)) {
+                e77 = e77.substring(n33.raw.length);
+                t60.push(n33);
+            } else if (n33 = this.tokenizer.br(e77)) {
+                e77 = e77.substring(n33.raw.length);
+                t60.push(n33);
+            } else if (n33 = this.tokenizer.del(e77)) {
+                e77 = e77.substring(n33.raw.length);
+                t60.push(n33);
+            } else if (n33 = this.tokenizer.autolink(e77, mangle)) {
+                e77 = e77.substring(n33.raw.length);
+                t60.push(n33);
+            } else if (this.state.inLink || !(n33 = this.tokenizer.url(e77, mangle))) {
+                s12 = e77;
                 if (this.options.extensions && this.options.extensions.startInline) {
-                    let t59 = Infinity;
-                    const n34 = e74.slice(1);
+                    let t61 = Infinity;
+                    const n34 = e77.slice(1);
                     let r23;
-                    this.options.extensions.startInline.forEach(function(e76) {
-                        r23 = e76.call({
+                    this.options.extensions.startInline.forEach(function(e79) {
+                        r23 = e79.call({
                             lexer: this
                         }, n34);
-                        "number" === typeof r23 && r23 >= 0 && (t59 = Math.min(t59, r23));
+                        "number" === typeof r23 && r23 >= 0 && (t61 = Math.min(t61, r23));
                     });
-                    t59 < Infinity && t59 >= 0 && (s12 = e74.substring(0, t59 + 1));
+                    t61 < Infinity && t61 >= 0 && (s12 = e77.substring(0, t61 + 1));
                 }
                 if (n33 = this.tokenizer.inlineText(s12, smartypants)) {
-                    e74 = e74.substring(n33.raw.length);
+                    e77 = e77.substring(n33.raw.length);
                     "_" !== n33.raw.slice(-1) && (o3 = n33.raw.slice(-1));
                     a3 = true;
-                    r21 = t58[t58.length - 1];
+                    r21 = t60[t60.length - 1];
                     if (r21 && "text" === r21.type) {
                         r21.raw += n33.raw;
                         r21.text += n33.text;
-                    } else t58.push(n33);
-                } else if (e74) {
-                    const t60 = "Infinite loop on byte: " + e74.charCodeAt(0);
+                    } else t60.push(n33);
+                } else if (e77) {
+                    const t62 = "Infinite loop on byte: " + e77.charCodeAt(0);
                     if (this.options.silent) {
-                        console.error(t60);
+                        console.error(t62);
                         break;
                     }
-                    throw new Error(t60);
+                    throw new Error(t62);
                 }
             } else {
-                e74 = e74.substring(n33.raw.length);
-                t58.push(n33);
+                e77 = e77.substring(n33.raw.length);
+                t60.push(n33);
             }
         }
-        return t58;
+        return t60;
     }
 }
 class Renderer {
-    constructor(t61){
-        this.options = t61 || e;
+    constructor(t63){
+        this.options = t63 || e;
     }
-    code(e77, t62, n35) {
-        const r24 = (t62 || "").match(/\S*/)[0];
+    code(e80, t64, n35) {
+        const r24 = (t64 || "").match(/\S*/)[0];
         if (this.options.highlight) {
-            const t63 = this.options.highlight(e77, r24);
-            if (null != t63 && t63 !== e77) {
+            const t65 = this.options.highlight(e80, r24);
+            if (null != t65 && t65 !== e80) {
                 n35 = true;
-                e77 = t63;
+                e80 = t65;
             }
         }
-        e77 = e77.replace(/\n$/, "") + "\n";
-        return r24 ? '<pre><code class="' + this.options.langPrefix + escape(r24, true) + '">' + (n35 ? e77 : escape(e77, true)) + "</code></pre>\n" : "<pre><code>" + (n35 ? e77 : escape(e77, true)) + "</code></pre>\n";
+        e80 = e80.replace(/\n$/, "") + "\n";
+        return r24 ? '<pre><code class="' + this.options.langPrefix + escape(r24, true) + '">' + (n35 ? e80 : escape(e80, true)) + "</code></pre>\n" : "<pre><code>" + (n35 ? e80 : escape(e80, true)) + "</code></pre>\n";
     }
-    blockquote(e78) {
-        return "<blockquote>\n" + e78 + "</blockquote>\n";
+    blockquote(e81) {
+        return "<blockquote>\n" + e81 + "</blockquote>\n";
     }
-    html(e79) {
-        return e79;
+    html(e82) {
+        return e82;
     }
-    heading(e80, t64, n36, r25) {
-        return this.options.headerIds ? "<h" + t64 + ' id="' + this.options.headerPrefix + r25.slug(n36) + '">' + e80 + "</h" + t64 + ">\n" : "<h" + t64 + ">" + e80 + "</h" + t64 + ">\n";
+    heading(e83, t66, n36, r25) {
+        return this.options.headerIds ? "<h" + t66 + ' id="' + this.options.headerPrefix + r25.slug(n36) + '">' + e83 + "</h" + t66 + ">\n" : "<h" + t66 + ">" + e83 + "</h" + t66 + ">\n";
     }
     hr() {
         return this.options.xhtml ? "<hr/>\n" : "<hr>\n";
     }
-    list(e81, t65, n37) {
-        const r26 = t65 ? "ol" : "ul", s13 = t65 && 1 !== n37 ? ' start="' + n37 + '"' : "";
-        return "<" + r26 + s13 + ">\n" + e81 + "</" + r26 + ">\n";
+    list(e84, t67, n37) {
+        const r26 = t67 ? "ol" : "ul", s13 = t67 && 1 !== n37 ? ' start="' + n37 + '"' : "";
+        return "<" + r26 + s13 + ">\n" + e84 + "</" + r26 + ">\n";
     }
-    listitem(e82) {
-        return "<li>" + e82 + "</li>\n";
+    listitem(e85) {
+        return "<li>" + e85 + "</li>\n";
     }
-    checkbox(e83) {
-        return "<input " + (e83 ? 'checked="" ' : "") + 'disabled="" type="checkbox"' + (this.options.xhtml ? " /" : "") + "> ";
+    checkbox(e86) {
+        return "<input " + (e86 ? 'checked="" ' : "") + 'disabled="" type="checkbox"' + (this.options.xhtml ? " /" : "") + "> ";
     }
-    paragraph(e84) {
-        return "<p>" + e84 + "</p>\n";
+    paragraph(e87) {
+        return "<p>" + e87 + "</p>\n";
     }
-    table(e85, t66) {
-        t66 && (t66 = "<tbody>" + t66 + "</tbody>");
-        return "<table>\n<thead>\n" + e85 + "</thead>\n" + t66 + "</table>\n";
+    table(e88, t68) {
+        t68 && (t68 = "<tbody>" + t68 + "</tbody>");
+        return "<table>\n<thead>\n" + e88 + "</thead>\n" + t68 + "</table>\n";
     }
-    tablerow(e86) {
-        return "<tr>\n" + e86 + "</tr>\n";
+    tablerow(e89) {
+        return "<tr>\n" + e89 + "</tr>\n";
     }
-    tablecell(e87, t67) {
-        const n38 = t67.header ? "th" : "td";
-        const r27 = t67.align ? "<" + n38 + ' align="' + t67.align + '">' : "<" + n38 + ">";
-        return r27 + e87 + "</" + n38 + ">\n";
+    tablecell(e90, t69) {
+        const n38 = t69.header ? "th" : "td";
+        const r27 = t69.align ? "<" + n38 + ' align="' + t69.align + '">' : "<" + n38 + ">";
+        return r27 + e90 + "</" + n38 + ">\n";
     }
-    strong(e88) {
-        return "<strong>" + e88 + "</strong>";
+    strong(e91) {
+        return "<strong>" + e91 + "</strong>";
     }
-    em(e89) {
-        return "<em>" + e89 + "</em>";
+    em(e92) {
+        return "<em>" + e92 + "</em>";
     }
-    codespan(e90) {
-        return "<code>" + e90 + "</code>";
+    codespan(e93) {
+        return "<code>" + e93 + "</code>";
     }
     br() {
         return this.options.xhtml ? "<br/>" : "<br>";
     }
-    del(e91) {
-        return "<del>" + e91 + "</del>";
+    del(e94) {
+        return "<del>" + e94 + "</del>";
     }
-    link(e92, t68, n39) {
-        e92 = cleanUrl(this.options.sanitize, this.options.baseUrl, e92);
-        if (null === e92) return n39;
-        let r28 = '<a href="' + escape(e92) + '"';
-        t68 && (r28 += ' title="' + t68 + '"');
+    link(e95, t70, n39) {
+        e95 = cleanUrl(this.options.sanitize, this.options.baseUrl, e95);
+        if (null === e95) return n39;
+        let r28 = '<a href="' + escape(e95) + '"';
+        t70 && (r28 += ' title="' + t70 + '"');
         r28 += ">" + n39 + "</a>";
         return r28;
     }
-    image(e93, t69, n40) {
-        e93 = cleanUrl(this.options.sanitize, this.options.baseUrl, e93);
-        if (null === e93) return n40;
-        let r29 = '<img src="' + e93 + '" alt="' + n40 + '"';
-        t69 && (r29 += ' title="' + t69 + '"');
+    image(e96, t71, n40) {
+        e96 = cleanUrl(this.options.sanitize, this.options.baseUrl, e96);
+        if (null === e96) return n40;
+        let r29 = '<img src="' + e96 + '" alt="' + n40 + '"';
+        t71 && (r29 += ' title="' + t71 + '"');
         r29 += this.options.xhtml ? "/>" : ">";
         return r29;
     }
-    text(e94) {
-        return e94;
+    text(e97) {
+        return e97;
     }
 }
 class TextRenderer {
-    strong(e95) {
-        return e95;
-    }
-    em(e96) {
-        return e96;
-    }
-    codespan(e97) {
-        return e97;
-    }
-    del(e98) {
+    strong(e98) {
         return e98;
     }
-    html(e99) {
+    em(e99) {
         return e99;
     }
-    text(e100) {
+    codespan(e100) {
         return e100;
+    }
+    del(e101) {
+        return e101;
+    }
+    html(e102) {
+        return e102;
+    }
+    text(e103) {
+        return e103;
     }
     link(e, t, n41) {
         return "" + n41;
@@ -34510,56 +24804,54 @@ class TextRenderer {
 }
 class Slugger {
     constructor(){
-        this.seen = {
-        };
+        this.seen = {};
     }
-    serialize(e101) {
-        return e101.toLowerCase().trim().replace(/<[!\/a-z].*?>/gi, "").replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, "").replace(/\s/g, "-");
+    serialize(e104) {
+        return e104.toLowerCase().trim().replace(/<[!\/a-z].*?>/gi, "").replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, "").replace(/\s/g, "-");
     }
-    getNextSafeSlug(e102, t70) {
-        let n43 = e102;
+    getNextSafeSlug(e105, t72) {
+        let n43 = e105;
         let r30 = 0;
         if (this.seen.hasOwnProperty(n43)) {
-            r30 = this.seen[e102];
+            r30 = this.seen[e105];
             do {
                 r30++;
-                n43 = e102 + "-" + r30;
+                n43 = e105 + "-" + r30;
             }while (this.seen.hasOwnProperty(n43))
         }
-        if (!t70) {
-            this.seen[e102] = r30;
+        if (!t72) {
+            this.seen[e105] = r30;
             this.seen[n43] = 0;
         }
         return n43;
     }
-    slug(e103, t71 = {
-    }) {
-        const n44 = this.serialize(e103);
-        return this.getNextSafeSlug(n44, t71.dryrun);
+    slug(e106, t73 = {}) {
+        const n44 = this.serialize(e106);
+        return this.getNextSafeSlug(n44, t73.dryrun);
     }
 }
 class Parser {
-    constructor(t72){
-        this.options = t72 || e;
+    constructor(t74){
+        this.options = t74 || e;
         this.options.renderer = this.options.renderer || new Renderer;
         this.renderer = this.options.renderer;
         this.renderer.options = this.options;
         this.textRenderer = new TextRenderer;
         this.slugger = new Slugger;
     }
-    static parse(e104, t73) {
-        const n45 = new Parser(t73);
-        return n45.parse(e104);
+    static parse(e107, t75) {
+        const n45 = new Parser(t75);
+        return n45.parse(e107);
     }
-    static parseInline(e105, t74) {
-        const n46 = new Parser(t74);
-        return n46.parseInline(e105);
+    static parseInline(e108, t76) {
+        const n46 = new Parser(t76);
+        return n46.parseInline(e108);
     }
-    parse(e106, t75 = true) {
+    parse(e109, t77 = true) {
         let n47, r31, s14, i9, l6, a4, o4, c2, h2, p2, u2, g2, d2, k2, f2, m2, x2, b1, w1, _1 = "";
-        const y1 = e106.length;
+        const y1 = e109.length;
         for(n47 = 0; n47 < y1; n47++){
-            p2 = e106[n47];
+            p2 = e109[n47];
             if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[p2.type]) {
                 w1 = this.options.extensions.renderers[p2.type].call({
                     parser: this
@@ -34654,31 +24946,31 @@ class Parser {
                     continue;
                 case "text":
                     h2 = p2.tokens ? this.parseInline(p2.tokens) : p2.text;
-                    while(n47 + 1 < y1 && "text" === e106[n47 + 1].type){
-                        p2 = e106[++n47];
+                    while(n47 + 1 < y1 && "text" === e109[n47 + 1].type){
+                        p2 = e109[++n47];
                         h2 += "\n" + (p2.tokens ? this.parseInline(p2.tokens) : p2.text);
                     }
-                    _1 += t75 ? this.renderer.paragraph(h2) : h2;
+                    _1 += t77 ? this.renderer.paragraph(h2) : h2;
                     continue;
                 default:
                     {
-                        const e107 = 'Token with "' + p2.type + '" type was not found.';
+                        const e110 = 'Token with "' + p2.type + '" type was not found.';
                         if (this.options.silent) {
-                            console.error(e107);
+                            console.error(e110);
                             return;
                         }
-                        throw new Error(e107);
+                        throw new Error(e110);
                     }
             }
         }
         return _1;
     }
-    parseInline(e108, t76) {
-        t76 = t76 || this.renderer;
+    parseInline(e111, t78) {
+        t78 = t78 || this.renderer;
         let n48, r32, s15, i10 = "";
-        const l7 = e108.length;
+        const l7 = e111.length;
         for(n48 = 0; n48 < l7; n48++){
-            r32 = e108[n48];
+            r32 = e111[n48];
             if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[r32.type]) {
                 s15 = this.options.extensions.renderers[r32.type].call({
                     parser: this
@@ -34701,92 +24993,90 @@ class Parser {
             }
             switch(r32.type){
                 case "escape":
-                    i10 += t76.text(r32.text);
+                    i10 += t78.text(r32.text);
                     break;
                 case "html":
-                    i10 += t76.html(r32.text);
+                    i10 += t78.html(r32.text);
                     break;
                 case "link":
-                    i10 += t76.link(r32.href, r32.title, this.parseInline(r32.tokens, t76));
+                    i10 += t78.link(r32.href, r32.title, this.parseInline(r32.tokens, t78));
                     break;
                 case "image":
-                    i10 += t76.image(r32.href, r32.title, r32.text);
+                    i10 += t78.image(r32.href, r32.title, r32.text);
                     break;
                 case "strong":
-                    i10 += t76.strong(this.parseInline(r32.tokens, t76));
+                    i10 += t78.strong(this.parseInline(r32.tokens, t78));
                     break;
                 case "em":
-                    i10 += t76.em(this.parseInline(r32.tokens, t76));
+                    i10 += t78.em(this.parseInline(r32.tokens, t78));
                     break;
                 case "codespan":
-                    i10 += t76.codespan(r32.text);
+                    i10 += t78.codespan(r32.text);
                     break;
                 case "br":
-                    i10 += t76.br();
+                    i10 += t78.br();
                     break;
                 case "del":
-                    i10 += t76.del(this.parseInline(r32.tokens, t76));
+                    i10 += t78.del(this.parseInline(r32.tokens, t78));
                     break;
                 case "text":
-                    i10 += t76.text(r32.text);
+                    i10 += t78.text(r32.text);
                     break;
                 default:
                     {
-                        const e109 = 'Token with "' + r32.type + '" type was not found.';
+                        const e112 = 'Token with "' + r32.type + '" type was not found.';
                         if (this.options.silent) {
-                            console.error(e109);
+                            console.error(e112);
                             return;
                         }
-                        throw new Error(e109);
+                        throw new Error(e112);
                     }
             }
         }
         return i10;
     }
 }
-function marked(e110, t77, n49) {
-    if ("undefined" === typeof e110 || null === e110) throw new Error("marked(): input parameter is undefined or null");
-    if ("string" !== typeof e110) throw new Error("marked(): input parameter is of type " + Object.prototype.toString.call(e110) + ", string expected");
-    if ("function" === typeof t77) {
-        n49 = t77;
-        t77 = null;
+function marked(e113, t79, n49) {
+    if ("undefined" === typeof e113 || null === e113) throw new Error("marked(): input parameter is undefined or null");
+    if ("string" !== typeof e113) throw new Error("marked(): input parameter is of type " + Object.prototype.toString.call(e113) + ", string expected");
+    if ("function" === typeof t79) {
+        n49 = t79;
+        t79 = null;
     }
-    t77 = merge({
-    }, marked.defaults, t77 || {
-    });
-    checkSanitizeDeprecation(t77);
+    t79 = merge({}, marked.defaults, t79 || {});
+    checkSanitizeDeprecation(t79);
     if (n49) {
-        const r33 = t77.highlight;
+        const r33 = t79.highlight;
         let s16;
         try {
-            s16 = Lexer.lex(e110, t77);
-        } catch (e111) {
-            return n49(e111);
+            s16 = Lexer.lex(e113, t79);
+        } catch (e114) {
+            return n49(e114);
         }
-        const done = function(e112) {
-            let i12;
-            if (!e112) try {
-                t77.walkTokens && marked.walkTokens(s16, t77.walkTokens);
-                i12 = Parser.parse(s16, t77);
-            } catch (t78) {
-                e112 = t78;
+        const done = function(e115) {
+            let i13;
+            if (!e115) try {
+                t79.walkTokens && marked.walkTokens(s16, t79.walkTokens);
+                i13 = Parser.parse(s16, t79);
+            } catch (t80) {
+                e115 = t80;
             }
-            t77.highlight = r33;
-            return e112 ? n49(e112) : n49(null, i12);
+            t79.highlight = r33;
+            return e115 ? n49(e115) : n49(null, i13);
         };
         if (!r33 || r33.length < 3) return done();
-        delete t77.highlight;
+        delete t79.highlight;
         if (!s16.length) return done();
         let i11 = 0;
-        marked.walkTokens(s16, function(e113) {
-            if ("code" === e113.type) {
+        marked.walkTokens(s16, function(e116) {
+            if ("code" === e116.type) {
                 i11++;
                 setTimeout(()=>{
-                    r33(e113.text, e113.lang, function(t79, n50) {
-                        if (t79) return done(t79);
-                        if (null != n50 && n50 !== e113.text) {
-                            e113.text = n50;
-                            e113.escaped = true;
+                    r33(e116.text, e116.lang, function(t81, n50) {
+                        if (t81) return done(t81);
+                        if (null != n50 && n50 !== e116.text) {
+                            e116.text = n50;
+                            e116.escaped = true;
                         }
                         i11--;
                         0 === i11 && done();
@@ -34796,127 +25086,122 @@ function marked(e110, t77, n49) {
         });
         0 === i11 && done();
     } else try {
-        const n51 = Lexer.lex(e110, t77);
-        t77.walkTokens && marked.walkTokens(n51, t77.walkTokens);
-        return Parser.parse(n51, t77);
-    } catch (e114) {
-        e114.message += "\nPlease report this to https://github.com/markedjs/marked.";
-        if (t77.silent) return "<p>An error occurred:</p><pre>" + escape(e114.message + "", true) + "</pre>";
-        throw e114;
+        const n51 = Lexer.lex(e113, t79);
+        t79.walkTokens && marked.walkTokens(n51, t79.walkTokens);
+        return Parser.parse(n51, t79);
+    } catch (e117) {
+        e117.message += "\nPlease report this to https://github.com/markedjs/marked.";
+        if (t79.silent) return "<p>An error occurred:</p><pre>" + escape(e117.message + "", true) + "</pre>";
+        throw e117;
     }
 }
-marked.options = marked.setOptions = function(e115) {
-    merge(marked.defaults, e115);
+marked.options = marked.setOptions = function(e118) {
+    merge(marked.defaults, e118);
     changeDefaults(marked.defaults);
     return marked;
 };
 marked.getDefaults = getDefaults;
 marked.defaults = e;
-marked.use = function(...e116) {
-    const t80 = merge({
-    }, ...e116);
+marked.use = function(...e119) {
+    const t82 = merge({}, ...e119);
     const n52 = marked.defaults.extensions || {
-        renderers: {
-        },
-        childTokens: {
-        }
+        renderers: {},
+        childTokens: {}
     };
     let r34;
-    e116.forEach((e117)=>{
-        if (e117.extensions) {
+    e119.forEach((e120)=>{
+        if (e120.extensions) {
             r34 = true;
-            e117.extensions.forEach((e118)=>{
-                if (!e118.name) throw new Error("extension name required");
-                if (e118.renderer) {
-                    const t81 = n52.renderers ? n52.renderers[e118.name] : null;
-                    n52.renderers[e118.name] = t81 ? function(...n53) {
-                        let r35 = e118.renderer.apply(this, n53);
-                        false === r35 && (r35 = t81.apply(this, n53));
+            e120.extensions.forEach((e121)=>{
+                if (!e121.name) throw new Error("extension name required");
+                if (e121.renderer) {
+                    const t83 = n52.renderers ? n52.renderers[e121.name] : null;
+                    n52.renderers[e121.name] = t83 ? function(...n53) {
+                        let r35 = e121.renderer.apply(this, n53);
+                        false === r35 && (r35 = t83.apply(this, n53));
                         return r35;
-                    } : e118.renderer;
+                    } : e121.renderer;
                 }
-                if (e118.tokenizer) {
-                    if (!e118.level || "block" !== e118.level && "inline" !== e118.level) throw new Error("extension level must be 'block' or 'inline'");
-                    n52[e118.level] ? n52[e118.level].unshift(e118.tokenizer) : n52[e118.level] = [
-                        e118.tokenizer
+                if (e121.tokenizer) {
+                    if (!e121.level || "block" !== e121.level && "inline" !== e121.level) throw new Error("extension level must be 'block' or 'inline'");
+                    n52[e121.level] ? n52[e121.level].unshift(e121.tokenizer) : n52[e121.level] = [
+                        e121.tokenizer
                     ];
-                    e118.start && ("block" === e118.level ? n52.startBlock ? n52.startBlock.push(e118.start) : n52.startBlock = [
-                        e118.start
-                    ] : "inline" === e118.level && (n52.startInline ? n52.startInline.push(e118.start) : n52.startInline = [
-                        e118.start
+                    e121.start && ("block" === e121.level ? n52.startBlock ? n52.startBlock.push(e121.start) : n52.startBlock = [
+                        e121.start
+                    ] : "inline" === e121.level && (n52.startInline ? n52.startInline.push(e121.start) : n52.startInline = [
+                        e121.start
                     ]));
                 }
-                e118.childTokens && (n52.childTokens[e118.name] = e118.childTokens);
+                e121.childTokens && (n52.childTokens[e121.name] = e121.childTokens);
             });
         }
-        if (e117.renderer) {
+        if (e120.renderer) {
             const n54 = marked.defaults.renderer || new Renderer;
-            for(const t in e117.renderer){
+            for(const t in e120.renderer){
                 const r36 = n54[t];
                 n54[t] = (...s17)=>{
-                    let i13 = e117.renderer[t].apply(n54, s17);
-                    false === i13 && (i13 = r36.apply(n54, s17));
-                    return i13;
-                };
-            }
-            t80.renderer = n54;
-        }
-        if (e117.tokenizer) {
-            const n55 = marked.defaults.tokenizer || new Tokenizer;
-            for(const t in e117.tokenizer){
-                const r37 = n55[t];
-                n55[t] = (...s18)=>{
-                    let i14 = e117.tokenizer[t].apply(n55, s18);
-                    false === i14 && (i14 = r37.apply(n55, s18));
+                    let i14 = e120.renderer[t].apply(n54, s17);
+                    false === i14 && (i14 = r36.apply(n54, s17));
                     return i14;
                 };
             }
-            t80.tokenizer = n55;
+            t82.renderer = n54;
         }
-        if (e117.walkTokens) {
+        if (e120.tokenizer) {
+            const n55 = marked.defaults.tokenizer || new Tokenizer;
+            for(const t in e120.tokenizer){
+                const r37 = n55[t];
+                n55[t] = (...s18)=>{
+                    let i15 = e120.tokenizer[t].apply(n55, s18);
+                    false === i15 && (i15 = r37.apply(n55, s18));
+                    return i15;
+                };
+            }
+            t82.tokenizer = n55;
+        }
+        if (e120.walkTokens) {
             const n56 = marked.defaults.walkTokens;
-            t80.walkTokens = function(t82) {
-                e117.walkTokens.call(this, t82);
-                n56 && n56.call(this, t82);
+            t82.walkTokens = function(t84) {
+                e120.walkTokens.call(this, t84);
+                n56 && n56.call(this, t84);
             };
         }
-        r34 && (t80.extensions = n52);
-        marked.setOptions(t80);
+        r34 && (t82.extensions = n52);
+        marked.setOptions(t82);
     });
 };
-marked.walkTokens = function(e119, t83) {
-    for (const n58 of e119){
-        t83.call(marked, n58);
+marked.walkTokens = function(e122, t85) {
+    for (const n58 of e122){
+        t85.call(marked, n58);
         switch(n58.type){
             case "table":
-                for (const e121 of n58.header)marked.walkTokens(e121.tokens, t83);
-                for (const e120 of n58.rows)for (const n57 of e120)marked.walkTokens(n57.tokens, t83);
+                for (const e124 of n58.header)marked.walkTokens(e124.tokens, t85);
+                for (const e123 of n58.rows)for (const n57 of e123)marked.walkTokens(n57.tokens, t85);
                 break;
             case "list":
-                marked.walkTokens(n58.items, t83);
+                marked.walkTokens(n58.items, t85);
                 break;
             default:
                 marked.defaults.extensions && marked.defaults.extensions.childTokens && marked.defaults.extensions.childTokens[n58.type] ? marked.defaults.extensions.childTokens[n58.type].forEach(function(e) {
-                    marked.walkTokens(n58[e], t83);
-                }) : n58.tokens && marked.walkTokens(n58.tokens, t83);
+                    marked.walkTokens(n58[e], t85);
+                }) : n58.tokens && marked.walkTokens(n58.tokens, t85);
         }
     }
 };
-marked.parseInline = function(e122, t84) {
-    if ("undefined" === typeof e122 || null === e122) throw new Error("marked.parseInline(): input parameter is undefined or null");
-    if ("string" !== typeof e122) throw new Error("marked.parseInline(): input parameter is of type " + Object.prototype.toString.call(e122) + ", string expected");
-    t84 = merge({
-    }, marked.defaults, t84 || {
-    });
-    checkSanitizeDeprecation(t84);
+marked.parseInline = function(e125, t86) {
+    if ("undefined" === typeof e125 || null === e125) throw new Error("marked.parseInline(): input parameter is undefined or null");
+    if ("string" !== typeof e125) throw new Error("marked.parseInline(): input parameter is of type " + Object.prototype.toString.call(e125) + ", string expected");
+    t86 = merge({}, marked.defaults, t86 || {});
+    checkSanitizeDeprecation(t86);
     try {
-        const n59 = Lexer.lexInline(e122, t84);
-        t84.walkTokens && marked.walkTokens(n59, t84.walkTokens);
-        return Parser.parseInline(n59, t84);
-    } catch (e123) {
-        e123.message += "\nPlease report this to https://github.com/markedjs/marked.";
-        if (t84.silent) return "<p>An error occurred:</p><pre>" + escape(e123.message + "", true) + "</pre>";
-        throw e123;
+        const n59 = Lexer.lexInline(e125, t86);
+        t86.walkTokens && marked.walkTokens(n59, t86.walkTokens);
+        return Parser.parseInline(n59, t86);
+    } catch (e126) {
+        e126.message += "\nPlease report this to https://github.com/markedjs/marked.";
+        if (t86.silent) return "<p>An error occurred:</p><pre>" + escape(e126.message + "", true) + "</pre>";
+        throw e126;
     }
 };
 marked.Parser = Parser;
@@ -34936,8 +25221,7 @@ marked.parseInline;
 Parser.parse;
 Lexer.lex;
 var r2 = "undefined" !== typeof globalThis ? globalThis : "undefined" !== typeof self ? self : global;
-var e1 = {
-};
+var e1 = {};
 var a2 = {
     exports: e1
 };
@@ -34948,7 +25232,7 @@ var a2 = {
     u12.global !== u12 && u12.window !== u12 || (t11 = u12);
     var c12 = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
     var l12 = /[\x01-\x7F]/g;
-    var i110 = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
+    var i12 = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
     var n3 = /<\u20D2|=\u20E5|>\u20D2|\u205F\u200A|\u219D\u0338|\u2202\u0338|\u2220\u20D2|\u2229\uFE00|\u222A\uFE00|\u223C\u20D2|\u223D\u0331|\u223E\u0333|\u2242\u0338|\u224B\u0338|\u224D\u20D2|\u224E\u0338|\u224F\u0338|\u2250\u0338|\u2261\u20E5|\u2264\u20D2|\u2265\u20D2|\u2266\u0338|\u2267\u0338|\u2268\uFE00|\u2269\uFE00|\u226A\u0338|\u226A\u20D2|\u226B\u0338|\u226B\u20D2|\u227F\u0338|\u2282\u20D2|\u2283\u20D2|\u228A\uFE00|\u228B\uFE00|\u228F\u0338|\u2290\u0338|\u2293\uFE00|\u2294\uFE00|\u22B4\u20D2|\u22B5\u20D2|\u22D8\u0338|\u22D9\u0338|\u22DA\uFE00|\u22DB\uFE00|\u22F5\u0338|\u22F9\u0338|\u2933\u0338|\u29CF\u0338|\u29D0\u0338|\u2A6D\u0338|\u2A70\u0338|\u2A7D\u0338|\u2A7E\u0338|\u2AA1\u0338|\u2AA2\u0338|\u2AAC\uFE00|\u2AAD\uFE00|\u2AAF\u0338|\u2AB0\u0338|\u2AC5\u0338|\u2AC6\u0338|\u2ACB\uFE00|\u2ACC\uFE00|\u2AFD\u20E5|[\xA0-\u0113\u0116-\u0122\u0124-\u012B\u012E-\u014D\u0150-\u017E\u0192\u01B5\u01F5\u0237\u02C6\u02C7\u02D8-\u02DD\u0311\u0391-\u03A1\u03A3-\u03A9\u03B1-\u03C9\u03D1\u03D2\u03D5\u03D6\u03DC\u03DD\u03F0\u03F1\u03F5\u03F6\u0401-\u040C\u040E-\u044F\u0451-\u045C\u045E\u045F\u2002-\u2005\u2007-\u2010\u2013-\u2016\u2018-\u201A\u201C-\u201E\u2020-\u2022\u2025\u2026\u2030-\u2035\u2039\u203A\u203E\u2041\u2043\u2044\u204F\u2057\u205F-\u2063\u20AC\u20DB\u20DC\u2102\u2105\u210A-\u2113\u2115-\u211E\u2122\u2124\u2127-\u2129\u212C\u212D\u212F-\u2131\u2133-\u2138\u2145-\u2148\u2153-\u215E\u2190-\u219B\u219D-\u21A7\u21A9-\u21AE\u21B0-\u21B3\u21B5-\u21B7\u21BA-\u21DB\u21DD\u21E4\u21E5\u21F5\u21FD-\u2205\u2207-\u2209\u220B\u220C\u220F-\u2214\u2216-\u2218\u221A\u221D-\u2238\u223A-\u2257\u2259\u225A\u225C\u225F-\u2262\u2264-\u228B\u228D-\u229B\u229D-\u22A5\u22A7-\u22B0\u22B2-\u22BB\u22BD-\u22DB\u22DE-\u22E3\u22E6-\u22F7\u22F9-\u22FE\u2305\u2306\u2308-\u2310\u2312\u2313\u2315\u2316\u231C-\u231F\u2322\u2323\u232D\u232E\u2336\u233D\u233F\u237C\u23B0\u23B1\u23B4-\u23B6\u23DC-\u23DF\u23E2\u23E7\u2423\u24C8\u2500\u2502\u250C\u2510\u2514\u2518\u251C\u2524\u252C\u2534\u253C\u2550-\u256C\u2580\u2584\u2588\u2591-\u2593\u25A1\u25AA\u25AB\u25AD\u25AE\u25B1\u25B3-\u25B5\u25B8\u25B9\u25BD-\u25BF\u25C2\u25C3\u25CA\u25CB\u25EC\u25EF\u25F8-\u25FC\u2605\u2606\u260E\u2640\u2642\u2660\u2663\u2665\u2666\u266A\u266D-\u266F\u2713\u2717\u2720\u2736\u2758\u2772\u2773\u27C8\u27C9\u27E6-\u27ED\u27F5-\u27FA\u27FC\u27FF\u2902-\u2905\u290C-\u2913\u2916\u2919-\u2920\u2923-\u292A\u2933\u2935-\u2939\u293C\u293D\u2945\u2948-\u294B\u294E-\u2976\u2978\u2979\u297B-\u297F\u2985\u2986\u298B-\u2996\u299A\u299C\u299D\u29A4-\u29B7\u29B9\u29BB\u29BC\u29BE-\u29C5\u29C9\u29CD-\u29D0\u29DC-\u29DE\u29E3-\u29E5\u29EB\u29F4\u29F6\u2A00-\u2A02\u2A04\u2A06\u2A0C\u2A0D\u2A10-\u2A17\u2A22-\u2A27\u2A29\u2A2A\u2A2D-\u2A31\u2A33-\u2A3C\u2A3F\u2A40\u2A42-\u2A4D\u2A50\u2A53-\u2A58\u2A5A-\u2A5D\u2A5F\u2A66\u2A6A\u2A6D-\u2A75\u2A77-\u2A9A\u2A9D-\u2AA2\u2AA4-\u2AB0\u2AB3-\u2AC8\u2ACB\u2ACC\u2ACF-\u2ADB\u2AE4\u2AE6-\u2AE9\u2AEB-\u2AF3\u2AFD\uFB00-\uFB04]|\uD835[\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDCCF\uDD04\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDD6B]/g;
     var p12 = {
         "­": "shy",
@@ -38870,8 +29154,7 @@ var a2 = {
         1114111
     ];
     var D1 = String.fromCharCode;
-    var y1 = {
-    };
+    var y1 = {};
     var A1 = y1.hasOwnProperty;
     var has = function(r12, e11) {
         return A1.call(r12, e11);
@@ -38884,8 +29167,7 @@ var a2 = {
     };
     var merge1 = function(r3, e3) {
         if (!r3) return e3;
-        var a21 = {
-        };
+        var a21 = {};
         var t3;
         for(t3 in e3)a21[t3] = has(r3, t3) ? r3[t3] : e3[t3];
         return a21;
@@ -38951,7 +29233,7 @@ var a2 = {
             var a5 = r11.charCodeAt(1);
             var t5 = 1024 * (e6 - 55296) + a5 - 56320 + 65536;
             return u2(t5);
-        }).replace(i110, escapeBmpSymbol);
+        }).replace(i12, escapeBmpSymbol);
     };
     encode.options = {
         allowUnsafeSymbols: false,
@@ -38964,7 +29246,7 @@ var a2 = {
         e7 = merge1(e7, decode.options);
         var a6 = e7.strict;
         a6 && m1.test(r12) && parseError("malformed character reference");
-        return r12.replace(b1, function(r13, t6, o3, s4, u3, c3, l2, i20, n) {
+        return r12.replace(b1, function(r13, t6, o3, s4, u3, c2, l2, i4, n) {
             var p2;
             var d2;
             var g2;
@@ -38987,14 +29269,14 @@ var a2 = {
             }
             if (u3) {
                 g2 = u3;
-                d2 = c3;
+                d2 = c2;
                 a6 && !d2 && parseError("character reference was not terminated by a semicolon");
                 p2 = parseInt(g2, 10);
                 return codePointToSymbol(p2, a6);
             }
             if (l2) {
                 m2 = l2;
-                d2 = i20;
+                d2 = i4;
                 a6 && !d2 && parseError("character reference was not terminated by a semicolon");
                 p2 = parseInt(m2, 16);
                 return codePointToSymbol(p2, a6);
@@ -39025,16 +29307,13 @@ var a2 = {
 })(e1);
 var t2 = a2.exports;
 var e2 = "undefined" !== typeof globalThis ? globalThis : "undefined" !== typeof self ? self : global;
-var t3 = {
-};
-var a3 = "undefined" !== typeof window ? window : "undefined" !== typeof WorkerGlobalScope && self instanceof WorkerGlobalScope ? self : {
-};
+var t3 = {};
+var a3 = "undefined" !== typeof window ? window : "undefined" !== typeof WorkerGlobalScope && self instanceof WorkerGlobalScope ? self : {};
 var n2 = function(t12) {
     var a13 = /(?:^|\s)lang(?:uage)?-([\w-]+)(?=\s|$)/i;
     var n12 = 0;
-    var r13 = {
-    };
-    var i111 = {
+    var r13 = {};
+    var i13 = {
         manual: t12.Prism && t12.Prism.manual,
         disableWorkerMessageHandler: t12.Prism && t12.Prism.disableWorkerMessageHandler,
         util: {
@@ -39051,21 +29330,19 @@ var n2 = function(t12) {
                 return e3.__id;
             },
             clone: function deepClone(e4, t21) {
-                t21 = t21 || {
-                };
+                t21 = t21 || {};
                 var a22;
                 var n21;
-                switch(i111.util.type(e4)){
+                switch(i13.util.type(e4)){
                     case "Object":
-                        n21 = i111.util.objId(e4);
+                        n21 = i13.util.objId(e4);
                         if (t21[n21]) return t21[n21];
-                        a22 = {
-                        };
+                        a22 = {};
                         t21[n21] = a22;
                         for(var r22 in e4)e4.hasOwnProperty(r22) && (a22[r22] = deepClone(e4[r22], t21));
                         return a22;
                     case "Array":
-                        n21 = i111.util.objId(e4);
+                        n21 = i13.util.objId(e4);
                         if (t21[n21]) return t21[n21];
                         a22 = [];
                         t21[n21] = a22;
@@ -39120,34 +29397,32 @@ var n2 = function(t12) {
             text: r13,
             txt: r13,
             extend: function(e, t7) {
-                var a4 = i111.util.clone(i111.languages[e]);
+                var a4 = i13.util.clone(i13.languages[e]);
                 for(var n in t7)a4[n] = t7[n];
                 return a4;
             },
             insertBefore: function(t8, a5, n5, r4) {
-                r4 = r4 || i111.languages;
+                r4 = r4 || i13.languages;
                 var s5 = r4[t8];
-                var l3 = {
-                };
+                var l3 = {};
                 for(var o4 in s5)if (s5.hasOwnProperty(o4)) {
                     if (o4 == a5) for(var u4 in n5)n5.hasOwnProperty(u4) && (l3[u4] = n5[u4]);
                     n5.hasOwnProperty(o4) || (l3[o4] = s5[o4]);
                 }
                 var g3 = r4[t8];
                 r4[t8] = l3;
-                i111.languages.DFS(i111.languages, function(a6, n6) {
+                i13.languages.DFS(i13.languages, function(a6, n6) {
                     n6 === g3 && a6 != t8 && ((this || e2)[a6] = l3);
                 });
                 return l3;
             },
             DFS: function DFS(e10, t9, a7, n7) {
-                n7 = n7 || {
-                };
-                var r = i111.util.objId;
+                n7 = n7 || {};
+                var r = i13.util.objId;
                 for(var s6 in e10)if (e10.hasOwnProperty(s6)) {
                     t9.call(e10, s6, e10[s6], a7 || s6);
                     var l4 = e10[s6];
-                    var o5 = i111.util.type(l4);
+                    var o5 = i13.util.type(l4);
                     if ("Object" !== o5 || n7[r(l4)]) {
                         if ("Array" === o5 && !n7[r(l4)]) {
                             n7[r(l4)] = true;
@@ -39160,10 +29435,9 @@ var n2 = function(t12) {
                 }
             }
         },
-        plugins: {
-        },
+        plugins: {},
         highlightAll: function(e11, t10) {
-            i111.highlightAllUnder(document, e11, t10);
+            i13.highlightAllUnder(document, e11, t10);
         },
         highlightAllUnder: function(e12, t11, a8) {
             var n8 = {
@@ -39171,17 +29445,17 @@ var n2 = function(t12) {
                 container: e12,
                 selector: 'code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code'
             };
-            i111.hooks.run("before-highlightall", n8);
+            i13.hooks.run("before-highlightall", n8);
             n8.elements = Array.prototype.slice.apply(n8.container.querySelectorAll(n8.selector));
-            i111.hooks.run("before-all-elements-highlight", n8);
-            for(var r5, s = 0; r5 = n8.elements[s++];)i111.highlightElement(r5, true === t11, n8.callback);
+            i13.hooks.run("before-all-elements-highlight", n8);
+            for(var r5, s = 0; r5 = n8.elements[s++];)i13.highlightElement(r5, true === t11, n8.callback);
         },
         highlightElement: function(e13, a9, n9) {
-            var r6 = i111.util.getLanguage(e13);
-            var s7 = i111.languages[r6];
-            i111.util.setLanguage(e13, r6);
+            var r6 = i13.util.getLanguage(e13);
+            var s7 = i13.languages[r6];
+            i13.util.setLanguage(e13, r6);
             var l5 = e13.parentElement;
-            l5 && "pre" === l5.nodeName.toLowerCase() && i111.util.setLanguage(l5, r6);
+            l5 && "pre" === l5.nodeName.toLowerCase() && i13.util.setLanguage(l5, r6);
             var o6 = e13.textContent;
             var u5 = {
                 element: e13,
@@ -39191,19 +29465,19 @@ var n2 = function(t12) {
             };
             function insertHighlightedCode(e14) {
                 u5.highlightedCode = e14;
-                i111.hooks.run("before-insert", u5);
+                i13.hooks.run("before-insert", u5);
                 u5.element.innerHTML = u5.highlightedCode;
-                i111.hooks.run("after-highlight", u5);
-                i111.hooks.run("complete", u5);
+                i13.hooks.run("after-highlight", u5);
+                i13.hooks.run("complete", u5);
                 n9 && n9.call(u5.element);
             }
-            i111.hooks.run("before-sanity-check", u5);
+            i13.hooks.run("before-sanity-check", u5);
             l5 = u5.element.parentElement;
             l5 && "pre" === l5.nodeName.toLowerCase() && !l5.hasAttribute("tabindex") && l5.setAttribute("tabindex", "0");
             if (u5.code) {
-                i111.hooks.run("before-highlight", u5);
+                i13.hooks.run("before-highlight", u5);
                 if (u5.grammar) if (a9 && t12.Worker) {
-                    var g4 = new Worker(i111.filename);
+                    var g4 = new Worker(i13.filename);
                     g4.onmessage = function(e15) {
                         insertHighlightedCode(e15.data);
                     };
@@ -39212,10 +29486,10 @@ var n2 = function(t12) {
                         code: u5.code,
                         immediateClose: true
                     }));
-                } else insertHighlightedCode(i111.highlight(u5.code, u5.grammar, u5.language));
-                else insertHighlightedCode(i111.util.encode(u5.code));
+                } else insertHighlightedCode(i13.highlight(u5.code, u5.grammar, u5.language));
+                else insertHighlightedCode(i13.util.encode(u5.code));
             } else {
-                i111.hooks.run("complete", u5);
+                i13.hooks.run("complete", u5);
                 n9 && n9.call(u5.element);
             }
         },
@@ -39225,10 +29499,10 @@ var n2 = function(t12) {
                 grammar: t12,
                 language: a10
             };
-            i111.hooks.run("before-tokenize", n10);
-            n10.tokens = i111.tokenize(n10.code, n10.grammar);
-            i111.hooks.run("after-tokenize", n10);
-            return Token.stringify(i111.util.encode(n10.tokens), n10.language);
+            i13.hooks.run("before-tokenize", n10);
+            n10.tokens = i13.tokenize(n10.code, n10.grammar);
+            i13.hooks.run("after-tokenize", n10);
+            return Token.stringify(i13.util.encode(n10.tokens), n10.language);
         },
         tokenize: function(e17, t13) {
             var a11 = t13.rest;
@@ -39242,21 +29516,20 @@ var n2 = function(t12) {
             return toArray(r7);
         },
         hooks: {
-            all: {
-            },
+            all: {},
             add: function(e, t14) {
-                var a12 = i111.hooks.all;
+                var a12 = i13.hooks.all;
                 a12[e] = a12[e] || [];
                 a12[e].push(t14);
             },
             run: function(e, t15) {
-                var a13 = i111.hooks.all[e];
+                var a13 = i13.hooks.all[e];
                 if (a13 && a13.length) for(var n11, r = 0; n11 = a13[r++];)n11(t15);
             }
         },
         Token: Token
     };
-    t12.Prism = i111;
+    t12.Prism = i13;
     function Token(t16, a14, n12, r8) {
         (this || e2).type = t16;
         (this || e2).content = a14;
@@ -39280,13 +29553,12 @@ var n2 = function(t12) {
                 "token",
                 e18.type
             ],
-            attributes: {
-            },
+            attributes: {},
             language: t17
         };
         var r9 = e18.alias;
         r9 && (Array.isArray(r9) ? Array.prototype.push.apply(n13.classes, r9) : n13.classes.push(r9));
-        i111.hooks.run("wrap", n13);
+        i13.hooks.run("wrap", n13);
         var s8 = "";
         for(var l6 in n13.attributes)s8 += " " + l6 + '="' + (n13.attributes[l6] || "").replace(/"/g, "&quot;") + '"';
         return "<" + n13.tag + ' class="' + n13.classes.join(" ") + '"' + s8 + ">" + n13.content + "</" + n13.tag + ">";
@@ -39295,9 +29567,9 @@ var n2 = function(t12) {
         e20.lastIndex = t18;
         var r10 = e20.exec(a16);
         if (r10 && n14 && r10[1]) {
-            var i21 = r10[1].length;
-            r10.index += i21;
-            r10[0] = r10[0].slice(i21);
+            var i5 = r10[1].length;
+            r10.index += i5;
+            r10[0] = r10[0].slice(i5);
         }
         return r10;
     }
@@ -39310,7 +29582,7 @@ var n2 = function(t12) {
             for(var u6 = 0; u6 < o7.length; ++u6){
                 if (s9 && s9.cause == l7 + "," + u6) return;
                 var g5 = o7[u6];
-                var c4 = g5.inside;
+                var c3 = g5.inside;
                 var d3 = !!g5.lookbehind;
                 var p3 = !!g5.greedy;
                 var h3 = g5.alias;
@@ -39319,34 +29591,34 @@ var n2 = function(t12) {
                     g5.pattern = RegExp(g5.pattern.source, f3 + "g");
                 }
                 var m3 = g5.pattern || g5;
-                for(var v2 = n15.next, b1 = r11; v2 !== t19.tail; b1 += v2.value.length, v2 = v2.next){
-                    if (s9 && b1 >= s9.reach) break;
+                for(var v2 = n15.next, b3 = r11; v2 !== t19.tail; b3 += v2.value.length, v2 = v2.next){
+                    if (s9 && b3 >= s9.reach) break;
                     var y2 = v2.value;
                     if (t19.length > e21.length) return;
                     if (!(y2 instanceof Token)) {
                         var k2 = 1;
                         var F1;
                         if (p3) {
-                            F1 = matchPattern(m3, b1, e21, d3);
+                            F1 = matchPattern(m3, b3, e21, d3);
                             if (!F1 || F1.index >= e21.length) break;
                             var x2 = F1.index;
                             var A2 = F1.index + F1[0].length;
-                            var w2 = b1;
+                            var w2 = b3;
                             w2 += v2.value.length;
                             while(x2 >= w2){
                                 v2 = v2.next;
                                 w2 += v2.value.length;
                             }
                             w2 -= v2.value.length;
-                            b1 = w2;
+                            b3 = w2;
                             if (v2.value instanceof Token) continue;
                             for(var $1 = v2; $1 !== t19.tail && (w2 < A2 || "string" === typeof $1.value); $1 = $1.next){
                                 k2++;
                                 w2 += $1.value.length;
                             }
                             k2--;
-                            y2 = e21.slice(b1, w2);
-                            F1.index -= b1;
+                            y2 = e21.slice(b3, w2);
+                            F1.index -= b3;
                         } else {
                             F1 = matchPattern(m3, 0, y2, d3);
                             if (!F1) continue;
@@ -39355,23 +29627,23 @@ var n2 = function(t12) {
                         var S1 = F1[0];
                         var E2 = y2.slice(0, x2);
                         var C1 = y2.slice(x2 + S1.length);
-                        var _1 = b1 + y2.length;
+                        var _1 = b3 + y2.length;
                         s9 && _1 > s9.reach && (s9.reach = _1);
-                        var j5 = v2.prev;
+                        var j1 = v2.prev;
                         if (E2) {
-                            j5 = addAfter(t19, j5, E2);
-                            b1 += E2.length;
+                            j1 = addAfter(t19, j1, E2);
+                            b3 += E2.length;
                         }
-                        removeRange(t19, j5, k2);
-                        var T1 = new Token(l7, c4 ? i111.tokenize(S1, c4) : S1, h3, S1);
-                        v2 = addAfter(t19, j5, T1);
+                        removeRange(t19, j1, k2);
+                        var T1 = new Token(l7, c3 ? i13.tokenize(S1, c3) : S1, h3, S1);
+                        v2 = addAfter(t19, j1, T1);
                         C1 && addAfter(t19, v2, C1);
                         if (k2 > 1) {
                             var L1 = {
                                 cause: l7 + "," + u6,
                                 reach: _1
                             };
-                            matchGrammar(e21, t19, a17, v2.prev, b1, L1);
+                            matchGrammar(e21, t19, a17, v2.prev, b3, L1);
                             s9 && L1.reach > s9.reach && (s9.reach = L1.reach);
                         }
                     }
@@ -39424,30 +29696,30 @@ var n2 = function(t12) {
         return t23;
     }
     if (!t12.document) {
-        if (!t12.addEventListener) return i111;
-        i111.disableWorkerMessageHandler || t12.addEventListener("message", function(e25) {
+        if (!t12.addEventListener) return i13;
+        i13.disableWorkerMessageHandler || t12.addEventListener("message", function(e25) {
             var a22 = JSON.parse(e25.data);
             var n18 = a22.language;
             var r14 = a22.code;
             var s10 = a22.immediateClose;
-            t12.postMessage(i111.highlight(r14, i111.languages[n18], n18));
+            t12.postMessage(i13.highlight(r14, i13.languages[n18], n18));
             s10 && t12.close();
         }, false);
-        return i111;
+        return i13;
     }
-    var s13 = i111.util.currentScript();
+    var s13 = i13.util.currentScript();
     if (s13) {
-        i111.filename = s13.src;
-        s13.hasAttribute("data-manual") && (i111.manual = true);
+        i13.filename = s13.src;
+        s13.hasAttribute("data-manual") && (i13.manual = true);
     }
     function highlightAutomaticallyCallback() {
-        i111.manual || i111.highlightAll();
+        i13.manual || i13.highlightAll();
     }
-    if (!i111.manual) {
+    if (!i13.manual) {
         var l13 = document.readyState;
         "loading" === l13 || "interactive" === l13 && s13 && s13.defer ? document.addEventListener("DOMContentLoaded", highlightAutomaticallyCallback) : window.requestAnimationFrame ? window.requestAnimationFrame(highlightAutomaticallyCallback) : window.setTimeout(highlightAutomaticallyCallback, 16);
     }
-    return i111;
+    return i13;
 }(a3);
 t3 && (t3 = n2);
 "undefined" !== typeof e2 && (e2.Prism = n2);
@@ -39531,8 +29803,7 @@ n2.hooks.add("wrap", function(e26) {
 });
 Object.defineProperty(n2.languages.markup.tag, "addInlined", {
     value: function addInlined(e27, t) {
-        var a23 = {
-        };
+        var a23 = {};
         a23["language-" + t] = {
             pattern: /(^<!\[CDATA\[)[\s\S]+?(?=\]\]>$)/i,
             lookbehind: true,
@@ -39549,9 +29820,8 @@ Object.defineProperty(n2.languages.markup.tag, "addInlined", {
             pattern: /[\s\S]+/,
             inside: n2.languages[t]
         };
-        var i22 = {
-        };
-        i22[e27] = {
+        var i6 = {};
+        i6[e27] = {
             pattern: RegExp(/(<__[^>]*>)(?:<!\[CDATA\[(?:[^\]]|\](?!\]>))*\]\]>|(?!<!\[CDATA\[)[\s\S])*?(?=<\/__>)/.source.replace(/__/g, function() {
                 return e27;
             }), "i"),
@@ -39559,7 +29829,7 @@ Object.defineProperty(n2.languages.markup.tag, "addInlined", {
             greedy: true,
             inside: r15
         };
-        n2.languages.insertBefore("markup", "cdata", i22);
+        n2.languages.insertBefore("markup", "cdata", i6);
     }
 });
 Object.defineProperty(n2.languages.markup.tag, "addAttribute", {
@@ -39597,8 +29867,7 @@ Object.defineProperty(n2.languages.markup.tag, "addAttribute", {
 n2.languages.html = n2.languages.markup;
 n2.languages.mathml = n2.languages.markup;
 n2.languages.svg = n2.languages.markup;
-n2.languages.xml = n2.languages.extend("markup", {
-});
+n2.languages.xml = n2.languages.extend("markup", {});
 n2.languages.ssml = n2.languages.xml;
 n2.languages.atom = n2.languages.xml;
 n2.languages.rss = n2.languages.xml;
@@ -39811,8 +30080,8 @@ n2.languages.js = n2.languages.javascript;
     if ("undefined" !== typeof n2 && "undefined" !== typeof document) {
         Element.prototype.matches || (Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector);
         var t26 = "Loading…";
-        var FAILURE_MESSAGE = function(e30, t27) {
-            return "✖ Error " + e30 + " while fetching file: " + t27;
+        var FAILURE_MESSAGE = function(e30, t28) {
+            return "✖ Error " + e30 + " while fetching file: " + t28;
         };
         var a25 = "✖ Error: File does not exist or is empty";
         var r16 = {
@@ -39826,60 +30095,60 @@ n2.languages.js = n2.languages.javascript;
             h: "c",
             tex: "latex"
         };
-        var i23 = "data-src-status";
+        var i7 = "data-src-status";
         var s2 = "loading";
         var l8 = "loaded";
         var o13 = "failed";
-        var u7 = "pre[data-src]:not([" + i23 + '="' + l8 + '"]):not([' + i23 + '="' + s2 + '"])';
+        var u7 = "pre[data-src]:not([" + i7 + '="' + l8 + '"]):not([' + i7 + '="' + s2 + '"])';
         n2.hooks.add("before-highlightall", function(e31) {
             e31.selector += ", " + u7;
         });
         n2.hooks.add("before-sanity-check", function(e32) {
-            var a26 = e32.element;
-            if (a26.matches(u7)) {
+            var a27 = e32.element;
+            if (a27.matches(u7)) {
                 e32.code = "";
-                a26.setAttribute(i23, s2);
-                var g6 = a26.appendChild(document.createElement("CODE"));
+                a27.setAttribute(i7, s2);
+                var g6 = a27.appendChild(document.createElement("CODE"));
                 g6.textContent = t26;
-                var c5 = a26.getAttribute("data-src");
+                var c4 = a27.getAttribute("data-src");
                 var d4 = e32.language;
                 if ("none" === d4) {
-                    var p4 = (/\.(\w+)$/.exec(c5) || [
+                    var p4 = (/\.(\w+)$/.exec(c4) || [
                         ,
                         "none"
                     ])[1];
                     d4 = r16[p4] || p4;
                 }
                 n2.util.setLanguage(g6, d4);
-                n2.util.setLanguage(a26, d4);
+                n2.util.setLanguage(a27, d4);
                 var h4 = n2.plugins.autoloader;
                 h4 && h4.loadLanguages(d4);
-                loadFile(c5, function(e33) {
-                    a26.setAttribute(i23, l8);
-                    var t28 = parseRange(a26.getAttribute("data-range"));
-                    if (t28) {
+                loadFile(c4, function(e33) {
+                    a27.setAttribute(i7, l8);
+                    var t29 = parseRange(a27.getAttribute("data-range"));
+                    if (t29) {
                         var r17 = e33.split(/\r\n?|\n/g);
-                        var s14 = t28[0];
-                        var o8 = null == t28[1] ? r17.length : t28[1];
+                        var s14 = t29[0];
+                        var o8 = null == t29[1] ? r17.length : t29[1];
                         s14 < 0 && (s14 += r17.length);
                         s14 = Math.max(0, Math.min(s14 - 1, r17.length));
                         o8 < 0 && (o8 += r17.length);
                         o8 = Math.max(0, Math.min(o8, r17.length));
                         e33 = r17.slice(s14, o8).join("\n");
-                        a26.hasAttribute("data-start") || a26.setAttribute("data-start", String(s14 + 1));
+                        a27.hasAttribute("data-start") || a27.setAttribute("data-start", String(s14 + 1));
                     }
                     g6.textContent = e33;
                     n2.highlightElement(g6);
                 }, function(e34) {
-                    a26.setAttribute(i23, o13);
+                    a27.setAttribute(i7, o13);
                     g6.textContent = e34;
                 });
             }
         });
         n2.plugins.fileHighlight = {
             highlight: function highlight(e35) {
-                var t29 = (e35 || document).querySelectorAll(u7);
-                for(var a27, r = 0; a27 = t29[r++];)n2.highlightElement(a27);
+                var t30 = (e35 || document).querySelectorAll(u7);
+                for(var a28, r = 0; a28 = t30[r++];)n2.highlightElement(a28);
             }
         };
         var g13 = false;
@@ -39891,29 +30160,29 @@ n2.languages.js = n2.languages.javascript;
             n2.plugins.fileHighlight.highlight.apply(this || e2, arguments);
         };
     }
-    function loadFile(e36, t30, n19) {
+    function loadFile(e36, t31, n19) {
         var r18 = new XMLHttpRequest;
         r18.open("GET", e36, true);
         r18.onreadystatechange = function() {
-            4 == r18.readyState && (r18.status < 400 && r18.responseText ? t30(r18.responseText) : r18.status >= 400 ? n19(FAILURE_MESSAGE(r18.status, r18.statusText)) : n19(a25));
+            4 == r18.readyState && (r18.status < 400 && r18.responseText ? t31(r18.responseText) : r18.status >= 400 ? n19(FAILURE_MESSAGE(r18.status, r18.statusText)) : n19(a25));
         };
         r18.send(null);
     }
     function parseRange(e37) {
-        var t31 = /^\s*(\d+)\s*(?:(,)\s*(?:(\d+)\s*)?)?$/.exec(e37 || "");
-        if (t31) {
-            var a28 = Number(t31[1]);
-            var n20 = t31[2];
-            var r19 = t31[3];
+        var t32 = /^\s*(\d+)\s*(?:(,)\s*(?:(\d+)\s*)?)?$/.exec(e37 || "");
+        if (t32) {
+            var a29 = Number(t32[1]);
+            var n20 = t32[2];
+            var r19 = t32[3];
             return n20 ? r19 ? [
-                a28,
+                a29,
                 Number(r19)
             ] : [
-                a28,
+                a29,
                 void 0
             ] : [
-                a28,
-                a28
+                a29,
+                a29
             ];
         }
     }
@@ -39957,8 +30226,7 @@ const pageServingHeaders = {
     "Cache-Control": "s-maxage=1500, public, immutable, stale-while-revalidate=1501",
     Link: `<https://ga.jspm.io>; rel="preconnect",<https://fonts.googleapis.com>; rel="preconnect", <https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css>; rel="preload"; as="style", </style.css>; rel="preload"; as="style", <https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap>; rel="preload"; as="style"`
 };
-function renderMarkdownContent(markdown, opts = {
-}) {
+function renderMarkdownContent(markdown, opts = {}) {
     markdown = emojify(markdown);
     return marked(markdown, {
         gfm: true,
@@ -39969,25 +30237,34 @@ const importMeta = {
     url: "file:///Users/shukla001/@jspm/jspm-packages/server.jsx",
     main: import.meta.main
 };
-const staticAssets = {
-    "/style.css": "./style.css",
-    "/dom-main.js": "./lib/dom-main.js"
+const staticResources = {
+    "/style.css": {
+        path: "./style.css",
+        contentType: "text/css; charset=utf-8"
+    },
+    "/dom-main.js": {
+        path: "./lib/dom-main.js",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/header.js": {
+        path: "./lib/header.js",
+        contentType: "application/javascript; charset=utf-8"
+    }
 };
 async function requestHandler(request) {
     try {
         const { pathname  } = new URL(request.url);
-        const staticFile = staticAssets[pathname];
-        if (staticFile) {
-            const response = await Deno.readFile(staticAsset);
+        const staticResource = staticResources[pathname];
+        if (staticResource) {
+            const response = await Deno.readFile(staticResource.path);
             return new Response(response, {
                 headers: {
-                    "content-type": contentType(lookup(staticAsset))
+                    "content-type": staticResource.contentType
                 }
             });
         }
         if (pathname === "/") {
-            const { objects =[]  } = await getRecentPackages() || {
-            };
+            const { objects =[]  } = await getRecentPackages() || {};
             const indexPage = gt(Ct(FeaturedPackages, {
                 packages: objects
             }));
