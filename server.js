@@ -1997,18 +1997,6 @@ Object.defineProperty(Fe, "VERSION", {
     }
 });
 const at = Fe.__esModule, ct = Fe.VERSION, lt = Fe.printVersion, ut = Fe.defineAsCustomElements, dt = Fe.withStyles, ht = Fe.useContext, pt = Fe.createContext, ft = Fe.Store, mt = Fe.Fragment, gt = Fe.renderSSR, bt = Fe.task, yt = Fe.nodeToString, vt = Fe.hydrateLazy, _t = Fe.jsx, St = Fe.Component, Ot = Fe.tick, jt = Fe.hydrate, wt = Fe.render, Ct = Fe.h, xt = Fe.Visible, Pt = Fe.Suspense, Et = Fe.Router, Mt = Fe.Link, Rt = Fe.Img, Lt = Fe.Helmet;
-function PackageHeader(param) {
-    var homepage = param.homepage, name = param.name, version = param.version, description = param.description;
-    return Ct("div", null, Ct("div", {
-        class: "package-header"
-    }, Ct("div", {
-        class: "package-info"
-    }, Ct("jspm-package-name", null, Ct("h1", null, Ct("a", {
-        href: homepage
-    }, name))), Ct("jspm-package-version", null, version), Ct("jspm-package-description", null, description))), Ct(Lt, null, Ct("style", {
-        "data-page": "package-header"
-    }, "\n        .package-header {\n          display: flex;\n          font-family: \"Major Mono Display\", monospace;\n          flex-wrap: wrap;\n          justify-content: center;\n          align-items: center;\n        }\n        @media(max-width: 479px) {\n          .package-info {\n            text-align: center;\n          }\n        }\n        ")));
-}
 function Readme(param) {
     var __html = param.__html;
     return Ct("jspm-package-readme", null, Ct("div", {
@@ -2155,12 +2143,7 @@ function Footer() {
 }
 function Package(param) {
     var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme;
-    return Ct("div", null, Ct(Header, null), Ct("jspm-package", null, Ct(PackageHeader, {
-        homepage: homepage || "",
-        name: name,
-        description: description,
-        version: version
-    }), Ct("jspm-package-content", null, Ct(Readme, {
+    return Ct("div", null, Ct(Header, null), Ct("jspm-package", null, Ct("jspm-package-content", null, Ct(Readme, {
         __html: readme
     }), Ct(Aside, {
         version: version,
@@ -2169,7 +2152,10 @@ function Package(param) {
         files: files,
         exports: exports,
         keywords: keywords
-    }))), Ct(Footer, null), Ct(Lt, null, Ct("style", {
+    }))), Ct(Footer, null), Ct(Lt, null, Ct("link", {
+        rel: "stylesheet",
+        href: "https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css"
+    }), Ct("style", {
         "data-page": "package-details"
     }, "\n        jspm-package-content {\n          display: flex;\n          flex-direction: row;\n          flex-wrap: wrap;\n        }\n        \n        jspm-package-readme {\n          display: block;\n          width: 800px;\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-package-aside {\n          width: 300px;\n          padding-left: var(--dl-space-space-unit);\n        }\n        \n        jspm-package-name,\n        jspm-package-version,\n        jspm-package-description,\n        jspm-package-license {\n          display: block;\n        }\n        \n        jspm-package-name h1 {\n          font-family: \"Major Mono Display\", monospace;\n          font-size: var(--step-5);\n        }\n        \n        jspm-package-name h1 a {\n          color: black;\n        }\n\n        @media(max-width: 767px) {\n          jspm-package-content {\n            justify-content: space-between;\n          }\n\n          jspm-package-readme {\n            width: 100%;\n          }\n        }\n        ")));
 }
