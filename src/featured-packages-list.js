@@ -1,4 +1,4 @@
-const featuredPackages = [{
+const FEATURED_PACKAGES = [{
   name: "svelte",
   version: "3.46.2",
   description: "Cybernetically enhanced web apps",
@@ -45,4 +45,4 @@ const featuredPackages = [{
   description: "Finite State Machines and Statecharts for the Modern Web.",
 }];
 
-export { featuredPackages };
+export { FEATURED_PACKAGES };

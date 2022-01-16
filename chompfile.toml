@@ -5,7 +5,7 @@ default-task = "deno"
 [[task]]
   name = "deno"
   deps = ["build"]
-  run = "deno run -A server.js"
+  run = "deno run -A --unstable --watch server.js"
 
 [[task]]
   name = "build"

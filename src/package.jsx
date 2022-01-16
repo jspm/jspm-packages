@@ -1,33 +1,25 @@
 import { h, Helmet } from "nano-jsx";
-import { PackageHeader } from "./package-header.js";
 import { Readme } from "./readme.js";
 import { Aside } from "./aside.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
 
-function Package(props) {
-  const {
-    name,
-    description,
-    keywords,
-    version,
-    homepage,
-    license,
-    files,
-    exports,
-    readme,
-  } = props;
+function Package({
+  name,
+  description,
+  keywords,
+  version,
+  homepage,
+  license,
+  files,
+  exports,
+  readme,
+}) {
 
   return (
     <div>
       <Header />
       <jspm-package>
-        <PackageHeader
-          homepage={homepage || ""}
-          name={name}
-          description={description}
-          version={version}
-        />
         <jspm-package-content>
           <Readme __html={readme} />
           <Aside
@@ -43,6 +35,7 @@ function Package(props) {
       <Footer />
 
       <Helmet>
+        <link rel="stylesheet" href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css" />
         <style data-page="package-details">
           {`
         jspm-package-content {

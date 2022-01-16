@@ -1,11 +1,9 @@
 import { h, Helmet } from "nano-jsx";
-import { Logo } from "./logo.js";
 
 function PackageHeader({ homepage, name, version, description }) {
   return (
     <div>
       <div class="package-header">
-        <Logo name={name} version={version} />
         <div class="package-info">
           <jspm-package-name>
             <h1>

@@ -1,9 +1,9 @@
 import { h } from "nano-jsx";
 
-function Readme() {
+function Readme({__html}) {
   return (
     <jspm-package-readme>
-      <package-readme-placeholder></package-readme-placeholder>
+      <div innerHTML={{ __dangerousHtml: __html }} />
     </jspm-package-readme>
   );
 }
