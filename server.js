@@ -1997,36 +1997,11 @@ Object.defineProperty(Fe, "VERSION", {
     }
 });
 const at = Fe.__esModule, ct = Fe.VERSION, lt = Fe.printVersion, ut = Fe.defineAsCustomElements, dt = Fe.withStyles, ht = Fe.useContext, pt = Fe.createContext, ft = Fe.Store, mt = Fe.Fragment, gt = Fe.renderSSR, bt = Fe.task, yt = Fe.nodeToString, vt = Fe.hydrateLazy, _t = Fe.jsx, St = Fe.Component, Ot = Fe.tick, jt = Fe.hydrate, wt = Fe.render, Ct = Fe.h, xt = Fe.Visible, Pt = Fe.Suspense, Et = Fe.Router, Mt = Fe.Link, Rt = Fe.Img, Lt = Fe.Helmet;
-function Logo(param) {
-    var name = param.name, version = param.version;
-    return Ct("jspm-package-logo", null, Ct("div", {
-        class: "scene"
-    }, Ct("div", {
-        class: "cube show-top"
-    }, Ct("div", {
-        class: "cube__face cube__face--front"
-    }, name), Ct("div", {
-        class: "cube__face cube__face--back"
-    }), Ct("div", {
-        class: "cube__face cube__face--right"
-    }, version), Ct("div", {
-        class: "cube__face cube__face--left"
-    }), Ct("div", {
-        class: "cube__face cube__face--top"
-    }, Ct("a", {
-        href: "/"
-    }, "JSPM")), Ct("div", {
-        class: "cube__face cube__face--bottom"
-    }))));
-}
 function PackageHeader(param) {
     var homepage = param.homepage, name = param.name, version = param.version, description = param.description;
     return Ct("div", null, Ct("div", {
         class: "package-header"
-    }, Ct(Logo, {
-        name: name,
-        version: version
-    }), Ct("div", {
+    }, Ct("div", {
         class: "package-info"
     }, Ct("jspm-package-name", null, Ct("h1", null, Ct("a", {
         href: homepage
@@ -2034,8 +2009,13 @@ function PackageHeader(param) {
         "data-page": "package-header"
     }, "\n        .package-header {\n          display: flex;\n          font-family: \"Major Mono Display\", monospace;\n          flex-wrap: wrap;\n          justify-content: center;\n          align-items: center;\n        }\n        @media(max-width: 479px) {\n          .package-info {\n            text-align: center;\n          }\n        }\n        ")));
 }
-function Readme() {
-    return Ct("jspm-package-readme", null, Ct("package-readme-placeholder", null));
+function Readme(param) {
+    var __html = param.__html;
+    return Ct("jspm-package-readme", null, Ct("div", {
+        innerHTML: {
+            __dangerousHtml: __html
+        }
+    }));
 }
 function Seperator() {
     return Ct("div", null, Ct("div", {
@@ -2066,24 +2046,16 @@ function Aside(param) {
         "data-page": "package-files"
     }, "\n          .package-file {\n            display: block;\n            line-height: 1.3;\n          }\n          .package-files {\n            list-style: none;\n            padding-left: 0px;\n            height: 500px;\n            overflow: scroll;\n          }\n          .package-files li {\n            line-height: 1.3;\n          }\n        ")));
 }
-function Header() {
-    return Ct("div", null, Ct("div", {
-        class: "header-header",
-        id: "app-header"
-    }, Ct("div", {
-        class: "header-container"
-    }, Ct("a", {
-        href: "/",
-        class: "header-logo"
-    }), Ct("img", {
-        alt: "image",
-        src: "https://jspm-registry.teleporthq.app/playground_assets/jspm.png",
-        class: "header-image"
-    }), Ct("h1", {
-        class: "jspmheaderlogo"
-    }, Ct("span", null, "JSPM"))), Ct("div", {
-        class: "header-search"
-    }, Ct("input", {
+function Logo(param) {
+    param.name, param.version;
+    return Ct("jspm-package-logo", null, Ct("h1", null, Ct("a", {
+        href: "/"
+    }, "JSPM")), Ct(Lt, null, Ct("style", {
+        "data-page-name": "header"
+    }, "\n          jspm-package-logo h1 a {\n            background: url(https://jspm.org/jspm.png) no-repeat left center;\n            color: var(--dl-color-gray-black);\n            background-size: contain;\n            padding-left: 2.5rem;\n          }\n          ")));
+}
+function Search(params) {
+    return Ct("jspm-package-search", null, Ct("input", {
         type: "text",
         autofocus: "true",
         placeholder: "Search for packages...",
@@ -2091,21 +2063,27 @@ function Header() {
         class: "header-textinput search_input"
     }), Ct("button", {
         class: "search_button"
-    }, Ct("span", null, "Search")))), Ct("div", {
-        class: "header-container1"
-    }, Ct("span", {
-        class: "header-text1"
-    }, Ct("span", null, "Generator")), Ct("span", {
-        class: "header-text2"
-    }, Ct("span", null, "Docs")), Ct("span", {
-        class: "header-text3"
-    }, Ct("span", null, "Faq")), Ct("img", {
-        alt: "image",
-        src: "https://jspm-registry.teleporthq.app/playground_assets/github.svg",
-        class: "header-image1"
-    })), Ct(Lt, null, Ct("style", {
+    }, Ct("span", null, "Search")), Ct(Lt, null, Ct("style", {
+        "data-page-name": "jspm-package-nav"
+    }, "\n          jspm-package-search{\n            display: flex;\n          }\n          .search_button {\n            color: var(--dl-color-gray-black);\n            display: inline-block;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            height: 40px;\n            display: flex;\n            align-items: center;\n            border-width: 0px;\n            padding-left: var(--dl-space-space-oneandhalfunits);\n            padding-right: var(--dl-space-space-oneandhalfunits);\n            background-color: var(--dl-color-primary-js-primary);\n            border-top-left-radius: none;\n            border-top-right-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: none;\n            border-bottom-right-radius: var(--dl-radius-radius-radius8);\n        }\n          \n          .search_input {\n            color: var(--dl-color-gray-black);\n            cursor: auto;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            background-color: var(--dl-color-gray-white);\n            height: 40px;\n            padding: var(--dl-space-space-halfunit);\n            max-width: 500px;\n            border-color: var(--dl-color-jspm-placeholder);\n            background-color: var(--dl-color-jspm-placeholder);\n            border-top-left-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: var(--dl-radius-radius-radius8);\n          }\n          jspm-package-nav nav ul {\n              display: flex;\n            list-style: none;\n          }\n          jspm-package-nav nav ul li{\n              margin: 20px;\n          }\n          ")));
+}
+function Nav() {
+    return Ct("jspm-package-nav", null, Ct("nav", null, Ct("ul", null, Ct("li", null, Ct("a", {
+        href: "https://generator.jspm.io"
+    }, "Generator")), Ct("li", null, Ct("a", {
+        href: "https://jspm.org/docs/cdn"
+    }, "Docs")), Ct("li", null, Ct("a", {
+        href: "https://jspm.org/sandbox"
+    }, "Sandbox")), Ct("li", null, Ct("a", {
+        href: "https://github.com/jspm/generator"
+    }, "Github")))), Ct(Lt, null, Ct("style", {
+        "data-page-name": "jspm-package-nav"
+    }, "\n          jspm-package-nav nav ul {\n              display: flex;\n            list-style: none;\n          }\n          jspm-package-nav nav ul li{\n              margin: 20px;\n          }\n          ")));
+}
+function Header() {
+    return Ct("jspm-package-header", null, Ct("header", null, Ct(Logo, null), Ct(Search, null), Ct(Nav, null)), Ct(Lt, null, Ct("style", {
         "data-page-name": "header"
-    }, "\n          .search_button {\n              color: var(--dl-color-gray-black);\n              display: inline-block;\n              padding: 0.5rem 1rem;\n              border-color: var(--dl-color-gray-black);\n              border-width: 1px;\n              height: 40px;\n              display: flex;\n              align-items: center;\n              border-width: 0px;\n              padding-left: var(--dl-space-space-oneandhalfunits);\n              padding-right: var(--dl-space-space-oneandhalfunits);\n              background-color: var(--dl-color-primary-js-primary);\n              border-top-left-radius: none;\n              border-top-right-radius: var(--dl-radius-radius-radius8);\n              border-bottom-left-radius: none;\n              border-bottom-right-radius: var(--dl-radius-radius-radius8);\n          }\n            \n            .search_input {\n              color: var(--dl-color-gray-black);\n              cursor: auto;\n              padding: 0.5rem 1rem;\n              border-color: var(--dl-color-gray-black);\n              border-width: 1px;\n              background-color: var(--dl-color-gray-white);\n              height: 40px;\n              padding: var(--dl-space-space-halfunit);\n              max-width: 500px;\n              border-color: var(--dl-color-jspm-placeholder);\n              background-color: var(--dl-color-jspm-placeholder);\n              border-top-left-radius: var(--dl-radius-radius-radius8);\n              border-bottom-left-radius: var(--dl-radius-radius-radius8);\n            }\n\n          .header-header {\n              width: 100%;\n              display: flex;\n              margin-top: var(--dl-space-space-oneandhalfunits);\n              align-items: center;\n              margin-bottom: var(--dl-space-space-oneandhalfunits);\n              flex-direction: row;\n              justify-content: space-between;\n            }\n            .header-container {\n              display: flex;\n              align-items: center;\n              flex-direction: row;\n              justify-content: center;\n            }\n\n            .header-logo {\n              display: flex;\n              align-items: center;\n              margin-right: var(--dl-space-space-unit);\n              flex-direction: row;\n              justify-content: center;\n              text-decoration: none;\n              color: var(--dl-color-gray-black);\n            }\n\n            .header-logo:visited {\n              text-decoration: none;\n            }\n\n            .header-image {\n              width: 32px;\n              object-fit: cover;\n            }\n            .header-search {\n              display: flex;\n              align-items: center;\n              flex-direction: row;\n              justify-content: center;\n            }\n            .header-textinput {\n              width: 300px;\n            }\n            .header-container1 {\n              display: flex;\n              align-items: center;\n              flex-direction: row;\n              justify-content: center;\n            }\n            .header-text1 {\n              margin-left: var(--dl-space-space-unit);\n              margin-right: var(--dl-space-space-unit);\n            }\n            .header-text2 {\n              margin-left: var(--dl-space-space-unit);\n              margin-right: var(--dl-space-space-unit);\n            }\n            .header-text3 {\n              margin-left: var(--dl-space-space-unit);\n              margin-right: var(--dl-space-space-unit);\n            }\n            .header-image1 {\n              width: 35px;\n              object-fit: cover;\n            }\n            @media(max-width: 767px) {\n              .header-header {\n                flex-wrap: wrap;\n                flex-direction: column;\n              }\n              .header-container {\n                margin-bottom: var(--dl-space-space-unit);\n              }\n              .header-container1 {\n                margin-top: var(--dl-space-space-unit);\n              }\n              .header-container {\n                width: 100%;\n              }\n            }\n            @media(max-width: 479px) {\n              .header-container {\n                flex-wrap: wrap;\n              }\n              .header-logo {\n                margin-left: var(--dl-space-space-unit);\n                margin-right: var(--dl-space-space-unit);\n                margin-bottom: var(--dl-space-space-unit);\n              }\n              .header-search {\n                margin-bottom: var(--dl-space-space-unit);\n              }\n              .header-textinput {\n                width: auto;\n              }\n            }\n          ")));
+    }, "\n          jspm-package-header header{\n            display: flex;\n            justify-content: space-between;\n            align-items: center;\n            flex-wrap: wrap;\n            align-content: center;\n          }\n          ")));
 }
 function Footer() {
     return Ct("div", null, Ct("div", {
@@ -2175,8 +2153,8 @@ function Footer() {
         "data-page-name": "footer"
     }, "\n        .footer-container {\n            width: 100%;\n            display: flex;\n            position: relative;\n            align-items: flex-start;\n            flex-direction: column;\n            background-color: var(--dl-color-jspm-footer);\n          }\n          .footer-footer {\n            width: 100%;\n            display: flex;\n            max-width: var(--dl-size-size-maxwidth);\n            align-items: center;\n            padding-top: var(--dl-space-space-twounits);\n            padding-left: var(--dl-space-space-threeunits);\n            padding-right: var(--dl-space-space-threeunits);\n            flex-direction: column;\n            padding-bottom: var(--dl-space-space-twounits);\n            justify-content: space-between;\n            background-color: var(--dl-color-gray-900);\n            margin-top: var(--dl-space-space-unit);\n          }\n          .footer-container1 {\n            width: 100%;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: row;\n            justify-content: center;\n          }\n          .footer-image {\n            width: 45px;\n            object-fit: cover;\n            margin-right: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-container2 {\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: row;\n            justify-content: space-between;\n            flex-wrap: wrap;\n          }\n          .footer-product-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text01 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text02 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text03 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text04 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text05 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text06 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text07 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container1 {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text08 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text09 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text10 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text11 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-separator {\n            width: 100%;\n            height: 1px;\n            margin-top: var(--dl-space-space-twounits);\n            margin-bottom: var(--dl-space-space-twounits);\n            background-color: var(--dl-color-gray-900);\n          }\n          .footer-copyright {\n            flex: 0 0 auto;\n            width: 100%;\n            height: auto;\n            display: flex;\n            align-items: flex-start;\n            justify-content: space-between;\n          }\n          .footer-text12 {\n            align-self: center;\n          }\n          .footer-socials {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: flex-start;\n          }\n          .footer-text14 {\n            font-style: normal;\n            font-weight: 400;\n            margin-right: var(--dl-space-space-unit);\n            margin-bottom: 0px;\n          }\n          .footer-icon-group {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: space-between;\n          }\n          .footer-image1 {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            object-fit: cover;\n            margin-right: var(--dl-space-space-unit);\n          }\n          .footer-icon {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            margin-left: 0px;\n            margin-right: 0px;\n          }\n          \n          @media(max-width: 991px) {\n            .footer-footer {\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 767px) {\n            .footer-footer {\n              padding-left: var(--dl-space-space-twounits);\n              padding-right: var(--dl-space-space-twounits);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n              justify-content: space-between;\n            }\n            .footer-image {\n              display: none;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 479px) {\n            .footer-footer {\n              padding: var(--dl-space-space-unit);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: 0px;\n            }\n            .footer-text12 {\n              text-align: center;\n            }\n          }          \n        ")));
 }
-function Package(props) {
-    var name = props.name, description = props.description, keywords = props.keywords, version = props.version, homepage = props.homepage, license = props.license, files = props.files, exports = props.exports, readme = props.readme;
+function Package(param) {
+    var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme;
     return Ct("div", null, Ct(Header, null), Ct("jspm-package", null, Ct(PackageHeader, {
         homepage: homepage || "",
         name: name,
@@ -2199,7 +2177,7 @@ function FeaturedPackages(param1) {
     var _packages = param1.packages, packages = _packages === void 0 ? [] : _packages;
     return Ct("div", {
         id: "featured-packages"
-    }, Ct(Header, null), Ct("ul", {
+    }, Ct("ul", {
         class: "list-style"
     }, packages.map(function(param) {
         var name = param.name, description = param.description, version = param.version;
@@ -2213,9 +2191,17 @@ function FeaturedPackages(param1) {
         }, version)), Ct("span", {
             class: "description"
         }, description));
-    })), Ct(Footer, null), Ct(Lt, null, Ct("style", {
+    })), Ct(Lt, null, Ct("style", {
         "data-page-name": "featured-packages"
     }, "\n          .list-style {\n            list-style: none;\n            padding-left: var(--dl-space-space-unit);\n            margin: 0px;\n            width: 100%;\n          }\n          \n          .package-item-wrapper {\n            font-weight: 200;\n            margin-top: var(--dl-space-space-oneandhalfunits);\n          }\n\n          .package-version {\n            font-weight: 200;\n            font-size: var(--dl-space-space-unit);\n          }\n\n          .package-name {\n            display: block;\n            font-size: var(--dl-space-space-oneandhalfunits);\n            font-family: 'Inter';\n            font-weight: 400;\n            margin-bottom: var(--dl-space-space-halfunit);\n          }\n\n          .description {\n            overflow: hidden;\n            white-space: normal;\n            word-break: break-word;\n            line-height: 1.5;\n          }\n\n        ")));
+}
+function Home(param) {
+    var packages = param.packages;
+    return Ct("jspm-package-home", null, Ct("jspm-package-home-header", null, Ct(Header, null)), Ct("jspm-package-home-main", null, Ct("main", null, Ct(FeaturedPackages, {
+        packages: packages
+    }))), Ct("jspm-package-home-footer", null, Ct("footer", null)), Ct(Lt, null, Ct("style", {
+        "data-page-name": "jspm-package-home"
+    }, "\n          \n        ")));
 }
 const emojis = [
     {
@@ -30221,7 +30207,7 @@ function renderMarkdownContent(markdown, opts = {}) {
         renderer: new Renderer1()
     });
 }
-const featuredPackages = [
+const FEATURED_PACKAGES = [
     {
         name: "svelte",
         version: "3.46.2",
@@ -30287,7 +30273,15 @@ const staticResources = {
         path: "./style.css",
         contentType: "text/css; charset=utf-8"
     },
+    "/package/style.css": {
+        path: "./style.css",
+        contentType: "text/css; charset=utf-8"
+    },
     "/dom-main.js": {
+        path: "./lib/dom-main.js",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/package/dom-main.js": {
         path: "./lib/dom-main.js",
         contentType: "application/javascript; charset=utf-8"
     },
@@ -30296,6 +30290,21 @@ const staticResources = {
         contentType: "application/javascript; charset=utf-8"
     }
 };
+async function generateHTML({ template , body , head , footer  } = {
+    template: "./lib/shell.html"
+}) {
+    const content = await Deno.readTextFile(template);
+    const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content.split(/<!-- __[A-Z]*__ -->/i);
+    return [
+        START,
+        head.join("\n"),
+        AFTER_HEADER_BEFORE_CONTENT,
+        body,
+        DOM_SCRIPT,
+        footer.join("\n"),
+        END, 
+    ].join("\n");
+}
 async function requestHandler(request) {
     try {
         const { pathname  } = new URL(request.url);
@@ -30309,21 +30318,16 @@ async function requestHandler(request) {
             });
         }
         if (pathname === "/") {
-            const indexPage = gt(Ct(FeaturedPackages, {
-                packages: featuredPackages
+            const indexPage = gt(Ct(Home, {
+                packages: FEATURED_PACKAGES
             }));
             const { body , head , footer  } = Lt.SSR(indexPage);
-            const content = await Deno.readTextFile("./lib/shell.html");
-            const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content.split(/<!-- __[A-Z]*__ -->/i);
-            const html = [
-                START,
-                head.join("\n"),
-                AFTER_HEADER_BEFORE_CONTENT,
+            const html = await generateHTML({
+                template: "./lib/shell.html",
                 body,
-                DOM_SCRIPT,
-                footer.join("\n"),
-                END, 
-            ].join("\n");
+                head,
+                footer
+            });
             return new Response(html, {
                 headers: pageServingHeaders
             });
@@ -30364,28 +30368,12 @@ async function requestHandler(request) {
                         keywords: keywords
                     }));
                     const { body , head , footer  } = Lt.SSR(app);
-                    const pieces = body.split("<package-readme-placeholder>");
-                    const html = `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <title>${name}@${version} - JSPM</title>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width,initial-scale=1.0">
-          <meta name="description" content=${description}>
-          <link rel="stylesheet" href="https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css" />
-          <link rel="stylesheet" href="./style.css" />
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap" />
-          <link rel="stylesheet" href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css" />
-          ${head.join("\n")}
-        </head>
-        <body>
-          ${pieces[0]}
-          ${readmeHTML}
-          ${pieces[1]}
-          ${footer.join("\n")}
-        </body>
-      </html>`;
+                    const html = await generateHTML({
+                        template: "./lib/shell.html",
+                        body,
+                        head,
+                        footer
+                    });
                     return new Response(html, {
                         headers: pageServingHeaders
                     });

@@ -1,11 +1,8 @@
 import { h, Helmet } from "nano-jsx";
-import { Header } from "./header.js";
-import { Footer } from "./footer.js";
 
 function FeaturedPackages({ packages = [] }) {
   return (
     <div id="featured-packages">
-      <Header />
       <ul class="list-style">
         {packages.map(({ name, description, version }) => {
           return (
@@ -18,7 +15,6 @@ function FeaturedPackages({ packages = [] }) {
           );
         })}
       </ul>
-      <Footer />
       <Helmet>
         <style data-page-name="featured-packages">
           {`

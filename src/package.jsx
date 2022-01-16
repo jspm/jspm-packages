@@ -5,18 +5,17 @@ import { Aside } from "./aside.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
 
-function Package(props) {
-  const {
-    name,
-    description,
-    keywords,
-    version,
-    homepage,
-    license,
-    files,
-    exports,
-    readme,
-  } = props;
+function Package({
+  name,
+  description,
+  keywords,
+  version,
+  homepage,
+  license,
+  files,
+  exports,
+  readme,
+}) {
 
   return (
     <div>

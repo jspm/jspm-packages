@@ -3,13 +3,21 @@
 import { serve } from "https://deno.land/std@0.121.0/http/server.ts";
 import { h, Helmet, renderSSR } from "nano-jsx";
 import { Package } from "./lib/package.js";
-import { FeaturedPackages } from "./lib/featured-packages.js";
+import { Home } from "./lib/home.js";
 import { pageServingHeaders, renderMarkdownContent } from "./utils.js";
-import { featuredPackages } from "./lib/featured-packages-list.js";
+import { FEATURED_PACKAGES } from "./lib/featured-packages-list.js";
 
 const staticResources = {
   "/style.css": { path: "./style.css", contentType: "text/css; charset=utf-8" },
+  "/package/style.css": {
+    path: "./style.css",
+    contentType: "text/css; charset=utf-8",
+  },
   "/dom-main.js": {
+    path: "./lib/dom-main.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/dom-main.js": {
     path: "./lib/dom-main.js",
     contentType: "application/javascript; charset=utf-8",
   },
@@ -18,6 +26,23 @@ const staticResources = {
     contentType: "application/javascript; charset=utf-8",
   },
 };
+
+async function generateHTML(
+  { template, body, head, footer } = { template: "./lib/shell.html" },
+) {
+  const content = await Deno.readTextFile(template);
+  const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content
+    .split(/<!-- __[A-Z]*__ -->/i);
+  return [
+    START,
+    head.join("\n"),
+    AFTER_HEADER_BEFORE_CONTENT,
+    body,
+    DOM_SCRIPT,
+    footer.join("\n"),
+    END,
+  ].join("\n");
+}
 
 async function requestHandler(request) {
   try {
@@ -33,22 +58,16 @@ async function requestHandler(request) {
     }
 
     if (pathname === "/") {
-      const indexPage = renderSSR(<FeaturedPackages packages={featuredPackages} />);
+      const indexPage = renderSSR(
+        <Home packages={FEATURED_PACKAGES} />,
+      );
       const { body, head, footer } = Helmet.SSR(indexPage);
-
-      const content = await Deno.readTextFile("./lib/shell.html");
-      const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content
-        .split(/<!-- __[A-Z]*__ -->/i);
-      const html = [
-        START,
-        head.join("\n"),
-        AFTER_HEADER_BEFORE_CONTENT,
+      const html = await generateHTML({
+        template: "./lib/shell.html",
         body,
-        DOM_SCRIPT,
-        footer.join("\n"),
-        END,
-      ].join("\n");
-
+        head,
+        footer,
+      });
       return new Response(html, {
         headers: pageServingHeaders,
       });
@@ -104,29 +123,12 @@ async function requestHandler(request) {
           );
           const { body, head, footer } = Helmet.SSR(app);
           /* Hack to SSR readme :! */
-          const pieces = body.split("<package-readme-placeholder>");
-
-          const html = `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <title>${name}@${version} - JSPM</title>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width,initial-scale=1.0">
-          <meta name="description" content=${description}>
-          <link rel="stylesheet" href="https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css" />
-          <link rel="stylesheet" href="./style.css" />
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap" />
-          <link rel="stylesheet" href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css" />
-          ${head.join("\n")}
-        </head>
-        <body>
-          ${pieces[0]}
-          ${readmeHTML}
-          ${pieces[1]}
-          ${footer.join("\n")}
-        </body>
-      </html>`;
+          const html = await generateHTML({
+            template: "./lib/shell.html",
+            body,
+            head,
+            footer,
+          });
 
           return new Response(html, {
             headers: pageServingHeaders,

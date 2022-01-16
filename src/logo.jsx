@@ -1,20 +1,23 @@
-import { h } from "nano-jsx";
+import { h, Helmet } from "nano-jsx";
 
 function Logo({ name, version }) {
   return (
     <jspm-package-logo>
-      <div class="scene">
-        <div class="cube show-top">
-          <div class="cube__face cube__face--front">{name}</div>
-          <div class="cube__face cube__face--back"></div>
-          <div class="cube__face cube__face--right">{version}</div>
-          <div class="cube__face cube__face--left"></div>
-          <div class="cube__face cube__face--top">
-            <a href="/">JSPM</a>
-          </div>
-          <div class="cube__face cube__face--bottom"></div>
-        </div>
-      </div>
+      <h1>
+        <a href="/">JSPM</a>
+      </h1>
+      <Helmet>
+        <style data-page-name="header">
+          {`
+          jspm-package-logo h1 a {
+            background: url(https://jspm.org/jspm.png) no-repeat left center;
+            color: var(--dl-color-gray-black);
+            background-size: contain;
+            padding-left: 2.5rem;
+          }
+          `}
+        </style>
+      </Helmet>
     </jspm-package-logo>
   );
 }
