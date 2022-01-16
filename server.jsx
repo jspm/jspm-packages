@@ -9,20 +9,24 @@ import { FEATURED_PACKAGES } from "./lib/featured-packages-list.js";
 
 const staticResources = {
   "/style.css": { path: "./style.css", contentType: "text/css; charset=utf-8" },
-  "/package/style.css": {
-    path: "./style.css",
-    contentType: "text/css; charset=utf-8",
-  },
   "/dom-main.js": {
-    path: "./lib/dom-main.js",
-    contentType: "application/javascript; charset=utf-8",
-  },
-  "/package/dom-main.js": {
     path: "./lib/dom-main.js",
     contentType: "application/javascript; charset=utf-8",
   },
   "/header.js": {
     path: "./lib/header.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/logo.js": {
+    path: "./lib/logo.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/search.js": {
+    path: "./lib/search.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/nav.js": {
+    path: "./lib/nav.js",
     contentType: "application/javascript; charset=utf-8",
   },
 };
@@ -44,10 +48,41 @@ async function generateHTML(
   ].join("\n");
 }
 
+/**
+ * @param {string} path 
+ * @returns {string}
+ */
+ function removeLeadingSlash(path) {
+  if (path.startsWith("/")) {
+    return path.slice(1);
+  }
+  return path;
+}
+
+/**
+ * @param {string} path 
+ * @returns {string}
+ */
+function removeTrailingSlash(path) {
+  if (path.endsWith("/")) {
+    return path.slice(0, -1);
+  }
+  return path;
+}
+
+/**
+ * @param {string} path 
+ * @returns {string}
+ */
+function removeSlashes(path) {
+  return removeTrailingSlash(removeLeadingSlash(path));
+}
+
 async function requestHandler(request) {
   try {
     const { pathname } = new URL(request.url);
-    const staticResource = staticResources[pathname];
+    const pathSegments = removeSlashes(pathname).split('/');
+    const staticResource = staticResources[`/${pathSegments[pathSegments.length - 1]}`];
 
     if (staticResource) {
       const response = await Deno.readFile(staticResource.path);
