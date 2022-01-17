@@ -2020,9 +2020,89 @@ function Seperator() {
         "data-page-name": "seperator"
     }, "\n        .seperator-seperator {\n            flex: 0 0 auto;\n            width: 100%;\n            height: auto;\n            display: flex;\n            margin-top: var(--dl-space-space-unit);\n            align-items: center;\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .seperator-container {\n            flex: 0 0 auto;\n            width: 50px;\n            height: 8px;\n            display: flex;\n            align-items: flex-start;\n            background-color: var(--dl-color-jspm-500);\n            border-top-left-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: var(--dl-radius-radius-radius8);\n          }\n          .seperator-container1 {\n            flex: 0 0 auto;\n            width: 50px;\n            height: 8px;\n            display: flex;\n            align-items: flex-start;\n            background-color: var(--dl-color-jspm-400);\n          }\n          .seperator-container2 {\n            flex: 0 0 auto;\n            width: 50px;\n            height: 8px;\n            display: flex;\n            align-items: flex-start;\n            background-color: var(--dl-color-jspm-300);\n          }\n          .seperator-container3 {\n            flex: 0 0 auto;\n            width: 50px;\n            height: 8px;\n            display: flex;\n            align-items: flex-start;\n            background-color: var(--dl-color-jspm-200);\n            border-top-right-radius: var(--dl-radius-radius-radius8);\n            border-bottom-right-radius: var(--dl-radius-radius-radius8);\n          }\n        ")));
 }
+function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i3 = 0, arr2 = new Array(len); i3 < len; i3++)arr2[i3] = arr[i3];
+    return arr2;
+}
+function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function _iterableToArrayLimit(arr, i4) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e1;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i4 && _arr.length === i4) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e1 = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e1;
+        }
+    }
+    return _arr;
+}
+function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _slicedToArray(arr, i5) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i5) || _unsupportedIterableToArray(arr, i5) || _nonIterableRest();
+}
+function _unsupportedIterableToArray(o2, minLen) {
+    if (!o2) return;
+    if (typeof o2 === "string") return _arrayLikeToArray(o2, minLen);
+    var n3 = Object.prototype.toString.call(o2).slice(8, -1);
+    if (n3 === "Object" && o2.constructor) n3 = o2.constructor.name;
+    if (n3 === "Map" || n3 === "Set") return Array.from(n3);
+    if (n3 === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n3)) return _arrayLikeToArray(o2, minLen);
+}
+function ExportsValue(param) {
+    var value = param.value;
+    if (typeof value === "string") {
+        return Ct("jspm-package-exports-target", null, value);
+    } else if (Array.isArray(value)) {
+        return value.map(function(target) {
+            return Ct("jspm-package-exports-target", null, target);
+        });
+    }
+    return Ct(Exports, {
+        exports: value
+    });
+}
+function ExportsKey(param) {
+    var key = param.key, name = param.name;
+    return Ct("jspm-package-exports-key", null, name, "/", key);
+}
+function Exports(param1) {
+    var exports = param1.exports, name = param1.name;
+    return Object.entries(exports).map(function(param) {
+        var _param = _slicedToArray(param, 2), key = _param[0], value = _param[1];
+        return Ct("jspm-package-exports", null, Ct("jspm-package-exports-entry", null, Ct(ExportsKey, {
+            key: key,
+            name: name
+        }), Ct(ExportsValue, {
+            value: value
+        })), Ct(Lt, null, Ct("style", {
+            "data-page": "package-details"
+        }, "\n          jspm-package-exports-entry {\n              display: flex;\n              display: block;\n              border: 1px solid red;\n          }\n          jspm-package-exports-target{\n              margin-left: 20px;\n              display: block;\n          }\n          \n          ")));
+    });
+}
 function Aside(param) {
-    var license = param.license, files = param.files, name = param.name, version = param.version;
-    return Ct("jspm-package-aside", null, Ct("aside", null, Ct("div", null, Ct("h3", null, "License"), Ct("jspm-package-license", null, license), Ct(Seperator, null)), Ct("ul", {
+    var license = param.license, files = param.files, name = param.name, version = param.version, exports = param.exports;
+    return Ct("jspm-package-aside", null, Ct("aside", null, Ct("div", null, Ct("h3", null, "License"), Ct("jspm-package-license", null, license), Ct(Seperator, null)), Ct(Exports, {
+        exports: exports,
+        name: name
+    }), Ct("ul", {
         class: "package-files"
     }, files === null || files === void 0 ? void 0 : files.map(function(file) {
         return Ct("li", null, Ct("a", {
@@ -2043,17 +2123,18 @@ function Logo(param) {
     }, "\n          jspm-package-logo h1 a {\n            background: url(https://jspm.org/jspm.png) no-repeat left center;\n            color: var(--dl-color-gray-black);\n            background-size: contain;\n            padding-left: 2.5rem;\n          }\n          ")));
 }
 function Search(params) {
-    return Ct("jspm-package-search", null, Ct("input", {
-        type: "text",
+    return Ct("jspm-package-search", null, Ct("form", null, Ct("input", {
+        type: "search",
         autofocus: "true",
-        placeholder: "Search for packages...",
+        placeholder: "npm package name",
         autocomplete: "on",
-        class: "header-textinput search_input"
+        class: "header-textinput search_input",
+        name: "q"
     }), Ct("button", {
         class: "search_button"
-    }, Ct("span", null, "Search")), Ct(Lt, null, Ct("style", {
+    }, Ct("span", null, "import package"))), Ct(Lt, null, Ct("style", {
         "data-page-name": "jspm-package-nav"
-    }, "\n          jspm-package-search{\n            display: flex;\n          }\n          .search_button {\n            color: var(--dl-color-gray-black);\n            display: inline-block;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            height: 40px;\n            display: flex;\n            align-items: center;\n            border-width: 0px;\n            padding-left: var(--dl-space-space-oneandhalfunits);\n            padding-right: var(--dl-space-space-oneandhalfunits);\n            background-color: var(--dl-color-primary-js-primary);\n            border-top-left-radius: none;\n            border-top-right-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: none;\n            border-bottom-right-radius: var(--dl-radius-radius-radius8);\n        }\n          \n          .search_input {\n            color: var(--dl-color-gray-black);\n            cursor: auto;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            background-color: var(--dl-color-gray-white);\n            height: 40px;\n            padding: var(--dl-space-space-halfunit);\n            max-width: 500px;\n            border-color: var(--dl-color-jspm-placeholder);\n            background-color: var(--dl-color-jspm-placeholder);\n            border-top-left-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: var(--dl-radius-radius-radius8);\n          }\n          jspm-package-nav nav ul {\n              display: flex;\n            list-style: none;\n          }\n          jspm-package-nav nav ul li{\n              margin: 20px;\n          }\n          ")));
+    }, "\n          jspm-package-search, jspm-package-search form{\n            display: flex;\n          }\n          .search_button {\n            color: var(--dl-color-gray-black);\n            display: inline-block;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            height: 40px;\n            display: flex;\n            align-items: center;\n            border-width: 0px;\n            padding-left: var(--dl-space-space-oneandhalfunits);\n            padding-right: var(--dl-space-space-oneandhalfunits);\n            background-color: var(--dl-color-primary-js-primary);\n            border-top-left-radius: none;\n            border-top-right-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: none;\n            border-bottom-right-radius: var(--dl-radius-radius-radius8);\n        }\n          \n          .search_input {\n            color: var(--dl-color-gray-black);\n            cursor: auto;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            background-color: var(--dl-color-gray-white);\n            height: 40px;\n            padding: var(--dl-space-space-halfunit);\n            max-width: 500px;\n            border-color: var(--dl-color-jspm-placeholder);\n            background-color: var(--dl-color-jspm-placeholder);\n            border-top-left-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: var(--dl-radius-radius-radius8);\n          }\n          jspm-package-nav nav ul {\n              display: flex;\n            list-style: none;\n          }\n          jspm-package-nav nav ul li{\n              margin: 20px;\n          }\n          ")));
 }
 function Nav() {
     return Ct("jspm-package-nav", null, Ct("nav", null, Ct("ul", null, Ct("li", null, Ct("a", {
@@ -23568,8 +23649,8 @@ function get(alias) {
 }
 function emojify(str) {
     if (!str) return "";
-    return str.split(reEmojiName).map((s2, i3)=>{
-        if (i3 % 2 === 0) return s2;
+    return str.split(reEmojiName).map((s2, i6)=>{
+        if (i6 % 2 === 0) return s2;
         let emoji5 = get(s2);
         if (!emoji5) emoji5 = wrapColons(s2);
         return emoji5;
@@ -25205,7 +25286,7 @@ var a2 = {
     var c12 = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
     var l12 = /[\x01-\x7F]/g;
     var i12 = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
-    var n3 = /<\u20D2|=\u20E5|>\u20D2|\u205F\u200A|\u219D\u0338|\u2202\u0338|\u2220\u20D2|\u2229\uFE00|\u222A\uFE00|\u223C\u20D2|\u223D\u0331|\u223E\u0333|\u2242\u0338|\u224B\u0338|\u224D\u20D2|\u224E\u0338|\u224F\u0338|\u2250\u0338|\u2261\u20E5|\u2264\u20D2|\u2265\u20D2|\u2266\u0338|\u2267\u0338|\u2268\uFE00|\u2269\uFE00|\u226A\u0338|\u226A\u20D2|\u226B\u0338|\u226B\u20D2|\u227F\u0338|\u2282\u20D2|\u2283\u20D2|\u228A\uFE00|\u228B\uFE00|\u228F\u0338|\u2290\u0338|\u2293\uFE00|\u2294\uFE00|\u22B4\u20D2|\u22B5\u20D2|\u22D8\u0338|\u22D9\u0338|\u22DA\uFE00|\u22DB\uFE00|\u22F5\u0338|\u22F9\u0338|\u2933\u0338|\u29CF\u0338|\u29D0\u0338|\u2A6D\u0338|\u2A70\u0338|\u2A7D\u0338|\u2A7E\u0338|\u2AA1\u0338|\u2AA2\u0338|\u2AAC\uFE00|\u2AAD\uFE00|\u2AAF\u0338|\u2AB0\u0338|\u2AC5\u0338|\u2AC6\u0338|\u2ACB\uFE00|\u2ACC\uFE00|\u2AFD\u20E5|[\xA0-\u0113\u0116-\u0122\u0124-\u012B\u012E-\u014D\u0150-\u017E\u0192\u01B5\u01F5\u0237\u02C6\u02C7\u02D8-\u02DD\u0311\u0391-\u03A1\u03A3-\u03A9\u03B1-\u03C9\u03D1\u03D2\u03D5\u03D6\u03DC\u03DD\u03F0\u03F1\u03F5\u03F6\u0401-\u040C\u040E-\u044F\u0451-\u045C\u045E\u045F\u2002-\u2005\u2007-\u2010\u2013-\u2016\u2018-\u201A\u201C-\u201E\u2020-\u2022\u2025\u2026\u2030-\u2035\u2039\u203A\u203E\u2041\u2043\u2044\u204F\u2057\u205F-\u2063\u20AC\u20DB\u20DC\u2102\u2105\u210A-\u2113\u2115-\u211E\u2122\u2124\u2127-\u2129\u212C\u212D\u212F-\u2131\u2133-\u2138\u2145-\u2148\u2153-\u215E\u2190-\u219B\u219D-\u21A7\u21A9-\u21AE\u21B0-\u21B3\u21B5-\u21B7\u21BA-\u21DB\u21DD\u21E4\u21E5\u21F5\u21FD-\u2205\u2207-\u2209\u220B\u220C\u220F-\u2214\u2216-\u2218\u221A\u221D-\u2238\u223A-\u2257\u2259\u225A\u225C\u225F-\u2262\u2264-\u228B\u228D-\u229B\u229D-\u22A5\u22A7-\u22B0\u22B2-\u22BB\u22BD-\u22DB\u22DE-\u22E3\u22E6-\u22F7\u22F9-\u22FE\u2305\u2306\u2308-\u2310\u2312\u2313\u2315\u2316\u231C-\u231F\u2322\u2323\u232D\u232E\u2336\u233D\u233F\u237C\u23B0\u23B1\u23B4-\u23B6\u23DC-\u23DF\u23E2\u23E7\u2423\u24C8\u2500\u2502\u250C\u2510\u2514\u2518\u251C\u2524\u252C\u2534\u253C\u2550-\u256C\u2580\u2584\u2588\u2591-\u2593\u25A1\u25AA\u25AB\u25AD\u25AE\u25B1\u25B3-\u25B5\u25B8\u25B9\u25BD-\u25BF\u25C2\u25C3\u25CA\u25CB\u25EC\u25EF\u25F8-\u25FC\u2605\u2606\u260E\u2640\u2642\u2660\u2663\u2665\u2666\u266A\u266D-\u266F\u2713\u2717\u2720\u2736\u2758\u2772\u2773\u27C8\u27C9\u27E6-\u27ED\u27F5-\u27FA\u27FC\u27FF\u2902-\u2905\u290C-\u2913\u2916\u2919-\u2920\u2923-\u292A\u2933\u2935-\u2939\u293C\u293D\u2945\u2948-\u294B\u294E-\u2976\u2978\u2979\u297B-\u297F\u2985\u2986\u298B-\u2996\u299A\u299C\u299D\u29A4-\u29B7\u29B9\u29BB\u29BC\u29BE-\u29C5\u29C9\u29CD-\u29D0\u29DC-\u29DE\u29E3-\u29E5\u29EB\u29F4\u29F6\u2A00-\u2A02\u2A04\u2A06\u2A0C\u2A0D\u2A10-\u2A17\u2A22-\u2A27\u2A29\u2A2A\u2A2D-\u2A31\u2A33-\u2A3C\u2A3F\u2A40\u2A42-\u2A4D\u2A50\u2A53-\u2A58\u2A5A-\u2A5D\u2A5F\u2A66\u2A6A\u2A6D-\u2A75\u2A77-\u2A9A\u2A9D-\u2AA2\u2AA4-\u2AB0\u2AB3-\u2AC8\u2ACB\u2ACC\u2ACF-\u2ADB\u2AE4\u2AE6-\u2AE9\u2AEB-\u2AF3\u2AFD\uFB00-\uFB04]|\uD835[\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDCCF\uDD04\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDD6B]/g;
+    var n4 = /<\u20D2|=\u20E5|>\u20D2|\u205F\u200A|\u219D\u0338|\u2202\u0338|\u2220\u20D2|\u2229\uFE00|\u222A\uFE00|\u223C\u20D2|\u223D\u0331|\u223E\u0333|\u2242\u0338|\u224B\u0338|\u224D\u20D2|\u224E\u0338|\u224F\u0338|\u2250\u0338|\u2261\u20E5|\u2264\u20D2|\u2265\u20D2|\u2266\u0338|\u2267\u0338|\u2268\uFE00|\u2269\uFE00|\u226A\u0338|\u226A\u20D2|\u226B\u0338|\u226B\u20D2|\u227F\u0338|\u2282\u20D2|\u2283\u20D2|\u228A\uFE00|\u228B\uFE00|\u228F\u0338|\u2290\u0338|\u2293\uFE00|\u2294\uFE00|\u22B4\u20D2|\u22B5\u20D2|\u22D8\u0338|\u22D9\u0338|\u22DA\uFE00|\u22DB\uFE00|\u22F5\u0338|\u22F9\u0338|\u2933\u0338|\u29CF\u0338|\u29D0\u0338|\u2A6D\u0338|\u2A70\u0338|\u2A7D\u0338|\u2A7E\u0338|\u2AA1\u0338|\u2AA2\u0338|\u2AAC\uFE00|\u2AAD\uFE00|\u2AAF\u0338|\u2AB0\u0338|\u2AC5\u0338|\u2AC6\u0338|\u2ACB\uFE00|\u2ACC\uFE00|\u2AFD\u20E5|[\xA0-\u0113\u0116-\u0122\u0124-\u012B\u012E-\u014D\u0150-\u017E\u0192\u01B5\u01F5\u0237\u02C6\u02C7\u02D8-\u02DD\u0311\u0391-\u03A1\u03A3-\u03A9\u03B1-\u03C9\u03D1\u03D2\u03D5\u03D6\u03DC\u03DD\u03F0\u03F1\u03F5\u03F6\u0401-\u040C\u040E-\u044F\u0451-\u045C\u045E\u045F\u2002-\u2005\u2007-\u2010\u2013-\u2016\u2018-\u201A\u201C-\u201E\u2020-\u2022\u2025\u2026\u2030-\u2035\u2039\u203A\u203E\u2041\u2043\u2044\u204F\u2057\u205F-\u2063\u20AC\u20DB\u20DC\u2102\u2105\u210A-\u2113\u2115-\u211E\u2122\u2124\u2127-\u2129\u212C\u212D\u212F-\u2131\u2133-\u2138\u2145-\u2148\u2153-\u215E\u2190-\u219B\u219D-\u21A7\u21A9-\u21AE\u21B0-\u21B3\u21B5-\u21B7\u21BA-\u21DB\u21DD\u21E4\u21E5\u21F5\u21FD-\u2205\u2207-\u2209\u220B\u220C\u220F-\u2214\u2216-\u2218\u221A\u221D-\u2238\u223A-\u2257\u2259\u225A\u225C\u225F-\u2262\u2264-\u228B\u228D-\u229B\u229D-\u22A5\u22A7-\u22B0\u22B2-\u22BB\u22BD-\u22DB\u22DE-\u22E3\u22E6-\u22F7\u22F9-\u22FE\u2305\u2306\u2308-\u2310\u2312\u2313\u2315\u2316\u231C-\u231F\u2322\u2323\u232D\u232E\u2336\u233D\u233F\u237C\u23B0\u23B1\u23B4-\u23B6\u23DC-\u23DF\u23E2\u23E7\u2423\u24C8\u2500\u2502\u250C\u2510\u2514\u2518\u251C\u2524\u252C\u2534\u253C\u2550-\u256C\u2580\u2584\u2588\u2591-\u2593\u25A1\u25AA\u25AB\u25AD\u25AE\u25B1\u25B3-\u25B5\u25B8\u25B9\u25BD-\u25BF\u25C2\u25C3\u25CA\u25CB\u25EC\u25EF\u25F8-\u25FC\u2605\u2606\u260E\u2640\u2642\u2660\u2663\u2665\u2666\u266A\u266D-\u266F\u2713\u2717\u2720\u2736\u2758\u2772\u2773\u27C8\u27C9\u27E6-\u27ED\u27F5-\u27FA\u27FC\u27FF\u2902-\u2905\u290C-\u2913\u2916\u2919-\u2920\u2923-\u292A\u2933\u2935-\u2939\u293C\u293D\u2945\u2948-\u294B\u294E-\u2976\u2978\u2979\u297B-\u297F\u2985\u2986\u298B-\u2996\u299A\u299C\u299D\u29A4-\u29B7\u29B9\u29BB\u29BC\u29BE-\u29C5\u29C9\u29CD-\u29D0\u29DC-\u29DE\u29E3-\u29E5\u29EB\u29F4\u29F6\u2A00-\u2A02\u2A04\u2A06\u2A0C\u2A0D\u2A10-\u2A17\u2A22-\u2A27\u2A29\u2A2A\u2A2D-\u2A31\u2A33-\u2A3C\u2A3F\u2A40\u2A42-\u2A4D\u2A50\u2A53-\u2A58\u2A5A-\u2A5D\u2A5F\u2A66\u2A6A\u2A6D-\u2A75\u2A77-\u2A9A\u2A9D-\u2AA2\u2AA4-\u2AB0\u2AB3-\u2AC8\u2ACB\u2ACC\u2ACF-\u2ADB\u2AE4\u2AE6-\u2AE9\u2AEB-\u2AF3\u2AFD\uFB00-\uFB04]|\uD835[\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDCCF\uDD04\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDD6B]/g;
     var p12 = {
         "­": "shy",
         "‌": "zwnj",
@@ -29177,7 +29258,7 @@ var a2 = {
         var a4 = e5.strict;
         a4 && f11.test(r8) && parseError("forbidden code point");
         var t4 = e5.encodeEverything;
-        var o2 = e5.useNamedReferences;
+        var o3 = e5.useNamedReferences;
         var s3 = e5.allowUnsafeSymbols;
         var u2 = e5.decimal ? decEscape : hexEscape;
         var escapeBmpSymbol = function(r9) {
@@ -29185,18 +29266,18 @@ var a2 = {
         };
         if (t4) {
             r8 = r8.replace(l12, function(r10) {
-                return o2 && has(p12, r10) ? "&" + p12[r10] + ";" : escapeBmpSymbol(r10);
+                return o3 && has(p12, r10) ? "&" + p12[r10] + ";" : escapeBmpSymbol(r10);
             });
-            o2 && (r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;").replace(/&#x66;&#x6A;/g, "&fjlig;"));
-            o2 && (r8 = r8.replace(n3, function(r) {
+            o3 && (r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;").replace(/&#x66;&#x6A;/g, "&fjlig;"));
+            o3 && (r8 = r8.replace(n4, function(r) {
                 return "&" + p12[r] + ";";
             }));
-        } else if (o2) {
+        } else if (o3) {
             s3 || (r8 = r8.replace(d12, function(r) {
                 return "&" + p12[r] + ";";
             }));
             r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;");
-            r8 = r8.replace(n3, function(r) {
+            r8 = r8.replace(n4, function(r) {
                 return "&" + p12[r] + ";";
             });
         } else s3 || (r8 = r8.replace(d12, escapeBmpSymbol));
@@ -29218,7 +29299,7 @@ var a2 = {
         e7 = merge1(e7, decode.options);
         var a6 = e7.strict;
         a6 && m1.test(r12) && parseError("malformed character reference");
-        return r12.replace(b1, function(r13, t6, o3, s4, u3, c2, l2, i4, n) {
+        return r12.replace(b1, function(r13, t6, o4, s4, u3, c2, l2, i7, n) {
             var p2;
             var d2;
             var g2;
@@ -29229,8 +29310,8 @@ var a2 = {
                 f2 = t6;
                 return h2[f2];
             }
-            if (o3) {
-                f2 = o3;
+            if (o4) {
+                f2 = o4;
                 b2 = s4;
                 if (b2 && e7.isAttributeValue) {
                     a6 && "=" == b2 && parseError("`&` did not start a character reference");
@@ -29248,7 +29329,7 @@ var a2 = {
             }
             if (l2) {
                 m2 = l2;
-                d2 = i4;
+                d2 = i7;
                 a6 && !d2 && parseError("character reference was not terminated by a semicolon");
                 p2 = parseInt(m2, 16);
                 return codePointToSymbol(p2, a6);
@@ -29377,9 +29458,9 @@ var n2 = function(t12) {
                 r4 = r4 || i13.languages;
                 var s5 = r4[t8];
                 var l3 = {};
-                for(var o4 in s5)if (s5.hasOwnProperty(o4)) {
-                    if (o4 == a5) for(var u4 in n5)n5.hasOwnProperty(u4) && (l3[u4] = n5[u4]);
-                    n5.hasOwnProperty(o4) || (l3[o4] = s5[o4]);
+                for(var o5 in s5)if (s5.hasOwnProperty(o5)) {
+                    if (o5 == a5) for(var u4 in n5)n5.hasOwnProperty(u4) && (l3[u4] = n5[u4]);
+                    n5.hasOwnProperty(o5) || (l3[o5] = s5[o5]);
                 }
                 var g3 = r4[t8];
                 r4[t8] = l3;
@@ -29394,9 +29475,9 @@ var n2 = function(t12) {
                 for(var s6 in e10)if (e10.hasOwnProperty(s6)) {
                     t9.call(e10, s6, e10[s6], a7 || s6);
                     var l4 = e10[s6];
-                    var o5 = i13.util.type(l4);
-                    if ("Object" !== o5 || n7[r(l4)]) {
-                        if ("Array" === o5 && !n7[r(l4)]) {
+                    var o6 = i13.util.type(l4);
+                    if ("Object" !== o6 || n7[r(l4)]) {
+                        if ("Array" === o6 && !n7[r(l4)]) {
                             n7[r(l4)] = true;
                             DFS(l4, t9, s6, n7);
                         }
@@ -29428,12 +29509,12 @@ var n2 = function(t12) {
             i13.util.setLanguage(e13, r6);
             var l5 = e13.parentElement;
             l5 && "pre" === l5.nodeName.toLowerCase() && i13.util.setLanguage(l5, r6);
-            var o6 = e13.textContent;
+            var o7 = e13.textContent;
             var u5 = {
                 element: e13,
                 language: r6,
                 grammar: s7,
-                code: o6
+                code: o7
             };
             function insertHighlightedCode(e14) {
                 u5.highlightedCode = e14;
@@ -29539,21 +29620,21 @@ var n2 = function(t12) {
         e20.lastIndex = t18;
         var r10 = e20.exec(a16);
         if (r10 && n14 && r10[1]) {
-            var i5 = r10[1].length;
-            r10.index += i5;
-            r10[0] = r10[0].slice(i5);
+            var i8 = r10[1].length;
+            r10.index += i8;
+            r10[0] = r10[0].slice(i8);
         }
         return r10;
     }
     function matchGrammar(e21, t19, a17, n15, r11, s9) {
         for(var l7 in a17)if (a17.hasOwnProperty(l7) && a17[l7]) {
-            var o7 = a17[l7];
-            o7 = Array.isArray(o7) ? o7 : [
-                o7
+            var o8 = a17[l7];
+            o8 = Array.isArray(o8) ? o8 : [
+                o8
             ];
-            for(var u6 = 0; u6 < o7.length; ++u6){
+            for(var u6 = 0; u6 < o8.length; ++u6){
                 if (s9 && s9.cause == l7 + "," + u6) return;
-                var g5 = o7[u6];
+                var g5 = o8[u6];
                 var c3 = g5.inside;
                 var d3 = !!g5.lookbehind;
                 var p3 = !!g5.greedy;
@@ -29792,8 +29873,8 @@ Object.defineProperty(n2.languages.markup.tag, "addInlined", {
             pattern: /[\s\S]+/,
             inside: n2.languages[t]
         };
-        var i6 = {};
-        i6[e27] = {
+        var i9 = {};
+        i9[e27] = {
             pattern: RegExp(/(<__[^>]*>)(?:<!\[CDATA\[(?:[^\]]|\](?!\]>))*\]\]>|(?!<!\[CDATA\[)[\s\S])*?(?=<\/__>)/.source.replace(/__/g, function() {
                 return e27;
             }), "i"),
@@ -29801,7 +29882,7 @@ Object.defineProperty(n2.languages.markup.tag, "addInlined", {
             greedy: true,
             inside: r15
         };
-        n2.languages.insertBefore("markup", "cdata", i6);
+        n2.languages.insertBefore("markup", "cdata", i9);
     }
 });
 Object.defineProperty(n2.languages.markup.tag, "addAttribute", {
@@ -30067,11 +30148,11 @@ n2.languages.js = n2.languages.javascript;
             h: "c",
             tex: "latex"
         };
-        var i7 = "data-src-status";
+        var i10 = "data-src-status";
         var s2 = "loading";
         var l8 = "loaded";
         var o13 = "failed";
-        var u7 = "pre[data-src]:not([" + i7 + '="' + l8 + '"]):not([' + i7 + '="' + s2 + '"])';
+        var u7 = "pre[data-src]:not([" + i10 + '="' + l8 + '"]):not([' + i10 + '="' + s2 + '"])';
         n2.hooks.add("before-highlightall", function(e31) {
             e31.selector += ", " + u7;
         });
@@ -30079,7 +30160,7 @@ n2.languages.js = n2.languages.javascript;
             var a27 = e32.element;
             if (a27.matches(u7)) {
                 e32.code = "";
-                a27.setAttribute(i7, s2);
+                a27.setAttribute(i10, s2);
                 var g6 = a27.appendChild(document.createElement("CODE"));
                 g6.textContent = t26;
                 var c4 = a27.getAttribute("data-src");
@@ -30096,23 +30177,23 @@ n2.languages.js = n2.languages.javascript;
                 var h4 = n2.plugins.autoloader;
                 h4 && h4.loadLanguages(d4);
                 loadFile(c4, function(e33) {
-                    a27.setAttribute(i7, l8);
+                    a27.setAttribute(i10, l8);
                     var t29 = parseRange(a27.getAttribute("data-range"));
                     if (t29) {
                         var r17 = e33.split(/\r\n?|\n/g);
                         var s14 = t29[0];
-                        var o8 = null == t29[1] ? r17.length : t29[1];
+                        var o9 = null == t29[1] ? r17.length : t29[1];
                         s14 < 0 && (s14 += r17.length);
                         s14 = Math.max(0, Math.min(s14 - 1, r17.length));
-                        o8 < 0 && (o8 += r17.length);
-                        o8 = Math.max(0, Math.min(o8, r17.length));
-                        e33 = r17.slice(s14, o8).join("\n");
+                        o9 < 0 && (o9 += r17.length);
+                        o9 = Math.max(0, Math.min(o9, r17.length));
+                        e33 = r17.slice(s14, o9).join("\n");
                         a27.hasAttribute("data-start") || a27.setAttribute("data-start", String(s14 + 1));
                     }
                     g6.textContent = e33;
                     n2.highlightElement(g6);
                 }, function(e34) {
-                    a27.setAttribute(i7, o13);
+                    a27.setAttribute(i10, o13);
                     g6.textContent = e34;
                 });
             }
@@ -30312,8 +30393,22 @@ function removeSlashes(path) {
 }
 async function requestHandler(request) {
     try {
-        const { pathname  } = new URL(request.url);
-        const pathSegments = removeSlashes(pathname).split('/');
+        const { pathname , searchParams  } = new URL(request.url);
+        const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
+        const npmPackage = searchParams.get("q");
+        if (npmPackage) {
+            const npmPackageProbe = await fetch(`${NPM_PROVIDER_URL}${npmPackage}`);
+            const npmPackageVersion = await npmPackageProbe.text();
+            if (npmPackageVersion) {
+                return new Response(npmPackage, {
+                    status: 302,
+                    headers: {
+                        "Location": `/package/${npmPackage}@${npmPackageVersion}`
+                    }
+                });
+            }
+        }
+        const pathSegments = removeSlashes(pathname).split("/");
         const staticResource = staticResources[`/${pathSegments[pathSegments.length - 1]}`];
         if (staticResource) {
             const response = await Deno.readFile(staticResource.path);
@@ -30339,7 +30434,6 @@ async function requestHandler(request) {
             });
         }
         const BASE_PATH = "/package/";
-        const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
         const maybeReadmeFiles = [
             "README.md",
             "readme.md"

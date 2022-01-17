@@ -1,7 +1,8 @@
 import { h, Helmet } from "nano-jsx";
 import { Seperator } from "./separator.js";
+import {Exports} from './exports.js';
 
-function Aside({ license, files, name, version }) {
+function Aside({ license, files, name, version, exports }) {
   return (
     <jspm-package-aside>
       <aside>
@@ -10,6 +11,7 @@ function Aside({ license, files, name, version }) {
           <jspm-package-license>{license}</jspm-package-license>
           <Seperator />
         </div>
+        <Exports exports={exports} name={name} />
         <ul class="package-files">
           {files?.map(
             (file) => (

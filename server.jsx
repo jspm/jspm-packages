@@ -49,10 +49,10 @@ async function generateHTML(
 }
 
 /**
- * @param {string} path 
+ * @param {string} path
  * @returns {string}
  */
- function removeLeadingSlash(path) {
+function removeLeadingSlash(path) {
   if (path.startsWith("/")) {
     return path.slice(1);
   }
@@ -60,7 +60,7 @@ async function generateHTML(
 }
 
 /**
- * @param {string} path 
+ * @param {string} path
  * @returns {string}
  */
 function removeTrailingSlash(path) {
@@ -71,7 +71,7 @@ function removeTrailingSlash(path) {
 }
 
 /**
- * @param {string} path 
+ * @param {string} path
  * @returns {string}
  */
 function removeSlashes(path) {
@@ -80,9 +80,26 @@ function removeSlashes(path) {
 
 async function requestHandler(request) {
   try {
-    const { pathname } = new URL(request.url);
-    const pathSegments = removeSlashes(pathname).split('/');
-    const staticResource = staticResources[`/${pathSegments[pathSegments.length - 1]}`];
+    const { pathname, searchParams } = new URL(request.url);
+
+    const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
+    const npmPackage = searchParams.get("q");
+    if (npmPackage) {
+      const npmPackageProbe = await fetch(`${NPM_PROVIDER_URL}${npmPackage}`);
+      const npmPackageVersion = await npmPackageProbe.text();
+
+      if (npmPackageVersion) {
+        return new Response(npmPackage, {
+          status: 302,
+          headers: {
+            "Location": `/package/${npmPackage}@${npmPackageVersion}`,
+          },
+        });
+      }
+    }
+    const pathSegments = removeSlashes(pathname).split("/");
+    const staticResource =
+      staticResources[`/${pathSegments[pathSegments.length - 1]}`];
 
     if (staticResource) {
       const response = await Deno.readFile(staticResource.path);
@@ -109,7 +126,6 @@ async function requestHandler(request) {
     }
 
     const BASE_PATH = "/package/";
-    const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
     const maybeReadmeFiles = ["README.md", "readme.md"];
 
     if (pathname.startsWith(BASE_PATH)) {
