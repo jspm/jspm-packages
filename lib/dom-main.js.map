@@ -1,1 +1,1 @@
-{"version":3,"sources":["../src/dom-main.jsx"],"names":[],"mappings":"AAAA,MAAM,GAAG,CAAC,EAAE,OAAO,QAAQ,CAAU;AACrC,MAAM,GAAG,MAAM,QAAQ,CAAa;AAEpC,OAAO,iBAAE,MAAM","file":"dom-main.js","sourcesContent":["import { h, hydrate } from \"nano-jsx\";\nimport { Header } from \"./header.js\";\n\nhydrate(<Header />);"]}
+{"version":3,"sources":["../src/dom-main.jsx"],"names":[],"mappings":"AAAA,GAAK,CAAC,KAAK,GAAI,CAEf;AAEA,OAAO,CAAC,GAAG,CAAC,KAAK","file":"dom-main.js","sourcesContent":["const title = `\n📦 JSPM\n`;\n\nconsole.log(title);"]}

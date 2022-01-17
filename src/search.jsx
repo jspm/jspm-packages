@@ -3,20 +3,23 @@ import { h, Helmet } from "nano-jsx";
 function Search(params) {
   return (
     <jspm-package-search>
-      <input
-        type="text"
-        autofocus="true"
-        placeholder="Search for packages..."
-        autocomplete="on"
-        class="header-textinput search_input"
-      />
-      <button class="search_button">
-        <span>Search</span>
-      </button>
+      <form>
+        <input
+          type="search"
+          autofocus="true"
+          placeholder="npm package name"
+          autocomplete="on"
+          class="header-textinput search_input"
+          name="q"
+        />
+        <button class="search_button">
+          <span>import package</span>
+        </button>
+      </form>
       <Helmet>
         <style data-page-name="jspm-package-nav">
           {`
-          jspm-package-search{
+          jspm-package-search, jspm-package-search form{
             display: flex;
           }
           .search_button {

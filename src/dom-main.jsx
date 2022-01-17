@@ -1,4 +1,5 @@
-import { h, hydrate } from "nano-jsx";
-import { Header } from "./header.js";
+const title = `
+📦 JSPM
+`;
 
-hydrate(<Header />);
+console.log(title);

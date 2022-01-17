@@ -2043,17 +2043,18 @@ function Logo(param) {
     }, "\n          jspm-package-logo h1 a {\n            background: url(https://jspm.org/jspm.png) no-repeat left center;\n            color: var(--dl-color-gray-black);\n            background-size: contain;\n            padding-left: 2.5rem;\n          }\n          ")));
 }
 function Search(params) {
-    return Ct("jspm-package-search", null, Ct("input", {
-        type: "text",
+    return Ct("jspm-package-search", null, Ct("form", null, Ct("input", {
+        type: "search",
         autofocus: "true",
-        placeholder: "Search for packages...",
+        placeholder: "npm package name",
         autocomplete: "on",
-        class: "header-textinput search_input"
+        class: "header-textinput search_input",
+        name: "q"
     }), Ct("button", {
         class: "search_button"
-    }, Ct("span", null, "Search")), Ct(Lt, null, Ct("style", {
+    }, Ct("span", null, "import package"))), Ct(Lt, null, Ct("style", {
         "data-page-name": "jspm-package-nav"
-    }, "\n          jspm-package-search{\n            display: flex;\n          }\n          .search_button {\n            color: var(--dl-color-gray-black);\n            display: inline-block;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            height: 40px;\n            display: flex;\n            align-items: center;\n            border-width: 0px;\n            padding-left: var(--dl-space-space-oneandhalfunits);\n            padding-right: var(--dl-space-space-oneandhalfunits);\n            background-color: var(--dl-color-primary-js-primary);\n            border-top-left-radius: none;\n            border-top-right-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: none;\n            border-bottom-right-radius: var(--dl-radius-radius-radius8);\n        }\n          \n          .search_input {\n            color: var(--dl-color-gray-black);\n            cursor: auto;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            background-color: var(--dl-color-gray-white);\n            height: 40px;\n            padding: var(--dl-space-space-halfunit);\n            max-width: 500px;\n            border-color: var(--dl-color-jspm-placeholder);\n            background-color: var(--dl-color-jspm-placeholder);\n            border-top-left-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: var(--dl-radius-radius-radius8);\n          }\n          jspm-package-nav nav ul {\n              display: flex;\n            list-style: none;\n          }\n          jspm-package-nav nav ul li{\n              margin: 20px;\n          }\n          ")));
+    }, "\n          jspm-package-search, jspm-package-search form{\n            display: flex;\n          }\n          .search_button {\n            color: var(--dl-color-gray-black);\n            display: inline-block;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            height: 40px;\n            display: flex;\n            align-items: center;\n            border-width: 0px;\n            padding-left: var(--dl-space-space-oneandhalfunits);\n            padding-right: var(--dl-space-space-oneandhalfunits);\n            background-color: var(--dl-color-primary-js-primary);\n            border-top-left-radius: none;\n            border-top-right-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: none;\n            border-bottom-right-radius: var(--dl-radius-radius-radius8);\n        }\n          \n          .search_input {\n            color: var(--dl-color-gray-black);\n            cursor: auto;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            background-color: var(--dl-color-gray-white);\n            height: 40px;\n            padding: var(--dl-space-space-halfunit);\n            max-width: 500px;\n            border-color: var(--dl-color-jspm-placeholder);\n            background-color: var(--dl-color-jspm-placeholder);\n            border-top-left-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: var(--dl-radius-radius-radius8);\n          }\n          jspm-package-nav nav ul {\n              display: flex;\n            list-style: none;\n          }\n          jspm-package-nav nav ul li{\n              margin: 20px;\n          }\n          ")));
 }
 function Nav() {
     return Ct("jspm-package-nav", null, Ct("nav", null, Ct("ul", null, Ct("li", null, Ct("a", {
@@ -30312,8 +30313,22 @@ function removeSlashes(path) {
 }
 async function requestHandler(request) {
     try {
-        const { pathname  } = new URL(request.url);
-        const pathSegments = removeSlashes(pathname).split('/');
+        const { pathname , searchParams  } = new URL(request.url);
+        const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
+        const npmPackage = searchParams.get("q");
+        if (npmPackage) {
+            const npmPackageProbe = await fetch(`${NPM_PROVIDER_URL}${npmPackage}`);
+            const npmPackageVersion = await npmPackageProbe.text();
+            if (npmPackageVersion) {
+                return new Response(npmPackage, {
+                    status: 302,
+                    headers: {
+                        "Location": `/package/${npmPackage}@${npmPackageVersion}`
+                    }
+                });
+            }
+        }
+        const pathSegments = removeSlashes(pathname).split("/");
         const staticResource = staticResources[`/${pathSegments[pathSegments.length - 1]}`];
         if (staticResource) {
             const response = await Deno.readFile(staticResource.path);
@@ -30339,7 +30354,6 @@ async function requestHandler(request) {
             });
         }
         const BASE_PATH = "/package/";
-        const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
         const maybeReadmeFiles = [
             "README.md",
             "readme.md"
