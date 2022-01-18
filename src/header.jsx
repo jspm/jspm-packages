@@ -5,26 +5,34 @@ import { Nav } from "./nav.js";
 
 function Header() {
   return (
-    <jspm-package-header>
-      <header>
-        <Logo />
-        <Search />
+    <div>
+      <header class="header">
+        <div class="header">
+          <Logo />
+          <Search />
+        </div>
         <Nav />
       </header>
       <Helmet>
         <style data-page-name="header">
           {`
-          jspm-package-header header{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            align-content: center;
-          }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              align-content: center;
+            }
+
+            @media(max-width: 768px) {
+              .header {
+                justify-content: center;
+              }
+            }
           `}
         </style>
       </Helmet>
-    </jspm-package-header>
+      </div>
   );
 }
 

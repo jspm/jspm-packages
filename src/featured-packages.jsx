@@ -20,14 +20,14 @@ function FeaturedPackages({ packages = [] }) {
           {`
           .list-style {
             list-style: none;
-            padding-left: var(--dl-space-space-unit);
+            padding-left: 0px;
             margin: 0px;
             width: 100%;
           }
           
           .package-item-wrapper {
             font-weight: 200;
-            margin-top: var(--dl-space-space-oneandhalfunits);
+            margin: var(--dl-space-space-unit);
           }
 
           .package-version {
