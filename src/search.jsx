@@ -7,13 +7,13 @@ function Search(params) {
         <input
           type="search"
           autofocus="true"
-          placeholder="npm package name"
+          placeholder="Package"
           autocomplete="on"
           class="header-textinput search_input"
           name="q"
         />
         <button class="search_button">
-          <span>import package</span>
+          <span>Import</span>
         </button>
       </form>
       <Helmet>

@@ -1,6 +1,7 @@
 import { h, Helmet } from "nano-jsx";
 import { Header } from "./header.js";
 import { FeaturedPackages } from "./featured-packages.js";
+import { Footer } from "./footer.js";
 
 function Home({ packages }) {
   return (
@@ -16,7 +17,7 @@ function Home({ packages }) {
       </jspm-package-home-main>
 
       <jspm-package-home-footer>
-        <footer></footer>
+        <Footer />
       </jspm-package-home-footer>
 
       <Helmet>

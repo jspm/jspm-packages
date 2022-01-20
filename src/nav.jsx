@@ -2,19 +2,19 @@ import { h, Helmet } from "nano-jsx";
 
 function Nav() {
   return (
-    <jspm-package-nav>
+    <div>
       <nav>
-        <ul>
-          <li>
+        <ul class="nav-list-style">
+          <li class="nav-list-item">
             <a href="https://generator.jspm.io">Generator</a>
           </li>
-          <li>
+          <li class="nav-list-item">
             <a href="https://jspm.org/docs/cdn">Docs</a>
           </li>
-          <li>
+          <li class="nav-list-item">
             <a href="https://jspm.org/sandbox">Sandbox</a>
           </li>
-          <li>
+          <li class="nav-list-item">
             <a href="https://github.com/jspm/generator">Github</a>
           </li>
         </ul>
@@ -22,17 +22,18 @@ function Nav() {
       <Helmet>
         <style data-page-name="jspm-package-nav">
           {`
-          jspm-package-nav nav ul {
+          .nav-list-style {
               display: flex;
-            list-style: none;
+              list-style: none;
           }
-          jspm-package-nav nav ul li{
-              margin: 20px;
+
+          .nav-list-item {
+              margin-right: var(--dl-space-space-twounits);
           }
           `}
         </style>
       </Helmet>
-    </jspm-package-nav>
+    </div> 
   );
 }
 export { Nav };
