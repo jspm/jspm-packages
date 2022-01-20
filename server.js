@@ -2147,7 +2147,7 @@ function _unsupportedIterableToArray(o2, minLen) {
     if (n3 === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n3)) return _arrayLikeToArray(o2, minLen);
 }
 function ExportsValue(param) {
-    var value = param.value;
+    var value = param.value, name = param.name;
     if (typeof value === "string") {
         return Ct("jspm-package-exports-target", null, value);
     } else if (Array.isArray(value)) {
@@ -2156,26 +2156,42 @@ function ExportsValue(param) {
         });
     }
     return Ct(Exports, {
-        exports: value
+        exports: value,
+        name: name
     });
+}
+function getResolvedKey(param) {
+    var key = param.key, name = param.name;
+    if (key === ".") {
+        return name;
+    }
+    if (key.startsWith("./")) {
+        return "".concat(name).concat(key.slice(1));
+    }
+    return name ? "".concat(name, "/").concat(key) : key;
 }
 function ExportsKey(param) {
     var key = param.key, name = param.name;
-    return Ct("jspm-package-exports-key", null, name, "/", key);
+    var resolvedKey = getResolvedKey({
+        key: key,
+        name: name
+    });
+    return Ct("jspm-package-exports-key", null, resolvedKey);
 }
 function Exports(param1) {
     var exports = param1.exports, name = param1.name;
-    return Object.entries(exports).map(function(param) {
+    return Ct("jspm-package-exports", null, Object.entries(exports).map(function(param) {
         var _param = _slicedToArray(param, 2), key = _param[0], value = _param[1];
-        return Ct("jspm-package-exports", null, Ct("jspm-package-exports-entry", null, Ct(ExportsKey, {
+        return key.endsWith('!cjs') || key === 'default' ? false : Ct("jspm-package-exports-entry", null, Ct("details", null, Ct("summary", null, Ct(ExportsKey, {
             key: key,
             name: name
-        }), Ct(ExportsValue, {
-            value: value
-        })), Ct(Lt, null, Ct("style", {
-            "data-page": "package-details"
-        }, "\n          jspm-package-exports-entry {\n              display: flex;\n              display: block;\n              border: 1px solid red;\n          }\n          jspm-package-exports-target{\n              margin-left: 20px;\n              display: block;\n          }\n          \n          ")));
-    });
+        })), Ct(ExportsValue, {
+            value: value,
+            name: name
+        })));
+    }), Ct(Lt, null, Ct("style", {
+        "data-page": "package-details"
+    }, "\n          jspm-package-exports-entry {\n              display: flex;\n              display: block;\n              padding-left: 10px;\n          }\n          jspm-package-exports-target{\n              margin-left: 20px;\n              display: block;\n          }\n          \n          ")));
 }
 function Aside(param) {
     var license = param.license, files = param.files, name = param.name, version = param.version, exports = param.exports;

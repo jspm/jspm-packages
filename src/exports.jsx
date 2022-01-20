@@ -1,6 +1,6 @@
 import { h, Helmet } from "nano-jsx";
 
-function ExportsValue({ value }) {
+function ExportsValue({ value, name }) {
   if (typeof value === "string") {
     return <jspm-package-exports-target>{value}</jspm-package-exports-target>;
   } else if (Array.isArray(value)) {
@@ -8,27 +8,48 @@ function ExportsValue({ value }) {
       <jspm-package-exports-target>{target}</jspm-package-exports-target>
     ));
   }
-  return <Exports exports={value} />;
+  return <Exports exports={value} name={name} />;
+}
+
+function getResolvedKey({ key, name }) {
+  if (key === ".") {
+    return name;
+  }
+  if (key.startsWith("./")) {
+    return `${name}${key.slice(1)}`;
+  }
+  return name ? `${name}/${key}` : key;
 }
 
 function ExportsKey({ key, name }) {
-  return <jspm-package-exports-key>{name}/{key}</jspm-package-exports-key>;
+  const resolvedKey = getResolvedKey({ key, name });
+  return (
+    <jspm-package-exports-key>
+       {resolvedKey}
+    </jspm-package-exports-key>
+  );
 }
 
 function Exports({ exports, name }) {
-  return Object.entries(exports).map(([key, value]) => (
+  return (
     <jspm-package-exports>
-      <jspm-package-exports-entry>
-        <ExportsKey key={key} name={name} />
-        <ExportsValue value={value} />
-      </jspm-package-exports-entry>
+      {Object.entries(exports).map(([key, value]) => key.endsWith('!cjs') || key === 'default' ? false : (
+        <jspm-package-exports-entry>
+          <details>
+            <summary>
+              <ExportsKey key={key} name={name} />
+            </summary>
+            <ExportsValue value={value} name={name} />
+          </details>
+        </jspm-package-exports-entry>
+      ))}
       <Helmet>
         <style data-page="package-details">
           {`
           jspm-package-exports-entry {
               display: flex;
               display: block;
-              border: 1px solid red;
+              padding-left: 10px;
           }
           jspm-package-exports-target{
               margin-left: 20px;
@@ -39,6 +60,6 @@ function Exports({ exports, name }) {
         </style>
       </Helmet>
     </jspm-package-exports>
-  ));
+  );
 }
 export { Exports };
