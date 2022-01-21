@@ -17,6 +17,22 @@ const staticResources = {
     path: "./lib/header.js",
     contentType: "application/javascript; charset=utf-8",
   },
+  "/exports.js": {
+    path: "./lib/exports.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/exports.js": {
+    path: "./lib/exports.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/exports.js.map": {
+    path: "./lib/exports.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/exports.js.map": {
+    path: "./lib/exports.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
   "/logo.js": {
     path: "./lib/logo.js",
     contentType: "application/javascript; charset=utf-8",
@@ -159,6 +175,8 @@ async function requestHandler(request) {
 
         try {
           const readmeHTML = renderMarkdownContent(readmeFileContent);
+          // https://github.com/jspm/generator.jspm.io/blob/main/src/api.js#L137
+          // const filteredExport = Object.keys(exports).filter(expt => !expt.endsWith('!cjs') && !expt.endsWith('/') && expt.indexOf('*') === -1).sort();
           const app = renderSSR(
             <Package
               name={name}

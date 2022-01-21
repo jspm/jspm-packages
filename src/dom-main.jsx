@@ -1,5 +1,11 @@
-const title = `
-📦 JSPM
-`;
+import { h, hydrate } from "nano-jsx";
+import { ExportsContainer } from "./exports.js";
 
-console.log(title);
+if (typeof globalThis.document !== "undefined") {
+  const mountElement = document.querySelector("jspm-package-aside-exports");
+  const { exports, name, version } = mountElement.dataset;
+  hydrate(
+    <ExportsContainer exports={JSON.parse(exports)} name={name} version={version} />,
+    mountElement,
+  );
+}
