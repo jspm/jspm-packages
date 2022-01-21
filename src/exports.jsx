@@ -39,7 +39,6 @@ function Exports(
                   version={version}
                   getImportMap={getImportMap}
                   importMaps={importMaps}
-                  map={importMaps[`${name}@${version}${getCleanPath(key)}`]}
                 />
               </details>
             </jspm-package-exports-entry>
@@ -65,7 +64,9 @@ function Exports(
   );
 }
 
-function ExportsValue({ key, value, name, version, getImportMap, importMaps, map }) {
+function ExportsValue(
+  { key, value, name, version, getImportMap, importMaps, map },
+) {
   if (typeof value === "string") {
     // const map = importMaps[`${name}@${version}${getCleanPath(key)}`];
     return (
@@ -117,7 +118,7 @@ class ExportsContainer extends Component {
       const importMap = JSON.stringify(generator.getMap(), null, 2);
       console.log(importMap);
       if (importMap) {
-        this.importMaps = { ...this.importMaps, [dependency]: importMap };
+        this.importMaps = { ...this.importMaps, [dependency]: generator.getMap() };
         this.update();
       }
     }
@@ -127,7 +128,13 @@ class ExportsContainer extends Component {
     const { exports, name, version } = this.props;
     return (
       <div>
-        {JSON.stringify(this.importMaps)}
+        <pre>
+          <code
+            innerHTML={{
+              __dangerousHtml: JSON.stringify(this.importMaps, null, 2),
+            }}
+          />
+        </pre>
         <Exports
           exports={exports}
           name={name}

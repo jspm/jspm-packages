@@ -2680,8 +2680,7 @@ function Exports(param1) {
             name: name,
             version: version,
             getImportMap: getImportMap,
-            importMaps: importMaps,
-            map: importMaps["".concat(name, "@").concat(version).concat(getCleanPath(key))]
+            importMaps: importMaps
         })));
     }), Ct(Lt, null, Ct("style", {
         "data-page": "package-details"
@@ -2745,7 +2744,7 @@ var ExportsContainer = function(Component1) {
                             importMap = JSON.stringify(generator.getMap(), null, 2);
                             console.log(importMap);
                             if (importMap) {
-                                _this1.importMaps = _objectSpread({}, _this1.importMaps, _defineProperty({}, dependency, importMap));
+                                _this1.importMaps = _objectSpread({}, _this1.importMaps, _defineProperty({}, dependency, generator.getMap()));
                                 _this1.update();
                             }
                         case 10:
@@ -2765,7 +2764,11 @@ var ExportsContainer = function(Component1) {
             key: "render",
             value: function render() {
                 var _props = this.props, exports = _props.exports, name = _props.name, version = _props.version;
-                return Ct("div", null, JSON.stringify(this.importMaps), Ct(Exports, {
+                return Ct("div", null, Ct("pre", null, Ct("code", {
+                    innerHTML: {
+                        __dangerousHtml: JSON.stringify(this.importMaps, null, 2)
+                    }
+                })), Ct(Exports, {
                     exports: exports,
                     name: name,
                     version: version,
