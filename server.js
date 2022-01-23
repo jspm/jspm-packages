@@ -30977,16 +30977,64 @@ const staticResources = {
         path: "./lib/logo.js",
         contentType: "application/javascript; charset=utf-8"
     },
+    "/logo.js.map": {
+        path: "./lib/logo.js.map",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/package/logo.js": {
+        path: "./lib/logo.js",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/package/logo.js.map": {
+        path: "./lib/logo.js.map",
+        contentType: "application/javascript; charset=utf-8"
+    },
     "/search.js": {
         path: "./lib/search.js",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/search.js.map": {
+        path: "./lib/search.js.map",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/package/search.js": {
+        path: "./lib/search.js",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/package/search.js.map": {
+        path: "./lib/search.js.map",
         contentType: "application/javascript; charset=utf-8"
     },
     "/nav.js": {
         path: "./lib/nav.js",
         contentType: "application/javascript; charset=utf-8"
     },
+    "/nav.js.map": {
+        path: "./lib/nav.js.map",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/package/nav.js": {
+        path: "./lib/nav.js",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/package/nav.js.map": {
+        path: "./lib/nav.js.map",
+        contentType: "application/javascript; charset=utf-8"
+    },
     "/importmap-generator.js": {
         path: "./lib/importmap-generator.js",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/importmap-generator.js.map": {
+        path: "./lib/importmap-generator.js.map",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/package/importmap-generator.js": {
+        path: "./lib/importmap-generator.js",
+        contentType: "application/javascript; charset=utf-8"
+    },
+    "/package/importmap-generator.js.map": {
+        path: "./lib/importmap-generator.js.map",
         contentType: "application/javascript; charset=utf-8"
     }
 };
