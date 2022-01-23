@@ -45,6 +45,10 @@ const staticResources = {
     path: "./lib/nav.js",
     contentType: "application/javascript; charset=utf-8",
   },
+  "/importmap-generator.js": {
+    path: "./lib/importmap-generator.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
 };
 
 async function generateHTML(
@@ -176,7 +180,8 @@ async function requestHandler(request) {
         try {
           const readmeHTML = renderMarkdownContent(readmeFileContent);
           // https://github.com/jspm/generator.jspm.io/blob/main/src/api.js#L137
-          // const filteredExport = Object.keys(exports).filter(expt => !expt.endsWith('!cjs') && !expt.endsWith('/') && expt.indexOf('*') === -1).sort();
+          const filteredExport = Object.keys(exports).filter(expt => !expt.endsWith('!cjs') && !expt.endsWith('/') && expt.indexOf('*') === -1).sort();
+          
           const app = renderSSR(
             <Package
               name={name}
@@ -185,7 +190,7 @@ async function requestHandler(request) {
               homepage={homepage}
               license={license}
               files={files}
-              exports={exports}
+              exports={filteredExport}
               readme={readmeHTML}
               keywords={keywords}
             />,

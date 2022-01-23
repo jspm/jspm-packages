@@ -15,7 +15,6 @@ function Package({
   exports,
   readme,
 }) {
-
   return (
     <div>
       <Header />
@@ -35,24 +34,25 @@ function Package({
       <Footer />
 
       <Helmet>
-        <link rel="stylesheet" href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css" />
+        <link
+          rel="stylesheet"
+          href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css"
+        />
         <style data-page="package-details">
           {`
         jspm-package-content {
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+          grid-gap: 1rem;
         }
         
         jspm-package-readme {
           display: block;
-          width: 800px;
           padding: var(--dl-space-space-oneandhalfunits);
         }
         
         jspm-package-aside {
-          width: 300px;
-          padding-left: var(--dl-space-space-unit);
+          padding: var(--dl-space-space-oneandhalfunits);
         }
         
         jspm-package-name,

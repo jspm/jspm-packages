@@ -2449,13 +2449,31 @@ try {
     "object" === typeof globalThis ? globalThis.regeneratorRuntime = r1 : Function("r", "regeneratorRuntime = r")(r1);
 }
 e.wrap, e.isGeneratorFunction, e.mark, e.awrap, e.AsyncIterator, e.async, e.keys, e.values;
-function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
-    return arr2;
+function getCleanPath(path) {
+    if (path === ".") {
+        return "";
+    }
+    if (path.startsWith("./")) {
+        return path.slice(1);
+    }
+    return path;
 }
-function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
+async function main({ target , name , version , subpaths  }) {
+    const environment = typeof globalThis.document === "undefined" ? "deno" : "browser";
+    const { Generator  } = await import(`https://cdn.jsdelivr.net/gh/fusionstrings/dependencies@@jspm/generator@1.0.0-beta.22/dist/${environment}/jspm.js`);
+    const generator = new Generator({
+        env: [
+            "production",
+            environment,
+            "module"
+        ]
+    });
+    await generator.install({
+        target: target || `${name}@${version}`,
+        subpaths
+    });
+    const importMap = generator.getMap();
+    return importMap;
 }
 function _assertThisInitialized(self) {
     if (self === void 0) {
@@ -2524,20 +2542,6 @@ function _defineProperty(obj, key, value) {
     }
     return obj;
 }
-function _extends() {
-    _extends = Object.assign || function(target) {
-        for(var i = 1; i < arguments.length; i++){
-            var source = arguments[i];
-            for(var key in source){
-                if (Object.prototype.hasOwnProperty.call(source, key)) {
-                    target[key] = source[key];
-                }
-            }
-        }
-        return target;
-    };
-    return _extends.apply(this, arguments);
-}
 function _getPrototypeOf(o1) {
     _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o2) {
         return o2.__proto__ || Object.getPrototypeOf(o2);
@@ -2557,48 +2561,6 @@ function _inherits(subClass, superClass) {
     });
     if (superClass) _setPrototypeOf(subClass, superClass);
 }
-function _iterableToArrayLimit(arr, i) {
-    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-    if (_i == null) return;
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _s, _e1;
-    try {
-        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
-            _arr.push(_s.value);
-            if (i && _arr.length === i) break;
-        }
-    } catch (err) {
-        _d = true;
-        _e1 = err;
-    } finally{
-        try {
-            if (!_n && _i["return"] != null) _i["return"]();
-        } finally{
-            if (_d) throw _e1;
-        }
-    }
-    return _arr;
-}
-function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _objectSpread(target) {
-    for(var i = 1; i < arguments.length; i++){
-        var source = arguments[i] != null ? arguments[i] : {};
-        var ownKeys = Object.keys(source);
-        if (typeof Object.getOwnPropertySymbols === "function") {
-            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
-                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-            }));
-        }
-        ownKeys.forEach(function(key) {
-            _defineProperty(target, key, source[key]);
-        });
-    }
-    return target;
-}
 function _possibleConstructorReturn(self, call) {
     if (call && (_typeof(call) === "object" || typeof call === "function")) {
         return call;
@@ -2612,21 +2574,10 @@ function _setPrototypeOf(o2, p1) {
     };
     return _setPrototypeOf(o2, p1);
 }
-function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-}
 var _typeof = function(obj) {
     "@swc/helpers - typeof";
     return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
 };
-function _unsupportedIterableToArray(o4, minLen) {
-    if (!o4) return;
-    if (typeof o4 === "string") return _arrayLikeToArray(o4, minLen);
-    var n3 = Object.prototype.toString.call(o4).slice(8, -1);
-    if (n3 === "Object" && o4.constructor) n3 = o4.constructor.name;
-    if (n3 === "Map" || n3 === "Set") return Array.from(n3);
-    if (n3 === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n3)) return _arrayLikeToArray(o4, minLen);
-}
 function _isNativeReflectConstruct() {
     if (typeof Reflect === "undefined" || !Reflect.construct) return false;
     if (Reflect.construct.sham) return false;
@@ -2651,189 +2602,112 @@ function _createSuper(Derived) {
         return _possibleConstructorReturn(this, result);
     };
 }
-function getCleanPath(path) {
-    if (path === ".") {
-        return "";
+var ImportMap = function(Component1) {
+    "use strict";
+    _inherits(ImportMap1, Component1);
+    var _super = _createSuper(ImportMap1);
+    function ImportMap1(props) {
+        _classCallCheck(this, ImportMap1);
+        var _this;
+        _this = _super.call(this, props);
+        _defineProperty(_assertThisInitialized(_this), "importMaps", void 0);
+        return _this;
     }
-    if (path.startsWith("./")) {
-        return path.slice(1);
-    }
-    return path;
-}
-function Exports(param1) {
-    var exports = param1.exports, name = param1.name, version = param1.version, importMaps = param1.importMaps, getImportMap = param1.getImportMap;
-    return Ct("jspm-package-exports", null, Object.entries(exports).map(function(param) {
-        var _param = _slicedToArray(param, 2), key = _param[0], value = _param[1];
-        return key.endsWith("!cjs") || key === "default" ? false : Ct("jspm-package-exports-entry", null, Ct("details", {
-            "data-subpath": key,
-            "data-dependency": "".concat(name, "@").concat(version).concat(getCleanPath(key)),
-            onClick: function() {
-                getImportMap("".concat(name, "@").concat(version).concat(getCleanPath(key)));
+    _createClass(ImportMap1, [
+        {
+            key: "didMount",
+            value: function didMount() {
+                var _this = this;
+                return _asyncToGenerator(e.mark(function _callee() {
+                    var _props, target, subpaths, importMap;
+                    return e.wrap(function _callee$(_ctx) {
+                        while(1)switch(_ctx.prev = _ctx.next){
+                            case 0:
+                                if (_this.importMaps) {
+                                    _ctx.next = 6;
+                                    break;
+                                }
+                                _props = _this.props, target = _props.target, subpaths = _props.subpaths;
+                                _ctx.next = 4;
+                                return main({
+                                    target: target,
+                                    subpaths: subpaths
+                                });
+                            case 4:
+                                importMap = _ctx.sent;
+                                if (importMap) {
+                                    _this.importMaps = importMap;
+                                    _this.update();
+                                }
+                            case 6:
+                            case "end":
+                                return _ctx.stop();
+                        }
+                    }, _callee);
+                }))();
             }
-        }, Ct("summary", null, Ct(ExportsKey, {
-            key: key,
-            name: name,
-            version: version
-        })), Ct(ExportsValue, {
-            key: key,
-            value: value,
+        },
+        {
+            key: "render",
+            value: function render() {
+                if (this.importMaps) {
+                    return Ct("pre", null, Ct("code", {
+                        innerHTML: {
+                            __dangerousHtml: JSON.stringify(this.importMaps, null, 2)
+                        }
+                    }));
+                } else {
+                    return Ct("div", null, this.props.subpath);
+                }
+            }
+        }
+    ]);
+    return ImportMap1;
+}(St);
+function SubpathImportMap(param) {
+    var subpath = param.subpath, name = param.name, version = param.version;
+    return Ct("jspm-package-exports-subpath-importmap", null, Ct(ImportMap, {
+        target: "".concat(name, "@").concat(version),
+        subpaths: [
+            subpath
+        ]
+    }));
+}
+function Subpath(param) {
+    var importPath = param.importPath;
+    return Ct("jspm-package-exports-subpath", null, importPath);
+}
+function Exports(param) {
+    var exports = param.exports, name = param.name, version = param.version;
+    return Ct("jspm-package-exports", null, exports.map(function(subpath) {
+        return Ct("jspm-package-exports-entry", null, Ct("details", {
+            "data-subpath": subpath,
+            "data-dependency": "".concat(name, "@").concat(version).concat(getCleanPath(subpath))
+        }, Ct("summary", null, Ct(Subpath, {
+            subpath: subpath,
             name: name,
             version: version,
-            getImportMap: getImportMap,
-            importMaps: importMaps
+            importPath: "".concat(name).concat(getCleanPath(subpath))
+        })), Ct(SubpathImportMap, {
+            subpath: subpath,
+            name: name,
+            version: version
         })));
     }), Ct(Lt, null, Ct("style", {
         "data-page": "package-details"
     }, "\n            jspm-package-exports-entry {\n                display: flex;\n                display: block;\n                padding-left: 10px;\n            }\n            jspm-package-exports-target{\n                margin-left: 20px;\n                display: block;\n            }\n            \n            ")));
 }
-function ExportsValue(param) {
-    var key = param.key, value = param.value, name = param.name, version = param.version, getImportMap = param.getImportMap, importMaps = param.importMaps, map = param.map;
-    if (typeof value === "string") {
-        return Ct("jspm-package-exports-target", null, value, map);
-    } else if (Array.isArray(value)) {
-        return value.map(function(target) {
-            return Ct("jspm-package-exports-target", null, target);
-        });
-    }
-    return Ct(Exports, {
-        exports: value,
-        name: name,
-        version: version,
-        getImportMap: getImportMap,
-        importMaps: importMaps
-    });
-}
-function ExportsKey(param) {
-    var key = param.key, name = param.name, version = param.version;
-    return Ct("jspm-package-exports-key", null, key);
-}
-var ExportsContainer = function(Component1) {
-    "use strict";
-    _inherits(ExportsContainer1, Component1);
-    var _super = _createSuper(ExportsContainer1);
-    function ExportsContainer1(props) {
-        _classCallCheck(this, ExportsContainer1);
-        var _this;
-        _this = _super.call(this, props);
-        _defineProperty(_assertThisInitialized(_this), "importMaps", {});
-        var _this1 = _assertThisInitialized(_this);
-        _defineProperty(_assertThisInitialized(_this), "getImportMap", function() {
-            var _ref = _asyncToGenerator(e.mark(function _callee(dependency) {
-                var Generator, generator, importMap;
-                return e.wrap(function _callee$(_ctx) {
-                    while(1)switch(_ctx.prev = _ctx.next){
-                        case 0:
-                            if (!(typeof document !== "undefined")) {
-                                _ctx.next = 10;
-                                break;
-                            }
-                            _ctx.next = 3;
-                            return import("@jspm/generator");
-                        case 3:
-                            Generator = _ctx.sent.Generator;
-                            generator = new Generator({
-                                env: [
-                                    "production",
-                                    "browser",
-                                    "module"
-                                ]
-                            });
-                            _ctx.next = 7;
-                            return generator.install(dependency);
-                        case 7:
-                            importMap = JSON.stringify(generator.getMap(), null, 2);
-                            console.log(importMap);
-                            if (importMap) {
-                                _this1.importMaps = _objectSpread({}, _this1.importMaps, _defineProperty({}, dependency, generator.getMap()));
-                                _this1.update();
-                            }
-                        case 10:
-                        case "end":
-                            return _ctx.stop();
-                    }
-                }, _callee);
-            }));
-            return function(dependency) {
-                return _ref.apply(this, arguments);
-            };
-        }());
-        return _this;
-    }
-    _createClass(ExportsContainer1, [
-        {
-            key: "render",
-            value: function render() {
-                var _props = this.props, exports = _props.exports, name = _props.name, version = _props.version;
-                return Ct("div", null, Ct("pre", null, Ct("code", {
-                    innerHTML: {
-                        __dangerousHtml: JSON.stringify(this.importMaps, null, 2)
-                    }
-                })), Ct(Exports, {
-                    exports: exports,
-                    name: name,
-                    version: version,
-                    getImportMap: this.getImportMap,
-                    importMaps: this.importMaps
-                }));
-            }
-        }
-    ]);
-    return ExportsContainer1;
-}(St);
-(function(Component2) {
-    "use strict";
-    _inherits(Exports21, Component2);
-    var _super = _createSuper(Exports21);
-    function Exports21() {
-        _classCallCheck(this, Exports21);
-        var _this;
-        _this = _super.apply(this, arguments);
-        _defineProperty(_assertThisInitialized(_this), "checked", true);
-        _defineProperty(_assertThisInitialized(_this), "toggle", function(e) {
-            _this.checked = !_this.checked;
-            _this.update();
-        });
-        return _this;
-    }
-    _createClass(Exports21, [
-        {
-            key: "render",
-            value: function render() {
-                var Text = this.checked ? Ct("p", null, "is checked") : null;
-                return Ct("div", null, Ct("input", _extends({
-                    id: "checkbox",
-                    type: "checkbox"
-                }, this.checked ? {
-                    checked: true
-                } : {}, {
-                    onClick: this.toggle
-                })), Ct(Text, null));
-            }
-        }
-    ]);
-    return Exports21;
-})(St);
 function Aside(param) {
-    var license = param.license, files = param.files, name = param.name, version = param.version, exports = param.exports;
+    var license = param.license, name = param.name, version = param.version, exports = param.exports;
     return Ct("jspm-package-aside", null, Ct("aside", null, Ct("div", null, Ct("h3", null, "License"), Ct("jspm-package-license", null, license), Ct(Seperator, null)), Ct("jspm-package-aside-exports", {
         "data-exports": JSON.stringify(exports),
         "data-name": name,
         "data-version": version
-    }, Ct(ExportsContainer, {
+    }, Ct(Exports, {
         exports: exports,
         name: name,
         version: version
-    })), Ct("ul", {
-        class: "package-files"
-    }, files === null || files === void 0 ? void 0 : files.map(function(file) {
-        return Ct("li", null, Ct("a", {
-            target: "_blank",
-            href: "https://ga.jspm.io/npm:".concat(name, "@").concat(version, "/").concat(file),
-            class: "package-file"
-        }, file));
-    }))), Ct(Lt, null, Ct("style", {
-        "data-page": "package-files"
-    }, "\n          .package-file {\n            display: block;\n            line-height: 1.3;\n          }\n          .package-files {\n            list-style: none;\n            padding-left: 0px;\n            height: 500px;\n            overflow: scroll;\n          }\n          .package-files li {\n            line-height: 1.3;\n          }\n        ")));
+    }))));
 }
 function Logo(param) {
     param.name, param.version;
@@ -2973,7 +2847,7 @@ function Package(param) {
         href: "https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css"
     }), Ct("style", {
         "data-page": "package-details"
-    }, "\n        jspm-package-content {\n          display: flex;\n          flex-direction: row;\n          flex-wrap: wrap;\n        }\n        \n        jspm-package-readme {\n          display: block;\n          width: 800px;\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-package-aside {\n          width: 300px;\n          padding-left: var(--dl-space-space-unit);\n        }\n        \n        jspm-package-name,\n        jspm-package-version,\n        jspm-package-description,\n        jspm-package-license {\n          display: block;\n        }\n        \n        jspm-package-name h1 {\n          font-family: \"Major Mono Display\", monospace;\n          font-size: var(--step-5);\n        }\n        \n        jspm-package-name h1 a {\n          color: black;\n        }\n\n        @media(max-width: 767px) {\n          jspm-package-content {\n            justify-content: space-between;\n          }\n\n          jspm-package-readme {\n            width: 100%;\n          }\n        }\n        ")));
+    }, "\n        jspm-package-content {\n          display: grid;\n          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n          grid-gap: 1rem;\n        }\n        \n        jspm-package-readme {\n          display: block;\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-package-aside {\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-package-name,\n        jspm-package-version,\n        jspm-package-description,\n        jspm-package-license {\n          display: block;\n        }\n        \n        jspm-package-name h1 {\n          font-family: \"Major Mono Display\", monospace;\n          font-size: var(--step-5);\n        }\n        \n        jspm-package-name h1 a {\n          color: black;\n        }\n\n        @media(max-width: 767px) {\n          jspm-package-content {\n            justify-content: space-between;\n          }\n\n          jspm-package-readme {\n            width: 100%;\n          }\n        }\n        ")));
 }
 function FeaturedPackages(param1) {
     var _packages = param1.packages, packages = _packages === void 0 ? [] : _packages;
@@ -26021,7 +25895,7 @@ var a2 = {
     var c12 = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
     var l12 = /[\x01-\x7F]/g;
     var i12 = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
-    var n4 = /<\u20D2|=\u20E5|>\u20D2|\u205F\u200A|\u219D\u0338|\u2202\u0338|\u2220\u20D2|\u2229\uFE00|\u222A\uFE00|\u223C\u20D2|\u223D\u0331|\u223E\u0333|\u2242\u0338|\u224B\u0338|\u224D\u20D2|\u224E\u0338|\u224F\u0338|\u2250\u0338|\u2261\u20E5|\u2264\u20D2|\u2265\u20D2|\u2266\u0338|\u2267\u0338|\u2268\uFE00|\u2269\uFE00|\u226A\u0338|\u226A\u20D2|\u226B\u0338|\u226B\u20D2|\u227F\u0338|\u2282\u20D2|\u2283\u20D2|\u228A\uFE00|\u228B\uFE00|\u228F\u0338|\u2290\u0338|\u2293\uFE00|\u2294\uFE00|\u22B4\u20D2|\u22B5\u20D2|\u22D8\u0338|\u22D9\u0338|\u22DA\uFE00|\u22DB\uFE00|\u22F5\u0338|\u22F9\u0338|\u2933\u0338|\u29CF\u0338|\u29D0\u0338|\u2A6D\u0338|\u2A70\u0338|\u2A7D\u0338|\u2A7E\u0338|\u2AA1\u0338|\u2AA2\u0338|\u2AAC\uFE00|\u2AAD\uFE00|\u2AAF\u0338|\u2AB0\u0338|\u2AC5\u0338|\u2AC6\u0338|\u2ACB\uFE00|\u2ACC\uFE00|\u2AFD\u20E5|[\xA0-\u0113\u0116-\u0122\u0124-\u012B\u012E-\u014D\u0150-\u017E\u0192\u01B5\u01F5\u0237\u02C6\u02C7\u02D8-\u02DD\u0311\u0391-\u03A1\u03A3-\u03A9\u03B1-\u03C9\u03D1\u03D2\u03D5\u03D6\u03DC\u03DD\u03F0\u03F1\u03F5\u03F6\u0401-\u040C\u040E-\u044F\u0451-\u045C\u045E\u045F\u2002-\u2005\u2007-\u2010\u2013-\u2016\u2018-\u201A\u201C-\u201E\u2020-\u2022\u2025\u2026\u2030-\u2035\u2039\u203A\u203E\u2041\u2043\u2044\u204F\u2057\u205F-\u2063\u20AC\u20DB\u20DC\u2102\u2105\u210A-\u2113\u2115-\u211E\u2122\u2124\u2127-\u2129\u212C\u212D\u212F-\u2131\u2133-\u2138\u2145-\u2148\u2153-\u215E\u2190-\u219B\u219D-\u21A7\u21A9-\u21AE\u21B0-\u21B3\u21B5-\u21B7\u21BA-\u21DB\u21DD\u21E4\u21E5\u21F5\u21FD-\u2205\u2207-\u2209\u220B\u220C\u220F-\u2214\u2216-\u2218\u221A\u221D-\u2238\u223A-\u2257\u2259\u225A\u225C\u225F-\u2262\u2264-\u228B\u228D-\u229B\u229D-\u22A5\u22A7-\u22B0\u22B2-\u22BB\u22BD-\u22DB\u22DE-\u22E3\u22E6-\u22F7\u22F9-\u22FE\u2305\u2306\u2308-\u2310\u2312\u2313\u2315\u2316\u231C-\u231F\u2322\u2323\u232D\u232E\u2336\u233D\u233F\u237C\u23B0\u23B1\u23B4-\u23B6\u23DC-\u23DF\u23E2\u23E7\u2423\u24C8\u2500\u2502\u250C\u2510\u2514\u2518\u251C\u2524\u252C\u2534\u253C\u2550-\u256C\u2580\u2584\u2588\u2591-\u2593\u25A1\u25AA\u25AB\u25AD\u25AE\u25B1\u25B3-\u25B5\u25B8\u25B9\u25BD-\u25BF\u25C2\u25C3\u25CA\u25CB\u25EC\u25EF\u25F8-\u25FC\u2605\u2606\u260E\u2640\u2642\u2660\u2663\u2665\u2666\u266A\u266D-\u266F\u2713\u2717\u2720\u2736\u2758\u2772\u2773\u27C8\u27C9\u27E6-\u27ED\u27F5-\u27FA\u27FC\u27FF\u2902-\u2905\u290C-\u2913\u2916\u2919-\u2920\u2923-\u292A\u2933\u2935-\u2939\u293C\u293D\u2945\u2948-\u294B\u294E-\u2976\u2978\u2979\u297B-\u297F\u2985\u2986\u298B-\u2996\u299A\u299C\u299D\u29A4-\u29B7\u29B9\u29BB\u29BC\u29BE-\u29C5\u29C9\u29CD-\u29D0\u29DC-\u29DE\u29E3-\u29E5\u29EB\u29F4\u29F6\u2A00-\u2A02\u2A04\u2A06\u2A0C\u2A0D\u2A10-\u2A17\u2A22-\u2A27\u2A29\u2A2A\u2A2D-\u2A31\u2A33-\u2A3C\u2A3F\u2A40\u2A42-\u2A4D\u2A50\u2A53-\u2A58\u2A5A-\u2A5D\u2A5F\u2A66\u2A6A\u2A6D-\u2A75\u2A77-\u2A9A\u2A9D-\u2AA2\u2AA4-\u2AB0\u2AB3-\u2AC8\u2ACB\u2ACC\u2ACF-\u2ADB\u2AE4\u2AE6-\u2AE9\u2AEB-\u2AF3\u2AFD\uFB00-\uFB04]|\uD835[\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDCCF\uDD04\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDD6B]/g;
+    var n3 = /<\u20D2|=\u20E5|>\u20D2|\u205F\u200A|\u219D\u0338|\u2202\u0338|\u2220\u20D2|\u2229\uFE00|\u222A\uFE00|\u223C\u20D2|\u223D\u0331|\u223E\u0333|\u2242\u0338|\u224B\u0338|\u224D\u20D2|\u224E\u0338|\u224F\u0338|\u2250\u0338|\u2261\u20E5|\u2264\u20D2|\u2265\u20D2|\u2266\u0338|\u2267\u0338|\u2268\uFE00|\u2269\uFE00|\u226A\u0338|\u226A\u20D2|\u226B\u0338|\u226B\u20D2|\u227F\u0338|\u2282\u20D2|\u2283\u20D2|\u228A\uFE00|\u228B\uFE00|\u228F\u0338|\u2290\u0338|\u2293\uFE00|\u2294\uFE00|\u22B4\u20D2|\u22B5\u20D2|\u22D8\u0338|\u22D9\u0338|\u22DA\uFE00|\u22DB\uFE00|\u22F5\u0338|\u22F9\u0338|\u2933\u0338|\u29CF\u0338|\u29D0\u0338|\u2A6D\u0338|\u2A70\u0338|\u2A7D\u0338|\u2A7E\u0338|\u2AA1\u0338|\u2AA2\u0338|\u2AAC\uFE00|\u2AAD\uFE00|\u2AAF\u0338|\u2AB0\u0338|\u2AC5\u0338|\u2AC6\u0338|\u2ACB\uFE00|\u2ACC\uFE00|\u2AFD\u20E5|[\xA0-\u0113\u0116-\u0122\u0124-\u012B\u012E-\u014D\u0150-\u017E\u0192\u01B5\u01F5\u0237\u02C6\u02C7\u02D8-\u02DD\u0311\u0391-\u03A1\u03A3-\u03A9\u03B1-\u03C9\u03D1\u03D2\u03D5\u03D6\u03DC\u03DD\u03F0\u03F1\u03F5\u03F6\u0401-\u040C\u040E-\u044F\u0451-\u045C\u045E\u045F\u2002-\u2005\u2007-\u2010\u2013-\u2016\u2018-\u201A\u201C-\u201E\u2020-\u2022\u2025\u2026\u2030-\u2035\u2039\u203A\u203E\u2041\u2043\u2044\u204F\u2057\u205F-\u2063\u20AC\u20DB\u20DC\u2102\u2105\u210A-\u2113\u2115-\u211E\u2122\u2124\u2127-\u2129\u212C\u212D\u212F-\u2131\u2133-\u2138\u2145-\u2148\u2153-\u215E\u2190-\u219B\u219D-\u21A7\u21A9-\u21AE\u21B0-\u21B3\u21B5-\u21B7\u21BA-\u21DB\u21DD\u21E4\u21E5\u21F5\u21FD-\u2205\u2207-\u2209\u220B\u220C\u220F-\u2214\u2216-\u2218\u221A\u221D-\u2238\u223A-\u2257\u2259\u225A\u225C\u225F-\u2262\u2264-\u228B\u228D-\u229B\u229D-\u22A5\u22A7-\u22B0\u22B2-\u22BB\u22BD-\u22DB\u22DE-\u22E3\u22E6-\u22F7\u22F9-\u22FE\u2305\u2306\u2308-\u2310\u2312\u2313\u2315\u2316\u231C-\u231F\u2322\u2323\u232D\u232E\u2336\u233D\u233F\u237C\u23B0\u23B1\u23B4-\u23B6\u23DC-\u23DF\u23E2\u23E7\u2423\u24C8\u2500\u2502\u250C\u2510\u2514\u2518\u251C\u2524\u252C\u2534\u253C\u2550-\u256C\u2580\u2584\u2588\u2591-\u2593\u25A1\u25AA\u25AB\u25AD\u25AE\u25B1\u25B3-\u25B5\u25B8\u25B9\u25BD-\u25BF\u25C2\u25C3\u25CA\u25CB\u25EC\u25EF\u25F8-\u25FC\u2605\u2606\u260E\u2640\u2642\u2660\u2663\u2665\u2666\u266A\u266D-\u266F\u2713\u2717\u2720\u2736\u2758\u2772\u2773\u27C8\u27C9\u27E6-\u27ED\u27F5-\u27FA\u27FC\u27FF\u2902-\u2905\u290C-\u2913\u2916\u2919-\u2920\u2923-\u292A\u2933\u2935-\u2939\u293C\u293D\u2945\u2948-\u294B\u294E-\u2976\u2978\u2979\u297B-\u297F\u2985\u2986\u298B-\u2996\u299A\u299C\u299D\u29A4-\u29B7\u29B9\u29BB\u29BC\u29BE-\u29C5\u29C9\u29CD-\u29D0\u29DC-\u29DE\u29E3-\u29E5\u29EB\u29F4\u29F6\u2A00-\u2A02\u2A04\u2A06\u2A0C\u2A0D\u2A10-\u2A17\u2A22-\u2A27\u2A29\u2A2A\u2A2D-\u2A31\u2A33-\u2A3C\u2A3F\u2A40\u2A42-\u2A4D\u2A50\u2A53-\u2A58\u2A5A-\u2A5D\u2A5F\u2A66\u2A6A\u2A6D-\u2A75\u2A77-\u2A9A\u2A9D-\u2AA2\u2AA4-\u2AB0\u2AB3-\u2AC8\u2ACB\u2ACC\u2ACF-\u2ADB\u2AE4\u2AE6-\u2AE9\u2AEB-\u2AF3\u2AFD\uFB00-\uFB04]|\uD835[\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDCCF\uDD04\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDD6B]/g;
     var p12 = {
         "­": "shy",
         "‌": "zwnj",
@@ -29993,7 +29867,7 @@ var a2 = {
         var a4 = e5.strict;
         a4 && f11.test(r8) && parseError("forbidden code point");
         var t4 = e5.encodeEverything;
-        var o5 = e5.useNamedReferences;
+        var o4 = e5.useNamedReferences;
         var s4 = e5.allowUnsafeSymbols;
         var u2 = e5.decimal ? decEscape : hexEscape;
         var escapeBmpSymbol = function(r9) {
@@ -30001,18 +29875,18 @@ var a2 = {
         };
         if (t4) {
             r8 = r8.replace(l12, function(r10) {
-                return o5 && has(p12, r10) ? "&" + p12[r10] + ";" : escapeBmpSymbol(r10);
+                return o4 && has(p12, r10) ? "&" + p12[r10] + ";" : escapeBmpSymbol(r10);
             });
-            o5 && (r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;").replace(/&#x66;&#x6A;/g, "&fjlig;"));
-            o5 && (r8 = r8.replace(n4, function(r) {
+            o4 && (r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;").replace(/&#x66;&#x6A;/g, "&fjlig;"));
+            o4 && (r8 = r8.replace(n3, function(r) {
                 return "&" + p12[r] + ";";
             }));
-        } else if (o5) {
+        } else if (o4) {
             s4 || (r8 = r8.replace(d12, function(r) {
                 return "&" + p12[r] + ";";
             }));
             r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;");
-            r8 = r8.replace(n4, function(r) {
+            r8 = r8.replace(n3, function(r) {
                 return "&" + p12[r] + ";";
             });
         } else s4 || (r8 = r8.replace(d12, escapeBmpSymbol));
@@ -30034,7 +29908,7 @@ var a2 = {
         e7 = merge1(e7, decode.options);
         var a6 = e7.strict;
         a6 && m1.test(r12) && parseError("malformed character reference");
-        return r12.replace(b1, function(r13, t6, o6, s5, u3, c2, l2, i, n) {
+        return r12.replace(b1, function(r13, t6, o5, s5, u3, c2, l2, i, n) {
             var p4;
             var d3;
             var g3;
@@ -30045,8 +29919,8 @@ var a2 = {
                 f3 = t6;
                 return h2[f3];
             }
-            if (o6) {
-                f3 = o6;
+            if (o5) {
+                f3 = o5;
                 b2 = s5;
                 if (b2 && e7.isAttributeValue) {
                     a6 && "=" == b2 && parseError("`&` did not start a character reference");
@@ -30193,9 +30067,9 @@ var n2 = function(t14) {
                 r4 = r4 || i13.languages;
                 var s6 = r4[t8];
                 var l3 = {};
-                for(var o7 in s6)if (s6.hasOwnProperty(o7)) {
-                    if (o7 == a5) for(var u4 in n5)n5.hasOwnProperty(u4) && (l3[u4] = n5[u4]);
-                    n5.hasOwnProperty(o7) || (l3[o7] = s6[o7]);
+                for(var o6 in s6)if (s6.hasOwnProperty(o6)) {
+                    if (o6 == a5) for(var u4 in n5)n5.hasOwnProperty(u4) && (l3[u4] = n5[u4]);
+                    n5.hasOwnProperty(o6) || (l3[o6] = s6[o6]);
                 }
                 var g4 = r4[t8];
                 r4[t8] = l3;
@@ -30210,9 +30084,9 @@ var n2 = function(t14) {
                 for(var s7 in e10)if (e10.hasOwnProperty(s7)) {
                     t9.call(e10, s7, e10[s7], a7 || s7);
                     var l4 = e10[s7];
-                    var o8 = i13.util.type(l4);
-                    if ("Object" !== o8 || n7[r(l4)]) {
-                        if ("Array" === o8 && !n7[r(l4)]) {
+                    var o7 = i13.util.type(l4);
+                    if ("Object" !== o7 || n7[r(l4)]) {
+                        if ("Array" === o7 && !n7[r(l4)]) {
                             n7[r(l4)] = true;
                             DFS(l4, t9, s7, n7);
                         }
@@ -30244,12 +30118,12 @@ var n2 = function(t14) {
             i13.util.setLanguage(e13, r6);
             var l5 = e13.parentElement;
             l5 && "pre" === l5.nodeName.toLowerCase() && i13.util.setLanguage(l5, r6);
-            var o9 = e13.textContent;
+            var o8 = e13.textContent;
             var u5 = {
                 element: e13,
                 language: r6,
                 grammar: s8,
-                code: o9
+                code: o8
             };
             function insertHighlightedCode(e14) {
                 u5.highlightedCode = e14;
@@ -30363,13 +30237,13 @@ var n2 = function(t14) {
     }
     function matchGrammar(e21, t19, a17, n15, r11, s10) {
         for(var l7 in a17)if (a17.hasOwnProperty(l7) && a17[l7]) {
-            var o10 = a17[l7];
-            o10 = Array.isArray(o10) ? o10 : [
-                o10
+            var o9 = a17[l7];
+            o9 = Array.isArray(o9) ? o9 : [
+                o9
             ];
-            for(var u6 = 0; u6 < o10.length; ++u6){
+            for(var u6 = 0; u6 < o9.length; ++u6){
                 if (s10 && s10.cause == l7 + "," + u6) return;
-                var g6 = o10[u6];
+                var g6 = o9[u6];
                 var c3 = g6.inside;
                 var d4 = !!g6.lookbehind;
                 var p5 = !!g6.greedy;
@@ -30886,7 +30760,7 @@ n2.languages.js = n2.languages.javascript;
         var i = "data-src-status";
         var s2 = "loading";
         var l8 = "loaded";
-        var o14 = "failed";
+        var o13 = "failed";
         var u7 = "pre[data-src]:not([" + i + '="' + l8 + '"]):not([' + i + '="' + s2 + '"])';
         n2.hooks.add("before-highlightall", function(e31) {
             e31.selector += ", " + u7;
@@ -30917,18 +30791,18 @@ n2.languages.js = n2.languages.javascript;
                     if (t29) {
                         var r17 = e33.split(/\r\n?|\n/g);
                         var s15 = t29[0];
-                        var o13 = null == t29[1] ? r17.length : t29[1];
+                        var o10 = null == t29[1] ? r17.length : t29[1];
                         s15 < 0 && (s15 += r17.length);
                         s15 = Math.max(0, Math.min(s15 - 1, r17.length));
-                        o13 < 0 && (o13 += r17.length);
-                        o13 = Math.max(0, Math.min(o13, r17.length));
-                        e33 = r17.slice(s15, o13).join("\n");
+                        o10 < 0 && (o10 += r17.length);
+                        o10 = Math.max(0, Math.min(o10, r17.length));
+                        e33 = r17.slice(s15, o10).join("\n");
                         a27.hasAttribute("data-start") || a27.setAttribute("data-start", String(s15 + 1));
                     }
                     g7.textContent = e33;
                     n2.highlightElement(g7);
                 }, function(e34) {
-                    a27.setAttribute(i, o14);
+                    a27.setAttribute(i, o13);
                     g7.textContent = e34;
                 });
             }
@@ -31110,6 +30984,10 @@ const staticResources = {
     "/nav.js": {
         path: "./lib/nav.js",
         contentType: "application/javascript; charset=utf-8"
+    },
+    "/importmap-generator.js": {
+        path: "./lib/importmap-generator.js",
+        contentType: "application/javascript; charset=utf-8"
     }
 };
 async function generateHTML({ template , body , head , footer  } = {
@@ -31207,6 +31085,8 @@ async function requestHandler(request) {
                 ).text();
                 try {
                     const readmeHTML = renderMarkdownContent(readmeFileContent);
+                    const filteredExport = Object.keys(exports).filter((expt)=>!expt.endsWith('!cjs') && !expt.endsWith('/') && expt.indexOf('*') === -1
+                    ).sort();
                     const app = gt(Ct(Package, {
                         name: name,
                         description: description,
@@ -31214,7 +31094,7 @@ async function requestHandler(request) {
                         homepage: homepage,
                         license: license,
                         files: files,
-                        exports: exports,
+                        exports: filteredExport,
                         readme: readmeHTML,
                         keywords: keywords
                     }));

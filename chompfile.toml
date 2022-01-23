@@ -1,6 +1,6 @@
 version = 0.1
 
-default-task = "deno"
+default-task = "deno-deploy"
 
 [[task]]
   name = "deno-deploy"
@@ -10,7 +10,7 @@ default-task = "deno"
 [[task]]
   name = "deno"
   deps = ["build"]
-  run = "deno run -A --import-map=deno.importmap --unstable --watch server.jsx"
+  run = "deno run -A --import-map=deno.importmap --unstable --watch --no-check server.jsx"
 
 [[task]]
   name = "build"

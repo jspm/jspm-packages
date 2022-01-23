@@ -1,49 +1,92 @@
 import { Component, h, Helmet } from "nano-jsx";
+import {
+  getCleanPath,
+  main as importMapGenerator,
+} from "./importmap-generator.js";
 
-function getCleanPath(path) {
-  if (path === ".") {
-    return "";
+class ImportMap extends Component {
+  constructor(props) {
+    super(props);
   }
-  if (path.startsWith("./")) {
-    return path.slice(1);
+
+  importMaps;
+
+  async didMount() {
+    if (!this.importMaps) {
+      const { target, subpaths } = this.props;
+      const importMap = await importMapGenerator({ target, subpaths });
+
+      if (importMap) {
+        this.importMaps = importMap;
+        this.update();
+      }
+    }
   }
-  return path;
+
+  render() {
+    if (this.importMaps) {
+      return (
+        <pre>
+          <code
+            innerHTML={{
+              __dangerousHtml: JSON.stringify(this.importMaps, null, 2),
+            }}
+          />
+        </pre>
+      );
+    } else {
+      return <div>{this.props.subpath}</div>;
+    }
+  }
+}
+
+function SubpathImportMap(
+  { subpath, name, version },
+) {
+  return (
+    <jspm-package-exports-subpath-importmap>
+      <ImportMap target={`${name}@${version}`} subpaths={[subpath]} />
+    </jspm-package-exports-subpath-importmap>
+  );
+}
+
+function Subpath({ importPath }) {
+  return (
+    <jspm-package-exports-subpath>
+      {importPath}
+    </jspm-package-exports-subpath>
+  );
 }
 
 function Exports(
-  { exports, name, version, importMaps, getImportMap },
+  { exports, name, version },
 ) {
   return (
     <jspm-package-exports>
-      {Object.entries(exports).map((
-        [key, value],
-      ) =>
-        key.endsWith("!cjs") || key === "default"
-          ? false
-          : (
-            <jspm-package-exports-entry>
-              <details
-                data-subpath={key}
-                data-dependency={`${name}@${version}${getCleanPath(key)}`}
-                onClick={() => {
-                  getImportMap(`${name}@${version}${getCleanPath(key)}`);
-                }}
-              >
-                <summary>
-                  <ExportsKey key={key} name={name} version={version} />
-                </summary>
-                <ExportsValue
-                  key={key}
-                  value={value}
+      {exports.map((subpath) => {
+        return (
+          <jspm-package-exports-entry>
+            <details
+              data-subpath={subpath}
+              data-dependency={`${name}@${version}${getCleanPath(subpath)}`}
+            >
+              <summary>
+                <Subpath
+                  subpath={subpath}
                   name={name}
                   version={version}
-                  getImportMap={getImportMap}
-                  importMaps={importMaps}
+                  importPath={`${name}${getCleanPath(subpath)}`}
                 />
-              </details>
-            </jspm-package-exports-entry>
-          )
-      )}
+              </summary>
+              <SubpathImportMap
+                subpath={subpath}
+                name={name}
+                version={version}
+              />
+            </details>
+          </jspm-package-exports-entry>
+        );
+      })}
       <Helmet>
         <style data-page="package-details">
           {`
@@ -63,112 +106,4 @@ function Exports(
     </jspm-package-exports>
   );
 }
-
-function ExportsValue(
-  { key, value, name, version, getImportMap, importMaps, map },
-) {
-  if (typeof value === "string") {
-    // const map = importMaps[`${name}@${version}${getCleanPath(key)}`];
-    return (
-      <jspm-package-exports-target>
-        {value}
-        {map}
-      </jspm-package-exports-target>
-    );
-  } else if (Array.isArray(value)) {
-    return value.map((target) => (
-      <jspm-package-exports-target>{target}</jspm-package-exports-target>
-    ));
-  }
-  return (
-    <Exports
-      exports={value}
-      name={name}
-      version={version}
-      getImportMap={getImportMap}
-      importMaps={importMaps}
-    />
-  );
-}
-
-function ExportsKey({ key, name, version }) {
-  return (
-    <jspm-package-exports-key>
-      {key}
-    </jspm-package-exports-key>
-  );
-}
-class ExportsContainer extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  importMaps = {};
-
-  getImportMap = async (dependency) => {
-    if (typeof document !== "undefined") {
-      // const resolvedKey = getResolvedKey({ key, name, version });
-      // console.log(resolvedKey);
-      //consol.log(this.props);
-      const { Generator } = await import("@jspm/generator");
-      const generator = new Generator({
-        env: ["production", "browser", "module"],
-      });
-      await generator.install(dependency);
-      const importMap = JSON.stringify(generator.getMap(), null, 2);
-      console.log(importMap);
-      if (importMap) {
-        this.importMaps = { ...this.importMaps, [dependency]: generator.getMap() };
-        this.update();
-      }
-    }
-  };
-
-  render() {
-    const { exports, name, version } = this.props;
-    return (
-      <div>
-        <pre>
-          <code
-            innerHTML={{
-              __dangerousHtml: JSON.stringify(this.importMaps, null, 2),
-            }}
-          />
-        </pre>
-        <Exports
-          exports={exports}
-          name={name}
-          version={version}
-          getImportMap={this.getImportMap}
-          importMaps={this.importMaps}
-        />
-      </div>
-    );
-  }
-}
-
-class Exports2 extends Component {
-  checked = true;
-
-  toggle = (e) => {
-    this.checked = !this.checked;
-    this.update();
-  };
-
-  render() {
-    const Text = this.checked ? <p>is checked</p> : null;
-
-    return (
-      <div>
-        <input
-          id="checkbox"
-          type="checkbox"
-          {...(this.checked ? { checked: true } : {})}
-          onClick={this.toggle}
-        />
-        <Text />
-      </div>
-    );
-  }
-}
-export { ExportsContainer };
+export { Exports };

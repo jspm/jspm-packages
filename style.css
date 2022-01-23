@@ -76,7 +76,6 @@ code {
 }
 
 body {
-  max-width: 1140px;
   font-family: "Inter", sans-serif;
   font-size: var(--dl-space-space-unit);
   margin-right: auto;
