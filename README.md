@@ -3,8 +3,8 @@
 # Develop
 - `./chomp --watch`
 or
-- `./chomp build --watch`
-- `deno run -A --unstable --watch server.js`
+- `./chomp build --watch` &&
+- `deno run -A --import-map=deno.importmap --unstable --watch --no-check server.jsx`
 
 # Deploy
 - `./chomp clean && ./chomp build`

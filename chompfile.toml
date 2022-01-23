@@ -1,11 +1,16 @@
 version = 0.1
 
-default-task = "deno"
+default-task = "deno-deploy"
+
+[[task]]
+  name = "deno-deploy"
+  deps = ["build"]
+  run = "deno run -A --unstable --watch server.js"
 
 [[task]]
   name = "deno"
   deps = ["build"]
-  run = "deno run -A --unstable --watch server.js"
+  run = "deno run -A --import-map=deno.importmap --unstable --watch --no-check server.jsx"
 
 [[task]]
   name = "build"
@@ -15,6 +20,15 @@ default-task = "deno"
   name = "jsx"
   target = "lib/#.js"
   deps = ["src/#.jsx"]
+  template = "swc"
+  [task.template-options.config]
+    "jsc.parser.jsx" = true
+    "jsc.transform.react.pragma" = "h"
+
+[[task]]
+  name = "jsx-deno"
+  target = "lib/server.js"
+  deps = ["server.jsx"]
   template = "swc"
   [task.template-options.config]
     "jsc.parser.jsx" = true
@@ -34,7 +48,7 @@ default-task = "deno"
   name = "generate-deno-bundle"
   deps = ["generate-deno-importmap"]
   run = """
-  deno bundle --import-map=deno.importmap --unstable server.jsx server.js
+  deno bundle --import-map=deno.importmap --unstable --no-check server.jsx server.js
   """
 
 [[task]]

@@ -1,62 +1,106 @@
-import { h, Helmet } from "nano-jsx";
+import { Component, h, Helmet } from "nano-jsx";
+import {
+  getCleanPath,
+  main as importMapGenerator,
+} from "./importmap-generator.js";
 
-function ExportsValue({ value, name }) {
-  if (typeof value === "string") {
-    return <jspm-package-exports-target>{value}</jspm-package-exports-target>;
-  } else if (Array.isArray(value)) {
-    return value.map((target) => (
-      <jspm-package-exports-target>{target}</jspm-package-exports-target>
-    ));
+class ImportMap extends Component {
+  constructor(props) {
+    super(props);
   }
-  return <Exports exports={value} name={name} />;
+
+  importMaps;
+
+  async didMount() {
+    if (!this.importMaps) {
+      const { target, subpaths } = this.props;
+      const importMap = await importMapGenerator({ target, subpaths });
+
+      if (importMap) {
+        this.importMaps = importMap;
+        this.update();
+      }
+    }
+  }
+
+  render() {
+    if (this.importMaps) {
+      return (
+        <pre>
+          <code
+            innerHTML={{
+              __dangerousHtml: JSON.stringify(this.importMaps, null, 2),
+            }}
+          />
+        </pre>
+      );
+    } else {
+      return <div>{this.props.subpath}</div>;
+    }
+  }
 }
 
-function getResolvedKey({ key, name }) {
-  if (key === ".") {
-    return name;
-  }
-  if (key.startsWith("./")) {
-    return `${name}${key.slice(1)}`;
-  }
-  return name ? `${name}/${key}` : key;
-}
-
-function ExportsKey({ key, name }) {
-  const resolvedKey = getResolvedKey({ key, name });
+function SubpathImportMap(
+  { subpath, name, version },
+) {
   return (
-    <jspm-package-exports-key>
-       {resolvedKey}
-    </jspm-package-exports-key>
+    <jspm-package-exports-subpath-importmap>
+      <ImportMap target={`${name}@${version}`} subpaths={[subpath]} />
+    </jspm-package-exports-subpath-importmap>
   );
 }
 
-function Exports({ exports, name }) {
+function Subpath({ importPath }) {
+  return (
+    <jspm-package-exports-subpath>
+      {importPath}
+    </jspm-package-exports-subpath>
+  );
+}
+
+function Exports(
+  { exports, name, version },
+) {
   return (
     <jspm-package-exports>
-      {Object.entries(exports).map(([key, value]) => key.endsWith('!cjs') || key === 'default' ? false : (
-        <jspm-package-exports-entry>
-          <details>
-            <summary>
-              <ExportsKey key={key} name={name} />
-            </summary>
-            <ExportsValue value={value} name={name} />
-          </details>
-        </jspm-package-exports-entry>
-      ))}
+      {exports.map((subpath) => {
+        return (
+          <jspm-package-exports-entry>
+            <details
+              data-subpath={subpath}
+              data-dependency={`${name}@${version}${getCleanPath(subpath)}`}
+            >
+              <summary>
+                <Subpath
+                  subpath={subpath}
+                  name={name}
+                  version={version}
+                  importPath={`${name}${getCleanPath(subpath)}`}
+                />
+              </summary>
+              <SubpathImportMap
+                subpath={subpath}
+                name={name}
+                version={version}
+              />
+            </details>
+          </jspm-package-exports-entry>
+        );
+      })}
       <Helmet>
         <style data-page="package-details">
           {`
-          jspm-package-exports-entry {
-              display: flex;
-              display: block;
-              padding-left: 10px;
-          }
-          jspm-package-exports-target{
-              margin-left: 20px;
-              display: block;
-          }
-          
-          `}
+            jspm-package-exports-entry {
+                display: flex;
+                display: block;
+                padding-left: 10px;
+            }
+            jspm-package-exports-target{
+                margin-left: 20px;
+                display: block;
+            }
+            
+            `}
         </style>
       </Helmet>
     </jspm-package-exports>

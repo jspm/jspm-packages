@@ -17,16 +17,84 @@ const staticResources = {
     path: "./lib/header.js",
     contentType: "application/javascript; charset=utf-8",
   },
+  "/exports.js": {
+    path: "./lib/exports.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/exports.js": {
+    path: "./lib/exports.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/exports.js.map": {
+    path: "./lib/exports.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/exports.js.map": {
+    path: "./lib/exports.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
   "/logo.js": {
     path: "./lib/logo.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/logo.js.map": {
+    path: "./lib/logo.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/logo.js": {
+    path: "./lib/logo.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/logo.js.map": {
+    path: "./lib/logo.js.map",
     contentType: "application/javascript; charset=utf-8",
   },
   "/search.js": {
     path: "./lib/search.js",
     contentType: "application/javascript; charset=utf-8",
   },
+  "/search.js.map": {
+    path: "./lib/search.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/search.js": {
+    path: "./lib/search.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/search.js.map": {
+    path: "./lib/search.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
   "/nav.js": {
     path: "./lib/nav.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/nav.js.map": {
+    path: "./lib/nav.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/nav.js": {
+    path: "./lib/nav.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/nav.js.map": {
+    path: "./lib/nav.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/importmap-generator.js": {
+    path: "./lib/importmap-generator.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/importmap-generator.js.map": {
+    path: "./lib/importmap-generator.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/importmap-generator.js": {
+    path: "./lib/importmap-generator.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package/importmap-generator.js.map": {
+    path: "./lib/importmap-generator.js.map",
     contentType: "application/javascript; charset=utf-8",
   },
 };
@@ -159,6 +227,9 @@ async function requestHandler(request) {
 
         try {
           const readmeHTML = renderMarkdownContent(readmeFileContent);
+          // https://github.com/jspm/generator.jspm.io/blob/main/src/api.js#L137
+          const filteredExport = Object.keys(exports).filter(expt => !expt.endsWith('!cjs') && !expt.endsWith('/') && expt.indexOf('*') === -1).sort();
+          
           const app = renderSSR(
             <Package
               name={name}
@@ -167,7 +238,7 @@ async function requestHandler(request) {
               homepage={homepage}
               license={license}
               files={files}
-              exports={exports}
+              exports={filteredExport}
               readme={readmeHTML}
               keywords={keywords}
             />,
