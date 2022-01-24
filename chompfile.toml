@@ -1,25 +1,24 @@
 version = 0.1
-
 default-task = "deno-deploy"
 
 [[task]]
   name = "deno-deploy"
-  deps = ["build"]
-  run = "deno run -A --unstable --watch server.js"
+  deps = [":build-lib", "server.js"]
+  run = "deno run -A --unstable server.js"
 
 [[task]]
   name = "deno"
-  deps = ["build"]
-  run = "deno run -A --import-map=deno.importmap --unstable --watch --no-check server.jsx"
+  deps = [":build-lib", "deno.importmap", "server.jsx"]
+  run = "deno run -A --import-map=deno.importmap --unstable --no-check server.jsx"
 
 [[task]]
-  name = "build"
-  deps = ["copy-js", "jsx", "jspm", "generate-deno-bundle"]
+  name = "build-lib"
+  deps = [":copy-js", ":jsx", "lib/shell.html"]
 
 [[task]]
   name = "jsx"
   target = "lib/#.js"
-  deps = ["src/#.jsx"]
+  dep = "src/#.jsx"
   template = "swc"
   [task.template-options.config]
     "jsc.parser.jsx" = true
@@ -28,7 +27,7 @@ default-task = "deno-deploy"
 [[task]]
   name = "jsx-deno"
   target = "lib/server.js"
-  deps = ["server.jsx"]
+  dep = "server.jsx"
   template = "swc"
   [task.template-options.config]
     "jsc.parser.jsx" = true
@@ -41,28 +40,27 @@ default-task = "deno-deploy"
 [[task]]
   name = "copy-js"
   target = "lib/#.js"
-  deps = ["src/#.js"]
+  dep = "src/#.js"
   run = "cp $DEP $TARGET"
 
 [[task]]
   name = "generate-deno-bundle"
-  deps = ["generate-deno-importmap"]
+  target = "server.js"
+  deps = [":build-lib", "deno.importmap", "server.jsx"]
   run = """
   deno bundle --import-map=deno.importmap --unstable --no-check server.jsx server.js
   """
 
 [[task]]
-  name = "generate-deno-importmap"
-  template = "jspm"
   target = "deno.importmap"
   deps = ["server.jsx"]
+  template = "jspm"
   [task.template-options]
     env = ["deno", "production"]
 
 [[task]]
-  name = "jspm"
   template = "jspm"
   target = "lib/shell.html"
-  deps = ["src/shell.html"]
+  deps = ["src/shell.html", ":jsx", ":copy-js"]
   [task.template-options]
     env = ["browser", "production"]
