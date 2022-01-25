@@ -41,11 +41,17 @@ class ImportMap extends Component {
 }
 
 function SubpathImportMap(
-  { subpath, name, version },
+  { importMap },
 ) {
   return (
     <jspm-package-exports-subpath-importmap>
-      <ImportMap target={`${name}@${version}`} subpaths={[subpath]} />
+      <pre>
+          <code
+            innerHTML={{
+              __dangerousHtml: JSON.stringify(importMap, null, 2),
+            }}
+          />
+        </pre>
     </jspm-package-exports-subpath-importmap>
   );
 }
@@ -59,7 +65,7 @@ function Subpath({ importPath }) {
 }
 
 function Exports(
-  { exports, name, version },
+  { exports, name, version, importMaps },
 ) {
   return (
     <jspm-package-exports>
@@ -82,6 +88,7 @@ function Exports(
                 subpath={subpath}
                 name={name}
                 version={version}
+                importMap={importMaps[subpath]}
               />
             </details>
           </jspm-package-exports-entry>

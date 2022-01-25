@@ -14,6 +14,7 @@ function Package({
   files,
   exports,
   readme,
+  importMaps,
 }) {
   return (
     <div>
@@ -22,6 +23,7 @@ function Package({
         <jspm-package-content>
           <Readme __html={readme} />
           <Aside
+            importMaps={importMaps}
             version={version}
             name={name}
             license={license}

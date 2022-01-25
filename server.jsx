@@ -228,8 +228,29 @@ async function requestHandler(request) {
         try {
           const readmeHTML = renderMarkdownContent(readmeFileContent);
           // https://github.com/jspm/generator.jspm.io/blob/main/src/api.js#L137
-          const filteredExport = Object.keys(exports).filter(expt => !expt.endsWith('!cjs') && !expt.endsWith('/') && expt.indexOf('*') === -1).sort();
-          
+          const filteredExports = Object.keys(exports).filter((expt) =>
+            !expt.endsWith("!cjs") && !expt.endsWith("/") &&
+            expt.indexOf("*") === -1
+          ).sort();
+
+          let importMaps = {};
+          const importMapRequests = await Promise.all(
+            filteredExports.map(
+              async (filteredExport) => {
+                const jspmAPI =
+                  `https://api.jspm.io/generate?install=${name}@${version}${
+                    filteredExport.slice(1)
+                  }`;
+                const response = await fetch(jspmAPI);
+
+                const json = await response.json();
+
+                importMaps[filteredExport] = json.map;
+                return json;
+              },
+            ),
+          );
+
           const app = renderSSR(
             <Package
               name={name}
@@ -238,9 +259,10 @@ async function requestHandler(request) {
               homepage={homepage}
               license={license}
               files={files}
-              exports={filteredExport}
+              exports={filteredExports}
               readme={readmeHTML}
               keywords={keywords}
+              importMaps={importMaps}
             />,
           );
           const { body, head, footer } = Helmet.SSR(app);

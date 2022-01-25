@@ -2460,7 +2460,7 @@ function getCleanPath(path) {
 }
 async function main({ target , name , version , subpaths  }) {
     const environment = typeof globalThis.document === "undefined" ? "deno" : "browser";
-    const { Generator  } = await import(`https://cdn.jsdelivr.net/gh/fusionstrings/dependencies@@jspm/generator@1.0.0-beta.22/dist/${environment}/jspm.js`);
+    const { Generator  } = await import('@jspm/generator');
     const generator = new Generator({
         env: [
             "production",
@@ -2602,7 +2602,7 @@ function _createSuper(Derived) {
         return _possibleConstructorReturn(this, result);
     };
 }
-var ImportMap = function(Component1) {
+(function(Component1) {
     "use strict";
     _inherits(ImportMap1, Component1);
     var _super = _createSuper(ImportMap1);
@@ -2663,22 +2663,21 @@ var ImportMap = function(Component1) {
         }
     ]);
     return ImportMap1;
-}(St);
+})(St);
 function SubpathImportMap(param) {
-    var subpath = param.subpath, name = param.name, version = param.version;
-    return Ct("jspm-package-exports-subpath-importmap", null, Ct(ImportMap, {
-        target: "".concat(name, "@").concat(version),
-        subpaths: [
-            subpath
-        ]
-    }));
+    var importMap = param.importMap;
+    return Ct("jspm-package-exports-subpath-importmap", null, Ct("pre", null, Ct("code", {
+        innerHTML: {
+            __dangerousHtml: JSON.stringify(importMap, null, 2)
+        }
+    })));
 }
 function Subpath(param) {
     var importPath = param.importPath;
     return Ct("jspm-package-exports-subpath", null, importPath);
 }
 function Exports(param) {
-    var exports = param.exports, name = param.name, version = param.version;
+    var exports = param.exports, name = param.name, version = param.version, importMaps = param.importMaps;
     return Ct("jspm-package-exports", null, exports.map(function(subpath) {
         return Ct("jspm-package-exports-entry", null, Ct("details", {
             "data-subpath": subpath,
@@ -2691,14 +2690,15 @@ function Exports(param) {
         })), Ct(SubpathImportMap, {
             subpath: subpath,
             name: name,
-            version: version
+            version: version,
+            importMap: importMaps[subpath]
         })));
     }), Ct(Lt, null, Ct("style", {
         "data-page": "package-details"
     }, "\n            jspm-package-exports-entry {\n                display: flex;\n                display: block;\n                padding-left: 10px;\n            }\n            jspm-package-exports-target{\n                margin-left: 20px;\n                display: block;\n            }\n            \n            ")));
 }
 function Aside(param) {
-    var license = param.license, name = param.name, version = param.version, exports = param.exports;
+    var license = param.license, name = param.name, version = param.version, exports = param.exports, importMaps = param.importMaps;
     return Ct("jspm-package-aside", null, Ct("aside", null, Ct("div", null, Ct("h3", null, "License"), Ct("jspm-package-license", null, license), Ct(Seperator, null)), Ct("jspm-package-aside-exports", {
         "data-exports": JSON.stringify(exports),
         "data-name": name,
@@ -2706,7 +2706,8 @@ function Aside(param) {
     }, Ct(Exports, {
         exports: exports,
         name: name,
-        version: version
+        version: version,
+        importMaps: importMaps
     }))));
 }
 function Logo(param) {
@@ -2832,10 +2833,11 @@ function Footer() {
     }, "\n        .footer-container {\n            width: 100%;\n            display: flex;\n            position: relative;\n            align-items: flex-start;\n            flex-direction: column;\n            background-color: var(--dl-color-jspm-footer);\n          }\n          .footer-footer {\n            width: 100%;\n            display: flex;\n            max-width: var(--dl-size-size-maxwidth);\n            align-items: center;\n            padding-top: var(--dl-space-space-twounits);\n            padding-left: var(--dl-space-space-threeunits);\n            padding-right: var(--dl-space-space-threeunits);\n            flex-direction: column;\n            padding-bottom: var(--dl-space-space-twounits);\n            justify-content: space-between;\n            background-color: var(--dl-color-gray-900);\n            margin-top: var(--dl-space-space-unit);\n          }\n          .footer-container1 {\n            width: 100%;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: row;\n            justify-content: center;\n          }\n          .footer-image {\n            width: 45px;\n            object-fit: cover;\n            margin-right: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-container2 {\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: row;\n            justify-content: space-between;\n            flex-wrap: wrap;\n          }\n          .footer-product-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text01 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text02 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text03 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text04 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text05 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text06 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text07 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container1 {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text08 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text09 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text10 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text11 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-separator {\n            width: 100%;\n            height: 1px;\n            margin-top: var(--dl-space-space-twounits);\n            margin-bottom: var(--dl-space-space-twounits);\n            background-color: var(--dl-color-gray-900);\n          }\n          .footer-copyright {\n            flex: 0 0 auto;\n            width: 100%;\n            height: auto;\n            display: flex;\n            align-items: flex-start;\n            justify-content: space-between;\n          }\n          .footer-text12 {\n            align-self: center;\n          }\n          .footer-socials {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: flex-start;\n          }\n          .footer-text14 {\n            font-style: normal;\n            font-weight: 400;\n            margin-right: var(--dl-space-space-unit);\n            margin-bottom: 0px;\n          }\n          .footer-icon-group {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: space-between;\n          }\n          .footer-image1 {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            object-fit: cover;\n            margin-right: var(--dl-space-space-unit);\n          }\n          .footer-icon {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            margin-left: 0px;\n            margin-right: 0px;\n          }\n          \n          @media(max-width: 991px) {\n            .footer-footer {\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 767px) {\n            .footer-footer {\n              padding-left: var(--dl-space-space-twounits);\n              padding-right: var(--dl-space-space-twounits);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n              justify-content: space-between;\n            }\n            .footer-image {\n              display: none;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 479px) {\n            .footer-footer {\n              padding: var(--dl-space-space-unit);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: 0px;\n            }\n            .footer-text12 {\n              text-align: center;\n            }\n          }          \n        ")));
 }
 function Package(param) {
-    var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme;
+    var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme, importMaps = param.importMaps;
     return Ct("div", null, Ct(Header, null), Ct("jspm-package", null, Ct("jspm-package-content", null, Ct(Readme, {
         __html: readme
     }), Ct(Aside, {
+        importMaps: importMaps,
         version: version,
         name: name,
         license: license,
@@ -31133,8 +31135,16 @@ async function requestHandler(request) {
                 ).text();
                 try {
                     const readmeHTML = renderMarkdownContent(readmeFileContent);
-                    const filteredExport = Object.keys(exports).filter((expt)=>!expt.endsWith('!cjs') && !expt.endsWith('/') && expt.indexOf('*') === -1
+                    const filteredExports = Object.keys(exports).filter((expt)=>!expt.endsWith("!cjs") && !expt.endsWith("/") && expt.indexOf("*") === -1
                     ).sort();
+                    let importMaps = {};
+                    await Promise.all(filteredExports.map(async (filteredExport)=>{
+                        const jspmAPI = `https://api.jspm.io/generate?install=${name}@${version}${filteredExport.slice(1)}`;
+                        const response = await fetch(jspmAPI);
+                        const json = await response.json();
+                        importMaps[filteredExport] = json.map;
+                        return json;
+                    }));
                     const app = gt(Ct(Package, {
                         name: name,
                         description: description,
@@ -31142,9 +31152,10 @@ async function requestHandler(request) {
                         homepage: homepage,
                         license: license,
                         files: files,
-                        exports: filteredExport,
+                        exports: filteredExports,
                         readme: readmeHTML,
-                        keywords: keywords
+                        keywords: keywords,
+                        importMaps: importMaps
                     }));
                     const { body , head , footer  } = Lt.SSR(app);
                     const html = await generateHTML({

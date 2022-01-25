@@ -2,7 +2,7 @@ import { h, Helmet } from "nano-jsx";
 import { Seperator } from "./separator.js";
 import { Exports } from "./exports.js";
 
-function Aside({ license, name, version, exports }) {
+function Aside({ license, name, version, exports, importMaps }) {
   return (
     <jspm-package-aside>
       <aside>
@@ -16,7 +16,7 @@ function Aside({ license, name, version, exports }) {
           data-name={name}
           data-version={version}
         >
-          <Exports exports={exports} name={name} version={version} />
+          <Exports exports={exports} name={name} version={version} importMaps={importMaps} />
         </jspm-package-aside-exports>
       </aside>
     </jspm-package-aside>
