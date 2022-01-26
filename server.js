@@ -2173,7 +2173,7 @@ function Footer() {
 }
 function Package(param) {
     var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme, stateHash = param.stateHash;
-    return Ct("div", null, Ct(Header, null), Ct("jspm-package", null, Ct("jspm-package-content", null, Ct("h2", null, stateHash), Ct(Readme, {
+    return Ct("div", null, Ct(Header, null), Ct("jspm-package", null, Ct("jspm-package-content", null, Ct(Readme, {
         __html: readme
     }), Ct(Aside, {
         version: version,
@@ -24019,7 +24019,7 @@ class Tokenizer {
                     })
                 ),
                 align: t32[2].replace(/^ *|\| *$/g, "").split(/ *\| */),
-                rows: t32[3] ? t32[3].replace(/\n[ \t]*$/, "").split("\n") : []
+                rows: t32[3] && t32[3].trim() ? t32[3].replace(/\n[ \t]*$/, "").split("\n") : []
             };
             if (e39.header.length === e39.align.length) {
                 e39.raw = t32[0];
