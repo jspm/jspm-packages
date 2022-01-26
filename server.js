@@ -2173,7 +2173,7 @@ function Footer() {
 }
 function Package(param) {
     var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme, stateHash = param.stateHash;
-    return Ct("div", null, Ct(Header, null), Ct("jspm-package", null, Ct("jspm-package-content", null, Ct(Readme, {
+    return Ct("main", null, Ct(Header, null), Ct("jspm-package", null, Ct("jspm-package-content", null, Ct(Readme, {
         __html: readme
     }), Ct(Aside, {
         version: version,
@@ -2187,7 +2187,7 @@ function Package(param) {
         href: "https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css"
     }), Ct("style", {
         "data-page": "package-details"
-    }, "\n        jspm-package-content {\n          display: grid;\n          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n          grid-gap: 1rem;\n        }\n        \n        jspm-package-readme {\n          display: block;\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-package-aside {\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-package-name,\n        jspm-package-version,\n        jspm-package-description,\n        jspm-package-license {\n          display: block;\n        }\n        \n        jspm-package-name h1 {\n          font-family: \"Major Mono Display\", monospace;\n          font-size: var(--step-5);\n        }\n        \n        jspm-package-name h1 a {\n          color: black;\n        }\n\n        @media(max-width: 767px) {\n          jspm-package-content {\n            justify-content: space-between;\n          }\n\n          jspm-package-readme {\n            width: 100%;\n          }\n        }\n        ")));
+    }, "\n          main{\n            max-width: 1140px;\n            margin: 0 auto;\n          }\n        jspm-package-content {\n          display: grid;\n          grid-template-columns: minmax(800px, 1fr) minmax(300px, 1fr);\n          grid-gap: 1rem;\n        }\n        \n        jspm-package-readme {\n          min-width: 800px;\n          display: block;\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-package-aside {\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-package-name,\n        jspm-package-version,\n        jspm-package-description,\n        jspm-package-license {\n          display: block;\n        }\n        \n        jspm-package-name h1 {\n          font-family: \"Major Mono Display\", monospace;\n          font-size: var(--step-5);\n        }\n        \n        jspm-package-name h1 a {\n          color: black;\n        }\n\n        @media(max-width: 767px) {\n          jspm-package-content {\n            justify-content: space-between;\n          }\n\n          jspm-package-readme {\n            width: 100%;\n          }\n        }\n        ")));
 }
 function FeaturedPackages(param1) {
     var _packages = param1.packages, packages = _packages === void 0 ? [] : _packages;

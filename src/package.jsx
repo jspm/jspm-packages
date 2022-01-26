@@ -14,10 +14,10 @@ function Package({
   files,
   exports,
   readme,
-  stateHash
+  stateHash,
 }) {
   return (
-    <div>
+    <main>
       <Header />
       <jspm-package>
         <jspm-package-content>
@@ -41,13 +41,18 @@ function Package({
         />
         <style data-page="package-details">
           {`
+          main{
+            max-width: 1140px;
+            margin: 0 auto;
+          }
         jspm-package-content {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+          grid-template-columns: minmax(800px, 1fr) minmax(300px, 1fr);
           grid-gap: 1rem;
         }
         
         jspm-package-readme {
+          min-width: 800px;
           display: block;
           padding: var(--dl-space-space-oneandhalfunits);
         }
@@ -84,7 +89,7 @@ function Package({
         `}
         </style>
       </Helmet>
-    </div>
+    </main>
   );
 }
 
