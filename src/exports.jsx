@@ -59,47 +59,45 @@ function Subpath({ importPath }) {
 }
 
 function Exports(
-  { exports, name, version },
+  { exports, name, version, exportHashes },
 ) {
   return (
     <jspm-package-exports>
-      {exports.map((subpath) => {
-        return (
-          <jspm-package-exports-entry>
-            <details
-              data-subpath={subpath}
-              data-dependency={`${name}@${version}${getCleanPath(subpath)}`}
-            >
-              <summary>
-                <Subpath
-                  subpath={subpath}
-                  name={name}
-                  version={version}
-                  importPath={`${name}${getCleanPath(subpath)}`}
-                />
-              </summary>
-              <SubpathImportMap
-                subpath={subpath}
-                name={name}
-                version={version}
-              />
-            </details>
-          </jspm-package-exports-entry>
-        );
-      })}
+      {
+        <ul class="package-files">
+          {exportHashes && exports?.map(
+            (subpath) => {
+              const href = exportHashes[subpath];
+              return (
+              <li>
+                <a
+                  target="_blank"
+                  href={href}
+                  class="package-file"
+                >
+                  {`${name}${subpath.slice(1)}`}
+                </a>
+              </li>
+            )},
+          )}
+        </ul>
+      }
       <Helmet>
         <style data-page="package-details">
           {`
-            jspm-package-exports-entry {
-                display: flex;
-                display: block;
-                padding-left: 10px;
+            .package-file {
+              display: block;
+              line-height: 1.3;
             }
-            jspm-package-exports-target{
-                margin-left: 20px;
-                display: block;
+            .package-files {
+              list-style: none;
+              padding-left: 0px;
+              height: 500px;
+              overflow: scroll;
             }
-            
+            .package-files li {
+              line-height: 1.3;
+            }
             `}
         </style>
       </Helmet>

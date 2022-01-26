@@ -14,12 +14,14 @@ function Package({
   files,
   exports,
   readme,
+  stateHash
 }) {
   return (
     <div>
       <Header />
       <jspm-package>
         <jspm-package-content>
+          <h2>{stateHash}</h2>
           <Readme __html={readme} />
           <Aside
             version={version}

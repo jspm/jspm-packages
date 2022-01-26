@@ -8,7 +8,7 @@ default-task = "deno-deploy"
 
 [[task]]
   name = "deno"
-  deps = [":build-lib", "deno.importmap", "server.jsx"]
+  deps = [":build-lib", "deno.importmap", "server.jsx", "generate-deno-bundle"]
   run = "deno run -A --import-map=deno.importmap --unstable --no-check server.jsx"
 
 [[task]]

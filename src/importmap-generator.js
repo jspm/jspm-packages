@@ -1,3 +1,5 @@
+import { Generator } from '@jspm/generator';
+
 function getCleanPath(path) {
   if (path === ".") {
     return "";
@@ -16,13 +18,11 @@ async function main({ target, name, version, subpaths }) {
     ? "deno"
     : "browser";
 
-  const { Generator } = await import(
-    `https://cdn.jsdelivr.net/gh/fusionstrings/dependencies@@jspm/generator@1.0.0-beta.22/dist/${environment}/jspm.js`
-  );
+  
 
   const generator = new Generator({
     //mapUrl: import.meta.url,
-    env: ["production", environment, "module"],
+    env: ["production", "browser", "module"],
   });
 
   // await generator.traceInstall(absoluteDependency);
