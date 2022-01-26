@@ -1,62 +1,62 @@
 import { Component, h, Helmet } from "nano-jsx";
-import {
-  getCleanPath,
-  main as importMapGenerator,
-} from "./importmap-generator.js";
+// import {
+//   getCleanPath,
+//   main as importMapGenerator,
+// } from "./importmap-generator.js";
 
-class ImportMap extends Component {
-  constructor(props) {
-    super(props);
-  }
+// class ImportMap extends Component {
+//   constructor(props) {
+//     super(props);
+//   }
 
-  importMaps;
+//   importMaps;
 
-  async didMount() {
-    if (!this.importMaps) {
-      const { target, subpaths } = this.props;
-      const importMap = await importMapGenerator({ target, subpaths });
+//   async didMount() {
+//     if (!this.importMaps) {
+//       const { target, subpaths } = this.props;
+//       const importMap = await importMapGenerator({ target, subpaths });
 
-      if (importMap) {
-        this.importMaps = importMap;
-        this.update();
-      }
-    }
-  }
+//       if (importMap) {
+//         this.importMaps = importMap;
+//         this.update();
+//       }
+//     }
+//   }
 
-  render() {
-    if (this.importMaps) {
-      return (
-        <pre>
-          <code
-            innerHTML={{
-              __dangerousHtml: JSON.stringify(this.importMaps, null, 2),
-            }}
-          />
-        </pre>
-      );
-    } else {
-      return <div>{this.props.subpath}</div>;
-    }
-  }
-}
+//   render() {
+//     if (this.importMaps) {
+//       return (
+//         <pre>
+//           <code
+//             innerHTML={{
+//               __dangerousHtml: JSON.stringify(this.importMaps, null, 2),
+//             }}
+//           />
+//         </pre>
+//       );
+//     } else {
+//       return <div>{this.props.subpath}</div>;
+//     }
+//   }
+// }
 
-function SubpathImportMap(
-  { subpath, name, version },
-) {
-  return (
-    <jspm-package-exports-subpath-importmap>
-      <ImportMap target={`${name}@${version}`} subpaths={[subpath]} />
-    </jspm-package-exports-subpath-importmap>
-  );
-}
+// function SubpathImportMap(
+//   { subpath, name, version },
+// ) {
+//   return (
+//     <jspm-package-exports-subpath-importmap>
+//       <ImportMap target={`${name}@${version}`} subpaths={[subpath]} />
+//     </jspm-package-exports-subpath-importmap>
+//   );
+// }
 
-function Subpath({ importPath }) {
-  return (
-    <jspm-package-exports-subpath>
-      {importPath}
-    </jspm-package-exports-subpath>
-  );
-}
+// function Subpath({ importPath }) {
+//   return (
+//     <jspm-package-exports-subpath>
+//       {importPath}
+//     </jspm-package-exports-subpath>
+//   );
+// }
 
 function Exports(
   { exports, name, version, exportHashes },

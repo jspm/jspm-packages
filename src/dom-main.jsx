@@ -7,7 +7,7 @@ async function getStateHash({ name, version, subpath }) {
   );
   // U2VhYGBkDM0rySzJSU1hcMgqLsjVz8wtyC8q0c1NLHAw0DPWMwYAt5WJsiUA
   const importPath = `${name}@${version}${subpath.slice(1)}`;
-  const deps = [importPath, !!subpath];
+  const deps = [[importPath, !!subpath]];
 
   console.log("deps: ", JSON.stringify(deps));
   const state = {
