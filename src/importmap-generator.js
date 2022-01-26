@@ -1,4 +1,3 @@
-import { Generator } from '@jspm/generator';
 
 function getCleanPath(path) {
   if (path === ".") {
@@ -17,6 +16,10 @@ async function main({ target, name, version, subpaths }) {
   const environment = typeof globalThis.document === "undefined"
     ? "deno"
     : "browser";
+
+    const { Generator } = await import(
+      `https://cdn.jsdelivr.net/gh/fusionstrings/dependencies@@jspm/generator@1.0.0-beta.22/dist/${environment}/jspm.js`
+    );
 
   
 
