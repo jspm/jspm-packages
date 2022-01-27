@@ -2,10 +2,9 @@
   "scopes": {
     "./": {
       "he": "https://ga.jspm.io/npm:he@1.2.0/he.js",
-      "marked": "https://ga.jspm.io/npm:marked@4.0.10/lib/marked.esm.js",
+      "marked": "https://ga.jspm.io/npm:marked@4.0.11/lib/marked.esm.js",
       "nano-jsx": "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js",
-      "prismjs": "https://ga.jspm.io/npm:prismjs@1.26.0/prism.js",
-      "regenerator-runtime": "https://ga.jspm.io/npm:regenerator-runtime@0.13.9/runtime.js"
+      "prismjs": "https://ga.jspm.io/npm:prismjs@1.26.0/prism.js"
     }
   }
 }
