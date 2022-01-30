@@ -92,7 +92,7 @@ function Exports(
             .package-files {
               list-style: none;
               padding-left: 0px;
-              height: 500px;
+              max-height: 500px;
               overflow: scroll;
             }
             .package-files li {

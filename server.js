@@ -5,14 +5,14 @@ function delay(ms, options = {}) {
     }
     return new Promise((resolve, reject)=>{
         const abort = ()=>{
-            clearTimeout(i2);
+            clearTimeout(i3);
             reject(new DOMException("Delay was aborted.", "AbortError"));
         };
         const done = ()=>{
             signal?.removeEventListener("abort", abort);
             resolve();
         };
-        const i2 = setTimeout(done, ms);
+        const i3 = setTimeout(done, ms);
         signal?.addEventListener("abort", abort, {
             once: true
         });
@@ -1997,6 +1997,528 @@ Object.defineProperty(Fe, "VERSION", {
     }
 });
 const at = Fe.__esModule, ct = Fe.VERSION, lt = Fe.printVersion, ut = Fe.defineAsCustomElements, dt = Fe.withStyles, ht = Fe.useContext, pt = Fe.createContext, ft = Fe.Store, mt = Fe.Fragment, gt = Fe.renderSSR, bt = Fe.task, yt = Fe.nodeToString, vt = Fe.hydrateLazy, _t = Fe.jsx, St = Fe.Component, Ot = Fe.tick, jt = Fe.hydrate, wt = Fe.render, Ct = Fe.h, xt = Fe.Visible, Pt = Fe.Suspense, Et = Fe.Router, Mt = Fe.Link, Rt = Fe.Img, Lt = Fe.Helmet;
+var a1 = 60;
+var r1 = 60 * a1;
+var v1 = 24 * r1;
+var d1 = 7 * v1;
+var e = 1000;
+var t1 = a1 * e;
+var m1 = r1 * e;
+var s1 = v1 * e;
+var n1 = d1 * e;
+var o1 = "millisecond";
+var Y1 = "second";
+var i1 = "minute";
+var D1 = "hour";
+var h1 = "day";
+var l1 = "week";
+var u1 = "month";
+var H1 = "quarter";
+var M1 = "year";
+var S1 = "date";
+var c1 = "YYYY-MM-DDTHH:mm:ssZ";
+var y1 = "Invalid Date";
+var T1 = /^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/;
+var Z1 = /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g;
+var g1 = {
+    name: "en",
+    weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
+    months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_")
+};
+var S2 = function padStart(t11, r11, e1) {
+    var n11 = String(t11);
+    return !n11 || n11.length >= r11 ? t11 : "" + Array(r11 + 1 - n11.length).join(e1) + t11;
+};
+var m2 = function padZoneStr(t2) {
+    var r2 = -t2.utcOffset();
+    var e2 = Math.abs(r2);
+    var n2 = Math.floor(e2 / 60);
+    var i11 = e2 % 60;
+    return (r2 <= 0 ? "+" : "-") + S2(n2, 2, "0") + ":" + S2(i11, 2, "0");
+};
+var p1 = function monthDiff(r3, e3) {
+    if (r3.date() < e3.date()) return -monthDiff(e3, r3);
+    var n3 = 12 * (e3.year() - r3.year()) + (e3.month() - r3.month());
+    var i2 = r3.clone().add(n3, u1);
+    var a11 = e3 - i2 < 0;
+    var s11 = r3.clone().add(n3 + (a11 ? -1 : 1), u1);
+    return +(-(n3 + (e3 - i2) / (a11 ? i2 - s11 : s11 - i2)) || 0);
+};
+var O1 = function absFloor(t3) {
+    return t3 < 0 ? Math.ceil(t3) || 0 : Math.floor(t3);
+};
+var w1 = function prettyUnit(h11) {
+    var c11 = {
+        M: u1,
+        y: M1,
+        w: l1,
+        d: h1,
+        D: S1,
+        h: D1,
+        m: i1,
+        s: Y1,
+        ms: o1,
+        Q: H1
+    };
+    return c11[h11] || String(h11 || "").toLowerCase().replace(/s$/, "");
+};
+var _1 = function isUndefined(t4) {
+    return void 0 === t4;
+};
+var b1 = {
+    s: S2,
+    z: m2,
+    m: p1,
+    a: O1,
+    p: w1,
+    u: _1
+};
+var H2 = "en";
+var T2 = {};
+T2[H2] = g1;
+var j1 = function isDayjs(t5) {
+    return t5 instanceof A1;
+};
+var x1 = function parseLocale(t6, r4, e4) {
+    var n4;
+    if (!t6) return H2;
+    if ("string" === typeof t6) {
+        T2[t6] && (n4 = t6);
+        if (r4) {
+            T2[t6] = r4;
+            n4 = t6;
+        }
+    } else {
+        var i3 = t6.name;
+        T2[i3] = t6;
+        n4 = i3;
+    }
+    !e4 && n4 && (H2 = n4);
+    return n4 || !e4 && H2;
+};
+var L1 = function dayjs(t7, r5) {
+    if (j1(t7)) return t7.clone();
+    var e5 = "object" === typeof r5 ? r5 : {};
+    e5.date = t7;
+    e5.args = arguments;
+    return new A1(e5);
+};
+var W1 = function wrapper(t8, r6) {
+    return L1(t8, {
+        locale: r6.$L,
+        utc: r6.$u,
+        x: r6.$x,
+        $offset: r6.$offset
+    });
+};
+var F1 = b1;
+F1.l = x1;
+F1.i = j1;
+F1.w = W1;
+var Y2 = function parseDate(t9) {
+    var r7 = t9.date, e6 = t9.utc;
+    if (null === r7) return new Date(NaN);
+    if (F1.u(r7)) return new Date;
+    if (r7 instanceof Date) return new Date(r7);
+    if ("string" === typeof r7 && !/Z$/i.test(r7)) {
+        var n5 = r7.match(T1);
+        if (n5) {
+            var i4 = n5[2] - 1 || 0;
+            var a2 = (n5[7] || "0").substring(0, 3);
+            return e6 ? new Date(Date.UTC(n5[1], i4, n5[3] || 1, n5[4] || 0, n5[5] || 0, n5[6] || 0, a2)) : new Date(n5[1], i4, n5[3] || 1, n5[4] || 0, n5[5] || 0, n5[6] || 0, a2);
+        }
+    }
+    return new Date(r7);
+};
+var A1 = function() {
+    function Dayjs(t10) {
+        this.$L = x1(t10.locale, null, true);
+        this.parse(t10);
+    }
+    var h2 = Dayjs.prototype;
+    h2.parse = function parse(t11) {
+        this.$d = Y2(t11);
+        this.$x = t11.x || {};
+        this.init();
+    };
+    h2.init = function init() {
+        var t12 = this.$d;
+        this.$y = t12.getFullYear();
+        this.$M = t12.getMonth();
+        this.$D = t12.getDate();
+        this.$W = t12.getDay();
+        this.$H = t12.getHours();
+        this.$m = t12.getMinutes();
+        this.$s = t12.getSeconds();
+        this.$ms = t12.getMilliseconds();
+    };
+    h2.$utils = function $utils() {
+        return F1;
+    };
+    h2.isValid = function isValid() {
+        return !(this.$d.toString() === y1);
+    };
+    h2.isSame = function isSame(t13, r8) {
+        var e7 = L1(t13);
+        return this.startOf(r8) <= e7 && e7 <= this.endOf(r8);
+    };
+    h2.isAfter = function isAfter(t14, r9) {
+        return L1(t14) < this.startOf(r9);
+    };
+    h2.isBefore = function isBefore(t15, r10) {
+        return this.endOf(r10) < L1(t15);
+    };
+    h2.$g = function $g(t16, r, e8) {
+        return F1.u(t16) ? this[r] : this.set(e8, t16);
+    };
+    h2.unix = function unix() {
+        return Math.floor(this.valueOf() / 1000);
+    };
+    h2.valueOf = function valueOf() {
+        return this.$d.getTime();
+    };
+    h2.startOf = function startOf(o11, f1) {
+        var h3 = this;
+        var c2 = !!F1.u(f1) || f1;
+        var d11 = F1.p(o11);
+        var v11 = function instanceFactory(t17, r11) {
+            var e9 = F1.w(h3.$u ? Date.UTC(h3.$y, r11, t17) : new Date(h3.$y, r11, t17), h3);
+            return c2 ? e9 : e9.endOf(h1);
+        };
+        var $1 = function instanceFactorySet(t, r12) {
+            var e10 = [
+                0,
+                0,
+                0,
+                0
+            ];
+            var n6 = [
+                23,
+                59,
+                59,
+                999
+            ];
+            return F1.w(h3.toDate()[t].apply(h3.toDate("s"), (c2 ? e10 : n6).slice(r12)), h3);
+        };
+        var l11 = this.$W, y11 = this.$M, D11 = this.$D;
+        var M11 = "set" + (this.$u ? "UTC" : "");
+        switch(d11){
+            case M1:
+                return c2 ? v11(1, 0) : v11(31, 11);
+            case u1:
+                return c2 ? v11(1, y11) : v11(0, y11 + 1);
+            case l1:
+                var g11 = this.$locale().weekStart || 0;
+                var S11 = (l11 < g11 ? l11 + 7 : l11) - g11;
+                return v11(c2 ? D11 - S11 : D11 + (6 - S11), y11);
+            case h1:
+            case S1:
+                return $1(M11 + "Hours", 0);
+            case D1:
+                return $1(M11 + "Minutes", 1);
+            case i1:
+                return $1(M11 + "Seconds", 2);
+            case Y1:
+                return $1(M11 + "Milliseconds", 3);
+            default:
+                return this.clone();
+        }
+    };
+    h2.endOf = function endOf(t18) {
+        return this.startOf(t18, false);
+    };
+    h2.$set = function $set(e11, f2) {
+        var h4;
+        var c3 = F1.p(e11);
+        var d2 = "set" + (this.$u ? "UTC" : "");
+        var v2 = (h4 = {}, h4[h1] = d2 + "Date", h4[S1] = d2 + "Date", h4[u1] = d2 + "Month", h4[M1] = d2 + "FullYear", h4[D1] = d2 + "Hours", h4[i1] = d2 + "Minutes", h4[Y1] = d2 + "Seconds", h4[o1] = d2 + "Milliseconds", h4)[c3];
+        var $2 = c3 === h1 ? this.$D + (f2 - this.$W) : f2;
+        if (c3 === u1 || c3 === M1) {
+            var l2 = this.clone().set(S1, 1);
+            l2.$d[v2]($2);
+            l2.init();
+            this.$d = l2.set(S1, Math.min(this.$D, l2.daysInMonth())).$d;
+        } else v2 && this.$d[v2]($2);
+        this.init();
+        return this;
+    };
+    h2.set = function set(t19, r13) {
+        return this.clone().$set(t19, r13);
+    };
+    h2.get = function get(t) {
+        return this[F1.p(t)]();
+    };
+    h2.add = function add(i5, o2) {
+        var f3, h5 = this;
+        i5 = Number(i5);
+        var c4 = F1.p(o2);
+        var l3 = function instanceFactorySet(t20) {
+            var r14 = L1(h5);
+            return F1.w(r14.date(r14.date() + Math.round(t20 * i5)), h5);
+        };
+        if (c4 === u1) return this.set(u1, this.$M + i5);
+        if (c4 === M1) return this.set(M1, this.$y + i5);
+        if (c4 === h1) return l3(1);
+        if (c4 === l1) return l3(7);
+        var y2 = (f3 = {}, f3[i1] = t1, f3[D1] = m1, f3[Y1] = e, f3)[c4] || 1;
+        var D2 = this.$d.getTime() + i5 * y2;
+        return F1.w(D2, this);
+    };
+    h2.subtract = function subtract(t21, r15) {
+        return this.add(-1 * t21, r15);
+    };
+    h2.format = function format(t22) {
+        var r16 = this;
+        var e12 = this.$locale();
+        if (!this.isValid()) return e12.invalidDate || y1;
+        var n7 = t22 || c1;
+        var i6 = F1.z(this);
+        var a3 = this.$H, s2 = this.$m, u11 = this.$M;
+        var o3 = e12.weekdays, f4 = e12.months, h6 = e12.meridiem;
+        var d3 = function getShort(t23, e, i7, a4) {
+            return t23 && (t23[e] || t23(r16, n7)) || i7[e].substr(0, a4);
+        };
+        var v3 = function get$H(t24) {
+            return F1.s(a3 % 12 || 12, t24, "0");
+        };
+        var $3 = h6 || function(t25, r, e13) {
+            var n8 = t25 < 12 ? "AM" : "PM";
+            return e13 ? n8.toLowerCase() : n8;
+        };
+        var D3 = {
+            YY: String(this.$y).slice(-2),
+            YYYY: this.$y,
+            M: u11 + 1,
+            MM: F1.s(u11 + 1, 2, "0"),
+            MMM: d3(e12.monthsShort, u11, f4, 3),
+            MMMM: d3(f4, u11),
+            D: this.$D,
+            DD: F1.s(this.$D, 2, "0"),
+            d: String(this.$W),
+            dd: d3(e12.weekdaysMin, this.$W, o3, 2),
+            ddd: d3(e12.weekdaysShort, this.$W, o3, 3),
+            dddd: o3[this.$W],
+            H: String(a3),
+            HH: F1.s(a3, 2, "0"),
+            h: v3(1),
+            hh: v3(2),
+            a: $3(a3, s2, true),
+            A: $3(a3, s2, false),
+            m: String(s2),
+            mm: F1.s(s2, 2, "0"),
+            s: String(this.$s),
+            ss: F1.s(this.$s, 2, "0"),
+            SSS: F1.s(this.$ms, 3, "0"),
+            Z: i6
+        };
+        return n7.replace(Z1, function(t, r17) {
+            return r17 || D3[t] || i6.replace(":", "");
+        });
+    };
+    h2.utcOffset = function utcOffset() {
+        return 15 * -Math.round(this.$d.getTimezoneOffset() / 15);
+    };
+    h2.diff = function diff(i8, o4, h7) {
+        var c5;
+        var l = F1.p(o4);
+        var y3 = L1(i8);
+        var g2 = (y3.utcOffset() - this.utcOffset()) * t1;
+        var diff = this - y3;
+        var S21 = F1.m(this, y3);
+        S21 = (c5 = {}, c5[M1] = S21 / 12, c5[u1] = S21, c5[H1] = S21 / 3, c5[l1] = (diff - g2) / n1, c5[h1] = (diff - g2) / s1, c5[D1] = diff / m1, c5[i1] = diff / t1, c5[Y1] = diff / e, c5)[l] || diff;
+        return h7 ? S21 : F1.a(S21);
+    };
+    h2.daysInMonth = function daysInMonth() {
+        return this.endOf(u1).$D;
+    };
+    h2.$locale = function $locale() {
+        return T2[this.$L];
+    };
+    h2.locale = function locale(t26, r18) {
+        if (!t26) return this.$L;
+        var e14 = this.clone();
+        var n9 = x1(t26, r18, true);
+        n9 && (e14.$L = n9);
+        return e14;
+    };
+    h2.clone = function clone() {
+        return F1.w(this.$d, this);
+    };
+    h2.toDate = function toDate() {
+        return new Date(this.valueOf());
+    };
+    h2.toJSON = function toJSON() {
+        return this.isValid() ? this.toISOString() : null;
+    };
+    h2.toISOString = function toISOString() {
+        return this.$d.toISOString();
+    };
+    h2.toString = function toString() {
+        return this.$d.toUTCString();
+    };
+    return Dayjs;
+}();
+var C1 = A1.prototype;
+L1.prototype = C1;
+[
+    [
+        "$ms",
+        o1
+    ],
+    [
+        "$s",
+        Y1
+    ],
+    [
+        "$m",
+        i1
+    ],
+    [
+        "$H",
+        D1
+    ],
+    [
+        "$W",
+        h1
+    ],
+    [
+        "$M",
+        u1
+    ],
+    [
+        "$y",
+        M1
+    ],
+    [
+        "$D",
+        S1
+    ]
+].forEach(function(t27) {
+    C1[t27[1]] = function(r19) {
+        return this.$g(r19, t27[0], t27[1]);
+    };
+});
+L1.extend = function(t28, r20) {
+    if (!t28.$i) {
+        t28(r20, A1, L1);
+        t28.$i = true;
+    }
+    return L1;
+};
+L1.locale = x1;
+L1.isDayjs = j1;
+L1.unix = function(t29) {
+    return L1(1000 * t29);
+};
+L1.en = T2[H2];
+L1.Ls = T2;
+L1.p = {};
+var r2 = "undefined" !== typeof globalThis ? globalThis : "undefined" !== typeof self ? self : global;
+var t2 = {};
+!function(r, n12) {
+    t2 = n12();
+}(0, function() {
+    return function(t12, n2, e1) {
+        t12 = t12 || {};
+        var o12 = n2.prototype, a5 = {
+            future: "in %s",
+            past: "%s ago",
+            s: "a few seconds",
+            m: "a minute",
+            mm: "%d minutes",
+            h: "an hour",
+            hh: "%d hours",
+            d: "a day",
+            dd: "%d days",
+            M: "a month",
+            MM: "%d months",
+            y: "a year",
+            yy: "%d years"
+        };
+        function i4(r12, t21, n3, e4) {
+            return o12.fromToBase(r12, t21, n3, e4);
+        }
+        e1.en.relativeTime = a5, o12.fromToBase = function(r21, n4, o3, u3, f2) {
+            for(var s3, l3, h3, m3 = o3.$locale().relativeTime || a5, c3 = t12.thresholds || [
+                {
+                    l: "s",
+                    r: 44,
+                    d: "second"
+                },
+                {
+                    l: "m",
+                    r: 89
+                },
+                {
+                    l: "mm",
+                    r: 44,
+                    d: "minute"
+                },
+                {
+                    l: "h",
+                    r: 89
+                },
+                {
+                    l: "hh",
+                    r: 21,
+                    d: "hour"
+                },
+                {
+                    l: "d",
+                    r: 35
+                },
+                {
+                    l: "dd",
+                    r: 25,
+                    d: "day"
+                },
+                {
+                    l: "M",
+                    r: 45
+                },
+                {
+                    l: "MM",
+                    r: 10,
+                    d: "month"
+                },
+                {
+                    l: "y",
+                    r: 17
+                },
+                {
+                    l: "yy",
+                    d: "year"
+                }
+            ], y2 = c3.length, v2 = 0; v2 < y2; v2 += 1){
+                var p3 = c3[v2];
+                p3.d && (s3 = u3 ? e1(r21).diff(o3, p3.d, !0) : o3.diff(r21, p3.d, !0));
+                var M2 = (t12.rounding || Math.round)(Math.abs(s3));
+                if (h3 = s3 > 0, M2 <= p3.r || !p3.r) {
+                    M2 <= 1 && v2 > 0 && (p3 = c3[v2 - 1]);
+                    var g3 = m3[p3.l];
+                    f2 && (M2 = f2("" + M2)), l3 = "string" == typeof g3 ? g3.replace("%d", M2) : g3(M2, n4, p3.l, h3);
+                    break;
+                }
+            }
+            if (n4) return l3;
+            var T3 = h3 ? m3.future : m3.past;
+            return "function" == typeof T3 ? T3(l3) : T3.replace("%s", l3);
+        }, o12.to = function(t3, n5) {
+            return i4(t3, n5, this || r2, !0);
+        }, o12.from = function(t4, n6) {
+            return i4(t4, n6, this || r2);
+        };
+        var d3 = function(r3) {
+            return r3.$u ? e1.utc() : e1();
+        };
+        o12.toNow = function(t5) {
+            return this.to(d3(this || r2), t5);
+        }, o12.fromNow = function(t6) {
+            return this.from(d3(this || r2), t6);
+        };
+    };
+});
+var n2 = t2;
 function Readme(param) {
     var __html = param.__html;
     return Ct("jspm-package-readme", null, Ct("div", {
@@ -2035,11 +2557,62 @@ function Exports(param) {
         }, "".concat(name).concat(subpath.slice(1))));
     }))), Ct(Lt, null, Ct("style", {
         "data-page": "package-details"
-    }, "\n            .package-file {\n              display: block;\n              line-height: 1.3;\n            }\n            .package-files {\n              list-style: none;\n              padding-left: 0px;\n              height: 500px;\n              overflow: scroll;\n            }\n            .package-files li {\n              line-height: 1.3;\n            }\n            ")));
+    }, "\n            .package-file {\n              display: block;\n              line-height: 1.3;\n            }\n            .package-files {\n              list-style: none;\n              padding-left: 0px;\n              max-height: 500px;\n              overflow: scroll;\n            }\n            .package-files li {\n              line-height: 1.3;\n            }\n            ")));
 }
-function Aside(param) {
-    var license = param.license, name = param.name, version = param.version, exports = param.exports;
-    return Ct("jspm-package-aside", null, Ct("aside", null, Ct("div", null, Ct("h3", null, "License"), Ct("jspm-package-license", null, license), Ct(Seperator, null)), Ct("jspm-package-aside-exports", {
+function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i5 = 0, arr2 = new Array(len); i5 < len; i5++)arr2[i5] = arr[i5];
+    return arr2;
+}
+function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function _iterableToArrayLimit(arr, i6) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e1;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i6 && _arr.length === i6) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e1 = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e1;
+        }
+    }
+    return _arr;
+}
+function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _slicedToArray(arr, i7) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i7) || _unsupportedIterableToArray(arr, i7) || _nonIterableRest();
+}
+function _unsupportedIterableToArray(o4, minLen) {
+    if (!o4) return;
+    if (typeof o4 === "string") return _arrayLikeToArray(o4, minLen);
+    var n5 = Object.prototype.toString.call(o4).slice(8, -1);
+    if (n5 === "Object" && o4.constructor) n5 = o4.constructor.name;
+    if (n5 === "Map" || n5 === "Set") return Array.from(n5);
+    if (n5 === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n5)) return _arrayLikeToArray(o4, minLen);
+}
+function Aside(param1) {
+    var license = param1.license, name = param1.name, version = param1.version, exports = param1.exports, downloads = param1.downloads, updated = param1.updated, type = param1.type, types = param1.types, features1 = param1.features, created = param1.created, links = param1.links;
+    return Ct("jspm-package-aside", null, Ct("aside", null, Ct("jspm-package-created", null, Ct("h3", null, "Created"), created), Ct("jspm-package-weekly-updated", null, Ct("h3", null, "Updated"), updated), Ct("jspm-package-weekly-downloads", null, Ct("h3", null, "Downloads (weekly)"), downloads), Ct("jspm-package-features", null, Ct("h3", null, "Features"), Object.entries(features1).map(function(param) {
+        var _param = _slicedToArray(param, 2), feature = _param[0], supported = _param[1];
+        return Ct("ul", null, Ct("li", {
+            "data-feature-supported": supported
+        }, feature));
+    })), Ct("div", null, Ct("h3", null, "License"), Ct("jspm-package-license", null, license), Ct(Seperator, null)), Ct("jspm-package-aside-exports", {
         "data-exports": JSON.stringify(exports),
         "data-name": name,
         "data-version": version
@@ -2047,7 +2620,14 @@ function Aside(param) {
         exports: exports,
         name: name,
         version: version
-    }))));
+    })), Ct("jspm-package-links", null, Ct("h3", null, "Links"), Object.entries(links).map(function(param) {
+        var _param = _slicedToArray(param, 2), text = _param[0], link = _param[1];
+        return link && Ct("jspm-package-link", null, Ct("h5", null, text), Ct("a", {
+            href: link
+        }, link));
+    }))), Ct(Lt, null, Ct("style", {
+        "data-page-name": "jspm-package-aside"
+    }, "\n          jspm-package-features li{\n            padding-inline-start: 1ch;\n          }\n          jspm-package-features li[data-feature-supported=\"true\"]{\n            list-style-type: '✔';\n          }\n          jspm-package-features li[data-feature-supported=\"false\"]{\n            list-style-type: '✖';\n          }\n          ")));
 }
 function Logo(param) {
     param.name, param.version;
@@ -2172,16 +2752,23 @@ function Footer() {
     }, "\n        .footer-container {\n            width: 100%;\n            display: flex;\n            position: relative;\n            align-items: flex-start;\n            flex-direction: column;\n            background-color: var(--dl-color-jspm-footer);\n          }\n          .footer-footer {\n            width: 100%;\n            display: flex;\n            max-width: var(--dl-size-size-maxwidth);\n            align-items: center;\n            padding-top: var(--dl-space-space-twounits);\n            padding-left: var(--dl-space-space-threeunits);\n            padding-right: var(--dl-space-space-threeunits);\n            flex-direction: column;\n            padding-bottom: var(--dl-space-space-twounits);\n            justify-content: space-between;\n            background-color: var(--dl-color-gray-900);\n            margin-top: var(--dl-space-space-unit);\n          }\n          .footer-container1 {\n            width: 100%;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: row;\n            justify-content: center;\n          }\n          .footer-image {\n            width: 45px;\n            object-fit: cover;\n            margin-right: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-container2 {\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: row;\n            justify-content: space-between;\n            flex-wrap: wrap;\n          }\n          .footer-product-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text01 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text02 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text03 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text04 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text05 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text06 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text07 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container1 {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text08 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text09 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text10 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text11 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-separator {\n            width: 100%;\n            height: 1px;\n            margin-top: var(--dl-space-space-twounits);\n            margin-bottom: var(--dl-space-space-twounits);\n            background-color: var(--dl-color-gray-900);\n          }\n          .footer-copyright {\n            flex: 0 0 auto;\n            width: 100%;\n            height: auto;\n            display: flex;\n            align-items: flex-start;\n            justify-content: space-between;\n          }\n          .footer-text12 {\n            align-self: center;\n          }\n          .footer-socials {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: flex-start;\n          }\n          .footer-text14 {\n            font-style: normal;\n            font-weight: 400;\n            margin-right: var(--dl-space-space-unit);\n            margin-bottom: 0px;\n          }\n          .footer-icon-group {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: space-between;\n          }\n          .footer-image1 {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            object-fit: cover;\n            margin-right: var(--dl-space-space-unit);\n          }\n          .footer-icon {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            margin-left: 0px;\n            margin-right: 0px;\n          }\n          \n          @media(max-width: 991px) {\n            .footer-footer {\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 767px) {\n            .footer-footer {\n              padding-left: var(--dl-space-space-twounits);\n              padding-right: var(--dl-space-space-twounits);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n              justify-content: space-between;\n            }\n            .footer-image {\n              display: none;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 479px) {\n            .footer-footer {\n              padding: var(--dl-space-space-unit);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: 0px;\n            }\n            .footer-text12 {\n              text-align: center;\n            }\n          }          \n        ")));
 }
 function Package(param) {
-    var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme, stateHash = param.stateHash;
+    var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme, stateHash = param.stateHash, downloads = param.downloads, created = param.created, updated = param.updated, type = param.type, types = param.types, features2 = param.features, links = param.links;
     return Ct("main", null, Ct(Header, null), Ct("jspm-package", null, Ct("jspm-package-content", null, Ct(Readme, {
         __html: readme
     }), Ct(Aside, {
+        created: created,
+        updated: updated,
+        downloads: downloads,
         version: version,
         name: name,
         license: license,
         files: files,
         exports: exports,
-        keywords: keywords
+        keywords: keywords,
+        type: type,
+        types: types,
+        features: features2,
+        links: links
     }))), Ct(Footer, null), Ct(Lt, null, Ct("link", {
         rel: "stylesheet",
         href: "https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css"
@@ -23598,10 +24185,10 @@ function get(alias) {
 }
 function emojify(str) {
     if (!str) return "";
-    return str.split(reEmojiName).map((s2, i3)=>{
-        if (i3 % 2 === 0) return s2;
-        let emoji5 = get(s2);
-        if (!emoji5) emoji5 = wrapColons(s2);
+    return str.split(reEmojiName).map((s4, i8)=>{
+        if (i8 % 2 === 0) return s4;
+        let emoji5 = get(s4);
+        if (!emoji5) emoji5 = wrapColons(s4);
         return emoji5;
     }).join("");
 }
@@ -23628,114 +24215,114 @@ function getDefaults() {
         xhtml: false
     };
 }
-let e = getDefaults();
-function changeDefaults(t1) {
-    e = t1;
+let e1 = getDefaults();
+function changeDefaults(t13) {
+    e1 = t13;
 }
-const t1 = /[&<>"']/;
-const n1 = /[&<>"']/g;
-const r1 = /[<>"']|&(?!#?\w+;)/;
-const s1 = /[<>"']|&(?!#?\w+;)/g;
-const i1 = {
+const t3 = /[&<>"']/;
+const n3 = /[&<>"']/g;
+const r3 = /[<>"']|&(?!#?\w+;)/;
+const s2 = /[<>"']|&(?!#?\w+;)/g;
+const i2 = {
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
     "'": "&#39;"
 };
-const getEscapeReplacement = (e)=>i1[e]
+const getEscapeReplacement = (e)=>i2[e]
 ;
-function escape(e1, i11) {
-    if (i11) {
-        if (t1.test(e1)) return e1.replace(n1, getEscapeReplacement);
-    } else if (r1.test(e1)) return e1.replace(s1, getEscapeReplacement);
-    return e1;
+function escape(e11, i12) {
+    if (i12) {
+        if (t3.test(e11)) return e11.replace(n3, getEscapeReplacement);
+    } else if (r3.test(e11)) return e11.replace(s2, getEscapeReplacement);
+    return e11;
 }
-const l1 = /&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/gi;
+const l2 = /&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/gi;
 function unescape(e2) {
-    return e2.replace(l1, (e, t2)=>{
-        t2 = t2.toLowerCase();
-        return "colon" === t2 ? ":" : "#" === t2.charAt(0) ? "x" === t2.charAt(1) ? String.fromCharCode(parseInt(t2.substring(2), 16)) : String.fromCharCode(+t2.substring(1)) : "";
+    return e2.replace(l2, (e, t22)=>{
+        t22 = t22.toLowerCase();
+        return "colon" === t22 ? ":" : "#" === t22.charAt(0) ? "x" === t22.charAt(1) ? String.fromCharCode(parseInt(t22.substring(2), 16)) : String.fromCharCode(+t22.substring(1)) : "";
     });
 }
-const a1 = /(^|[^\[])\^/g;
-function edit(e3, t3) {
+const a2 = /(^|[^\[])\^/g;
+function edit(e3, t31) {
     e3 = e3.source || e3;
-    t3 = t3 || "";
-    const n11 = {
-        replace: (t4, r11)=>{
-            r11 = r11.source || r11;
-            r11 = r11.replace(a1, "$1");
-            e3 = e3.replace(t4, r11);
-            return n11;
+    t31 = t31 || "";
+    const n13 = {
+        replace: (t4, r13)=>{
+            r13 = r13.source || r13;
+            r13 = r13.replace(a2, "$1");
+            e3 = e3.replace(t4, r13);
+            return n13;
         },
-        getRegex: ()=>new RegExp(e3, t3)
+        getRegex: ()=>new RegExp(e3, t31)
     };
-    return n11;
+    return n13;
 }
-const o1 = /[^\w:]/g;
-const c1 = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-function cleanUrl(e4, t5, n2) {
+const o2 = /[^\w:]/g;
+const c2 = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
+function cleanUrl(e4, t5, n21) {
     if (e4) {
         let e5;
         try {
-            e5 = decodeURIComponent(unescape(n2)).replace(o1, "").toLowerCase();
+            e5 = decodeURIComponent(unescape(n21)).replace(o2, "").toLowerCase();
         } catch (e) {
             return null;
         }
         if (0 === e5.indexOf("javascript:") || 0 === e5.indexOf("vbscript:") || 0 === e5.indexOf("data:")) return null;
     }
-    t5 && !c1.test(n2) && (n2 = resolveUrl(t5, n2));
+    t5 && !c2.test(n21) && (n21 = resolveUrl(t5, n21));
     try {
-        n2 = encodeURI(n2).replace(/%25/g, "%");
+        n21 = encodeURI(n21).replace(/%25/g, "%");
     } catch (e) {
         return null;
     }
-    return n2;
+    return n21;
 }
-const h1 = {};
-const p1 = /^[^:]+:\/*[^/]*$/;
-const u1 = /^([^:]+:)[\s\S]*$/;
-const g1 = /^([^:]+:\/*[^/]*)[\s\S]*$/;
+const h2 = {};
+const p2 = /^[^:]+:\/*[^/]*$/;
+const u2 = /^([^:]+:)[\s\S]*$/;
+const g2 = /^([^:]+:\/*[^/]*)[\s\S]*$/;
 function resolveUrl(e6, t6) {
-    h1[" " + e6] || (p1.test(e6) ? h1[" " + e6] = e6 + "/" : h1[" " + e6] = rtrim(e6, "/", true));
-    e6 = h1[" " + e6];
-    const n3 = -1 === e6.indexOf(":");
-    return "//" === t6.substring(0, 2) ? n3 ? t6 : e6.replace(u1, "$1") + t6 : "/" === t6.charAt(0) ? n3 ? t6 : e6.replace(g1, "$1") + t6 : e6 + t6;
+    h2[" " + e6] || (p2.test(e6) ? h2[" " + e6] = e6 + "/" : h2[" " + e6] = rtrim(e6, "/", true));
+    e6 = h2[" " + e6];
+    const n31 = -1 === e6.indexOf(":");
+    return "//" === t6.substring(0, 2) ? n31 ? t6 : e6.replace(u2, "$1") + t6 : "/" === t6.charAt(0) ? n31 ? t6 : e6.replace(g2, "$1") + t6 : e6 + t6;
 }
-const d1 = {
+const d2 = {
     exec: function noopTest() {}
 };
 function merge(e7) {
-    let t7, n4, r2 = 1;
-    for(; r2 < arguments.length; r2++){
-        t7 = arguments[r2];
+    let t7, n4, r22 = 1;
+    for(; r22 < arguments.length; r22++){
+        t7 = arguments[r22];
         for(n4 in t7)Object.prototype.hasOwnProperty.call(t7, n4) && (e7[n4] = t7[n4]);
     }
     return e7;
 }
 function splitCells(e8, t8) {
     const n5 = e8.replace(/\|/g, (e, t9, n6)=>{
-        let r4 = false, s2 = t9;
-        while(--s2 >= 0 && "\\" === n6[s2])r4 = !r4;
+        let r4 = false, s21 = t9;
+        while(--s21 >= 0 && "\\" === n6[s21])r4 = !r4;
         return r4 ? "|" : " |";
-    }), r3 = n5.split(/ \|/);
-    let s11 = 0;
-    r3[0].trim() || r3.shift();
-    r3[r3.length - 1].trim() || r3.pop();
-    if (r3.length > t8) r3.splice(t8);
-    else while(r3.length < t8)r3.push("");
-    for(; s11 < r3.length; s11++)r3[s11] = r3[s11].trim().replace(/\\\|/g, "|");
-    return r3;
+    }), r31 = n5.split(/ \|/);
+    let s12 = 0;
+    r31[0].trim() || r31.shift();
+    r31.length > 0 && !r31[r31.length - 1].trim() && r31.pop();
+    if (r31.length > t8) r31.splice(t8);
+    else while(r31.length < t8)r31.push("");
+    for(; s12 < r31.length; s12++)r31[s12] = r31[s12].trim().replace(/\\\|/g, "|");
+    return r31;
 }
 function rtrim(e9, t10, n7) {
     const r5 = e9.length;
     if (0 === r5) return "";
     let s3 = 0;
     while(s3 < r5){
-        const i2 = e9.charAt(r5 - s3 - 1);
-        if (i2 !== t10 || n7) {
-            if (i2 === t10 || !n7) break;
+        const i21 = e9.charAt(r5 - s3 - 1);
+        if (i21 !== t10 || n7) {
+            if (i21 === t10 || !n7) break;
             s3++;
         } else s3++;
     }
@@ -23769,7 +24356,7 @@ function repeatString(e12, t12) {
 function outputLink(e13, t13, n10, r7) {
     const s5 = t13.href;
     const i3 = t13.title ? escape(t13.title) : null;
-    const l11 = e13[1].replace(/\\([\[\]])/g, "$1");
+    const l12 = e13[1].replace(/\\([\[\]])/g, "$1");
     if ("!" !== e13[0].charAt(0)) {
         r7.state.inLink = true;
         const e14 = {
@@ -23777,8 +24364,8 @@ function outputLink(e13, t13, n10, r7) {
             raw: n10,
             href: s5,
             title: i3,
-            text: l11,
-            tokens: r7.inlineTokens(l11, [])
+            text: l12,
+            tokens: r7.inlineTokens(l12, [])
         };
         r7.state.inLink = false;
         return e14;
@@ -23788,7 +24375,7 @@ function outputLink(e13, t13, n10, r7) {
         raw: n10,
         href: s5,
         title: i3,
-        text: escape(l11)
+        text: escape(l12)
     };
 }
 function indentCodeCompensation(e15, t14) {
@@ -23804,7 +24391,7 @@ function indentCodeCompensation(e15, t14) {
 }
 class Tokenizer {
     constructor(t16){
-        this.options = t16 || e;
+        this.options = t16 || e1;
     }
     space(e17) {
         const t17 = this.rules.block.newline.exec(e17);
@@ -23879,66 +24466,66 @@ class Tokenizer {
     list(e27) {
         let t24 = this.rules.block.list.exec(e27);
         if (t24) {
-            let n15, r9, s6, i4, l2, a11, o11, c11, h11, p11, u11, g11;
-            let d11 = t24[1].trim();
-            const k1 = d11.length > 1;
+            let n15, r9, s6, i4, l21, a12, o13, c12, h12, p11, u12, g12;
+            let d12 = t24[1].trim();
+            const k1 = d12.length > 1;
             const f1 = {
                 type: "list",
                 raw: "",
                 ordered: k1,
-                start: k1 ? +d11.slice(0, -1) : "",
+                start: k1 ? +d12.slice(0, -1) : "",
                 loose: false,
                 items: []
             };
-            d11 = k1 ? `\\d{1,9}\\${d11.slice(-1)}` : `\\${d11}`;
-            this.options.pedantic && (d11 = k1 ? d11 : "[*+-]");
-            const m1 = new RegExp(`^( {0,3}${d11})((?: [^\\n]*)?(?:\\n|$))`);
+            d12 = k1 ? `\\d{1,9}\\${d12.slice(-1)}` : `\\${d12}`;
+            this.options.pedantic && (d12 = k1 ? d12 : "[*+-]");
+            const m11 = new RegExp(`^( {0,3}${d12})((?: [^\\n]*)?(?:\\n|$))`);
             while(e27){
-                g11 = false;
-                if (!(t24 = m1.exec(e27))) break;
+                g12 = false;
+                if (!(t24 = m11.exec(e27))) break;
                 if (this.rules.block.hr.test(e27)) break;
                 n15 = t24[0];
                 e27 = e27.substring(n15.length);
-                c11 = t24[2].split("\n", 1)[0];
-                h11 = e27.split("\n", 1)[0];
+                c12 = t24[2].split("\n", 1)[0];
+                h12 = e27.split("\n", 1)[0];
                 if (this.options.pedantic) {
                     i4 = 2;
-                    u11 = c11.trimLeft();
+                    u12 = c12.trimLeft();
                 } else {
                     i4 = t24[2].search(/[^ ]/);
                     i4 = i4 > 4 ? 1 : i4;
-                    u11 = c11.slice(i4);
+                    u12 = c12.slice(i4);
                     i4 += t24[1].length;
                 }
-                a11 = false;
-                if (!c11 && /^ *$/.test(h11)) {
-                    n15 += h11 + "\n";
-                    e27 = e27.substring(h11.length + 1);
-                    g11 = true;
+                a12 = false;
+                if (!c12 && /^ *$/.test(h12)) {
+                    n15 += h12 + "\n";
+                    e27 = e27.substring(h12.length + 1);
+                    g12 = true;
                 }
-                if (!g11) {
+                if (!g12) {
                     const t25 = new RegExp(`^ {0,${Math.min(3, i4 - 1)}}(?:[*+-]|\\d{1,9}[.)])`);
                     while(e27){
                         p11 = e27.split("\n", 1)[0];
-                        c11 = p11;
-                        this.options.pedantic && (c11 = c11.replace(/^ {1,4}(?=( {4})*[^ ])/g, "  "));
-                        if (t25.test(c11)) break;
-                        if (c11.search(/[^ ]/) >= i4 || !c11.trim()) u11 += "\n" + c11.slice(i4);
+                        c12 = p11;
+                        this.options.pedantic && (c12 = c12.replace(/^ {1,4}(?=( {4})*[^ ])/g, "  "));
+                        if (t25.test(c12)) break;
+                        if (c12.search(/[^ ]/) >= i4 || !c12.trim()) u12 += "\n" + c12.slice(i4);
                         else {
-                            if (a11) break;
-                            u11 += "\n" + c11;
+                            if (a12) break;
+                            u12 += "\n" + c12;
                         }
-                        a11 || c11.trim() || (a11 = true);
+                        a12 || c12.trim() || (a12 = true);
                         n15 += p11 + "\n";
                         e27 = e27.substring(p11.length + 1);
                     }
                 }
-                f1.loose || (o11 ? f1.loose = true : /\n *\n *$/.test(n15) && (o11 = true));
+                f1.loose || (o13 ? f1.loose = true : /\n *\n *$/.test(n15) && (o13 = true));
                 if (this.options.gfm) {
-                    r9 = /^\[[ xX]\] /.exec(u11);
+                    r9 = /^\[[ xX]\] /.exec(u12);
                     if (r9) {
                         s6 = "[ ] " !== r9[0];
-                        u11 = u11.replace(/^\[[ xX]\] +/, "");
+                        u12 = u12.replace(/^\[[ xX]\] +/, "");
                     }
                 }
                 f1.items.push({
@@ -23947,18 +24534,18 @@ class Tokenizer {
                     task: !!r9,
                     checked: s6,
                     loose: false,
-                    text: u11
+                    text: u12
                 });
                 f1.raw += n15;
             }
             f1.items[f1.items.length - 1].raw = n15.trimRight();
-            f1.items[f1.items.length - 1].text = u11.trimRight();
+            f1.items[f1.items.length - 1].text = u12.trimRight();
             f1.raw = f1.raw.trimRight();
-            const x1 = f1.items.length;
-            for(l2 = 0; l2 < x1; l2++){
+            const x11 = f1.items.length;
+            for(l21 = 0; l21 < x11; l21++){
                 this.lexer.state.top = false;
-                f1.items[l2].tokens = this.lexer.blockTokens(f1.items[l2].text, []);
-                const e28 = f1.items[l2].tokens.filter((e31)=>"space" === e31.type
+                f1.items[l21].tokens = this.lexer.blockTokens(f1.items[l21].text, []);
+                const e28 = f1.items[l21].tokens.filter((e31)=>"space" === e31.type
                 );
                 const t26 = e28.every((e33)=>{
                     const t29 = e33.raw.split("");
@@ -23971,7 +24558,7 @@ class Tokenizer {
                 });
                 if (!f1.loose && e28.length && t26) {
                     f1.loose = true;
-                    f1.items[l2].loose = true;
+                    f1.items[l21].loose = true;
                 }
             }
             return f1;
@@ -24168,11 +24755,11 @@ class Tokenizer {
         const s8 = r13[1] || r13[2] || "";
         if (!s8 || s8 && ("" === n21 || this.rules.inline.punctuation.exec(n21))) {
             const n22 = r13[0].length - 1;
-            let s9, i6, l4 = n22, a2 = 0;
-            const o2 = "*" === r13[0][0] ? this.rules.inline.emStrong.rDelimAst : this.rules.inline.emStrong.rDelimUnd;
-            o2.lastIndex = 0;
+            let s9, i6, l4 = n22, a21 = 0;
+            const o21 = "*" === r13[0][0] ? this.rules.inline.emStrong.rDelimAst : this.rules.inline.emStrong.rDelimUnd;
+            o21.lastIndex = 0;
             t41 = t41.slice(-1 * e58.length + n22);
-            while(null != (r13 = o2.exec(t41))){
+            while(null != (r13 = o21.exec(t41))){
                 s9 = r13[1] || r13[2] || r13[3] || r13[4] || r13[5] || r13[6];
                 if (!s9) continue;
                 i6 = s9.length;
@@ -24181,12 +24768,12 @@ class Tokenizer {
                     continue;
                 }
                 if ((r13[5] || r13[6]) && n22 % 3 && !((n22 + i6) % 3)) {
-                    a2 += i6;
+                    a21 += i6;
                     continue;
                 }
                 l4 -= i6;
                 if (l4 > 0) continue;
-                i6 = Math.min(i6, i6 + l4 + a2);
+                i6 = Math.min(i6, i6 + l4 + a21);
                 if (Math.min(n22, i6) % 2) {
                     const t42 = e58.slice(1, n22 + r13.index + i6);
                     return {
@@ -24317,7 +24904,7 @@ const k1 = {
     list: /^( {0,3}bull)( [^\n]+?)?(?:\n|$)/,
     html: "^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n *)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$))",
     def: /^ {0,3}\[(label)\]: *(?:\n *)?<?([^\s>]+)>?(?:(?: +(?:\n *)?| *\n *)(title))? *(?:\n+|$)/,
-    table: d1,
+    table: d2,
     lheading: /^([^\n]+)\n {0,3}(=+|-+) *(?:\n+|$)/,
     _paragraph: /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/,
     text: /^[^\n]+/
@@ -24343,13 +24930,13 @@ k1.pedantic = merge({}, k1.normal, {
     html: edit("^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:\"[^\"]*\"|'[^']*'|\\s[^'\"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))").replace("comment", k1._comment).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(),
     def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/,
     heading: /^(#{1,6})(.*)(?:\n+|$)/,
-    fences: d1,
+    fences: d2,
     paragraph: edit(k1.normal._paragraph).replace("hr", k1.hr).replace("heading", " *#{1,6} *[^\n]").replace("lheading", k1.lheading).replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").getRegex()
 });
 const f1 = {
     escape: /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/,
     autolink: /^<(scheme:[^\s\x00-\x1f<>]*|email)>/,
-    url: d1,
+    url: d2,
     tag: "^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>",
     link: /^!?\[(label)\]\(\s*(href)(?:\s+(title))?\s*\)/,
     reflink: /^!?\[(label)\]\[(ref)\]/,
@@ -24362,7 +24949,7 @@ const f1 = {
     },
     code: /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,
     br: /^( {2,}|\\)\n(?!\s*$)/,
-    del: d1,
+    del: d2,
     text: /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/,
     punctuation: /^([\spunctuation])/
 };
@@ -24434,7 +25021,7 @@ class Lexer {
     constructor(t52){
         this.tokens = [];
         this.tokens.links = Object.create(null);
-        this.options = t52 || e;
+        this.options = t52 || e1;
         this.options.tokenizer = this.options.tokenizer || new Tokenizer;
         this.tokenizer = this.options.tokenizer;
         this.tokenizer.options = this.options;
@@ -24689,7 +25276,7 @@ class Lexer {
 }
 class Renderer {
     constructor(t63){
-        this.options = t63 || e;
+        this.options = t63 || e1;
     }
     code(e80, t64, n35) {
         const r24 = (t64 || "").match(/\S*/)[0];
@@ -24834,7 +25421,7 @@ class Slugger {
 }
 class Parser {
     constructor(t74){
-        this.options = t74 || e;
+        this.options = t74 || e1;
         this.options.renderer = this.options.renderer || new Renderer;
         this.renderer = this.options.renderer;
         this.renderer.options = this.options;
@@ -24850,15 +25437,15 @@ class Parser {
         return n46.parseInline(e108);
     }
     parse(e109, t77 = true) {
-        let n47, r31, s14, i9, l6, a4, o4, c2, h2, p2, u2, g2, d2, k2, f2, m2, x2, b1, w1, _1 = "";
-        const y1 = e109.length;
-        for(n47 = 0; n47 < y1; n47++){
-            p2 = e109[n47];
-            if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[p2.type]) {
-                w1 = this.options.extensions.renderers[p2.type].call({
+        let n47, r31, s14, i9, l6, a4, o4, c21, h21, p21, u21, g21, d21, k2, f2, m21, x2, b11, w11, _11 = "";
+        const y12 = e109.length;
+        for(n47 = 0; n47 < y12; n47++){
+            p21 = e109[n47];
+            if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[p21.type]) {
+                w11 = this.options.extensions.renderers[p21.type].call({
                     parser: this
-                }, p2);
-                if (false !== w1 || ![
+                }, p21);
+                if (false !== w11 || ![
                     "space",
                     "hr",
                     "heading",
@@ -24869,94 +25456,94 @@ class Parser {
                     "html",
                     "paragraph",
                     "text"
-                ].includes(p2.type)) {
-                    _1 += w1 || "";
+                ].includes(p21.type)) {
+                    _11 += w11 || "";
                     continue;
                 }
             }
-            switch(p2.type){
+            switch(p21.type){
                 case "space":
                     continue;
                 case "hr":
-                    _1 += this.renderer.hr();
+                    _11 += this.renderer.hr();
                     continue;
                 case "heading":
-                    _1 += this.renderer.heading(this.parseInline(p2.tokens), p2.depth, unescape(this.parseInline(p2.tokens, this.textRenderer)), this.slugger);
+                    _11 += this.renderer.heading(this.parseInline(p21.tokens), p21.depth, unescape(this.parseInline(p21.tokens, this.textRenderer)), this.slugger);
                     continue;
                 case "code":
-                    _1 += this.renderer.code(p2.text, p2.lang, p2.escaped);
+                    _11 += this.renderer.code(p21.text, p21.lang, p21.escaped);
                     continue;
                 case "table":
-                    c2 = "";
+                    c21 = "";
                     o4 = "";
-                    i9 = p2.header.length;
-                    for(r31 = 0; r31 < i9; r31++)o4 += this.renderer.tablecell(this.parseInline(p2.header[r31].tokens), {
+                    i9 = p21.header.length;
+                    for(r31 = 0; r31 < i9; r31++)o4 += this.renderer.tablecell(this.parseInline(p21.header[r31].tokens), {
                         header: true,
-                        align: p2.align[r31]
+                        align: p21.align[r31]
                     });
-                    c2 += this.renderer.tablerow(o4);
-                    h2 = "";
-                    i9 = p2.rows.length;
+                    c21 += this.renderer.tablerow(o4);
+                    h21 = "";
+                    i9 = p21.rows.length;
                     for(r31 = 0; r31 < i9; r31++){
-                        a4 = p2.rows[r31];
+                        a4 = p21.rows[r31];
                         o4 = "";
                         l6 = a4.length;
                         for(s14 = 0; s14 < l6; s14++)o4 += this.renderer.tablecell(this.parseInline(a4[s14].tokens), {
                             header: false,
-                            align: p2.align[s14]
+                            align: p21.align[s14]
                         });
-                        h2 += this.renderer.tablerow(o4);
+                        h21 += this.renderer.tablerow(o4);
                     }
-                    _1 += this.renderer.table(c2, h2);
+                    _11 += this.renderer.table(c21, h21);
                     continue;
                 case "blockquote":
-                    h2 = this.parse(p2.tokens);
-                    _1 += this.renderer.blockquote(h2);
+                    h21 = this.parse(p21.tokens);
+                    _11 += this.renderer.blockquote(h21);
                     continue;
                 case "list":
-                    u2 = p2.ordered;
-                    g2 = p2.start;
-                    d2 = p2.loose;
-                    i9 = p2.items.length;
-                    h2 = "";
+                    u21 = p21.ordered;
+                    g21 = p21.start;
+                    d21 = p21.loose;
+                    i9 = p21.items.length;
+                    h21 = "";
                     for(r31 = 0; r31 < i9; r31++){
-                        f2 = p2.items[r31];
-                        m2 = f2.checked;
+                        f2 = p21.items[r31];
+                        m21 = f2.checked;
                         x2 = f2.task;
                         k2 = "";
                         if (f2.task) {
-                            b1 = this.renderer.checkbox(m2);
-                            if (d2) if (f2.tokens.length > 0 && "paragraph" === f2.tokens[0].type) {
-                                f2.tokens[0].text = b1 + " " + f2.tokens[0].text;
-                                f2.tokens[0].tokens && f2.tokens[0].tokens.length > 0 && "text" === f2.tokens[0].tokens[0].type && (f2.tokens[0].tokens[0].text = b1 + " " + f2.tokens[0].tokens[0].text);
+                            b11 = this.renderer.checkbox(m21);
+                            if (d21) if (f2.tokens.length > 0 && "paragraph" === f2.tokens[0].type) {
+                                f2.tokens[0].text = b11 + " " + f2.tokens[0].text;
+                                f2.tokens[0].tokens && f2.tokens[0].tokens.length > 0 && "text" === f2.tokens[0].tokens[0].type && (f2.tokens[0].tokens[0].text = b11 + " " + f2.tokens[0].tokens[0].text);
                             } else f2.tokens.unshift({
                                 type: "text",
-                                text: b1
+                                text: b11
                             });
-                            else k2 += b1;
+                            else k2 += b11;
                         }
-                        k2 += this.parse(f2.tokens, d2);
-                        h2 += this.renderer.listitem(k2, x2, m2);
+                        k2 += this.parse(f2.tokens, d21);
+                        h21 += this.renderer.listitem(k2, x2, m21);
                     }
-                    _1 += this.renderer.list(h2, u2, g2);
+                    _11 += this.renderer.list(h21, u21, g21);
                     continue;
                 case "html":
-                    _1 += this.renderer.html(p2.text);
+                    _11 += this.renderer.html(p21.text);
                     continue;
                 case "paragraph":
-                    _1 += this.renderer.paragraph(this.parseInline(p2.tokens));
+                    _11 += this.renderer.paragraph(this.parseInline(p21.tokens));
                     continue;
                 case "text":
-                    h2 = p2.tokens ? this.parseInline(p2.tokens) : p2.text;
-                    while(n47 + 1 < y1 && "text" === e109[n47 + 1].type){
-                        p2 = e109[++n47];
-                        h2 += "\n" + (p2.tokens ? this.parseInline(p2.tokens) : p2.text);
+                    h21 = p21.tokens ? this.parseInline(p21.tokens) : p21.text;
+                    while(n47 + 1 < y12 && "text" === e109[n47 + 1].type){
+                        p21 = e109[++n47];
+                        h21 += "\n" + (p21.tokens ? this.parseInline(p21.tokens) : p21.text);
                     }
-                    _1 += t77 ? this.renderer.paragraph(h2) : h2;
+                    _11 += t77 ? this.renderer.paragraph(h21) : h21;
                     continue;
                 default:
                     {
-                        const e110 = 'Token with "' + p2.type + '" type was not found.';
+                        const e110 = 'Token with "' + p21.type + '" type was not found.';
                         if (this.options.silent) {
                             console.error(e110);
                             return;
@@ -24965,7 +25552,7 @@ class Parser {
                     }
             }
         }
-        return _1;
+        return _11;
     }
     parseInline(e111, t78) {
         t78 = t78 || this.renderer;
@@ -25103,7 +25690,7 @@ marked.options = marked.setOptions = function(e118) {
     return marked;
 };
 marked.getDefaults = getDefaults;
-marked.defaults = e;
+marked.defaults = e1;
 marked.use = function(...e119) {
     const t82 = merge({}, ...e119);
     const n52 = marked.defaults.extensions || {
@@ -25222,20 +25809,20 @@ marked.walkTokens;
 marked.parseInline;
 Parser.parse;
 Lexer.lex;
-var r2 = "undefined" !== typeof globalThis ? globalThis : "undefined" !== typeof self ? self : global;
-var e1 = {};
-var a2 = {
-    exports: e1
+var r4 = "undefined" !== typeof globalThis ? globalThis : "undefined" !== typeof self ? self : global;
+var e2 = {};
+var a3 = {
+    exports: e2
 };
-(function(t11) {
-    var o12 = e1;
-    var s12 = true && a2.exports == o12 && a2;
-    var u12 = "object" == typeof r2 && r2;
-    u12.global !== u12 && u12.window !== u12 || (t11 = u12);
-    var c12 = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
-    var l12 = /[\x01-\x7F]/g;
-    var i12 = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
-    var n3 = /<\u20D2|=\u20E5|>\u20D2|\u205F\u200A|\u219D\u0338|\u2202\u0338|\u2220\u20D2|\u2229\uFE00|\u222A\uFE00|\u223C\u20D2|\u223D\u0331|\u223E\u0333|\u2242\u0338|\u224B\u0338|\u224D\u20D2|\u224E\u0338|\u224F\u0338|\u2250\u0338|\u2261\u20E5|\u2264\u20D2|\u2265\u20D2|\u2266\u0338|\u2267\u0338|\u2268\uFE00|\u2269\uFE00|\u226A\u0338|\u226A\u20D2|\u226B\u0338|\u226B\u20D2|\u227F\u0338|\u2282\u20D2|\u2283\u20D2|\u228A\uFE00|\u228B\uFE00|\u228F\u0338|\u2290\u0338|\u2293\uFE00|\u2294\uFE00|\u22B4\u20D2|\u22B5\u20D2|\u22D8\u0338|\u22D9\u0338|\u22DA\uFE00|\u22DB\uFE00|\u22F5\u0338|\u22F9\u0338|\u2933\u0338|\u29CF\u0338|\u29D0\u0338|\u2A6D\u0338|\u2A70\u0338|\u2A7D\u0338|\u2A7E\u0338|\u2AA1\u0338|\u2AA2\u0338|\u2AAC\uFE00|\u2AAD\uFE00|\u2AAF\u0338|\u2AB0\u0338|\u2AC5\u0338|\u2AC6\u0338|\u2ACB\uFE00|\u2ACC\uFE00|\u2AFD\u20E5|[\xA0-\u0113\u0116-\u0122\u0124-\u012B\u012E-\u014D\u0150-\u017E\u0192\u01B5\u01F5\u0237\u02C6\u02C7\u02D8-\u02DD\u0311\u0391-\u03A1\u03A3-\u03A9\u03B1-\u03C9\u03D1\u03D2\u03D5\u03D6\u03DC\u03DD\u03F0\u03F1\u03F5\u03F6\u0401-\u040C\u040E-\u044F\u0451-\u045C\u045E\u045F\u2002-\u2005\u2007-\u2010\u2013-\u2016\u2018-\u201A\u201C-\u201E\u2020-\u2022\u2025\u2026\u2030-\u2035\u2039\u203A\u203E\u2041\u2043\u2044\u204F\u2057\u205F-\u2063\u20AC\u20DB\u20DC\u2102\u2105\u210A-\u2113\u2115-\u211E\u2122\u2124\u2127-\u2129\u212C\u212D\u212F-\u2131\u2133-\u2138\u2145-\u2148\u2153-\u215E\u2190-\u219B\u219D-\u21A7\u21A9-\u21AE\u21B0-\u21B3\u21B5-\u21B7\u21BA-\u21DB\u21DD\u21E4\u21E5\u21F5\u21FD-\u2205\u2207-\u2209\u220B\u220C\u220F-\u2214\u2216-\u2218\u221A\u221D-\u2238\u223A-\u2257\u2259\u225A\u225C\u225F-\u2262\u2264-\u228B\u228D-\u229B\u229D-\u22A5\u22A7-\u22B0\u22B2-\u22BB\u22BD-\u22DB\u22DE-\u22E3\u22E6-\u22F7\u22F9-\u22FE\u2305\u2306\u2308-\u2310\u2312\u2313\u2315\u2316\u231C-\u231F\u2322\u2323\u232D\u232E\u2336\u233D\u233F\u237C\u23B0\u23B1\u23B4-\u23B6\u23DC-\u23DF\u23E2\u23E7\u2423\u24C8\u2500\u2502\u250C\u2510\u2514\u2518\u251C\u2524\u252C\u2534\u253C\u2550-\u256C\u2580\u2584\u2588\u2591-\u2593\u25A1\u25AA\u25AB\u25AD\u25AE\u25B1\u25B3-\u25B5\u25B8\u25B9\u25BD-\u25BF\u25C2\u25C3\u25CA\u25CB\u25EC\u25EF\u25F8-\u25FC\u2605\u2606\u260E\u2640\u2642\u2660\u2663\u2665\u2666\u266A\u266D-\u266F\u2713\u2717\u2720\u2736\u2758\u2772\u2773\u27C8\u27C9\u27E6-\u27ED\u27F5-\u27FA\u27FC\u27FF\u2902-\u2905\u290C-\u2913\u2916\u2919-\u2920\u2923-\u292A\u2933\u2935-\u2939\u293C\u293D\u2945\u2948-\u294B\u294E-\u2976\u2978\u2979\u297B-\u297F\u2985\u2986\u298B-\u2996\u299A\u299C\u299D\u29A4-\u29B7\u29B9\u29BB\u29BC\u29BE-\u29C5\u29C9\u29CD-\u29D0\u29DC-\u29DE\u29E3-\u29E5\u29EB\u29F4\u29F6\u2A00-\u2A02\u2A04\u2A06\u2A0C\u2A0D\u2A10-\u2A17\u2A22-\u2A27\u2A29\u2A2A\u2A2D-\u2A31\u2A33-\u2A3C\u2A3F\u2A40\u2A42-\u2A4D\u2A50\u2A53-\u2A58\u2A5A-\u2A5D\u2A5F\u2A66\u2A6A\u2A6D-\u2A75\u2A77-\u2A9A\u2A9D-\u2AA2\u2AA4-\u2AB0\u2AB3-\u2AC8\u2ACB\u2ACC\u2ACF-\u2ADB\u2AE4\u2AE6-\u2AE9\u2AEB-\u2AF3\u2AFD\uFB00-\uFB04]|\uD835[\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDCCF\uDD04\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDD6B]/g;
+(function(t14) {
+    var o14 = e2;
+    var s13 = true && a3.exports == o14 && a3;
+    var u13 = "object" == typeof r4 && r4;
+    u13.global !== u13 && u13.window !== u13 || (t14 = u13);
+    var c13 = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+    var l13 = /[\x01-\x7F]/g;
+    var i13 = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
+    var n6 = /<\u20D2|=\u20E5|>\u20D2|\u205F\u200A|\u219D\u0338|\u2202\u0338|\u2220\u20D2|\u2229\uFE00|\u222A\uFE00|\u223C\u20D2|\u223D\u0331|\u223E\u0333|\u2242\u0338|\u224B\u0338|\u224D\u20D2|\u224E\u0338|\u224F\u0338|\u2250\u0338|\u2261\u20E5|\u2264\u20D2|\u2265\u20D2|\u2266\u0338|\u2267\u0338|\u2268\uFE00|\u2269\uFE00|\u226A\u0338|\u226A\u20D2|\u226B\u0338|\u226B\u20D2|\u227F\u0338|\u2282\u20D2|\u2283\u20D2|\u228A\uFE00|\u228B\uFE00|\u228F\u0338|\u2290\u0338|\u2293\uFE00|\u2294\uFE00|\u22B4\u20D2|\u22B5\u20D2|\u22D8\u0338|\u22D9\u0338|\u22DA\uFE00|\u22DB\uFE00|\u22F5\u0338|\u22F9\u0338|\u2933\u0338|\u29CF\u0338|\u29D0\u0338|\u2A6D\u0338|\u2A70\u0338|\u2A7D\u0338|\u2A7E\u0338|\u2AA1\u0338|\u2AA2\u0338|\u2AAC\uFE00|\u2AAD\uFE00|\u2AAF\u0338|\u2AB0\u0338|\u2AC5\u0338|\u2AC6\u0338|\u2ACB\uFE00|\u2ACC\uFE00|\u2AFD\u20E5|[\xA0-\u0113\u0116-\u0122\u0124-\u012B\u012E-\u014D\u0150-\u017E\u0192\u01B5\u01F5\u0237\u02C6\u02C7\u02D8-\u02DD\u0311\u0391-\u03A1\u03A3-\u03A9\u03B1-\u03C9\u03D1\u03D2\u03D5\u03D6\u03DC\u03DD\u03F0\u03F1\u03F5\u03F6\u0401-\u040C\u040E-\u044F\u0451-\u045C\u045E\u045F\u2002-\u2005\u2007-\u2010\u2013-\u2016\u2018-\u201A\u201C-\u201E\u2020-\u2022\u2025\u2026\u2030-\u2035\u2039\u203A\u203E\u2041\u2043\u2044\u204F\u2057\u205F-\u2063\u20AC\u20DB\u20DC\u2102\u2105\u210A-\u2113\u2115-\u211E\u2122\u2124\u2127-\u2129\u212C\u212D\u212F-\u2131\u2133-\u2138\u2145-\u2148\u2153-\u215E\u2190-\u219B\u219D-\u21A7\u21A9-\u21AE\u21B0-\u21B3\u21B5-\u21B7\u21BA-\u21DB\u21DD\u21E4\u21E5\u21F5\u21FD-\u2205\u2207-\u2209\u220B\u220C\u220F-\u2214\u2216-\u2218\u221A\u221D-\u2238\u223A-\u2257\u2259\u225A\u225C\u225F-\u2262\u2264-\u228B\u228D-\u229B\u229D-\u22A5\u22A7-\u22B0\u22B2-\u22BB\u22BD-\u22DB\u22DE-\u22E3\u22E6-\u22F7\u22F9-\u22FE\u2305\u2306\u2308-\u2310\u2312\u2313\u2315\u2316\u231C-\u231F\u2322\u2323\u232D\u232E\u2336\u233D\u233F\u237C\u23B0\u23B1\u23B4-\u23B6\u23DC-\u23DF\u23E2\u23E7\u2423\u24C8\u2500\u2502\u250C\u2510\u2514\u2518\u251C\u2524\u252C\u2534\u253C\u2550-\u256C\u2580\u2584\u2588\u2591-\u2593\u25A1\u25AA\u25AB\u25AD\u25AE\u25B1\u25B3-\u25B5\u25B8\u25B9\u25BD-\u25BF\u25C2\u25C3\u25CA\u25CB\u25EC\u25EF\u25F8-\u25FC\u2605\u2606\u260E\u2640\u2642\u2660\u2663\u2665\u2666\u266A\u266D-\u266F\u2713\u2717\u2720\u2736\u2758\u2772\u2773\u27C8\u27C9\u27E6-\u27ED\u27F5-\u27FA\u27FC\u27FF\u2902-\u2905\u290C-\u2913\u2916\u2919-\u2920\u2923-\u292A\u2933\u2935-\u2939\u293C\u293D\u2945\u2948-\u294B\u294E-\u2976\u2978\u2979\u297B-\u297F\u2985\u2986\u298B-\u2996\u299A\u299C\u299D\u29A4-\u29B7\u29B9\u29BB\u29BC\u29BE-\u29C5\u29C9\u29CD-\u29D0\u29DC-\u29DE\u29E3-\u29E5\u29EB\u29F4\u29F6\u2A00-\u2A02\u2A04\u2A06\u2A0C\u2A0D\u2A10-\u2A17\u2A22-\u2A27\u2A29\u2A2A\u2A2D-\u2A31\u2A33-\u2A3C\u2A3F\u2A40\u2A42-\u2A4D\u2A50\u2A53-\u2A58\u2A5A-\u2A5D\u2A5F\u2A66\u2A6A\u2A6D-\u2A75\u2A77-\u2A9A\u2A9D-\u2AA2\u2AA4-\u2AB0\u2AB3-\u2AC8\u2ACB\u2ACC\u2ACF-\u2ADB\u2AE4\u2AE6-\u2AE9\u2AEB-\u2AF3\u2AFD\uFB00-\uFB04]|\uD835[\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDCCF\uDD04\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDD6B]/g;
     var p12 = {
         "­": "shy",
         "‌": "zwnj",
@@ -26749,8 +27336,8 @@ var a2 = {
         "ℷ": "gimel",
         "ℸ": "daleth"
     };
-    var d12 = /["&'<>`]/g;
-    var g12 = {
+    var d13 = /["&'<>`]/g;
+    var g13 = {
         '"': "&quot;",
         "&": "&amp;",
         "'": "&#x27;",
@@ -26758,10 +27345,10 @@ var a2 = {
         ">": "&gt;",
         "`": "&#x60;"
     };
-    var m1 = /&#(?:[xX][^a-fA-F0-9]|[^0-9xX])/;
+    var m12 = /&#(?:[xX][^a-fA-F0-9]|[^0-9xX])/;
     var f11 = /[\0-\x08\x0B\x0E-\x1F\x7F-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]|[\uD83F\uD87F\uD8BF\uD8FF\uD93F\uD97F\uD9BF\uD9FF\uDA3F\uDA7F\uDABF\uDAFF\uDB3F\uDB7F\uDBBF\uDBFF][\uDFFE\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]/;
-    var b1 = /&(CounterClockwiseContourIntegral|DoubleLongLeftRightArrow|ClockwiseContourIntegral|NotNestedGreaterGreater|NotSquareSupersetEqual|DiacriticalDoubleAcute|NotRightTriangleEqual|NotSucceedsSlantEqual|NotPrecedesSlantEqual|CloseCurlyDoubleQuote|NegativeVeryThinSpace|DoubleContourIntegral|FilledVerySmallSquare|CapitalDifferentialD|OpenCurlyDoubleQuote|EmptyVerySmallSquare|NestedGreaterGreater|DoubleLongRightArrow|NotLeftTriangleEqual|NotGreaterSlantEqual|ReverseUpEquilibrium|DoubleLeftRightArrow|NotSquareSubsetEqual|NotDoubleVerticalBar|RightArrowLeftArrow|NotGreaterFullEqual|NotRightTriangleBar|SquareSupersetEqual|DownLeftRightVector|DoubleLongLeftArrow|leftrightsquigarrow|LeftArrowRightArrow|NegativeMediumSpace|blacktriangleright|RightDownVectorBar|PrecedesSlantEqual|RightDoubleBracket|SucceedsSlantEqual|NotLeftTriangleBar|RightTriangleEqual|SquareIntersection|RightDownTeeVector|ReverseEquilibrium|NegativeThickSpace|longleftrightarrow|Longleftrightarrow|LongLeftRightArrow|DownRightTeeVector|DownRightVectorBar|GreaterSlantEqual|SquareSubsetEqual|LeftDownVectorBar|LeftDoubleBracket|VerticalSeparator|rightleftharpoons|NotGreaterGreater|NotSquareSuperset|blacktriangleleft|blacktriangledown|NegativeThinSpace|LeftDownTeeVector|NotLessSlantEqual|leftrightharpoons|DoubleUpDownArrow|DoubleVerticalBar|LeftTriangleEqual|FilledSmallSquare|twoheadrightarrow|NotNestedLessLess|DownLeftTeeVector|DownLeftVectorBar|RightAngleBracket|NotTildeFullEqual|NotReverseElement|RightUpDownVector|DiacriticalTilde|NotSucceedsTilde|circlearrowright|NotPrecedesEqual|rightharpoondown|DoubleRightArrow|NotSucceedsEqual|NonBreakingSpace|NotRightTriangle|LessEqualGreater|RightUpTeeVector|LeftAngleBracket|GreaterFullEqual|DownArrowUpArrow|RightUpVectorBar|twoheadleftarrow|GreaterEqualLess|downharpoonright|RightTriangleBar|ntrianglerighteq|NotSupersetEqual|LeftUpDownVector|DiacriticalAcute|rightrightarrows|vartriangleright|UpArrowDownArrow|DiacriticalGrave|UnderParenthesis|EmptySmallSquare|LeftUpVectorBar|leftrightarrows|DownRightVector|downharpoonleft|trianglerighteq|ShortRightArrow|OverParenthesis|DoubleLeftArrow|DoubleDownArrow|NotSquareSubset|bigtriangledown|ntrianglelefteq|UpperRightArrow|curvearrowright|vartriangleleft|NotLeftTriangle|nleftrightarrow|LowerRightArrow|NotHumpDownHump|NotGreaterTilde|rightthreetimes|LeftUpTeeVector|NotGreaterEqual|straightepsilon|LeftTriangleBar|rightsquigarrow|ContourIntegral|rightleftarrows|CloseCurlyQuote|RightDownVector|LeftRightVector|nLeftrightarrow|leftharpoondown|circlearrowleft|SquareSuperset|OpenCurlyQuote|hookrightarrow|HorizontalLine|DiacriticalDot|NotLessGreater|ntriangleright|DoubleRightTee|InvisibleComma|InvisibleTimes|LowerLeftArrow|DownLeftVector|NotSubsetEqual|curvearrowleft|trianglelefteq|NotVerticalBar|TildeFullEqual|downdownarrows|NotGreaterLess|RightTeeVector|ZeroWidthSpace|looparrowright|LongRightArrow|doublebarwedge|ShortLeftArrow|ShortDownArrow|RightVectorBar|GreaterGreater|ReverseElement|rightharpoonup|LessSlantEqual|leftthreetimes|upharpoonright|rightarrowtail|LeftDownVector|Longrightarrow|NestedLessLess|UpperLeftArrow|nshortparallel|leftleftarrows|leftrightarrow|Leftrightarrow|LeftRightArrow|longrightarrow|upharpoonleft|RightArrowBar|ApplyFunction|LeftTeeVector|leftarrowtail|NotEqualTilde|varsubsetneqq|varsupsetneqq|RightTeeArrow|SucceedsEqual|SucceedsTilde|LeftVectorBar|SupersetEqual|hookleftarrow|DifferentialD|VerticalTilde|VeryThinSpace|blacktriangle|bigtriangleup|LessFullEqual|divideontimes|leftharpoonup|UpEquilibrium|ntriangleleft|RightTriangle|measuredangle|shortparallel|longleftarrow|Longleftarrow|LongLeftArrow|DoubleLeftTee|Poincareplane|PrecedesEqual|triangleright|DoubleUpArrow|RightUpVector|fallingdotseq|looparrowleft|PrecedesTilde|NotTildeEqual|NotTildeTilde|smallsetminus|Proportional|triangleleft|triangledown|UnderBracket|NotHumpEqual|exponentiale|ExponentialE|NotLessTilde|HilbertSpace|RightCeiling|blacklozenge|varsupsetneq|HumpDownHump|GreaterEqual|VerticalLine|LeftTeeArrow|NotLessEqual|DownTeeArrow|LeftTriangle|varsubsetneq|Intersection|NotCongruent|DownArrowBar|LeftUpVector|LeftArrowBar|risingdotseq|GreaterTilde|RoundImplies|SquareSubset|ShortUpArrow|NotSuperset|quaternions|precnapprox|backepsilon|preccurlyeq|OverBracket|blacksquare|MediumSpace|VerticalBar|circledcirc|circleddash|CircleMinus|CircleTimes|LessGreater|curlyeqprec|curlyeqsucc|diamondsuit|UpDownArrow|Updownarrow|RuleDelayed|Rrightarrow|updownarrow|RightVector|nRightarrow|nrightarrow|eqslantless|LeftCeiling|Equilibrium|SmallCircle|expectation|NotSucceeds|thickapprox|GreaterLess|SquareUnion|NotPrecedes|NotLessLess|straightphi|succnapprox|succcurlyeq|SubsetEqual|sqsupseteq|Proportion|Laplacetrf|ImaginaryI|supsetneqq|NotGreater|gtreqqless|NotElement|ThickSpace|TildeEqual|TildeTilde|Fouriertrf|rmoustache|EqualTilde|eqslantgtr|UnderBrace|LeftVector|UpArrowBar|nLeftarrow|nsubseteqq|subsetneqq|nsupseteqq|nleftarrow|succapprox|lessapprox|UpTeeArrow|upuparrows|curlywedge|lesseqqgtr|varepsilon|varnothing|RightFloor|complement|CirclePlus|sqsubseteq|Lleftarrow|circledast|RightArrow|Rightarrow|rightarrow|lmoustache|Bernoullis|precapprox|mapstoleft|mapstodown|longmapsto|dotsquare|downarrow|DoubleDot|nsubseteq|supsetneq|leftarrow|nsupseteq|subsetneq|ThinSpace|ngeqslant|subseteqq|HumpEqual|NotSubset|triangleq|NotCupCap|lesseqgtr|heartsuit|TripleDot|Leftarrow|Coproduct|Congruent|varpropto|complexes|gvertneqq|LeftArrow|LessTilde|supseteqq|MinusPlus|CircleDot|nleqslant|NotExists|gtreqless|nparallel|UnionPlus|LeftFloor|checkmark|CenterDot|centerdot|Mellintrf|gtrapprox|bigotimes|OverBrace|spadesuit|therefore|pitchfork|rationals|PlusMinus|Backslash|Therefore|DownBreve|backsimeq|backprime|DownArrow|nshortmid|Downarrow|lvertneqq|eqvparsl|imagline|imagpart|infintie|integers|Integral|intercal|LessLess|Uarrocir|intlarhk|sqsupset|angmsdaf|sqsubset|llcorner|vartheta|cupbrcap|lnapprox|Superset|SuchThat|succnsim|succneqq|angmsdag|biguplus|curlyvee|trpezium|Succeeds|NotTilde|bigwedge|angmsdah|angrtvbd|triminus|cwconint|fpartint|lrcorner|smeparsl|subseteq|urcorner|lurdshar|laemptyv|DDotrahd|approxeq|ldrushar|awconint|mapstoup|backcong|shortmid|triangle|geqslant|gesdotol|timesbar|circledR|circledS|setminus|multimap|naturals|scpolint|ncongdot|RightTee|boxminus|gnapprox|boxtimes|andslope|thicksim|angmsdaa|varsigma|cirfnint|rtriltri|angmsdab|rppolint|angmsdac|barwedge|drbkarow|clubsuit|thetasym|bsolhsub|capbrcup|dzigrarr|doteqdot|DotEqual|dotminus|UnderBar|NotEqual|realpart|otimesas|ulcorner|hksearow|hkswarow|parallel|PartialD|elinters|emptyset|plusacir|bbrktbrk|angmsdad|pointint|bigoplus|angmsdae|Precedes|bigsqcup|varkappa|notindot|supseteq|precneqq|precnsim|profalar|profline|profsurf|leqslant|lesdotor|raemptyv|subplus|notnivb|notnivc|subrarr|zigrarr|vzigzag|submult|subedot|Element|between|cirscir|larrbfs|larrsim|lotimes|lbrksld|lbrkslu|lozenge|ldrdhar|dbkarow|bigcirc|epsilon|simrarr|simplus|ltquest|Epsilon|luruhar|gtquest|maltese|npolint|eqcolon|npreceq|bigodot|ddagger|gtrless|bnequiv|harrcir|ddotseq|equivDD|backsim|demptyv|nsqsube|nsqsupe|Upsilon|nsubset|upsilon|minusdu|nsucceq|swarrow|nsupset|coloneq|searrow|boxplus|napprox|natural|asympeq|alefsym|congdot|nearrow|bigstar|diamond|supplus|tritime|LeftTee|nvinfin|triplus|NewLine|nvltrie|nvrtrie|nwarrow|nexists|Diamond|ruluhar|Implies|supmult|angzarr|suplarr|suphsub|questeq|because|digamma|Because|olcross|bemptyv|omicron|Omicron|rotimes|NoBreak|intprod|angrtvb|orderof|uwangle|suphsol|lesdoto|orslope|DownTee|realine|cudarrl|rdldhar|OverBar|supedot|lessdot|supdsub|topfork|succsim|rbrkslu|rbrksld|pertenk|cudarrr|isindot|planckh|lessgtr|pluscir|gesdoto|plussim|plustwo|lesssim|cularrp|rarrsim|Cayleys|notinva|notinvb|notinvc|UpArrow|Uparrow|uparrow|NotLess|dwangle|precsim|Product|curarrm|Cconint|dotplus|rarrbfs|ccupssm|Cedilla|cemptyv|notniva|quatint|frac35|frac38|frac45|frac56|frac58|frac78|tridot|xoplus|gacute|gammad|Gammad|lfisht|lfloor|bigcup|sqsupe|gbreve|Gbreve|lharul|sqsube|sqcups|Gcedil|apacir|llhard|lmidot|Lmidot|lmoust|andand|sqcaps|approx|Abreve|spades|circeq|tprime|divide|topcir|Assign|topbot|gesdot|divonx|xuplus|timesd|gesles|atilde|solbar|SOFTcy|loplus|timesb|lowast|lowbar|dlcorn|dlcrop|softcy|dollar|lparlt|thksim|lrhard|Atilde|lsaquo|smashp|bigvee|thinsp|wreath|bkarow|lsquor|lstrok|Lstrok|lthree|ltimes|ltlarr|DotDot|simdot|ltrPar|weierp|xsqcup|angmsd|sigmav|sigmaf|zeetrf|Zcaron|zcaron|mapsto|vsupne|thetav|cirmid|marker|mcomma|Zacute|vsubnE|there4|gtlPar|vsubne|bottom|gtrarr|SHCHcy|shchcy|midast|midcir|middot|minusb|minusd|gtrdot|bowtie|sfrown|mnplus|models|colone|seswar|Colone|mstpos|searhk|gtrsim|nacute|Nacute|boxbox|telrec|hairsp|Tcedil|nbumpe|scnsim|ncaron|Ncaron|ncedil|Ncedil|hamilt|Scedil|nearhk|hardcy|HARDcy|tcedil|Tcaron|commat|nequiv|nesear|tcaron|target|hearts|nexist|varrho|scedil|Scaron|scaron|hellip|Sacute|sacute|hercon|swnwar|compfn|rtimes|rthree|rsquor|rsaquo|zacute|wedgeq|homtht|barvee|barwed|Barwed|rpargt|horbar|conint|swarhk|roplus|nltrie|hslash|hstrok|Hstrok|rmoust|Conint|bprime|hybull|hyphen|iacute|Iacute|supsup|supsub|supsim|varphi|coprod|brvbar|agrave|Supset|supset|igrave|Igrave|notinE|Agrave|iiiint|iinfin|copysr|wedbar|Verbar|vangrt|becaus|incare|verbar|inodot|bullet|drcorn|intcal|drcrop|cularr|vellip|Utilde|bumpeq|cupcap|dstrok|Dstrok|CupCap|cupcup|cupdot|eacute|Eacute|supdot|iquest|easter|ecaron|Ecaron|ecolon|isinsv|utilde|itilde|Itilde|curarr|succeq|Bumpeq|cacute|ulcrop|nparsl|Cacute|nprcue|egrave|Egrave|nrarrc|nrarrw|subsup|subsub|nrtrie|jsercy|nsccue|Jsercy|kappav|kcedil|Kcedil|subsim|ulcorn|nsimeq|egsdot|veebar|kgreen|capand|elsdot|Subset|subset|curren|aacute|lacute|Lacute|emptyv|ntilde|Ntilde|lagran|lambda|Lambda|capcap|Ugrave|langle|subdot|emsp13|numero|emsp14|nvdash|nvDash|nVdash|nVDash|ugrave|ufisht|nvHarr|larrfs|nvlArr|larrhk|larrlp|larrpl|nvrArr|Udblac|nwarhk|larrtl|nwnear|oacute|Oacute|latail|lAtail|sstarf|lbrace|odblac|Odblac|lbrack|udblac|odsold|eparsl|lcaron|Lcaron|ograve|Ograve|lcedil|Lcedil|Aacute|ssmile|ssetmn|squarf|ldquor|capcup|ominus|cylcty|rharul|eqcirc|dagger|rfloor|rfisht|Dagger|daleth|equals|origof|capdot|equest|dcaron|Dcaron|rdquor|oslash|Oslash|otilde|Otilde|otimes|Otimes|urcrop|Ubreve|ubreve|Yacute|Uacute|uacute|Rcedil|rcedil|urcorn|parsim|Rcaron|Vdashl|rcaron|Tstrok|percnt|period|permil|Exists|yacute|rbrack|rbrace|phmmat|ccaron|Ccaron|planck|ccedil|plankv|tstrok|female|plusdo|plusdu|ffilig|plusmn|ffllig|Ccedil|rAtail|dfisht|bernou|ratail|Rarrtl|rarrtl|angsph|rarrpl|rarrlp|rarrhk|xwedge|xotime|forall|ForAll|Vvdash|vsupnE|preceq|bigcap|frac12|frac13|frac14|primes|rarrfs|prnsim|frac15|Square|frac16|square|lesdot|frac18|frac23|propto|prurel|rarrap|rangle|puncsp|frac25|Racute|qprime|racute|lesges|frac34|abreve|AElig|eqsim|utdot|setmn|urtri|Equal|Uring|seArr|uring|searr|dashv|Dashv|mumap|nabla|iogon|Iogon|sdote|sdotb|scsim|napid|napos|equiv|natur|Acirc|dblac|erarr|nbump|iprod|erDot|ucirc|awint|esdot|angrt|ncong|isinE|scnap|Scirc|scirc|ndash|isins|Ubrcy|nearr|neArr|isinv|nedot|ubrcy|acute|Ycirc|iukcy|Iukcy|xutri|nesim|caret|jcirc|Jcirc|caron|twixt|ddarr|sccue|exist|jmath|sbquo|ngeqq|angst|ccaps|lceil|ngsim|UpTee|delta|Delta|rtrif|nharr|nhArr|nhpar|rtrie|jukcy|Jukcy|kappa|rsquo|Kappa|nlarr|nlArr|TSHcy|rrarr|aogon|Aogon|fflig|xrarr|tshcy|ccirc|nleqq|filig|upsih|nless|dharl|nlsim|fjlig|ropar|nltri|dharr|robrk|roarr|fllig|fltns|roang|rnmid|subnE|subne|lAarr|trisb|Ccirc|acirc|ccups|blank|VDash|forkv|Vdash|langd|cedil|blk12|blk14|laquo|strns|diams|notin|vDash|larrb|blk34|block|disin|uplus|vdash|vBarv|aelig|starf|Wedge|check|xrArr|lates|lbarr|lBarr|notni|lbbrk|bcong|frasl|lbrke|frown|vrtri|vprop|vnsup|gamma|Gamma|wedge|xodot|bdquo|srarr|doteq|ldquo|boxdl|boxdL|gcirc|Gcirc|boxDl|boxDL|boxdr|boxdR|boxDr|TRADE|trade|rlhar|boxDR|vnsub|npart|vltri|rlarr|boxhd|boxhD|nprec|gescc|nrarr|nrArr|boxHd|boxHD|boxhu|boxhU|nrtri|boxHu|clubs|boxHU|times|colon|Colon|gimel|xlArr|Tilde|nsime|tilde|nsmid|nspar|THORN|thorn|xlarr|nsube|nsubE|thkap|xhArr|comma|nsucc|boxul|boxuL|nsupe|nsupE|gneqq|gnsim|boxUl|boxUL|grave|boxur|boxuR|boxUr|boxUR|lescc|angle|bepsi|boxvh|varpi|boxvH|numsp|Theta|gsime|gsiml|theta|boxVh|boxVH|boxvl|gtcir|gtdot|boxvL|boxVl|boxVL|crarr|cross|Cross|nvsim|boxvr|nwarr|nwArr|sqsup|dtdot|Uogon|lhard|lharu|dtrif|ocirc|Ocirc|lhblk|duarr|odash|sqsub|Hacek|sqcup|llarr|duhar|oelig|OElig|ofcir|boxvR|uogon|lltri|boxVr|csube|uuarr|ohbar|csupe|ctdot|olarr|olcir|harrw|oline|sqcap|omacr|Omacr|omega|Omega|boxVR|aleph|lneqq|lnsim|loang|loarr|rharu|lobrk|hcirc|operp|oplus|rhard|Hcirc|orarr|Union|order|ecirc|Ecirc|cuepr|szlig|cuesc|breve|reals|eDDot|Breve|hoarr|lopar|utrif|rdquo|Umacr|umacr|efDot|swArr|ultri|alpha|rceil|ovbar|swarr|Wcirc|wcirc|smtes|smile|bsemi|lrarr|aring|parsl|lrhar|bsime|uhblk|lrtri|cupor|Aring|uharr|uharl|slarr|rbrke|bsolb|lsime|rbbrk|RBarr|lsimg|phone|rBarr|rbarr|icirc|lsquo|Icirc|emacr|Emacr|ratio|simne|plusb|simlE|simgE|simeq|pluse|ltcir|ltdot|empty|xharr|xdtri|iexcl|Alpha|ltrie|rarrw|pound|ltrif|xcirc|bumpe|prcue|bumpE|asymp|amacr|cuvee|Sigma|sigma|iiint|udhar|iiota|ijlig|IJlig|supnE|imacr|Imacr|prime|Prime|image|prnap|eogon|Eogon|rarrc|mdash|mDDot|cuwed|imath|supne|imped|Amacr|udarr|prsim|micro|rarrb|cwint|raquo|infin|eplus|range|rangd|Ucirc|radic|minus|amalg|veeeq|rAarr|epsiv|ycirc|quest|sharp|quot|zwnj|Qscr|race|qscr|Qopf|qopf|qint|rang|Rang|Zscr|zscr|Zopf|zopf|rarr|rArr|Rarr|Pscr|pscr|prop|prod|prnE|prec|ZHcy|zhcy|prap|Zeta|zeta|Popf|popf|Zdot|plus|zdot|Yuml|yuml|phiv|YUcy|yucy|Yscr|yscr|perp|Yopf|yopf|part|para|YIcy|Ouml|rcub|yicy|YAcy|rdca|ouml|osol|Oscr|rdsh|yacy|real|oscr|xvee|andd|rect|andv|Xscr|oror|ordm|ordf|xscr|ange|aopf|Aopf|rHar|Xopf|opar|Oopf|xopf|xnis|rhov|oopf|omid|xmap|oint|apid|apos|ogon|ascr|Ascr|odot|odiv|xcup|xcap|ocir|oast|nvlt|nvle|nvgt|nvge|nvap|Wscr|wscr|auml|ntlg|ntgl|nsup|nsub|nsim|Nscr|nscr|nsce|Wopf|ring|npre|wopf|npar|Auml|Barv|bbrk|Nopf|nopf|nmid|nLtv|beta|ropf|Ropf|Beta|beth|nles|rpar|nleq|bnot|bNot|nldr|NJcy|rscr|Rscr|Vscr|vscr|rsqb|njcy|bopf|nisd|Bopf|rtri|Vopf|nGtv|ngtr|vopf|boxh|boxH|boxv|nges|ngeq|boxV|bscr|scap|Bscr|bsim|Vert|vert|bsol|bull|bump|caps|cdot|ncup|scnE|ncap|nbsp|napE|Cdot|cent|sdot|Vbar|nang|vBar|chcy|Mscr|mscr|sect|semi|CHcy|Mopf|mopf|sext|circ|cire|mldr|mlcp|cirE|comp|shcy|SHcy|vArr|varr|cong|copf|Copf|copy|COPY|malt|male|macr|lvnE|cscr|ltri|sime|ltcc|simg|Cscr|siml|csub|Uuml|lsqb|lsim|uuml|csup|Lscr|lscr|utri|smid|lpar|cups|smte|lozf|darr|Lopf|Uscr|solb|lopf|sopf|Sopf|lneq|uscr|spar|dArr|lnap|Darr|dash|Sqrt|LJcy|ljcy|lHar|dHar|Upsi|upsi|diam|lesg|djcy|DJcy|leqq|dopf|Dopf|dscr|Dscr|dscy|ldsh|ldca|squf|DScy|sscr|Sscr|dsol|lcub|late|star|Star|Uopf|Larr|lArr|larr|uopf|dtri|dzcy|sube|subE|Lang|lang|Kscr|kscr|Kopf|kopf|KJcy|kjcy|KHcy|khcy|DZcy|ecir|edot|eDot|Jscr|jscr|succ|Jopf|jopf|Edot|uHar|emsp|ensp|Iuml|iuml|eopf|isin|Iscr|iscr|Eopf|epar|sung|epsi|escr|sup1|sup2|sup3|Iota|iota|supe|supE|Iopf|iopf|IOcy|iocy|Escr|esim|Esim|imof|Uarr|QUOT|uArr|uarr|euml|IEcy|iecy|Idot|Euml|euro|excl|Hscr|hscr|Hopf|hopf|TScy|tscy|Tscr|hbar|tscr|flat|tbrk|fnof|hArr|harr|half|fopf|Fopf|tdot|gvnE|fork|trie|gtcc|fscr|Fscr|gdot|gsim|Gscr|gscr|Gopf|gopf|gneq|Gdot|tosa|gnap|Topf|topf|geqq|toea|GJcy|gjcy|tint|gesl|mid|Sfr|ggg|top|ges|gla|glE|glj|geq|gne|gEl|gel|gnE|Gcy|gcy|gap|Tfr|tfr|Tcy|tcy|Hat|Tau|Ffr|tau|Tab|hfr|Hfr|ffr|Fcy|fcy|icy|Icy|iff|ETH|eth|ifr|Ifr|Eta|eta|int|Int|Sup|sup|ucy|Ucy|Sum|sum|jcy|ENG|ufr|Ufr|eng|Jcy|jfr|els|ell|egs|Efr|efr|Jfr|uml|kcy|Kcy|Ecy|ecy|kfr|Kfr|lap|Sub|sub|lat|lcy|Lcy|leg|Dot|dot|lEg|leq|les|squ|div|die|lfr|Lfr|lgE|Dfr|dfr|Del|deg|Dcy|dcy|lne|lnE|sol|loz|smt|Cup|lrm|cup|lsh|Lsh|sim|shy|map|Map|mcy|Mcy|mfr|Mfr|mho|gfr|Gfr|sfr|cir|Chi|chi|nap|Cfr|vcy|Vcy|cfr|Scy|scy|ncy|Ncy|vee|Vee|Cap|cap|nfr|scE|sce|Nfr|nge|ngE|nGg|vfr|Vfr|ngt|bot|nGt|nis|niv|Rsh|rsh|nle|nlE|bne|Bfr|bfr|nLl|nlt|nLt|Bcy|bcy|not|Not|rlm|wfr|Wfr|npr|nsc|num|ocy|ast|Ocy|ofr|xfr|Xfr|Ofr|ogt|ohm|apE|olt|Rho|ape|rho|Rfr|rfr|ord|REG|ang|reg|orv|And|and|AMP|Rcy|amp|Afr|ycy|Ycy|yen|yfr|Yfr|rcy|par|pcy|Pcy|pfr|Pfr|phi|Phi|afr|Acy|acy|zcy|Zcy|piv|acE|acd|zfr|Zfr|pre|prE|psi|Psi|qfr|Qfr|zwj|Or|ge|Gg|gt|gg|el|oS|lt|Lt|LT|Re|lg|gl|eg|ne|Im|it|le|DD|wp|wr|nu|Nu|dd|lE|Sc|sc|pi|Pi|ee|af|ll|Ll|rx|gE|xi|pm|Xi|ic|pr|Pr|in|ni|mp|mu|ac|Mu|or|ap|Gt|GT|ii);|&(Aacute|Agrave|Atilde|Ccedil|Eacute|Egrave|Iacute|Igrave|Ntilde|Oacute|Ograve|Oslash|Otilde|Uacute|Ugrave|Yacute|aacute|agrave|atilde|brvbar|ccedil|curren|divide|eacute|egrave|frac12|frac14|frac34|iacute|igrave|iquest|middot|ntilde|oacute|ograve|oslash|otilde|plusmn|uacute|ugrave|yacute|AElig|Acirc|Aring|Ecirc|Icirc|Ocirc|THORN|Ucirc|acirc|acute|aelig|aring|cedil|ecirc|icirc|iexcl|laquo|micro|ocirc|pound|raquo|szlig|thorn|times|ucirc|Auml|COPY|Euml|Iuml|Ouml|QUOT|Uuml|auml|cent|copy|euml|iuml|macr|nbsp|ordf|ordm|ouml|para|quot|sect|sup1|sup2|sup3|uuml|yuml|AMP|ETH|REG|amp|deg|eth|not|reg|shy|uml|yen|GT|LT|gt|lt)(?!;)([=a-zA-Z0-9]?)|&#([0-9]+)(;?)|&#[xX]([a-fA-F0-9]+)(;?)|&([0-9a-zA-Z]+)/g;
-    var h2 = {
+    var b12 = /&(CounterClockwiseContourIntegral|DoubleLongLeftRightArrow|ClockwiseContourIntegral|NotNestedGreaterGreater|NotSquareSupersetEqual|DiacriticalDoubleAcute|NotRightTriangleEqual|NotSucceedsSlantEqual|NotPrecedesSlantEqual|CloseCurlyDoubleQuote|NegativeVeryThinSpace|DoubleContourIntegral|FilledVerySmallSquare|CapitalDifferentialD|OpenCurlyDoubleQuote|EmptyVerySmallSquare|NestedGreaterGreater|DoubleLongRightArrow|NotLeftTriangleEqual|NotGreaterSlantEqual|ReverseUpEquilibrium|DoubleLeftRightArrow|NotSquareSubsetEqual|NotDoubleVerticalBar|RightArrowLeftArrow|NotGreaterFullEqual|NotRightTriangleBar|SquareSupersetEqual|DownLeftRightVector|DoubleLongLeftArrow|leftrightsquigarrow|LeftArrowRightArrow|NegativeMediumSpace|blacktriangleright|RightDownVectorBar|PrecedesSlantEqual|RightDoubleBracket|SucceedsSlantEqual|NotLeftTriangleBar|RightTriangleEqual|SquareIntersection|RightDownTeeVector|ReverseEquilibrium|NegativeThickSpace|longleftrightarrow|Longleftrightarrow|LongLeftRightArrow|DownRightTeeVector|DownRightVectorBar|GreaterSlantEqual|SquareSubsetEqual|LeftDownVectorBar|LeftDoubleBracket|VerticalSeparator|rightleftharpoons|NotGreaterGreater|NotSquareSuperset|blacktriangleleft|blacktriangledown|NegativeThinSpace|LeftDownTeeVector|NotLessSlantEqual|leftrightharpoons|DoubleUpDownArrow|DoubleVerticalBar|LeftTriangleEqual|FilledSmallSquare|twoheadrightarrow|NotNestedLessLess|DownLeftTeeVector|DownLeftVectorBar|RightAngleBracket|NotTildeFullEqual|NotReverseElement|RightUpDownVector|DiacriticalTilde|NotSucceedsTilde|circlearrowright|NotPrecedesEqual|rightharpoondown|DoubleRightArrow|NotSucceedsEqual|NonBreakingSpace|NotRightTriangle|LessEqualGreater|RightUpTeeVector|LeftAngleBracket|GreaterFullEqual|DownArrowUpArrow|RightUpVectorBar|twoheadleftarrow|GreaterEqualLess|downharpoonright|RightTriangleBar|ntrianglerighteq|NotSupersetEqual|LeftUpDownVector|DiacriticalAcute|rightrightarrows|vartriangleright|UpArrowDownArrow|DiacriticalGrave|UnderParenthesis|EmptySmallSquare|LeftUpVectorBar|leftrightarrows|DownRightVector|downharpoonleft|trianglerighteq|ShortRightArrow|OverParenthesis|DoubleLeftArrow|DoubleDownArrow|NotSquareSubset|bigtriangledown|ntrianglelefteq|UpperRightArrow|curvearrowright|vartriangleleft|NotLeftTriangle|nleftrightarrow|LowerRightArrow|NotHumpDownHump|NotGreaterTilde|rightthreetimes|LeftUpTeeVector|NotGreaterEqual|straightepsilon|LeftTriangleBar|rightsquigarrow|ContourIntegral|rightleftarrows|CloseCurlyQuote|RightDownVector|LeftRightVector|nLeftrightarrow|leftharpoondown|circlearrowleft|SquareSuperset|OpenCurlyQuote|hookrightarrow|HorizontalLine|DiacriticalDot|NotLessGreater|ntriangleright|DoubleRightTee|InvisibleComma|InvisibleTimes|LowerLeftArrow|DownLeftVector|NotSubsetEqual|curvearrowleft|trianglelefteq|NotVerticalBar|TildeFullEqual|downdownarrows|NotGreaterLess|RightTeeVector|ZeroWidthSpace|looparrowright|LongRightArrow|doublebarwedge|ShortLeftArrow|ShortDownArrow|RightVectorBar|GreaterGreater|ReverseElement|rightharpoonup|LessSlantEqual|leftthreetimes|upharpoonright|rightarrowtail|LeftDownVector|Longrightarrow|NestedLessLess|UpperLeftArrow|nshortparallel|leftleftarrows|leftrightarrow|Leftrightarrow|LeftRightArrow|longrightarrow|upharpoonleft|RightArrowBar|ApplyFunction|LeftTeeVector|leftarrowtail|NotEqualTilde|varsubsetneqq|varsupsetneqq|RightTeeArrow|SucceedsEqual|SucceedsTilde|LeftVectorBar|SupersetEqual|hookleftarrow|DifferentialD|VerticalTilde|VeryThinSpace|blacktriangle|bigtriangleup|LessFullEqual|divideontimes|leftharpoonup|UpEquilibrium|ntriangleleft|RightTriangle|measuredangle|shortparallel|longleftarrow|Longleftarrow|LongLeftArrow|DoubleLeftTee|Poincareplane|PrecedesEqual|triangleright|DoubleUpArrow|RightUpVector|fallingdotseq|looparrowleft|PrecedesTilde|NotTildeEqual|NotTildeTilde|smallsetminus|Proportional|triangleleft|triangledown|UnderBracket|NotHumpEqual|exponentiale|ExponentialE|NotLessTilde|HilbertSpace|RightCeiling|blacklozenge|varsupsetneq|HumpDownHump|GreaterEqual|VerticalLine|LeftTeeArrow|NotLessEqual|DownTeeArrow|LeftTriangle|varsubsetneq|Intersection|NotCongruent|DownArrowBar|LeftUpVector|LeftArrowBar|risingdotseq|GreaterTilde|RoundImplies|SquareSubset|ShortUpArrow|NotSuperset|quaternions|precnapprox|backepsilon|preccurlyeq|OverBracket|blacksquare|MediumSpace|VerticalBar|circledcirc|circleddash|CircleMinus|CircleTimes|LessGreater|curlyeqprec|curlyeqsucc|diamondsuit|UpDownArrow|Updownarrow|RuleDelayed|Rrightarrow|updownarrow|RightVector|nRightarrow|nrightarrow|eqslantless|LeftCeiling|Equilibrium|SmallCircle|expectation|NotSucceeds|thickapprox|GreaterLess|SquareUnion|NotPrecedes|NotLessLess|straightphi|succnapprox|succcurlyeq|SubsetEqual|sqsupseteq|Proportion|Laplacetrf|ImaginaryI|supsetneqq|NotGreater|gtreqqless|NotElement|ThickSpace|TildeEqual|TildeTilde|Fouriertrf|rmoustache|EqualTilde|eqslantgtr|UnderBrace|LeftVector|UpArrowBar|nLeftarrow|nsubseteqq|subsetneqq|nsupseteqq|nleftarrow|succapprox|lessapprox|UpTeeArrow|upuparrows|curlywedge|lesseqqgtr|varepsilon|varnothing|RightFloor|complement|CirclePlus|sqsubseteq|Lleftarrow|circledast|RightArrow|Rightarrow|rightarrow|lmoustache|Bernoullis|precapprox|mapstoleft|mapstodown|longmapsto|dotsquare|downarrow|DoubleDot|nsubseteq|supsetneq|leftarrow|nsupseteq|subsetneq|ThinSpace|ngeqslant|subseteqq|HumpEqual|NotSubset|triangleq|NotCupCap|lesseqgtr|heartsuit|TripleDot|Leftarrow|Coproduct|Congruent|varpropto|complexes|gvertneqq|LeftArrow|LessTilde|supseteqq|MinusPlus|CircleDot|nleqslant|NotExists|gtreqless|nparallel|UnionPlus|LeftFloor|checkmark|CenterDot|centerdot|Mellintrf|gtrapprox|bigotimes|OverBrace|spadesuit|therefore|pitchfork|rationals|PlusMinus|Backslash|Therefore|DownBreve|backsimeq|backprime|DownArrow|nshortmid|Downarrow|lvertneqq|eqvparsl|imagline|imagpart|infintie|integers|Integral|intercal|LessLess|Uarrocir|intlarhk|sqsupset|angmsdaf|sqsubset|llcorner|vartheta|cupbrcap|lnapprox|Superset|SuchThat|succnsim|succneqq|angmsdag|biguplus|curlyvee|trpezium|Succeeds|NotTilde|bigwedge|angmsdah|angrtvbd|triminus|cwconint|fpartint|lrcorner|smeparsl|subseteq|urcorner|lurdshar|laemptyv|DDotrahd|approxeq|ldrushar|awconint|mapstoup|backcong|shortmid|triangle|geqslant|gesdotol|timesbar|circledR|circledS|setminus|multimap|naturals|scpolint|ncongdot|RightTee|boxminus|gnapprox|boxtimes|andslope|thicksim|angmsdaa|varsigma|cirfnint|rtriltri|angmsdab|rppolint|angmsdac|barwedge|drbkarow|clubsuit|thetasym|bsolhsub|capbrcup|dzigrarr|doteqdot|DotEqual|dotminus|UnderBar|NotEqual|realpart|otimesas|ulcorner|hksearow|hkswarow|parallel|PartialD|elinters|emptyset|plusacir|bbrktbrk|angmsdad|pointint|bigoplus|angmsdae|Precedes|bigsqcup|varkappa|notindot|supseteq|precneqq|precnsim|profalar|profline|profsurf|leqslant|lesdotor|raemptyv|subplus|notnivb|notnivc|subrarr|zigrarr|vzigzag|submult|subedot|Element|between|cirscir|larrbfs|larrsim|lotimes|lbrksld|lbrkslu|lozenge|ldrdhar|dbkarow|bigcirc|epsilon|simrarr|simplus|ltquest|Epsilon|luruhar|gtquest|maltese|npolint|eqcolon|npreceq|bigodot|ddagger|gtrless|bnequiv|harrcir|ddotseq|equivDD|backsim|demptyv|nsqsube|nsqsupe|Upsilon|nsubset|upsilon|minusdu|nsucceq|swarrow|nsupset|coloneq|searrow|boxplus|napprox|natural|asympeq|alefsym|congdot|nearrow|bigstar|diamond|supplus|tritime|LeftTee|nvinfin|triplus|NewLine|nvltrie|nvrtrie|nwarrow|nexists|Diamond|ruluhar|Implies|supmult|angzarr|suplarr|suphsub|questeq|because|digamma|Because|olcross|bemptyv|omicron|Omicron|rotimes|NoBreak|intprod|angrtvb|orderof|uwangle|suphsol|lesdoto|orslope|DownTee|realine|cudarrl|rdldhar|OverBar|supedot|lessdot|supdsub|topfork|succsim|rbrkslu|rbrksld|pertenk|cudarrr|isindot|planckh|lessgtr|pluscir|gesdoto|plussim|plustwo|lesssim|cularrp|rarrsim|Cayleys|notinva|notinvb|notinvc|UpArrow|Uparrow|uparrow|NotLess|dwangle|precsim|Product|curarrm|Cconint|dotplus|rarrbfs|ccupssm|Cedilla|cemptyv|notniva|quatint|frac35|frac38|frac45|frac56|frac58|frac78|tridot|xoplus|gacute|gammad|Gammad|lfisht|lfloor|bigcup|sqsupe|gbreve|Gbreve|lharul|sqsube|sqcups|Gcedil|apacir|llhard|lmidot|Lmidot|lmoust|andand|sqcaps|approx|Abreve|spades|circeq|tprime|divide|topcir|Assign|topbot|gesdot|divonx|xuplus|timesd|gesles|atilde|solbar|SOFTcy|loplus|timesb|lowast|lowbar|dlcorn|dlcrop|softcy|dollar|lparlt|thksim|lrhard|Atilde|lsaquo|smashp|bigvee|thinsp|wreath|bkarow|lsquor|lstrok|Lstrok|lthree|ltimes|ltlarr|DotDot|simdot|ltrPar|weierp|xsqcup|angmsd|sigmav|sigmaf|zeetrf|Zcaron|zcaron|mapsto|vsupne|thetav|cirmid|marker|mcomma|Zacute|vsubnE|there4|gtlPar|vsubne|bottom|gtrarr|SHCHcy|shchcy|midast|midcir|middot|minusb|minusd|gtrdot|bowtie|sfrown|mnplus|models|colone|seswar|Colone|mstpos|searhk|gtrsim|nacute|Nacute|boxbox|telrec|hairsp|Tcedil|nbumpe|scnsim|ncaron|Ncaron|ncedil|Ncedil|hamilt|Scedil|nearhk|hardcy|HARDcy|tcedil|Tcaron|commat|nequiv|nesear|tcaron|target|hearts|nexist|varrho|scedil|Scaron|scaron|hellip|Sacute|sacute|hercon|swnwar|compfn|rtimes|rthree|rsquor|rsaquo|zacute|wedgeq|homtht|barvee|barwed|Barwed|rpargt|horbar|conint|swarhk|roplus|nltrie|hslash|hstrok|Hstrok|rmoust|Conint|bprime|hybull|hyphen|iacute|Iacute|supsup|supsub|supsim|varphi|coprod|brvbar|agrave|Supset|supset|igrave|Igrave|notinE|Agrave|iiiint|iinfin|copysr|wedbar|Verbar|vangrt|becaus|incare|verbar|inodot|bullet|drcorn|intcal|drcrop|cularr|vellip|Utilde|bumpeq|cupcap|dstrok|Dstrok|CupCap|cupcup|cupdot|eacute|Eacute|supdot|iquest|easter|ecaron|Ecaron|ecolon|isinsv|utilde|itilde|Itilde|curarr|succeq|Bumpeq|cacute|ulcrop|nparsl|Cacute|nprcue|egrave|Egrave|nrarrc|nrarrw|subsup|subsub|nrtrie|jsercy|nsccue|Jsercy|kappav|kcedil|Kcedil|subsim|ulcorn|nsimeq|egsdot|veebar|kgreen|capand|elsdot|Subset|subset|curren|aacute|lacute|Lacute|emptyv|ntilde|Ntilde|lagran|lambda|Lambda|capcap|Ugrave|langle|subdot|emsp13|numero|emsp14|nvdash|nvDash|nVdash|nVDash|ugrave|ufisht|nvHarr|larrfs|nvlArr|larrhk|larrlp|larrpl|nvrArr|Udblac|nwarhk|larrtl|nwnear|oacute|Oacute|latail|lAtail|sstarf|lbrace|odblac|Odblac|lbrack|udblac|odsold|eparsl|lcaron|Lcaron|ograve|Ograve|lcedil|Lcedil|Aacute|ssmile|ssetmn|squarf|ldquor|capcup|ominus|cylcty|rharul|eqcirc|dagger|rfloor|rfisht|Dagger|daleth|equals|origof|capdot|equest|dcaron|Dcaron|rdquor|oslash|Oslash|otilde|Otilde|otimes|Otimes|urcrop|Ubreve|ubreve|Yacute|Uacute|uacute|Rcedil|rcedil|urcorn|parsim|Rcaron|Vdashl|rcaron|Tstrok|percnt|period|permil|Exists|yacute|rbrack|rbrace|phmmat|ccaron|Ccaron|planck|ccedil|plankv|tstrok|female|plusdo|plusdu|ffilig|plusmn|ffllig|Ccedil|rAtail|dfisht|bernou|ratail|Rarrtl|rarrtl|angsph|rarrpl|rarrlp|rarrhk|xwedge|xotime|forall|ForAll|Vvdash|vsupnE|preceq|bigcap|frac12|frac13|frac14|primes|rarrfs|prnsim|frac15|Square|frac16|square|lesdot|frac18|frac23|propto|prurel|rarrap|rangle|puncsp|frac25|Racute|qprime|racute|lesges|frac34|abreve|AElig|eqsim|utdot|setmn|urtri|Equal|Uring|seArr|uring|searr|dashv|Dashv|mumap|nabla|iogon|Iogon|sdote|sdotb|scsim|napid|napos|equiv|natur|Acirc|dblac|erarr|nbump|iprod|erDot|ucirc|awint|esdot|angrt|ncong|isinE|scnap|Scirc|scirc|ndash|isins|Ubrcy|nearr|neArr|isinv|nedot|ubrcy|acute|Ycirc|iukcy|Iukcy|xutri|nesim|caret|jcirc|Jcirc|caron|twixt|ddarr|sccue|exist|jmath|sbquo|ngeqq|angst|ccaps|lceil|ngsim|UpTee|delta|Delta|rtrif|nharr|nhArr|nhpar|rtrie|jukcy|Jukcy|kappa|rsquo|Kappa|nlarr|nlArr|TSHcy|rrarr|aogon|Aogon|fflig|xrarr|tshcy|ccirc|nleqq|filig|upsih|nless|dharl|nlsim|fjlig|ropar|nltri|dharr|robrk|roarr|fllig|fltns|roang|rnmid|subnE|subne|lAarr|trisb|Ccirc|acirc|ccups|blank|VDash|forkv|Vdash|langd|cedil|blk12|blk14|laquo|strns|diams|notin|vDash|larrb|blk34|block|disin|uplus|vdash|vBarv|aelig|starf|Wedge|check|xrArr|lates|lbarr|lBarr|notni|lbbrk|bcong|frasl|lbrke|frown|vrtri|vprop|vnsup|gamma|Gamma|wedge|xodot|bdquo|srarr|doteq|ldquo|boxdl|boxdL|gcirc|Gcirc|boxDl|boxDL|boxdr|boxdR|boxDr|TRADE|trade|rlhar|boxDR|vnsub|npart|vltri|rlarr|boxhd|boxhD|nprec|gescc|nrarr|nrArr|boxHd|boxHD|boxhu|boxhU|nrtri|boxHu|clubs|boxHU|times|colon|Colon|gimel|xlArr|Tilde|nsime|tilde|nsmid|nspar|THORN|thorn|xlarr|nsube|nsubE|thkap|xhArr|comma|nsucc|boxul|boxuL|nsupe|nsupE|gneqq|gnsim|boxUl|boxUL|grave|boxur|boxuR|boxUr|boxUR|lescc|angle|bepsi|boxvh|varpi|boxvH|numsp|Theta|gsime|gsiml|theta|boxVh|boxVH|boxvl|gtcir|gtdot|boxvL|boxVl|boxVL|crarr|cross|Cross|nvsim|boxvr|nwarr|nwArr|sqsup|dtdot|Uogon|lhard|lharu|dtrif|ocirc|Ocirc|lhblk|duarr|odash|sqsub|Hacek|sqcup|llarr|duhar|oelig|OElig|ofcir|boxvR|uogon|lltri|boxVr|csube|uuarr|ohbar|csupe|ctdot|olarr|olcir|harrw|oline|sqcap|omacr|Omacr|omega|Omega|boxVR|aleph|lneqq|lnsim|loang|loarr|rharu|lobrk|hcirc|operp|oplus|rhard|Hcirc|orarr|Union|order|ecirc|Ecirc|cuepr|szlig|cuesc|breve|reals|eDDot|Breve|hoarr|lopar|utrif|rdquo|Umacr|umacr|efDot|swArr|ultri|alpha|rceil|ovbar|swarr|Wcirc|wcirc|smtes|smile|bsemi|lrarr|aring|parsl|lrhar|bsime|uhblk|lrtri|cupor|Aring|uharr|uharl|slarr|rbrke|bsolb|lsime|rbbrk|RBarr|lsimg|phone|rBarr|rbarr|icirc|lsquo|Icirc|emacr|Emacr|ratio|simne|plusb|simlE|simgE|simeq|pluse|ltcir|ltdot|empty|xharr|xdtri|iexcl|Alpha|ltrie|rarrw|pound|ltrif|xcirc|bumpe|prcue|bumpE|asymp|amacr|cuvee|Sigma|sigma|iiint|udhar|iiota|ijlig|IJlig|supnE|imacr|Imacr|prime|Prime|image|prnap|eogon|Eogon|rarrc|mdash|mDDot|cuwed|imath|supne|imped|Amacr|udarr|prsim|micro|rarrb|cwint|raquo|infin|eplus|range|rangd|Ucirc|radic|minus|amalg|veeeq|rAarr|epsiv|ycirc|quest|sharp|quot|zwnj|Qscr|race|qscr|Qopf|qopf|qint|rang|Rang|Zscr|zscr|Zopf|zopf|rarr|rArr|Rarr|Pscr|pscr|prop|prod|prnE|prec|ZHcy|zhcy|prap|Zeta|zeta|Popf|popf|Zdot|plus|zdot|Yuml|yuml|phiv|YUcy|yucy|Yscr|yscr|perp|Yopf|yopf|part|para|YIcy|Ouml|rcub|yicy|YAcy|rdca|ouml|osol|Oscr|rdsh|yacy|real|oscr|xvee|andd|rect|andv|Xscr|oror|ordm|ordf|xscr|ange|aopf|Aopf|rHar|Xopf|opar|Oopf|xopf|xnis|rhov|oopf|omid|xmap|oint|apid|apos|ogon|ascr|Ascr|odot|odiv|xcup|xcap|ocir|oast|nvlt|nvle|nvgt|nvge|nvap|Wscr|wscr|auml|ntlg|ntgl|nsup|nsub|nsim|Nscr|nscr|nsce|Wopf|ring|npre|wopf|npar|Auml|Barv|bbrk|Nopf|nopf|nmid|nLtv|beta|ropf|Ropf|Beta|beth|nles|rpar|nleq|bnot|bNot|nldr|NJcy|rscr|Rscr|Vscr|vscr|rsqb|njcy|bopf|nisd|Bopf|rtri|Vopf|nGtv|ngtr|vopf|boxh|boxH|boxv|nges|ngeq|boxV|bscr|scap|Bscr|bsim|Vert|vert|bsol|bull|bump|caps|cdot|ncup|scnE|ncap|nbsp|napE|Cdot|cent|sdot|Vbar|nang|vBar|chcy|Mscr|mscr|sect|semi|CHcy|Mopf|mopf|sext|circ|cire|mldr|mlcp|cirE|comp|shcy|SHcy|vArr|varr|cong|copf|Copf|copy|COPY|malt|male|macr|lvnE|cscr|ltri|sime|ltcc|simg|Cscr|siml|csub|Uuml|lsqb|lsim|uuml|csup|Lscr|lscr|utri|smid|lpar|cups|smte|lozf|darr|Lopf|Uscr|solb|lopf|sopf|Sopf|lneq|uscr|spar|dArr|lnap|Darr|dash|Sqrt|LJcy|ljcy|lHar|dHar|Upsi|upsi|diam|lesg|djcy|DJcy|leqq|dopf|Dopf|dscr|Dscr|dscy|ldsh|ldca|squf|DScy|sscr|Sscr|dsol|lcub|late|star|Star|Uopf|Larr|lArr|larr|uopf|dtri|dzcy|sube|subE|Lang|lang|Kscr|kscr|Kopf|kopf|KJcy|kjcy|KHcy|khcy|DZcy|ecir|edot|eDot|Jscr|jscr|succ|Jopf|jopf|Edot|uHar|emsp|ensp|Iuml|iuml|eopf|isin|Iscr|iscr|Eopf|epar|sung|epsi|escr|sup1|sup2|sup3|Iota|iota|supe|supE|Iopf|iopf|IOcy|iocy|Escr|esim|Esim|imof|Uarr|QUOT|uArr|uarr|euml|IEcy|iecy|Idot|Euml|euro|excl|Hscr|hscr|Hopf|hopf|TScy|tscy|Tscr|hbar|tscr|flat|tbrk|fnof|hArr|harr|half|fopf|Fopf|tdot|gvnE|fork|trie|gtcc|fscr|Fscr|gdot|gsim|Gscr|gscr|Gopf|gopf|gneq|Gdot|tosa|gnap|Topf|topf|geqq|toea|GJcy|gjcy|tint|gesl|mid|Sfr|ggg|top|ges|gla|glE|glj|geq|gne|gEl|gel|gnE|Gcy|gcy|gap|Tfr|tfr|Tcy|tcy|Hat|Tau|Ffr|tau|Tab|hfr|Hfr|ffr|Fcy|fcy|icy|Icy|iff|ETH|eth|ifr|Ifr|Eta|eta|int|Int|Sup|sup|ucy|Ucy|Sum|sum|jcy|ENG|ufr|Ufr|eng|Jcy|jfr|els|ell|egs|Efr|efr|Jfr|uml|kcy|Kcy|Ecy|ecy|kfr|Kfr|lap|Sub|sub|lat|lcy|Lcy|leg|Dot|dot|lEg|leq|les|squ|div|die|lfr|Lfr|lgE|Dfr|dfr|Del|deg|Dcy|dcy|lne|lnE|sol|loz|smt|Cup|lrm|cup|lsh|Lsh|sim|shy|map|Map|mcy|Mcy|mfr|Mfr|mho|gfr|Gfr|sfr|cir|Chi|chi|nap|Cfr|vcy|Vcy|cfr|Scy|scy|ncy|Ncy|vee|Vee|Cap|cap|nfr|scE|sce|Nfr|nge|ngE|nGg|vfr|Vfr|ngt|bot|nGt|nis|niv|Rsh|rsh|nle|nlE|bne|Bfr|bfr|nLl|nlt|nLt|Bcy|bcy|not|Not|rlm|wfr|Wfr|npr|nsc|num|ocy|ast|Ocy|ofr|xfr|Xfr|Ofr|ogt|ohm|apE|olt|Rho|ape|rho|Rfr|rfr|ord|REG|ang|reg|orv|And|and|AMP|Rcy|amp|Afr|ycy|Ycy|yen|yfr|Yfr|rcy|par|pcy|Pcy|pfr|Pfr|phi|Phi|afr|Acy|acy|zcy|Zcy|piv|acE|acd|zfr|Zfr|pre|prE|psi|Psi|qfr|Qfr|zwj|Or|ge|Gg|gt|gg|el|oS|lt|Lt|LT|Re|lg|gl|eg|ne|Im|it|le|DD|wp|wr|nu|Nu|dd|lE|Sc|sc|pi|Pi|ee|af|ll|Ll|rx|gE|xi|pm|Xi|ic|pr|Pr|in|ni|mp|mu|ac|Mu|or|ap|Gt|GT|ii);|&(Aacute|Agrave|Atilde|Ccedil|Eacute|Egrave|Iacute|Igrave|Ntilde|Oacute|Ograve|Oslash|Otilde|Uacute|Ugrave|Yacute|aacute|agrave|atilde|brvbar|ccedil|curren|divide|eacute|egrave|frac12|frac14|frac34|iacute|igrave|iquest|middot|ntilde|oacute|ograve|oslash|otilde|plusmn|uacute|ugrave|yacute|AElig|Acirc|Aring|Ecirc|Icirc|Ocirc|THORN|Ucirc|acirc|acute|aelig|aring|cedil|ecirc|icirc|iexcl|laquo|micro|ocirc|pound|raquo|szlig|thorn|times|ucirc|Auml|COPY|Euml|Iuml|Ouml|QUOT|Uuml|auml|cent|copy|euml|iuml|macr|nbsp|ordf|ordm|ouml|para|quot|sect|sup1|sup2|sup3|uuml|yuml|AMP|ETH|REG|amp|deg|eth|not|reg|shy|uml|yen|GT|LT|gt|lt)(?!;)([=a-zA-Z0-9]?)|&#([0-9]+)(;?)|&#[xX]([a-fA-F0-9]+)(;?)|&([0-9a-zA-Z]+)/g;
+    var h4 = {
         aacute: "á",
         Aacute: "Á",
         abreve: "ă",
@@ -28888,7 +29475,7 @@ var a2 = {
         zwj: "‍",
         zwnj: "‌"
     };
-    var v1 = {
+    var v3 = {
         aacute: "á",
         Aacute: "Á",
         acirc: "â",
@@ -29026,7 +29613,7 @@ var a2 = {
         158: "ž",
         159: "Ÿ"
     };
-    var w1 = [
+    var w2 = [
         1,
         2,
         3,
@@ -29155,43 +29742,43 @@ var a2 = {
         1114110,
         1114111
     ];
-    var D1 = String.fromCharCode;
-    var y1 = {};
-    var A1 = y1.hasOwnProperty;
-    var has = function(r12, e11) {
-        return A1.call(r12, e11);
+    var D2 = String.fromCharCode;
+    var y3 = {};
+    var A2 = y3.hasOwnProperty;
+    var has = function(r14, e12) {
+        return A2.call(r14, e12);
     };
-    var contains = function(r21, e2) {
-        var a12 = -1;
-        var t2 = r21.length;
-        while(++a12 < t2)if (r21[a12] == e2) return true;
+    var contains = function(r23, e21) {
+        var a13 = -1;
+        var t23 = r23.length;
+        while(++a13 < t23)if (r23[a13] == e21) return true;
         return false;
     };
-    var merge1 = function(r3, e3) {
-        if (!r3) return e3;
-        var a21 = {};
-        var t3;
-        for(t3 in e3)a21[t3] = has(r3, t3) ? r3[t3] : e3[t3];
-        return a21;
+    var merge1 = function(r32, e3) {
+        if (!r32) return e3;
+        var a22 = {};
+        var t32;
+        for(t32 in e3)a22[t32] = has(r32, t32) ? r32[t32] : e3[t32];
+        return a22;
     };
-    var codePointToSymbol = function(r4, e4) {
-        var a3 = "";
-        if (r4 >= 55296 && r4 <= 57343 || r4 > 1114111) {
+    var codePointToSymbol = function(r41, e4) {
+        var a31 = "";
+        if (r41 >= 55296 && r41 <= 57343 || r41 > 1114111) {
             e4 && parseError("character reference outside the permissible Unicode range");
             return "�";
         }
-        if (has(q1, r4)) {
+        if (has(q1, r41)) {
             e4 && parseError("disallowed character reference");
-            return q1[r4];
+            return q1[r41];
         }
-        e4 && contains(w1, r4) && parseError("disallowed character reference");
-        if (r4 > 65535) {
-            r4 -= 65536;
-            a3 += D1(r4 >>> 10 & 1023 | 55296);
-            r4 = 56320 | 1023 & r4;
+        e4 && contains(w2, r41) && parseError("disallowed character reference");
+        if (r41 > 65535) {
+            r41 -= 65536;
+            a31 += D2(r41 >>> 10 & 1023 | 55296);
+            r41 = 56320 | 1023 & r41;
         }
-        a3 += D1(r4);
-        return a3;
+        a31 += D2(r41);
+        return a31;
     };
     var hexEscape = function(r5) {
         return "&#x" + r5.toString(16).toUpperCase() + ";";
@@ -29207,35 +29794,35 @@ var a2 = {
         var a4 = e5.strict;
         a4 && f11.test(r8) && parseError("forbidden code point");
         var t4 = e5.encodeEverything;
-        var o2 = e5.useNamedReferences;
-        var s3 = e5.allowUnsafeSymbols;
-        var u2 = e5.decimal ? decEscape : hexEscape;
+        var o5 = e5.useNamedReferences;
+        var s5 = e5.allowUnsafeSymbols;
+        var u4 = e5.decimal ? decEscape : hexEscape;
         var escapeBmpSymbol = function(r9) {
-            return u2(r9.charCodeAt(0));
+            return u4(r9.charCodeAt(0));
         };
         if (t4) {
-            r8 = r8.replace(l12, function(r10) {
-                return o2 && has(p12, r10) ? "&" + p12[r10] + ";" : escapeBmpSymbol(r10);
+            r8 = r8.replace(l13, function(r10) {
+                return o5 && has(p12, r10) ? "&" + p12[r10] + ";" : escapeBmpSymbol(r10);
             });
-            o2 && (r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;").replace(/&#x66;&#x6A;/g, "&fjlig;"));
-            o2 && (r8 = r8.replace(n3, function(r) {
+            o5 && (r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;").replace(/&#x66;&#x6A;/g, "&fjlig;"));
+            o5 && (r8 = r8.replace(n6, function(r) {
                 return "&" + p12[r] + ";";
             }));
-        } else if (o2) {
-            s3 || (r8 = r8.replace(d12, function(r) {
+        } else if (o5) {
+            s5 || (r8 = r8.replace(d13, function(r) {
                 return "&" + p12[r] + ";";
             }));
             r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;");
-            r8 = r8.replace(n3, function(r) {
+            r8 = r8.replace(n6, function(r) {
                 return "&" + p12[r] + ";";
             });
-        } else s3 || (r8 = r8.replace(d12, escapeBmpSymbol));
-        return r8.replace(c12, function(r11) {
+        } else s5 || (r8 = r8.replace(d13, escapeBmpSymbol));
+        return r8.replace(c13, function(r11) {
             var e6 = r11.charCodeAt(0);
             var a5 = r11.charCodeAt(1);
             var t5 = 1024 * (e6 - 55296) + a5 - 56320 + 65536;
-            return u2(t5);
-        }).replace(i12, escapeBmpSymbol);
+            return u4(t5);
+        }).replace(i13, escapeBmpSymbol);
     };
     encode.options = {
         allowUnsafeSymbols: false,
@@ -29247,41 +29834,41 @@ var a2 = {
     var decode = function(r12, e7) {
         e7 = merge1(e7, decode.options);
         var a6 = e7.strict;
-        a6 && m1.test(r12) && parseError("malformed character reference");
-        return r12.replace(b1, function(r13, t6, o3, s4, u3, c2, l2, i4, n) {
-            var p2;
-            var d2;
-            var g2;
-            var m2;
-            var f2;
+        a6 && m12.test(r12) && parseError("malformed character reference");
+        return r12.replace(b12, function(r13, t6, o6, s6, u5, c4, l4, i9, n) {
+            var p4;
+            var d4;
+            var g4;
+            var m4;
+            var f3;
             var b2;
             if (t6) {
-                f2 = t6;
-                return h2[f2];
+                f3 = t6;
+                return h4[f3];
             }
-            if (o3) {
-                f2 = o3;
-                b2 = s4;
+            if (o6) {
+                f3 = o6;
+                b2 = s6;
                 if (b2 && e7.isAttributeValue) {
                     a6 && "=" == b2 && parseError("`&` did not start a character reference");
                     return r13;
                 }
                 a6 && parseError("named character reference was not terminated by a semicolon");
-                return v1[f2] + (b2 || "");
+                return v3[f3] + (b2 || "");
             }
-            if (u3) {
-                g2 = u3;
-                d2 = c2;
-                a6 && !d2 && parseError("character reference was not terminated by a semicolon");
-                p2 = parseInt(g2, 10);
-                return codePointToSymbol(p2, a6);
+            if (u5) {
+                g4 = u5;
+                d4 = c4;
+                a6 && !d4 && parseError("character reference was not terminated by a semicolon");
+                p4 = parseInt(g4, 10);
+                return codePointToSymbol(p4, a6);
             }
-            if (l2) {
-                m2 = l2;
-                d2 = i4;
-                a6 && !d2 && parseError("character reference was not terminated by a semicolon");
-                p2 = parseInt(m2, 16);
-                return codePointToSymbol(p2, a6);
+            if (l4) {
+                m4 = l4;
+                d4 = i9;
+                a6 && !d4 && parseError("character reference was not terminated by a semicolon");
+                p4 = parseInt(m4, 16);
+                return codePointToSymbol(p4, a6);
             }
             a6 && parseError("named character reference was not terminated by a semicolon");
             return r13;
@@ -29292,8 +29879,8 @@ var a2 = {
         strict: false
     };
     var escape1 = function(r14) {
-        return r14.replace(d12, function(r) {
-            return g12[r];
+        return r14.replace(d13, function(r) {
+            return g13[r];
         });
     };
     var E1 = {
@@ -29303,143 +29890,143 @@ var a2 = {
         escape: escape1,
         unescape: decode
     };
-    if (o12 && !o12.nodeType) if (s12) s12.exports = E1;
-    else for(var x1 in E1)has(E1, x1) && (o12[x1] = E1[x1]);
-    else t11.he = E1;
-})(e1);
-var t2 = a2.exports;
-var e2 = "undefined" !== typeof globalThis ? globalThis : "undefined" !== typeof self ? self : global;
-var t3 = {};
-var a3 = "undefined" !== typeof window ? window : "undefined" !== typeof WorkerGlobalScope && self instanceof WorkerGlobalScope ? self : {};
-var n2 = function(t12) {
-    var a13 = /(?:^|\s)lang(?:uage)?-([\w-]+)(?=\s|$)/i;
-    var n12 = 0;
-    var r13 = {};
-    var i13 = {
-        manual: t12.Prism && t12.Prism.manual,
-        disableWorkerMessageHandler: t12.Prism && t12.Prism.disableWorkerMessageHandler,
+    if (o14 && !o14.nodeType) if (s13) s13.exports = E1;
+    else for(var x2 in E1)has(E1, x2) && (o14[x2] = E1[x2]);
+    else t14.he = E1;
+})(e2);
+var t4 = a3.exports;
+var e3 = "undefined" !== typeof globalThis ? globalThis : "undefined" !== typeof self ? self : global;
+var t5 = {};
+var a4 = "undefined" !== typeof window ? window : "undefined" !== typeof WorkerGlobalScope && self instanceof WorkerGlobalScope ? self : {};
+var n4 = function(t15) {
+    var a14 = /(?:^|\s)lang(?:uage)?-([\w-]+)(?=\s|$)/i;
+    var n14 = 0;
+    var r15 = {};
+    var i14 = {
+        manual: t15.Prism && t15.Prism.manual,
+        disableWorkerMessageHandler: t15.Prism && t15.Prism.disableWorkerMessageHandler,
         util: {
-            encode: function encode(e12) {
-                return e12 instanceof Token ? new Token(e12.type, encode(e12.content), e12.alias) : Array.isArray(e12) ? e12.map(encode) : e12.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\u00a0/g, " ");
+            encode: function encode(e13) {
+                return e13 instanceof Token ? new Token(e13.type, encode(e13.content), e13.alias) : Array.isArray(e13) ? e13.map(encode) : e13.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\u00a0/g, " ");
             },
-            type: function(e21) {
-                return Object.prototype.toString.call(e21).slice(8, -1);
+            type: function(e22) {
+                return Object.prototype.toString.call(e22).slice(8, -1);
             },
-            objId: function(e3) {
-                e3.__id || Object.defineProperty(e3, "__id", {
-                    value: ++n12
+            objId: function(e31) {
+                e31.__id || Object.defineProperty(e31, "__id", {
+                    value: ++n14
                 });
-                return e3.__id;
+                return e31.__id;
             },
-            clone: function deepClone(e4, t21) {
-                t21 = t21 || {};
-                var a22;
-                var n21;
-                switch(i13.util.type(e4)){
+            clone: function deepClone(e4, t24) {
+                t24 = t24 || {};
+                var a23;
+                var n22;
+                switch(i14.util.type(e4)){
                     case "Object":
-                        n21 = i13.util.objId(e4);
-                        if (t21[n21]) return t21[n21];
-                        a22 = {};
-                        t21[n21] = a22;
-                        for(var r22 in e4)e4.hasOwnProperty(r22) && (a22[r22] = deepClone(e4[r22], t21));
-                        return a22;
+                        n22 = i14.util.objId(e4);
+                        if (t24[n22]) return t24[n22];
+                        a23 = {};
+                        t24[n22] = a23;
+                        for(var r24 in e4)e4.hasOwnProperty(r24) && (a23[r24] = deepClone(e4[r24], t24));
+                        return a23;
                     case "Array":
-                        n21 = i13.util.objId(e4);
-                        if (t21[n21]) return t21[n21];
-                        a22 = [];
-                        t21[n21] = a22;
+                        n22 = i14.util.objId(e4);
+                        if (t24[n22]) return t24[n22];
+                        a23 = [];
+                        t24[n22] = a23;
                         e4.forEach(function(e5, n) {
-                            a22[n] = deepClone(e5, t21);
+                            a23[n] = deepClone(e5, t24);
                         });
-                        return a22;
+                        return a23;
                     default:
                         return e4;
                 }
             },
             getLanguage: function(e6) {
                 while(e6){
-                    var t31 = a13.exec(e6.className);
-                    if (t31) return t31[1].toLowerCase();
+                    var t33 = a14.exec(e6.className);
+                    if (t33) return t33[1].toLowerCase();
                     e6 = e6.parentElement;
                 }
                 return "none";
             },
-            setLanguage: function(e7, t4) {
-                e7.className = e7.className.replace(RegExp(a13, "gi"), "");
-                e7.classList.add("language-" + t4);
+            setLanguage: function(e7, t41) {
+                e7.className = e7.className.replace(RegExp(a14, "gi"), "");
+                e7.classList.add("language-" + t41);
             },
             currentScript: function() {
                 if ("undefined" === typeof document) return null;
                 if ("currentScript" in document && 1 < 2) return document.currentScript;
                 try {
                     throw new Error;
-                } catch (n3) {
-                    var e8 = (/at [^(\r\n]*\((.*):[^:]+:[^:]+\)$/i.exec(n3.stack) || [])[1];
+                } catch (n32) {
+                    var e8 = (/at [^(\r\n]*\((.*):[^:]+:[^:]+\)$/i.exec(n32.stack) || [])[1];
                     if (e8) {
-                        var t5 = document.getElementsByTagName("script");
-                        for(var a in t5)if (t5[a].src == e8) return t5[a];
+                        var t51 = document.getElementsByTagName("script");
+                        for(var a in t51)if (t51[a].src == e8) return t51[a];
                     }
                     return null;
                 }
             },
-            isActive: function(e9, t6, a31) {
-                var n4 = "no-" + t6;
+            isActive: function(e9, t6, a32) {
+                var n41 = "no-" + t6;
                 while(e9){
-                    var r3 = e9.classList;
-                    if (r3.contains(t6)) return true;
-                    if (r3.contains(n4)) return false;
+                    var r33 = e9.classList;
+                    if (r33.contains(t6)) return true;
+                    if (r33.contains(n41)) return false;
                     e9 = e9.parentElement;
                 }
-                return !!a31;
+                return !!a32;
             }
         },
         languages: {
-            plain: r13,
-            plaintext: r13,
-            text: r13,
-            txt: r13,
+            plain: r15,
+            plaintext: r15,
+            text: r15,
+            txt: r15,
             extend: function(e, t7) {
-                var a4 = i13.util.clone(i13.languages[e]);
-                for(var n in t7)a4[n] = t7[n];
-                return a4;
+                var a41 = i14.util.clone(i14.languages[e]);
+                for(var n in t7)a41[n] = t7[n];
+                return a41;
             },
-            insertBefore: function(t8, a5, n5, r4) {
-                r4 = r4 || i13.languages;
-                var s5 = r4[t8];
-                var l3 = {};
-                for(var o4 in s5)if (s5.hasOwnProperty(o4)) {
-                    if (o4 == a5) for(var u4 in n5)n5.hasOwnProperty(u4) && (l3[u4] = n5[u4]);
-                    n5.hasOwnProperty(o4) || (l3[o4] = s5[o4]);
+            insertBefore: function(t8, a5, n5, r42) {
+                r42 = r42 || i14.languages;
+                var s7 = r42[t8];
+                var l5 = {};
+                for(var o7 in s7)if (s7.hasOwnProperty(o7)) {
+                    if (o7 == a5) for(var u6 in n5)n5.hasOwnProperty(u6) && (l5[u6] = n5[u6]);
+                    n5.hasOwnProperty(o7) || (l5[o7] = s7[o7]);
                 }
-                var g3 = r4[t8];
-                r4[t8] = l3;
-                i13.languages.DFS(i13.languages, function(a6, n6) {
-                    n6 === g3 && a6 != t8 && ((this || e2)[a6] = l3);
+                var g5 = r42[t8];
+                r42[t8] = l5;
+                i14.languages.DFS(i14.languages, function(a6, n6) {
+                    n6 === g5 && a6 != t8 && ((this || e3)[a6] = l5);
                 });
-                return l3;
+                return l5;
             },
             DFS: function DFS(e10, t9, a7, n7) {
                 n7 = n7 || {};
-                var r = i13.util.objId;
-                for(var s6 in e10)if (e10.hasOwnProperty(s6)) {
-                    t9.call(e10, s6, e10[s6], a7 || s6);
-                    var l4 = e10[s6];
-                    var o5 = i13.util.type(l4);
-                    if ("Object" !== o5 || n7[r(l4)]) {
-                        if ("Array" === o5 && !n7[r(l4)]) {
-                            n7[r(l4)] = true;
-                            DFS(l4, t9, s6, n7);
+                var r = i14.util.objId;
+                for(var s8 in e10)if (e10.hasOwnProperty(s8)) {
+                    t9.call(e10, s8, e10[s8], a7 || s8);
+                    var l6 = e10[s8];
+                    var o8 = i14.util.type(l6);
+                    if ("Object" !== o8 || n7[r(l6)]) {
+                        if ("Array" === o8 && !n7[r(l6)]) {
+                            n7[r(l6)] = true;
+                            DFS(l6, t9, s8, n7);
                         }
                     } else {
-                        n7[r(l4)] = true;
-                        DFS(l4, t9, null, n7);
+                        n7[r(l6)] = true;
+                        DFS(l6, t9, null, n7);
                     }
                 }
             }
         },
         plugins: {},
         highlightAll: function(e11, t10) {
-            i13.highlightAllUnder(document, e11, t10);
+            i14.highlightAllUnder(document, e11, t10);
         },
         highlightAllUnder: function(e12, t11, a8) {
             var n8 = {
@@ -29447,52 +30034,52 @@ var n2 = function(t12) {
                 container: e12,
                 selector: 'code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code'
             };
-            i13.hooks.run("before-highlightall", n8);
+            i14.hooks.run("before-highlightall", n8);
             n8.elements = Array.prototype.slice.apply(n8.container.querySelectorAll(n8.selector));
-            i13.hooks.run("before-all-elements-highlight", n8);
-            for(var r5, s = 0; r5 = n8.elements[s++];)i13.highlightElement(r5, true === t11, n8.callback);
+            i14.hooks.run("before-all-elements-highlight", n8);
+            for(var r5, s = 0; r5 = n8.elements[s++];)i14.highlightElement(r5, true === t11, n8.callback);
         },
         highlightElement: function(e13, a9, n9) {
-            var r6 = i13.util.getLanguage(e13);
-            var s7 = i13.languages[r6];
-            i13.util.setLanguage(e13, r6);
-            var l5 = e13.parentElement;
-            l5 && "pre" === l5.nodeName.toLowerCase() && i13.util.setLanguage(l5, r6);
-            var o6 = e13.textContent;
-            var u5 = {
+            var r6 = i14.util.getLanguage(e13);
+            var s9 = i14.languages[r6];
+            i14.util.setLanguage(e13, r6);
+            var l7 = e13.parentElement;
+            l7 && "pre" === l7.nodeName.toLowerCase() && i14.util.setLanguage(l7, r6);
+            var o9 = e13.textContent;
+            var u7 = {
                 element: e13,
                 language: r6,
-                grammar: s7,
-                code: o6
+                grammar: s9,
+                code: o9
             };
             function insertHighlightedCode(e14) {
-                u5.highlightedCode = e14;
-                i13.hooks.run("before-insert", u5);
-                u5.element.innerHTML = u5.highlightedCode;
-                i13.hooks.run("after-highlight", u5);
-                i13.hooks.run("complete", u5);
-                n9 && n9.call(u5.element);
+                u7.highlightedCode = e14;
+                i14.hooks.run("before-insert", u7);
+                u7.element.innerHTML = u7.highlightedCode;
+                i14.hooks.run("after-highlight", u7);
+                i14.hooks.run("complete", u7);
+                n9 && n9.call(u7.element);
             }
-            i13.hooks.run("before-sanity-check", u5);
-            l5 = u5.element.parentElement;
-            l5 && "pre" === l5.nodeName.toLowerCase() && !l5.hasAttribute("tabindex") && l5.setAttribute("tabindex", "0");
-            if (u5.code) {
-                i13.hooks.run("before-highlight", u5);
-                if (u5.grammar) if (a9 && t12.Worker) {
-                    var g4 = new Worker(i13.filename);
-                    g4.onmessage = function(e15) {
+            i14.hooks.run("before-sanity-check", u7);
+            l7 = u7.element.parentElement;
+            l7 && "pre" === l7.nodeName.toLowerCase() && !l7.hasAttribute("tabindex") && l7.setAttribute("tabindex", "0");
+            if (u7.code) {
+                i14.hooks.run("before-highlight", u7);
+                if (u7.grammar) if (a9 && t15.Worker) {
+                    var g6 = new Worker(i14.filename);
+                    g6.onmessage = function(e15) {
                         insertHighlightedCode(e15.data);
                     };
-                    g4.postMessage(JSON.stringify({
-                        language: u5.language,
-                        code: u5.code,
+                    g6.postMessage(JSON.stringify({
+                        language: u7.language,
+                        code: u7.code,
                         immediateClose: true
                     }));
-                } else insertHighlightedCode(i13.highlight(u5.code, u5.grammar, u5.language));
-                else insertHighlightedCode(i13.util.encode(u5.code));
+                } else insertHighlightedCode(i14.highlight(u7.code, u7.grammar, u7.language));
+                else insertHighlightedCode(i14.util.encode(u7.code));
             } else {
-                i13.hooks.run("complete", u5);
-                n9 && n9.call(u5.element);
+                i14.hooks.run("complete", u7);
+                n9 && n9.call(u7.element);
             }
         },
         highlight: function(e16, t12, a10) {
@@ -29501,10 +30088,10 @@ var n2 = function(t12) {
                 grammar: t12,
                 language: a10
             };
-            i13.hooks.run("before-tokenize", n10);
-            n10.tokens = i13.tokenize(n10.code, n10.grammar);
-            i13.hooks.run("after-tokenize", n10);
-            return Token.stringify(i13.util.encode(n10.tokens), n10.language);
+            i14.hooks.run("before-tokenize", n10);
+            n10.tokens = i14.tokenize(n10.code, n10.grammar);
+            i14.hooks.run("after-tokenize", n10);
+            return Token.stringify(i14.util.encode(n10.tokens), n10.language);
         },
         tokenize: function(e17, t13) {
             var a11 = t13.rest;
@@ -29520,23 +30107,23 @@ var n2 = function(t12) {
         hooks: {
             all: {},
             add: function(e, t14) {
-                var a12 = i13.hooks.all;
+                var a12 = i14.hooks.all;
                 a12[e] = a12[e] || [];
                 a12[e].push(t14);
             },
             run: function(e, t15) {
-                var a13 = i13.hooks.all[e];
+                var a13 = i14.hooks.all[e];
                 if (a13 && a13.length) for(var n11, r = 0; n11 = a13[r++];)n11(t15);
             }
         },
         Token: Token
     };
-    t12.Prism = i13;
+    t15.Prism = i14;
     function Token(t16, a14, n12, r8) {
-        (this || e2).type = t16;
-        (this || e2).content = a14;
-        (this || e2).alias = n12;
-        (this || e2).length = 0 | (r8 || "").length;
+        (this || e3).type = t16;
+        (this || e3).content = a14;
+        (this || e3).alias = n12;
+        (this || e3).length = 0 | (r8 || "").length;
     }
     Token.stringify = function stringify(e18, t17) {
         if ("string" == typeof e18) return e18;
@@ -29560,93 +30147,93 @@ var n2 = function(t12) {
         };
         var r9 = e18.alias;
         r9 && (Array.isArray(r9) ? Array.prototype.push.apply(n13.classes, r9) : n13.classes.push(r9));
-        i13.hooks.run("wrap", n13);
-        var s8 = "";
-        for(var l6 in n13.attributes)s8 += " " + l6 + '="' + (n13.attributes[l6] || "").replace(/"/g, "&quot;") + '"';
-        return "<" + n13.tag + ' class="' + n13.classes.join(" ") + '"' + s8 + ">" + n13.content + "</" + n13.tag + ">";
+        i14.hooks.run("wrap", n13);
+        var s10 = "";
+        for(var l8 in n13.attributes)s10 += " " + l8 + '="' + (n13.attributes[l8] || "").replace(/"/g, "&quot;") + '"';
+        return "<" + n13.tag + ' class="' + n13.classes.join(" ") + '"' + s10 + ">" + n13.content + "</" + n13.tag + ">";
     };
     function matchPattern(e20, t18, a16, n14) {
         e20.lastIndex = t18;
         var r10 = e20.exec(a16);
         if (r10 && n14 && r10[1]) {
-            var i5 = r10[1].length;
-            r10.index += i5;
-            r10[0] = r10[0].slice(i5);
+            var i10 = r10[1].length;
+            r10.index += i10;
+            r10[0] = r10[0].slice(i10);
         }
         return r10;
     }
-    function matchGrammar(e21, t19, a17, n15, r11, s9) {
-        for(var l7 in a17)if (a17.hasOwnProperty(l7) && a17[l7]) {
-            var o7 = a17[l7];
-            o7 = Array.isArray(o7) ? o7 : [
-                o7
+    function matchGrammar(e21, t19, a17, n15, r11, s14) {
+        for(var l9 in a17)if (a17.hasOwnProperty(l9) && a17[l9]) {
+            var o10 = a17[l9];
+            o10 = Array.isArray(o10) ? o10 : [
+                o10
             ];
-            for(var u6 = 0; u6 < o7.length; ++u6){
-                if (s9 && s9.cause == l7 + "," + u6) return;
-                var g5 = o7[u6];
-                var c3 = g5.inside;
-                var d3 = !!g5.lookbehind;
-                var p3 = !!g5.greedy;
-                var h3 = g5.alias;
-                if (p3 && !g5.pattern.global) {
-                    var f3 = g5.pattern.toString().match(/[imsuy]*$/)[0];
-                    g5.pattern = RegExp(g5.pattern.source, f3 + "g");
+            for(var u8 = 0; u8 < o10.length; ++u8){
+                if (s14 && s14.cause == l9 + "," + u8) return;
+                var g7 = o10[u8];
+                var c5 = g7.inside;
+                var d5 = !!g7.lookbehind;
+                var p5 = !!g7.greedy;
+                var h5 = g7.alias;
+                if (p5 && !g7.pattern.global) {
+                    var f4 = g7.pattern.toString().match(/[imsuy]*$/)[0];
+                    g7.pattern = RegExp(g7.pattern.source, f4 + "g");
                 }
-                var m3 = g5.pattern || g5;
-                for(var v2 = n15.next, b3 = r11; v2 !== t19.tail; b3 += v2.value.length, v2 = v2.next){
-                    if (s9 && b3 >= s9.reach) break;
-                    var y2 = v2.value;
+                var m5 = g7.pattern || g7;
+                for(var v4 = n15.next, b3 = r11; v4 !== t19.tail; b3 += v4.value.length, v4 = v4.next){
+                    if (s14 && b3 >= s14.reach) break;
+                    var y4 = v4.value;
                     if (t19.length > e21.length) return;
-                    if (!(y2 instanceof Token)) {
+                    if (!(y4 instanceof Token)) {
                         var k2 = 1;
-                        var F1;
-                        if (p3) {
-                            F1 = matchPattern(m3, b3, e21, d3);
-                            if (!F1 || F1.index >= e21.length) break;
-                            var x2 = F1.index;
-                            var A2 = F1.index + F1[0].length;
-                            var w2 = b3;
-                            w2 += v2.value.length;
-                            while(x2 >= w2){
-                                v2 = v2.next;
-                                w2 += v2.value.length;
+                        var F2;
+                        if (p5) {
+                            F2 = matchPattern(m5, b3, e21, d5);
+                            if (!F2 || F2.index >= e21.length) break;
+                            var x3 = F2.index;
+                            var A3 = F2.index + F2[0].length;
+                            var w3 = b3;
+                            w3 += v4.value.length;
+                            while(x3 >= w3){
+                                v4 = v4.next;
+                                w3 += v4.value.length;
                             }
-                            w2 -= v2.value.length;
-                            b3 = w2;
-                            if (v2.value instanceof Token) continue;
-                            for(var $1 = v2; $1 !== t19.tail && (w2 < A2 || "string" === typeof $1.value); $1 = $1.next){
+                            w3 -= v4.value.length;
+                            b3 = w3;
+                            if (v4.value instanceof Token) continue;
+                            for(var $1 = v4; $1 !== t19.tail && (w3 < A3 || "string" === typeof $1.value); $1 = $1.next){
                                 k2++;
-                                w2 += $1.value.length;
+                                w3 += $1.value.length;
                             }
                             k2--;
-                            y2 = e21.slice(b3, w2);
-                            F1.index -= b3;
+                            y4 = e21.slice(b3, w3);
+                            F2.index -= b3;
                         } else {
-                            F1 = matchPattern(m3, 0, y2, d3);
-                            if (!F1) continue;
+                            F2 = matchPattern(m5, 0, y4, d5);
+                            if (!F2) continue;
                         }
-                        x2 = F1.index;
-                        var S1 = F1[0];
-                        var E2 = y2.slice(0, x2);
-                        var C1 = y2.slice(x2 + S1.length);
-                        var _1 = b3 + y2.length;
-                        s9 && _1 > s9.reach && (s9.reach = _1);
-                        var j1 = v2.prev;
+                        x3 = F2.index;
+                        var S3 = F2[0];
+                        var E2 = y4.slice(0, x3);
+                        var C2 = y4.slice(x3 + S3.length);
+                        var _2 = b3 + y4.length;
+                        s14 && _2 > s14.reach && (s14.reach = _2);
+                        var j2 = v4.prev;
                         if (E2) {
-                            j1 = addAfter(t19, j1, E2);
+                            j2 = addAfter(t19, j2, E2);
                             b3 += E2.length;
                         }
-                        removeRange(t19, j1, k2);
-                        var T1 = new Token(l7, c3 ? i13.tokenize(S1, c3) : S1, h3, S1);
-                        v2 = addAfter(t19, j1, T1);
-                        C1 && addAfter(t19, v2, C1);
+                        removeRange(t19, j2, k2);
+                        var T4 = new Token(l9, c5 ? i14.tokenize(S3, c5) : S3, h5, S3);
+                        v4 = addAfter(t19, j2, T4);
+                        C2 && addAfter(t19, v4, C2);
                         if (k2 > 1) {
-                            var L1 = {
-                                cause: l7 + "," + u6,
-                                reach: _1
+                            var L2 = {
+                                cause: l9 + "," + u8,
+                                reach: _2
                             };
-                            matchGrammar(e21, t19, a17, v2.prev, b3, L1);
-                            s9 && L1.reach > s9.reach && (s9.reach = L1.reach);
+                            matchGrammar(e21, t19, a17, v4.prev, b3, L2);
+                            s14 && L2.reach > s14.reach && (s14.reach = L2.reach);
                         }
                     }
                 }
@@ -29665,9 +30252,9 @@ var n2 = function(t12) {
             next: null
         };
         t20.next = a18;
-        (this || e2).head = t20;
-        (this || e2).tail = a18;
-        (this || e2).length = 0;
+        (this || e3).head = t20;
+        (this || e3).tail = a18;
+        (this || e3).length = 0;
     }
     function addAfter(e22, t21, a19) {
         var n16 = t21.next;
@@ -29697,35 +30284,35 @@ var n2 = function(t12) {
         }
         return t23;
     }
-    if (!t12.document) {
-        if (!t12.addEventListener) return i13;
-        i13.disableWorkerMessageHandler || t12.addEventListener("message", function(e25) {
+    if (!t15.document) {
+        if (!t15.addEventListener) return i14;
+        i14.disableWorkerMessageHandler || t15.addEventListener("message", function(e25) {
             var a22 = JSON.parse(e25.data);
             var n18 = a22.language;
             var r14 = a22.code;
-            var s10 = a22.immediateClose;
-            t12.postMessage(i13.highlight(r14, i13.languages[n18], n18));
-            s10 && t12.close();
+            var s15 = a22.immediateClose;
+            t15.postMessage(i14.highlight(r14, i14.languages[n18], n18));
+            s15 && t15.close();
         }, false);
-        return i13;
+        return i14;
     }
-    var s13 = i13.util.currentScript();
-    if (s13) {
-        i13.filename = s13.src;
-        s13.hasAttribute("data-manual") && (i13.manual = true);
+    var s16 = i14.util.currentScript();
+    if (s16) {
+        i14.filename = s16.src;
+        s16.hasAttribute("data-manual") && (i14.manual = true);
     }
     function highlightAutomaticallyCallback() {
-        i13.manual || i13.highlightAll();
+        i14.manual || i14.highlightAll();
     }
-    if (!i13.manual) {
-        var l13 = document.readyState;
-        "loading" === l13 || "interactive" === l13 && s13 && s13.defer ? document.addEventListener("DOMContentLoaded", highlightAutomaticallyCallback) : window.requestAnimationFrame ? window.requestAnimationFrame(highlightAutomaticallyCallback) : window.setTimeout(highlightAutomaticallyCallback, 16);
+    if (!i14.manual) {
+        var l14 = document.readyState;
+        "loading" === l14 || "interactive" === l14 && s16 && s16.defer ? document.addEventListener("DOMContentLoaded", highlightAutomaticallyCallback) : window.requestAnimationFrame ? window.requestAnimationFrame(highlightAutomaticallyCallback) : window.setTimeout(highlightAutomaticallyCallback, 16);
     }
-    return i13;
-}(a3);
-t3 && (t3 = n2);
-"undefined" !== typeof e2 && (e2.Prism = n2);
-n2.languages.markup = {
+    return i14;
+}(a4);
+t5 && (t5 = n4);
+"undefined" !== typeof e3 && (e3.Prism = n4);
+n4.languages.markup = {
     comment: {
         pattern: /<!--(?:(?!<!--)[\s\S])*?-->/,
         greedy: true
@@ -29798,18 +30385,18 @@ n2.languages.markup = {
         /&#x?[\da-f]{1,8};/i
     ]
 };
-n2.languages.markup.tag.inside["attr-value"].inside.entity = n2.languages.markup.entity;
-n2.languages.markup.doctype.inside["internal-subset"].inside = n2.languages.markup;
-n2.hooks.add("wrap", function(e26) {
+n4.languages.markup.tag.inside["attr-value"].inside.entity = n4.languages.markup.entity;
+n4.languages.markup.doctype.inside["internal-subset"].inside = n4.languages.markup;
+n4.hooks.add("wrap", function(e26) {
     "entity" === e26.type && (e26.attributes.title = e26.content.replace(/&amp;/, "&"));
 });
-Object.defineProperty(n2.languages.markup.tag, "addInlined", {
+Object.defineProperty(n4.languages.markup.tag, "addInlined", {
     value: function addInlined(e27, t) {
         var a23 = {};
         a23["language-" + t] = {
             pattern: /(^<!\[CDATA\[)[\s\S]+?(?=\]\]>$)/i,
             lookbehind: true,
-            inside: n2.languages[t]
+            inside: n4.languages[t]
         };
         a23.cdata = /^<!\[CDATA\[|\]\]>$/i;
         var r15 = {
@@ -29820,10 +30407,10 @@ Object.defineProperty(n2.languages.markup.tag, "addInlined", {
         };
         r15["language-" + t] = {
             pattern: /[\s\S]+/,
-            inside: n2.languages[t]
+            inside: n4.languages[t]
         };
-        var i6 = {};
-        i6[e27] = {
+        var i15 = {};
+        i15[e27] = {
             pattern: RegExp(/(<__[^>]*>)(?:<!\[CDATA\[(?:[^\]]|\](?!\]>))*\]\]>|(?!<!\[CDATA\[)[\s\S])*?(?=<\/__>)/.source.replace(/__/g, function() {
                 return e27;
             }), "i"),
@@ -29831,12 +30418,12 @@ Object.defineProperty(n2.languages.markup.tag, "addInlined", {
             greedy: true,
             inside: r15
         };
-        n2.languages.insertBefore("markup", "cdata", i6);
+        n4.languages.insertBefore("markup", "cdata", i15);
     }
 });
-Object.defineProperty(n2.languages.markup.tag, "addAttribute", {
+Object.defineProperty(n4.languages.markup.tag, "addAttribute", {
     value: function(e28, t24) {
-        n2.languages.markup.tag.inside["special-attr"].push({
+        n4.languages.markup.tag.inside["special-attr"].push({
             pattern: RegExp(/(^|["'\s])/.source + "(?:" + e28 + ")" + /\s*=\s*(?:"[^"]*"|'[^']*'|[^\s'">=]+(?=[\s>]))/.source, "i"),
             lookbehind: true,
             inside: {
@@ -29851,7 +30438,7 @@ Object.defineProperty(n2.languages.markup.tag, "addAttribute", {
                                 t24,
                                 "language-" + t24
                             ],
-                            inside: n2.languages[t24]
+                            inside: n4.languages[t24]
                         },
                         punctuation: [
                             {
@@ -29866,13 +30453,13 @@ Object.defineProperty(n2.languages.markup.tag, "addAttribute", {
         });
     }
 });
-n2.languages.html = n2.languages.markup;
-n2.languages.mathml = n2.languages.markup;
-n2.languages.svg = n2.languages.markup;
-n2.languages.xml = n2.languages.extend("markup", {});
-n2.languages.ssml = n2.languages.xml;
-n2.languages.atom = n2.languages.xml;
-n2.languages.rss = n2.languages.xml;
+n4.languages.html = n4.languages.markup;
+n4.languages.mathml = n4.languages.markup;
+n4.languages.svg = n4.languages.markup;
+n4.languages.xml = n4.languages.extend("markup", {});
+n4.languages.ssml = n4.languages.xml;
+n4.languages.atom = n4.languages.xml;
+n4.languages.rss = n4.languages.xml;
 (function(e29) {
     var t25 = /(?:"(?:\\(?:\r\n|[\s\S])|[^"\\\r\n])*"|'(?:\\(?:\r\n|[\s\S])|[^'\\\r\n])*')/;
     e29.languages.css = {
@@ -29929,8 +30516,8 @@ n2.languages.rss = n2.languages.xml;
         a24.tag.addInlined("style", "css");
         a24.tag.addAttribute("style", "css");
     }
-})(n2);
-n2.languages.clike = {
+})(n4);
+n4.languages.clike = {
     comment: [
         {
             pattern: /(^|[^\\])\/\*[\s\S]*?(?:\*\/|$)/,
@@ -29961,9 +30548,9 @@ n2.languages.clike = {
     operator: /[<>]=?|[!=]=?=?|--?|\+\+?|&&?|\|\|?|[?*/~^%]/,
     punctuation: /[{}[\];(),.:]/
 };
-n2.languages.javascript = n2.languages.extend("clike", {
+n4.languages.javascript = n4.languages.extend("clike", {
     "class-name": [
-        n2.languages.clike["class-name"],
+        n4.languages.clike["class-name"],
         {
             pattern: /(^|[^$\w\xA0-\uFFFF])(?!\s)[_$A-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\.(?:constructor|prototype))/,
             lookbehind: true
@@ -29986,8 +30573,8 @@ n2.languages.javascript = n2.languages.extend("clike", {
     },
     operator: /--|\+\+|\*\*=?|=>|&&=?|\|\|=?|[!=]==|<<=?|>>>?=?|[-+*/%&|^!=<>]=?|\.{3}|\?\?=?|\?\.?|[~:]/
 });
-n2.languages.javascript["class-name"][0].pattern = /(\b(?:class|extends|implements|instanceof|interface|new)\s+)[\w.\\]+/;
-n2.languages.insertBefore("javascript", "keyword", {
+n4.languages.javascript["class-name"][0].pattern = /(\b(?:class|extends|implements|instanceof|interface|new)\s+)[\w.\\]+/;
+n4.languages.insertBefore("javascript", "keyword", {
     regex: {
         pattern: /((?:^|[^$\w\xA0-\uFFFF."'\])\s]|\b(?:return|yield))\s*)\/(?:\[(?:[^\]\\\r\n]|\\.)*\]|\\.|[^/\\\[\r\n])+\/[dgimyus]{0,7}(?=(?:\s|\/\*(?:[^*]|\*(?!\/))*\*\/)*(?:$|[\r\n,.;:})\]]|\/\/))/,
         lookbehind: true,
@@ -29997,7 +30584,7 @@ n2.languages.insertBefore("javascript", "keyword", {
                 pattern: /^(\/)[\s\S]+(?=\/[a-z]*$)/,
                 lookbehind: true,
                 alias: "language-regex",
-                inside: n2.languages.regex
+                inside: n4.languages.regex
             },
             "regex-delimiter": /^\/|\/$/,
             "regex-flags": /^[a-z]+$/
@@ -30011,27 +30598,27 @@ n2.languages.insertBefore("javascript", "keyword", {
         {
             pattern: /(function(?:\s+(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*)?\s*\(\s*)(?!\s)(?:[^()\s]|\s+(?![\s)])|\([^()]*\))+(?=\s*\))/,
             lookbehind: true,
-            inside: n2.languages.javascript
+            inside: n4.languages.javascript
         },
         {
             pattern: /(^|[^$\w\xA0-\uFFFF])(?!\s)[_$a-z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*=>)/i,
             lookbehind: true,
-            inside: n2.languages.javascript
+            inside: n4.languages.javascript
         },
         {
             pattern: /(\(\s*)(?!\s)(?:[^()\s]|\s+(?![\s)])|\([^()]*\))+(?=\s*\)\s*=>)/,
             lookbehind: true,
-            inside: n2.languages.javascript
+            inside: n4.languages.javascript
         },
         {
             pattern: /((?:\b|\s|^)(?!(?:as|async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|enum|export|extends|finally|for|from|function|get|if|implements|import|in|instanceof|interface|let|new|null|of|package|private|protected|public|return|set|static|super|switch|this|throw|try|typeof|undefined|var|void|while|with|yield)(?![$\w\xA0-\uFFFF]))(?:(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*\s*)\(\s*|\]\s*\(\s*)(?!\s)(?:[^()\s]|\s+(?![\s)])|\([^()]*\))+(?=\s*\)\s*\{)/,
             lookbehind: true,
-            inside: n2.languages.javascript
+            inside: n4.languages.javascript
         }
     ],
     constant: /\b[A-Z](?:[A-Z_]|\dx?)*\b/
 });
-n2.languages.insertBefore("javascript", "string", {
+n4.languages.insertBefore("javascript", "string", {
     hashbang: {
         pattern: /^#!.*/,
         greedy: true,
@@ -30053,7 +30640,7 @@ n2.languages.insertBefore("javascript", "string", {
                         pattern: /^\$\{|\}$/,
                         alias: "punctuation"
                     },
-                    rest: n2.languages.javascript
+                    rest: n4.languages.javascript
                 }
             },
             string: /[\s\S]+/
@@ -30066,20 +30653,20 @@ n2.languages.insertBefore("javascript", "string", {
         alias: "property"
     }
 });
-n2.languages.insertBefore("javascript", "operator", {
+n4.languages.insertBefore("javascript", "operator", {
     "literal-property": {
         pattern: /((?:^|[,{])[ \t]*)(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*:)/m,
         lookbehind: true,
         alias: "property"
     }
 });
-if (n2.languages.markup) {
-    n2.languages.markup.tag.addInlined("script", "javascript");
-    n2.languages.markup.tag.addAttribute(/on(?:abort|blur|change|click|composition(?:end|start|update)|dblclick|error|focus(?:in|out)?|key(?:down|up)|load|mouse(?:down|enter|leave|move|out|over|up)|reset|resize|scroll|select|slotchange|submit|unload|wheel)/.source, "javascript");
+if (n4.languages.markup) {
+    n4.languages.markup.tag.addInlined("script", "javascript");
+    n4.languages.markup.tag.addAttribute(/on(?:abort|blur|change|click|composition(?:end|start|update)|dblclick|error|focus(?:in|out)?|key(?:down|up)|load|mouse(?:down|enter|leave|move|out|over|up)|reset|resize|scroll|select|slotchange|submit|unload|wheel)/.source, "javascript");
 }
-n2.languages.js = n2.languages.javascript;
+n4.languages.js = n4.languages.javascript;
 (function() {
-    if ("undefined" !== typeof n2 && "undefined" !== typeof document) {
+    if ("undefined" !== typeof n4 && "undefined" !== typeof document) {
         Element.prototype.matches || (Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector);
         var t26 = "Loading…";
         var FAILURE_MESSAGE = function(e30, t28) {
@@ -30097,69 +30684,69 @@ n2.languages.js = n2.languages.javascript;
             h: "c",
             tex: "latex"
         };
-        var i7 = "data-src-status";
-        var s2 = "loading";
-        var l8 = "loaded";
-        var o13 = "failed";
-        var u7 = "pre[data-src]:not([" + i7 + '="' + l8 + '"]):not([' + i7 + '="' + s2 + '"])';
-        n2.hooks.add("before-highlightall", function(e31) {
-            e31.selector += ", " + u7;
+        var i16 = "data-src-status";
+        var s22 = "loading";
+        var l10 = "loaded";
+        var o16 = "failed";
+        var u9 = "pre[data-src]:not([" + i16 + '="' + l10 + '"]):not([' + i16 + '="' + s22 + '"])';
+        n4.hooks.add("before-highlightall", function(e31) {
+            e31.selector += ", " + u9;
         });
-        n2.hooks.add("before-sanity-check", function(e32) {
+        n4.hooks.add("before-sanity-check", function(e32) {
             var a27 = e32.element;
-            if (a27.matches(u7)) {
+            if (a27.matches(u9)) {
                 e32.code = "";
-                a27.setAttribute(i7, s2);
-                var g6 = a27.appendChild(document.createElement("CODE"));
-                g6.textContent = t26;
-                var c4 = a27.getAttribute("data-src");
-                var d4 = e32.language;
-                if ("none" === d4) {
-                    var p4 = (/\.(\w+)$/.exec(c4) || [
+                a27.setAttribute(i16, s22);
+                var g8 = a27.appendChild(document.createElement("CODE"));
+                g8.textContent = t26;
+                var c6 = a27.getAttribute("data-src");
+                var d6 = e32.language;
+                if ("none" === d6) {
+                    var p6 = (/\.(\w+)$/.exec(c6) || [
                         ,
                         "none"
                     ])[1];
-                    d4 = r16[p4] || p4;
+                    d6 = r16[p6] || p6;
                 }
-                n2.util.setLanguage(g6, d4);
-                n2.util.setLanguage(a27, d4);
-                var h4 = n2.plugins.autoloader;
-                h4 && h4.loadLanguages(d4);
-                loadFile(c4, function(e33) {
-                    a27.setAttribute(i7, l8);
+                n4.util.setLanguage(g8, d6);
+                n4.util.setLanguage(a27, d6);
+                var h6 = n4.plugins.autoloader;
+                h6 && h6.loadLanguages(d6);
+                loadFile(c6, function(e33) {
+                    a27.setAttribute(i16, l10);
                     var t29 = parseRange(a27.getAttribute("data-range"));
                     if (t29) {
                         var r17 = e33.split(/\r\n?|\n/g);
-                        var s14 = t29[0];
-                        var o8 = null == t29[1] ? r17.length : t29[1];
-                        s14 < 0 && (s14 += r17.length);
-                        s14 = Math.max(0, Math.min(s14 - 1, r17.length));
-                        o8 < 0 && (o8 += r17.length);
-                        o8 = Math.max(0, Math.min(o8, r17.length));
-                        e33 = r17.slice(s14, o8).join("\n");
-                        a27.hasAttribute("data-start") || a27.setAttribute("data-start", String(s14 + 1));
+                        var s17 = t29[0];
+                        var o15 = null == t29[1] ? r17.length : t29[1];
+                        s17 < 0 && (s17 += r17.length);
+                        s17 = Math.max(0, Math.min(s17 - 1, r17.length));
+                        o15 < 0 && (o15 += r17.length);
+                        o15 = Math.max(0, Math.min(o15, r17.length));
+                        e33 = r17.slice(s17, o15).join("\n");
+                        a27.hasAttribute("data-start") || a27.setAttribute("data-start", String(s17 + 1));
                     }
-                    g6.textContent = e33;
-                    n2.highlightElement(g6);
+                    g8.textContent = e33;
+                    n4.highlightElement(g8);
                 }, function(e34) {
-                    a27.setAttribute(i7, o13);
-                    g6.textContent = e34;
+                    a27.setAttribute(i16, o16);
+                    g8.textContent = e34;
                 });
             }
         });
-        n2.plugins.fileHighlight = {
+        n4.plugins.fileHighlight = {
             highlight: function highlight(e35) {
-                var t30 = (e35 || document).querySelectorAll(u7);
-                for(var a28, r = 0; a28 = t30[r++];)n2.highlightElement(a28);
+                var t30 = (e35 || document).querySelectorAll(u9);
+                for(var a28, r = 0; a28 = t30[r++];)n4.highlightElement(a28);
             }
         };
-        var g13 = false;
-        n2.fileHighlight = function() {
-            if (!g13) {
+        var g14 = false;
+        n4.fileHighlight = function() {
+            if (!g14) {
                 console.warn("Prism.fileHighlight is deprecated. Use `Prism.plugins.fileHighlight.highlight` instead.");
-                g13 = true;
+                g14 = true;
             }
-            n2.plugins.fileHighlight.highlight.apply(this || e2, arguments);
+            n4.plugins.fileHighlight.highlight.apply(this || e3, arguments);
         };
     }
     function loadFile(e36, t31, n19) {
@@ -30189,7 +30776,7 @@ n2.languages.js = n2.languages.javascript;
         }
     }
 })();
-var r3 = t3;
+var r5 = t5;
 class Renderer1 extends marked.Renderer {
     heading(text, level, raw, slugger) {
         const slug = slugger.slug(raw);
@@ -30197,11 +30784,11 @@ class Renderer1 extends marked.Renderer {
     }
     code(code, language) {
         language = language.split(",")[0];
-        const grammar = Object.hasOwnProperty.call(r3.languages, language) ? r3.languages[language] : undefined;
+        const grammar = Object.hasOwnProperty.call(r5.languages, language) ? r5.languages[language] : undefined;
         if (grammar === undefined) {
-            return `<pre><code>${t2.escape(code)}</code></pre>`;
+            return `<pre><code>${t4.escape(code)}</code></pre>`;
         }
-        const html = r3.highlight(code, grammar, language);
+        const html = r5.highlight(code, grammar, language);
         return `<div class="highlight highlight-source-${language}"><pre>${html}</pre></div>`;
     }
     link(href, title, text) {
@@ -30280,6 +30867,122 @@ const FEATURED_PACKAGES = [
         description: "Finite State Machines and Statecharts for the Modern Web."
     }
 ];
+function repoURL(url) {
+    return url.trim().replace(/^git\+/i, "").replace(/\.git$/i, "").replace(/git@/, "").replace(/(bitbucket|github|gitlab)\.([a-z]+):/, "$1.$2/").replace(/bitbucket:/, "$1.org/").replace(/(github|gitlab):/, "$1.com/").replace(/^(http\s*:\/\/|https\s*:\/\/|\/\/)?/, "https://");
+}
+function runCheck({ pass , title  }) {
+    return {
+        [title]: pass()
+    };
+}
+function supportsESM(packageJson) {
+    return runCheck({
+        title: "ES Module Entrypoint",
+        url: "https://docs.skypack.dev/package-authors/package-checks#esm",
+        pass: ()=>{
+            if (packageJson.type === "module") {
+                return true;
+            }
+            if (packageJson.module) {
+                return true;
+            }
+            if (typeof packageJson.main === "string" && packageJson.main.endsWith(".mjs")) {
+                return true;
+            }
+            if (packageJson.exports && (packageJson.exports["import"] || !!Object.values(packageJson.exports).find((x4)=>typeof x4 === "object" && x4.import
+            ))) {
+                return true;
+            }
+            return false;
+        }
+    });
+}
+function supportsExportmap(packageJson) {
+    return runCheck({
+        title: "Export Map",
+        url: "https://docs.skypack.dev/package-authors/package-checks#export-map",
+        pass: ()=>{
+            return !!packageJson.exports;
+        }
+    });
+}
+function supportsKeywords(packageJson) {
+    return runCheck({
+        title: "Keywords",
+        url: "https://docs.skypack.dev/package-authors/package-checks#keywords",
+        pass: ()=>{
+            return !!packageJson.keywords && !!packageJson.keywords.length;
+        }
+    });
+}
+function supportsLicense(packageJson) {
+    return runCheck({
+        title: "License",
+        url: "https://docs.skypack.dev/package-authors/package-checks#license",
+        pass: ()=>{
+            return !!packageJson.license;
+        }
+    });
+}
+function parseURL(meta) {
+    if (!meta) {
+        return false;
+    }
+    if (typeof meta === "string") {
+        return meta;
+    }
+    if (meta.url) {
+        return new URL(repoURL(meta.url)).toString();
+    }
+    return false;
+}
+function supportsRepositoryURL(packageJson) {
+    return runCheck({
+        title: "Repository URL",
+        url: "https://docs.skypack.dev/package-authors/package-checks#repository",
+        pass: ()=>!!parseURL(packageJson.repository)
+    });
+}
+function supportsTypes(packageJson) {
+    return runCheck({
+        title: "TypeScript Types",
+        url: "https://docs.skypack.dev/package-authors/package-checks#types",
+        pass: ()=>{
+            const isOk = !!packageJson.types || !!packageJson.typings || !!packageJson.typesVersions;
+            if (isOk) {
+                return true;
+            }
+            if (packageJson.files.includes("index.d.ts")) {
+                console.warn('"./index.d.ts" file found, but package.json "types" entry is missing.');
+                console.warn("Learn more about why this is still required: https://github.com/skypackjs/package-check/issues/6#issuecomment-714840634");
+                return false;
+            }
+            return false;
+        }
+    });
+}
+function supportsReadme(packageJson) {
+    return runCheck({
+        title: "README",
+        url: "https://docs.skypack.dev/package-authors/package-checks#readme",
+        pass: ()=>{
+            return !!packageJson.files.find((f5)=>/^readme\.?/i.test(f5)
+            );
+        }
+    });
+}
+function features(packageJson) {
+    return {
+        "ESM via JSPM": true,
+        ...supportsESM(packageJson),
+        ...supportsExportmap(packageJson),
+        ...supportsKeywords(packageJson),
+        ...supportsLicense(packageJson),
+        ...supportsRepositoryURL(packageJson),
+        ...supportsTypes(packageJson),
+        ...supportsReadme(packageJson)
+    };
+}
 const importMeta = {
     url: "file:///Users/shukla001/@jspm/jspm-packages/server.jsx",
     main: import.meta.main
@@ -30439,18 +31142,31 @@ async function requestHandler(request) {
                     "package.json",
                     ...maybeReadmeFiles
                 ];
-                const [jspmPackage, README, readme] = await Promise.all(filesToFetch.map((file)=>fetch(`${baseURL}/${file}`)
+                const [jspmPackage, READMEFile, readmeFile1] = await Promise.all(filesToFetch.map((file)=>fetch(`${baseURL}/${file}`)
                 ));
-                const { name , description , keywords , version , homepage , license , files , exports ,  } = await jspmPackage.json();
+                const packageJson = await jspmPackage.json();
+                const { name , description , keywords , version , license , files , exports , types , type , homepage , repository , bugs  } = packageJson;
                 const readmeFileContent = await [
-                    README,
-                    readme
+                    READMEFile,
+                    readmeFile1
                 ].find((readmeFile)=>readmeFile.status === 200 || readmeFile.status === 304
                 ).text();
+                const weeklyDownloadsResponse = await fetch(`https://api.npmjs.org/downloads/point/last-week/${name}`);
+                const { downloads  } = await weeklyDownloadsResponse.json();
+                const packageMetaData = await fetch(`https://registry.npmjs.org/${name}`);
+                const { readme , time: { created: createdISO , modified  }  } = await packageMetaData.json();
+                L1.extend(n2);
+                const updated = L1(modified).fromNow();
+                const created = L1(createdISO).fromNow();
                 try {
-                    const readmeHTML = renderMarkdownContent(readmeFileContent);
+                    const readmeHTML = renderMarkdownContent(readmeFileContent || readme);
                     const filteredExport = Object.keys(exports).filter((expt)=>!expt.endsWith("!cjs") && !expt.endsWith("/") && expt.indexOf("*") === -1
                     ).sort();
+                    const links = {
+                        homepage,
+                        repository: parseURL(repository),
+                        issues: parseURL(bugs)
+                    };
                     const app = gt(Ct(Package, {
                         name: name,
                         description: description,
@@ -30460,7 +31176,14 @@ async function requestHandler(request) {
                         files: files,
                         exports: filteredExport,
                         readme: readmeHTML,
-                        keywords: keywords
+                        keywords: keywords,
+                        downloads: downloads,
+                        created: created,
+                        updated: updated,
+                        type: type,
+                        types: types,
+                        features: features(packageJson),
+                        links: links
                     }));
                     const { body , head , footer  } = Lt.SSR(app);
                     const html = await generateHTML({
@@ -30472,9 +31195,9 @@ async function requestHandler(request) {
                     return new Response(html, {
                         headers: pageServingHeaders
                     });
-                } catch (e3) {
+                } catch (e5) {
                     console.error(`Failed in generating package-page ${name}@${version}`);
-                    console.error(e3);
+                    console.error(e5);
                     return new Response("500", {
                         status: 500
                     });

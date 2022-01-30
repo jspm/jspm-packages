@@ -15,6 +15,13 @@ function Package({
   exports,
   readme,
   stateHash,
+  downloads,
+  created,
+  updated,
+  type,
+  types,
+  features,
+  links
 }) {
   return (
     <main>
@@ -23,12 +30,19 @@ function Package({
         <jspm-package-content>
           <Readme __html={readme} />
           <Aside
+            created={created}
+            updated={updated}
+            downloads={downloads}
             version={version}
             name={name}
             license={license}
             files={files}
             exports={exports}
             keywords={keywords}
+            type={type}
+            types={types}
+            features={features}
+            links={links}
           />
         </jspm-package-content>
       </jspm-package>

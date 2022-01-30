@@ -2,10 +2,13 @@
 
 import { serve } from "https://deno.land/std@0.121.0/http/server.ts";
 import { h, Helmet, renderSSR } from "nano-jsx";
+import dayjsEsm from "dayjs/esm";
+import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
 import { Package } from "./lib/package.js";
 import { Home } from "./lib/home.js";
 import { pageServingHeaders, renderMarkdownContent } from "./utils.js";
 import { FEATURED_PACKAGES } from "./lib/featured-packages-list.js";
+import { features, parseURL } from "./lib/package-quality-check.js";
 
 const staticResources = {
   "/style.css": { path: "./style.css", contentType: "text/css; charset=utf-8" },
@@ -179,35 +182,61 @@ async function requestHandler(request) {
         const baseURL = `${NPM_PROVIDER_URL}${packageName}`;
         const filesToFetch = ["package.json", ...maybeReadmeFiles];
 
-        const [jspmPackage, README, readme] = await Promise.all(
+        const [jspmPackage, READMEFile, readmeFile] = await Promise.all(
           filesToFetch.map((file) => fetch(`${baseURL}/${file}`)),
         );
-
+          const packageJson = await jspmPackage.json();
         const {
           name,
           description,
           keywords,
           version,
-          homepage,
           license,
           files,
           exports,
-        } = await jspmPackage.json();
+          types,
+          type,
+          homepage,
+          repository,
+          bugs
+        } = packageJson;
 
-        const readmeFileContent = await [README, readme]
+        const readmeFileContent = await [READMEFile, readmeFile]
           .find(
             (readmeFile) =>
               readmeFile.status === 200 || readmeFile.status === 304,
           )
           .text();
+          // https://github.com/npm/registry/blob/master/docs/download-counts.md
+        const weeklyDownloadsResponse = await fetch(
+          `https://api.npmjs.org/downloads/point/last-week/${name}`,
+        );
 
+        const { downloads } = await weeklyDownloadsResponse.json();
+        // https://github.com/npm/registry
+        const packageMetaData = await fetch(
+          `https://registry.npmjs.org/${name}`,
+        );
+        const { readme, time: { created: createdISO, modified } } = await packageMetaData.json();
+
+        dayjsEsm.extend(dayjsPluginRelativeTime);
+        const updated = dayjsEsm(modified).fromNow();
+        const created = dayjsEsm(createdISO).fromNow();
         try {
-          const readmeHTML = renderMarkdownContent(readmeFileContent);
+          // `readme` is preferred here but this content always refers to the latest version
+          // hence using it as fallback
+          const readmeHTML = renderMarkdownContent(readmeFileContent || readme);
           // https://github.com/jspm/generator.jspm.io/blob/main/src/api.js#L137
           const filteredExport = Object.keys(exports).filter((expt) =>
             !expt.endsWith("!cjs") && !expt.endsWith("/") &&
             expt.indexOf("*") === -1
           ).sort();
+
+          const links = {
+            homepage,
+            repository: parseURL(repository),
+            issues: parseURL(bugs)
+          }
 
           const app = renderSSR(
             <Package
@@ -220,6 +249,13 @@ async function requestHandler(request) {
               exports={filteredExport}
               readme={readmeHTML}
               keywords={keywords}
+              downloads={downloads}
+              created={created}
+              updated={updated}
+              type={type}
+              types={types}
+              features={features(packageJson)}
+              links={links}
             />,
           );
           const { body, head, footer } = Helmet.SSR(app);

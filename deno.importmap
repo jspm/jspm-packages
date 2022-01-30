@@ -1,8 +1,10 @@
 {
   "scopes": {
     "./": {
+      "dayjs/esm": "https://ga.jspm.io/npm:dayjs@1.10.7/esm/index.js",
+      "dayjs/plugin/relativeTime": "https://ga.jspm.io/npm:dayjs@1.10.7/plugin/relativeTime.js",
       "he": "https://ga.jspm.io/npm:he@1.2.0/he.js",
-      "marked": "https://ga.jspm.io/npm:marked@4.0.11/lib/marked.esm.js",
+      "marked": "https://ga.jspm.io/npm:marked@4.0.12/lib/marked.esm.js",
       "nano-jsx": "https://ga.jspm.io/npm:nano-jsx@0.0.27/lib/index.js",
       "prismjs": "https://ga.jspm.io/npm:prismjs@1.26.0/prism.js"
     }
