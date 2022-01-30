@@ -21,7 +21,8 @@ function Package({
   type,
   types,
   features,
-  links
+  links,
+  maintainers
 }) {
   return (
     <main>
@@ -43,6 +44,7 @@ function Package({
             types={types}
             features={features}
             links={links}
+            maintainers={maintainers}
           />
         </jspm-package-content>
       </jspm-package>

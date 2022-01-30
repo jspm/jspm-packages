@@ -2606,7 +2606,7 @@ function _unsupportedIterableToArray(o4, minLen) {
     if (n5 === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n5)) return _arrayLikeToArray(o4, minLen);
 }
 function Aside(param1) {
-    var license = param1.license, name = param1.name, version = param1.version, exports = param1.exports, downloads = param1.downloads, updated = param1.updated, type = param1.type, types = param1.types, features1 = param1.features, created = param1.created, links = param1.links;
+    var license = param1.license, name1 = param1.name, version = param1.version, exports = param1.exports, downloads = param1.downloads, updated = param1.updated, type = param1.type, types = param1.types, features1 = param1.features, created = param1.created, links = param1.links, maintainers = param1.maintainers;
     return Ct("jspm-package-aside", null, Ct("aside", null, Ct("jspm-package-created", null, Ct("h3", null, "Created"), created), Ct("jspm-package-weekly-updated", null, Ct("h3", null, "Updated"), updated), Ct("jspm-package-weekly-downloads", null, Ct("h3", null, "Downloads (weekly)"), downloads), Ct("jspm-package-features", null, Ct("h3", null, "Features"), Object.entries(features1).map(function(param) {
         var _param = _slicedToArray(param, 2), feature = _param[0], supported = _param[1];
         return Ct("ul", null, Ct("li", {
@@ -2614,20 +2614,25 @@ function Aside(param1) {
         }, feature));
     })), Ct("div", null, Ct("h3", null, "License"), Ct("jspm-package-license", null, license), Ct(Seperator, null)), Ct("jspm-package-aside-exports", {
         "data-exports": JSON.stringify(exports),
-        "data-name": name,
+        "data-name": name1,
         "data-version": version
     }, Ct(Exports, {
         exports: exports,
-        name: name,
+        name: name1,
         version: version
     })), Ct("jspm-package-links", null, Ct("h3", null, "Links"), Object.entries(links).map(function(param) {
         var _param = _slicedToArray(param, 2), text = _param[0], link = _param[1];
         return link && Ct("jspm-package-link", null, Ct("h5", null, text), Ct("a", {
             href: link
         }, link));
+    })), Ct("jspm-package-maintainers", null, Ct("h3", null, "Collaborators"), maintainers.map(function(param) {
+        var name = param.name, email = param.email;
+        return Ct("jspm-package-maintainer", null, Ct("figure", null, Ct("img", {
+            src: "https://unavatar.io/".concat(email)
+        })), name);
     }))), Ct(Lt, null, Ct("style", {
         "data-page-name": "jspm-package-aside"
-    }, "\n          jspm-package-features li{\n            padding-inline-start: 1ch;\n          }\n          jspm-package-features li[data-feature-supported=\"true\"]{\n            list-style-type: '✔';\n          }\n          jspm-package-features li[data-feature-supported=\"false\"]{\n            list-style-type: '✖';\n          }\n          ")));
+    }, "\n          jspm-package-features li{\n            padding-inline-start: 1ch;\n          }\n          jspm-package-features li[data-feature-supported=\"true\"]{\n            list-style-type: '✔';\n          }\n          jspm-package-features li[data-feature-supported=\"false\"]{\n            list-style-type: '✖';\n          }\n          jspm-package-maintainer {\n            display: flex;\n            justify-content: space-between;\n            flex-wrap: nowrap;\n            align-content: center;\n            align-items: center;\n          }\n          jspm-package-maintainer figure{\n            width: 80px;\n            display: inline-block;\n          }\n          jspm-package-maintainer figure img{\n            width: 100%;\n            display: block;\n          }\n          ")));
 }
 function Logo(param) {
     param.name, param.version;
@@ -2752,7 +2757,7 @@ function Footer() {
     }, "\n        .footer-container {\n            width: 100%;\n            display: flex;\n            position: relative;\n            align-items: flex-start;\n            flex-direction: column;\n            background-color: var(--dl-color-jspm-footer);\n          }\n          .footer-footer {\n            width: 100%;\n            display: flex;\n            max-width: var(--dl-size-size-maxwidth);\n            align-items: center;\n            padding-top: var(--dl-space-space-twounits);\n            padding-left: var(--dl-space-space-threeunits);\n            padding-right: var(--dl-space-space-threeunits);\n            flex-direction: column;\n            padding-bottom: var(--dl-space-space-twounits);\n            justify-content: space-between;\n            background-color: var(--dl-color-gray-900);\n            margin-top: var(--dl-space-space-unit);\n          }\n          .footer-container1 {\n            width: 100%;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: row;\n            justify-content: center;\n          }\n          .footer-image {\n            width: 45px;\n            object-fit: cover;\n            margin-right: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-container2 {\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: row;\n            justify-content: space-between;\n            flex-wrap: wrap;\n          }\n          .footer-product-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text01 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text02 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text03 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text04 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text05 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text06 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text07 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container1 {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text08 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text09 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text10 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text11 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-separator {\n            width: 100%;\n            height: 1px;\n            margin-top: var(--dl-space-space-twounits);\n            margin-bottom: var(--dl-space-space-twounits);\n            background-color: var(--dl-color-gray-900);\n          }\n          .footer-copyright {\n            flex: 0 0 auto;\n            width: 100%;\n            height: auto;\n            display: flex;\n            align-items: flex-start;\n            justify-content: space-between;\n          }\n          .footer-text12 {\n            align-self: center;\n          }\n          .footer-socials {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: flex-start;\n          }\n          .footer-text14 {\n            font-style: normal;\n            font-weight: 400;\n            margin-right: var(--dl-space-space-unit);\n            margin-bottom: 0px;\n          }\n          .footer-icon-group {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: space-between;\n          }\n          .footer-image1 {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            object-fit: cover;\n            margin-right: var(--dl-space-space-unit);\n          }\n          .footer-icon {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            margin-left: 0px;\n            margin-right: 0px;\n          }\n          \n          @media(max-width: 991px) {\n            .footer-footer {\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 767px) {\n            .footer-footer {\n              padding-left: var(--dl-space-space-twounits);\n              padding-right: var(--dl-space-space-twounits);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n              justify-content: space-between;\n            }\n            .footer-image {\n              display: none;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 479px) {\n            .footer-footer {\n              padding: var(--dl-space-space-unit);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: 0px;\n            }\n            .footer-text12 {\n              text-align: center;\n            }\n          }          \n        ")));
 }
 function Package(param) {
-    var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme, stateHash = param.stateHash, downloads = param.downloads, created = param.created, updated = param.updated, type = param.type, types = param.types, features2 = param.features, links = param.links;
+    var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme, stateHash = param.stateHash, downloads = param.downloads, created = param.created, updated = param.updated, type = param.type, types = param.types, features2 = param.features, links = param.links, maintainers = param.maintainers;
     return Ct("main", null, Ct(Header, null), Ct("jspm-package", null, Ct("jspm-package-content", null, Ct(Readme, {
         __html: readme
     }), Ct(Aside, {
@@ -2768,7 +2773,8 @@ function Package(param) {
         type: type,
         types: types,
         features: features2,
-        links: links
+        links: links,
+        maintainers: maintainers
     }))), Ct(Footer, null), Ct(Lt, null, Ct("link", {
         rel: "stylesheet",
         href: "https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css"
@@ -31154,7 +31160,7 @@ async function requestHandler(request) {
                 const weeklyDownloadsResponse = await fetch(`https://api.npmjs.org/downloads/point/last-week/${name}`);
                 const { downloads  } = await weeklyDownloadsResponse.json();
                 const packageMetaData = await fetch(`https://registry.npmjs.org/${name}`);
-                const { readme , time: { created: createdISO , modified  }  } = await packageMetaData.json();
+                const { maintainers , readme , time: { created: createdISO , modified  }  } = await packageMetaData.json();
                 L1.extend(n2);
                 const updated = L1(modified).fromNow();
                 const created = L1(createdISO).fromNow();
@@ -31183,7 +31189,8 @@ async function requestHandler(request) {
                         type: type,
                         types: types,
                         features: features(packageJson),
-                        links: links
+                        links: links,
+                        maintainers: maintainers
                     }));
                     const { body , head , footer  } = Lt.SSR(app);
                     const html = await generateHTML({

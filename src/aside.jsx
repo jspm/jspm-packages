@@ -15,6 +15,7 @@ function Aside(
     features,
     created,
     links,
+    maintainers,
   },
 ) {
   return (
@@ -54,13 +55,26 @@ function Aside(
         </jspm-package-aside-exports>
         <jspm-package-links>
           <h3>Links</h3>
-          {Object.entries(links).map(([text, link]) => link && (
-            <jspm-package-link>
-              <h5>{text}</h5>
-              <a href={link}>{link}</a>
-            </jspm-package-link>
-          ))}
+          {Object.entries(links).map(([text, link]) =>
+            link && (
+              <jspm-package-link>
+                <h5>{text}</h5>
+                <a href={link}>{link}</a>
+              </jspm-package-link>
+            )
+          )}
         </jspm-package-links>
+        <jspm-package-maintainers>
+          <h3>Collaborators</h3>
+          {maintainers.map(({ name, email }) => (
+            <jspm-package-maintainer>
+              <figure>
+                <img src={`https://unavatar.io/${email}`} />
+              </figure>
+              {name}
+            </jspm-package-maintainer>
+          ))}
+        </jspm-package-maintainers>
       </aside>
 
       <Helmet>
@@ -74,6 +88,21 @@ function Aside(
           }
           jspm-package-features li[data-feature-supported="false"]{
             list-style-type: '✖';
+          }
+          jspm-package-maintainer {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            align-content: center;
+            align-items: center;
+          }
+          jspm-package-maintainer figure{
+            width: 80px;
+            display: inline-block;
+          }
+          jspm-package-maintainer figure img{
+            width: 100%;
+            display: block;
           }
           `}
         </style>

@@ -217,7 +217,7 @@ async function requestHandler(request) {
         const packageMetaData = await fetch(
           `https://registry.npmjs.org/${name}`,
         );
-        const { readme, time: { created: createdISO, modified } } = await packageMetaData.json();
+        const { maintainers, readme, time: { created: createdISO, modified } } = await packageMetaData.json();
 
         dayjsEsm.extend(dayjsPluginRelativeTime);
         const updated = dayjsEsm(modified).fromNow();
@@ -256,6 +256,7 @@ async function requestHandler(request) {
               types={types}
               features={features(packageJson)}
               links={links}
+              maintainers={maintainers}
             />,
           );
           const { body, head, footer } = Helmet.SSR(app);
