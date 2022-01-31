@@ -3,3 +3,13 @@ package-lock.json
 # When Chomp is released:
 # lib
 # deno.importmap
+.swcrc_
+deno.jsonc
+deno2.importmap
+dev.jsx
+lib/header copy.js
+lib/header copy.js.map
+lib/importmap-generator.js
+src/importmap-generator.js
+src/shell copy.html
+dist

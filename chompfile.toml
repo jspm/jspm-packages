@@ -26,7 +26,7 @@ default-task = "deno-deploy"
 
 [[task]]
   name = "jsx-deno"
-  target = "lib/server.js"
+  target = "server.js"
   dep = "server.jsx"
   template = "swc"
   [task.template-options.config]

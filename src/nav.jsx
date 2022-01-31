@@ -20,7 +20,7 @@ function Nav() {
         </ul>
       </nav>
       <Helmet>
-        <style data-page-name="jspm-package-nav">
+        <style data-component-name="jspm-nav">
           {`
           .nav-list-style {
               display: flex;

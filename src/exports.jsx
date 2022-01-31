@@ -1,4 +1,6 @@
-import { Component, h, Helmet } from "nano-jsx";
+/** @jsx h */
+import { Component, h, Helmet, useContext } from "nano-jsx";
+import {JSPMGeneratorContext } from './generate-statehash.js';
 // import {
 //   getCleanPath,
 //   main as importMapGenerator,
@@ -44,41 +46,37 @@ import { Component, h, Helmet } from "nano-jsx";
 //   { subpath, name, version },
 // ) {
 //   return (
-//     <jspm-package-exports-subpath-importmap>
+//     <jspm-exports-subpath-importmap>
 //       <ImportMap target={`${name}@${version}`} subpaths={[subpath]} />
-//     </jspm-package-exports-subpath-importmap>
+//     </jspm-exports-subpath-importmap>
 //   );
 // }
 
 // function Subpath({ importPath }) {
 //   return (
-//     <jspm-package-exports-subpath>
+//     <jspm-exports-subpath>
 //       {importPath}
-//     </jspm-package-exports-subpath>
+//     </jspm-exports-subpath>
 //   );
 // }
 
 function Exports(
-  { exports, name, version, exportHashes },
+  { exports, name, version },
 ) {
+  const generatorHash = useContext(JSPMGeneratorContext);
   return (
-    <jspm-package-exports>
+    <jspm-exports>
+      generatorHash: {generatorHash}
       {
         <ul class="package-files">
-          {exportHashes && exports?.map(
+          {exports?.map(
             (subpath) => {
-              const href = exportHashes[subpath];
               return (
-              <li>
-                <a
-                  target="_blank"
-                  href={href}
-                  class="package-file"
-                >
+                <li>
                   {`${name}${subpath.slice(1)}`}
-                </a>
-              </li>
-            )},
+                </li>
+              );
+            },
           )}
         </ul>
       }
@@ -92,7 +90,7 @@ function Exports(
             .package-files {
               list-style: none;
               padding-left: 0px;
-              height: 500px;
+              max-height: 500px;
               overflow: scroll;
             }
             .package-files li {
@@ -101,7 +99,7 @@ function Exports(
             `}
         </style>
       </Helmet>
-    </jspm-package-exports>
+    </jspm-exports>
   );
 }
 export { Exports };

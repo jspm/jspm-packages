@@ -1,3 +1,4 @@
+/** @jsx h */
 import { h, Helmet } from "nano-jsx";
 
 function Footer() {
@@ -55,7 +56,7 @@ function Footer() {
         </footer>
       </div>
       <Helmet>
-        <style data-page-name="footer">
+        <style data-component-name="footer">
           {`
         .footer-container {
             width: 100%;

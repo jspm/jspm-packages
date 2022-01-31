@@ -1,3 +1,4 @@
+/** @jsx h */
 import { h, Helmet } from "nano-jsx";
 import { Logo } from "./logo.js";
 import { Search } from "./search.js";
@@ -5,7 +6,7 @@ import { Nav } from "./nav.js";
 
 function Header() {
   return (
-    <div>
+    <jspm-header>
       <header class="header">
         <div class="header">
           <Logo />
@@ -14,7 +15,7 @@ function Header() {
         <Nav />
       </header>
       <Helmet>
-        <style data-page-name="header">
+        <style data-component-name="header">
           {`
             .header {
               display: flex;
@@ -32,7 +33,7 @@ function Header() {
           `}
         </style>
       </Helmet>
-      </div>
+      </jspm-header>
   );
 }
 
