@@ -1,3 +1,4 @@
+/** @jsx h */
 import { h, Helmet } from "nano-jsx";
 
 function FeaturedPackages({ packages = [] }) {
@@ -16,7 +17,7 @@ function FeaturedPackages({ packages = [] }) {
         })}
       </ul>
       <Helmet>
-        <style data-page-name="featured-packages">
+        <style data-component-name="featured-packages">
           {`
           .list-style {
             list-style: none;

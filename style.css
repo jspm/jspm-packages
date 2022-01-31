@@ -70,7 +70,7 @@ pre {
   background-color: var(--dl-color-jspm-placeholder);
 }
 
-code {
+code, .code {
   font-family: "Source Code Pro", monospace;
   font-size: var(--step--2);
 }
@@ -82,7 +82,7 @@ body {
   margin-left: auto;
 }
 
-jspm-package, jspm-packages-featured {
+jspm-package, jspm-featured {
   display: block;
   margin: 0 auto;
 }

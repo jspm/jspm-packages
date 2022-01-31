@@ -1,19 +1,20 @@
+/** @jsx h */
 import { h, Helmet } from "nano-jsx";
 
 function Logo({ name, version }) {
   return (
-    <jspm-package-logo>
+    <jspm-logo>
       <h1>
         <a href="/">JSPM</a>
       </h1>
       <Helmet>
-        <style data-page-name="header">
+        <style data-component-name="header">
           {`
-            jspm-package-logo {
+            jspm-logo {
               margin-right: var(--dl-space-space-unit);
             }
 
-            jspm-package-logo h1 a {
+            jspm-logo h1 a {
               background: url(https://jspm.org/jspm.png) no-repeat left center;
               color: var(--dl-color-gray-black);
               background-size: contain;
@@ -22,7 +23,7 @@ function Logo({ name, version }) {
           `}
         </style>
       </Helmet>
-    </jspm-package-logo>
+    </jspm-logo>
   );
 }
 export { Logo };

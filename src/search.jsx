@@ -2,7 +2,7 @@ import { h, Helmet } from "nano-jsx";
 
 function Search(params) {
   return (
-    <jspm-package-search>
+    <jspm-search>
       <form>
         <input
           type="search"
@@ -17,9 +17,9 @@ function Search(params) {
         </button>
       </form>
       <Helmet>
-        <style data-page-name="jspm-package-nav">
+        <style data-component-name="jspm-nav">
           {`
-          jspm-package-search, jspm-package-search form{
+          jspm-search, jspm-search form{
             display: flex;
           }
           .search_button {
@@ -56,17 +56,17 @@ function Search(params) {
             border-top-left-radius: var(--dl-radius-radius-radius8);
             border-bottom-left-radius: var(--dl-radius-radius-radius8);
           }
-          jspm-package-nav nav ul {
+          jspm-nav nav ul {
               display: flex;
             list-style: none;
           }
-          jspm-package-nav nav ul li{
+          jspm-nav nav ul li{
               margin: 20px;
           }
           `}
         </style>
       </Helmet>
-    </jspm-package-search>
+    </jspm-search>
   );
 }
 

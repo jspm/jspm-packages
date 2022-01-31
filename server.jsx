@@ -44,6 +44,22 @@ const staticResources = {
     path: "./lib/exports.js.map",
     contentType: "application/javascript; charset=utf-8",
   },
+  "/hero.js": {
+    path: "./lib/hero.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/hero.js.map": {
+    path: "./lib/hero.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/generate-statehash.js": {
+    path: "./lib/generate-statehash.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/generate-statehash.js.map": {
+    path: "./lib/generate-statehash.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
   "/logo.js": {
     path: "./lib/logo.js",
     contentType: "application/javascript; charset=utf-8",
@@ -75,6 +91,26 @@ const staticResources = {
   "/importmap-generator.js.map": {
     path: "./lib/importmap-generator.js.map",
     contentType: "application/javascript; charset=utf-8",
+  },
+  "/imports-hash-store.js": {
+    path: "./lib/imports-hash-store.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/icon-add.svg": {
+    path: "./images/icon-add.svg",
+    contentType: "image/svg+xml; charset=utf-8",
+  },
+  "/icon-check.svg": {
+    path: "./images/icon-check.svg",
+    contentType: "image/svg+xml; charset=utf-8",
+  },
+  "/icon-typescript-logo.svg": {
+    path: "./images/icon-typescript-logo.svg",
+    contentType: "image/svg+xml; charset=utf-8",
+  },
+  "/favicon.ico": {
+    path: "./favicon.ico",
+    contentType: "image/vnd.microsoft.icon",
   },
 };
 

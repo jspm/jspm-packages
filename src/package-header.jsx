@@ -5,13 +5,13 @@ function PackageHeader({ homepage, name, version, description }) {
     <div>
       <div class="package-header">
         <div class="package-info">
-          <jspm-package-name>
+          <jspm-name>
             <h1>
               <a href={homepage}>{name}</a>
             </h1>
-          </jspm-package-name>
-          <jspm-package-version>{version}</jspm-package-version>
-          <jspm-package-description>{description}</jspm-package-description>
+          </jspm-name>
+          <jspm-version>{version}</jspm-version>
+          <jspm-description>{description}</jspm-description>
         </div>
       </div>
       <Helmet>

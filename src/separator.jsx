@@ -10,7 +10,7 @@ export function Seperator() {
         <div class="seperator-container3"></div>
       </div>
       <Helmet>
-        <style data-page-name="seperator">{`
+        <style data-component-name="seperator">{`
         .seperator-seperator {
             flex: 0 0 auto;
             width: 100%;

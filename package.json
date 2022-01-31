@@ -1,9 +1,14 @@
 {
+  "scripts": {
+    "build": "rollup -c"
+  },
   "devDependencies": {
     "@jspm/generator": "^1.0.0-beta.22",
+    "@jspm/plugin-rollup": "github:jspm/rollup-plugin-jspm",
     "@swc/cli": "^0.1.55",
-    "@swc/core": "^1.2.133",
-    "mkdirp": "^1.0.4"
+    "@swc/core": "^1.2.135",
+    "mkdirp": "^1.0.4",
+    "rollup": "^2.66.1"
   },
   "type": "module"
 }
