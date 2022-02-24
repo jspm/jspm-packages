@@ -115,7 +115,7 @@ const staticResources = {
 };
 
 async function generateHTML(
-  { template, body, head, footer } = { template: "./lib/shell.html" },
+  { template, body, head, footer } = { template: "./shell.html" },
 ) {
   const content = await Deno.readTextFile(template);
   const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content
@@ -198,7 +198,7 @@ async function requestHandler(request) {
       );
       const { body, head, footer } = Helmet.SSR(indexPage);
       const html = await generateHTML({
-        template: "./lib/shell.html",
+        template: "./shell.html",
         body,
         head,
         footer,
@@ -298,7 +298,7 @@ async function requestHandler(request) {
           const { body, head, footer } = Helmet.SSR(app);
           /* Hack to SSR readme :! */
           const html = await generateHTML({
-            template: "./lib/shell.html",
+            template: "./shell.html",
             body,
             head,
             footer,

@@ -1,6 +1,8 @@
 {
   "scopes": {
     "./": {
+      "@jspm/core/nodelibs/buffer": "https://ga.jspm.io/npm:@jspm/core@2.0.0-beta.19/nodelibs/deno/buffer.ts",
+      "@jspm/core/nodelibs/zlib": "https://ga.jspm.io/npm:@jspm/core@2.0.0-beta.19/nodelibs/browser/zlib.js",
       "dayjs/esm": "https://ga.jspm.io/npm:dayjs@1.10.7/esm/index.js",
       "dayjs/plugin/relativeTime": "https://ga.jspm.io/npm:dayjs@1.10.7/plugin/relativeTime.js",
       "he": "https://ga.jspm.io/npm:he@1.2.0/he.js",

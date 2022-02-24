@@ -1,9 +1,6 @@
 {
-  "scripts": {
-    "build": "rollup -c"
-  },
   "devDependencies": {
-    "@jspm/generator": "^1.0.0-beta.22",
+    "@jspm/generator": "^1.0.0-beta.25",
     "@jspm/plugin-rollup": "github:jspm/rollup-plugin-jspm",
     "@swc/cli": "^0.1.55",
     "@swc/core": "^1.2.135",
