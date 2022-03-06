@@ -2583,15 +2583,18 @@ var t2 = {};
     };
 });
 var n2 = t2;
-function Readme(param) {
-    var __html = param.__html;
+function Readme({ __html  }) {
     return Pt("jspm-readme", null, Pt("div", {
         innerHTML: {
             __dangerousHtml: __html
         }
     }), Pt(kt, null, Pt("style", {
         "data-component-name": "jspm-readme"
-    }, "\n            jspm-readme img {\n              max-width: 100%;\n            }\n          ")));
+    }, `
+            jspm-readme img {
+              max-width: 100%;
+            }
+          `)));
 }
 function Seperator() {
     return Pt("div", null, Pt("div", {
@@ -2606,82 +2609,110 @@ function Seperator() {
         class: "seperator-container3"
     })), Pt(kt, null, Pt("style", {
         "data-component-name": "seperator"
-    }, "\n        .seperator-seperator {\n            flex: 0 0 auto;\n            width: 100%;\n            height: auto;\n            display: flex;\n            margin-top: var(--dl-space-space-unit);\n            align-items: center;\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .seperator-container {\n            flex: 0 0 auto;\n            width: 50px;\n            height: 8px;\n            display: flex;\n            align-items: flex-start;\n            background-color: var(--dl-color-jspm-500);\n            border-top-left-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: var(--dl-radius-radius-radius8);\n          }\n          .seperator-container1 {\n            flex: 0 0 auto;\n            width: 50px;\n            height: 8px;\n            display: flex;\n            align-items: flex-start;\n            background-color: var(--dl-color-jspm-400);\n          }\n          .seperator-container2 {\n            flex: 0 0 auto;\n            width: 50px;\n            height: 8px;\n            display: flex;\n            align-items: flex-start;\n            background-color: var(--dl-color-jspm-300);\n          }\n          .seperator-container3 {\n            flex: 0 0 auto;\n            width: 50px;\n            height: 8px;\n            display: flex;\n            align-items: flex-start;\n            background-color: var(--dl-color-jspm-200);\n            border-top-right-radius: var(--dl-radius-radius-radius8);\n            border-bottom-right-radius: var(--dl-radius-radius-radius8);\n          }\n        ")));
+    }, `
+        .seperator-seperator {
+            flex: 0 0 auto;
+            width: 100%;
+            height: auto;
+            display: flex;
+            margin-top: var(--dl-space-space-unit);
+            align-items: center;
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .seperator-container {
+            flex: 0 0 auto;
+            width: 50px;
+            height: 8px;
+            display: flex;
+            align-items: flex-start;
+            background-color: var(--dl-color-jspm-500);
+            border-top-left-radius: var(--dl-radius-radius-radius8);
+            border-bottom-left-radius: var(--dl-radius-radius-radius8);
+          }
+          .seperator-container1 {
+            flex: 0 0 auto;
+            width: 50px;
+            height: 8px;
+            display: flex;
+            align-items: flex-start;
+            background-color: var(--dl-color-jspm-400);
+          }
+          .seperator-container2 {
+            flex: 0 0 auto;
+            width: 50px;
+            height: 8px;
+            display: flex;
+            align-items: flex-start;
+            background-color: var(--dl-color-jspm-300);
+          }
+          .seperator-container3 {
+            flex: 0 0 auto;
+            width: 50px;
+            height: 8px;
+            display: flex;
+            align-items: flex-start;
+            background-color: var(--dl-color-jspm-200);
+            border-top-right-radius: var(--dl-radius-radius-radius8);
+            border-bottom-right-radius: var(--dl-radius-radius-radius8);
+          }
+        `)));
 }
-function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-    for(var i5 = 0, arr2 = new Array(len); i5 < len; i5++)arr2[i5] = arr[i5];
-    return arr2;
-}
-function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
-}
-function _iterableToArrayLimit(arr, i6) {
-    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-    if (_i == null) return;
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _s, _e1;
-    try {
-        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
-            _arr.push(_s.value);
-            if (i6 && _arr.length === i6) break;
-        }
-    } catch (err) {
-        _d = true;
-        _e1 = err;
-    } finally{
-        try {
-            if (!_n && _i["return"] != null) _i["return"]();
-        } finally{
-            if (_d) throw _e1;
-        }
-    }
-    return _arr;
-}
-function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _slicedToArray(arr, i7) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i7) || _unsupportedIterableToArray(arr, i7) || _nonIterableRest();
-}
-function _unsupportedIterableToArray(o4, minLen) {
-    if (!o4) return;
-    if (typeof o4 === "string") return _arrayLikeToArray(o4, minLen);
-    var n5 = Object.prototype.toString.call(o4).slice(8, -1);
-    if (n5 === "Object" && o4.constructor) n5 = o4.constructor.name;
-    if (n5 === "Map" || n5 === "Set") return Array.from(n5);
-    if (n5 === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n5)) return _arrayLikeToArray(o4, minLen);
-}
-function Aside(param1) {
-    var license = param1.license, name1 = param1.name, version = param1.version, exports = param1.exports, downloads = param1.downloads, updated = param1.updated, type = param1.type, types = param1.types, features1 = param1.features, created = param1.created, links = param1.links, maintainers = param1.maintainers;
-    return Pt("jspm-aside", null, Pt("aside", null, Pt("jspm-created", null, Pt("h3", null, "Created"), created), Pt("jspm-weekly-updated", null, Pt("h3", null, "Updated"), updated), Pt("jspm-weekly-downloads", null, Pt("h3", null, "Downloads (weekly)"), downloads), Pt("jspm-features", null, Pt("h3", null, "Features"), Object.entries(features1).map(function(param) {
-        var _param = _slicedToArray(param, 2), feature = _param[0], supported = _param[1];
-        return Pt("ul", null, Pt("li", {
+function Aside({ license , name: name1 , version , exports , downloads , updated , type , types , features: features1 , created , links , maintainers ,  }) {
+    return Pt("jspm-aside", null, Pt("aside", null, Pt("jspm-created", null, Pt("h3", null, "Created"), created), Pt("jspm-weekly-updated", null, Pt("h3", null, "Updated"), updated), Pt("jspm-weekly-downloads", null, Pt("h3", null, "Downloads (weekly)"), downloads), Pt("jspm-features", null, Pt("h3", null, "Features"), Object.entries(features1).map(([feature, supported])=>Pt("ul", null, Pt("li", {
             "data-feature-supported": supported
-        }, feature));
-    })), Pt("div", null, Pt("h3", null, "License"), Pt("jspm-license", null, license), Pt(Seperator, null)), Pt("jspm-links", null, Pt("h3", null, "Links"), Object.entries(links).map(function(param) {
-        var _param = _slicedToArray(param, 2), text = _param[0], link = _param[1];
-        return link && Pt("jspm-link", null, Pt("h5", null, text), Pt("a", {
+        }, feature))
+    )), Pt("div", null, Pt("h3", null, "License"), Pt("jspm-license", null, license), Pt(Seperator, null)), Pt("jspm-links", null, Pt("h3", null, "Links"), Object.entries(links).map(([text, link])=>link && Pt("jspm-link", null, Pt("h5", null, text), Pt("a", {
             href: link
-        }, link));
-    })), Pt("jspm-maintainers", null, Pt("h3", null, "Collaborators"), maintainers.map(function(param) {
-        var name = param.name, email = param.email;
-        return Pt("jspm-maintainer", null, Pt("figure", null, Pt("img", {
-            src: "https://unavatar.io/".concat(email)
-        })), name);
-    }))), Pt(kt, null, Pt("style", {
+        }, link))
+    )), Pt("jspm-maintainers", null, Pt("h3", null, "Collaborators"), maintainers.map(({ name , email  })=>Pt("jspm-maintainer", null, Pt("figure", null, Pt("img", {
+            src: `https://unavatar.io/${email}`
+        })), name)
+    ))), Pt(kt, null, Pt("style", {
         "data-component-name": "jspm-aside"
-    }, "\n          jspm-features li{\n            padding-inline-start: 1ch;\n          }\n          jspm-features li[data-feature-supported=\"true\"]{\n            list-style-type: '✔';\n          }\n          jspm-features li[data-feature-supported=\"false\"]{\n            list-style-type: '✖';\n          }\n          jspm-maintainer {\n            display: flex;\n            justify-content: space-between;\n            flex-wrap: nowrap;\n            align-content: center;\n            align-items: center;\n          }\n          jspm-maintainer figure{\n            width: 80px;\n            display: inline-block;\n          }\n          jspm-maintainer figure img{\n            width: 100%;\n            display: block;\n          }\n          ")));
+    }, `
+          jspm-features li{
+            padding-inline-start: 1ch;
+          }
+          jspm-features li[data-feature-supported="true"]{
+            list-style-type: '✔';
+          }
+          jspm-features li[data-feature-supported="false"]{
+            list-style-type: '✖';
+          }
+          jspm-maintainer {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            align-content: center;
+            align-items: center;
+          }
+          jspm-maintainer figure{
+            width: 80px;
+            display: inline-block;
+          }
+          jspm-maintainer figure img{
+            width: 100%;
+            display: block;
+          }
+          `)));
 }
-function Logo(param) {
-    param.name, param.version;
+function Logo({ name , version  }) {
     return Pt("jspm-logo", null, Pt("h1", null, Pt("a", {
         href: "/"
     }, "JSPM")), Pt(kt, null, Pt("style", {
         "data-component-name": "header"
-    }, "\n            jspm-logo {\n              margin-right: var(--dl-space-space-unit);\n            }\n\n            jspm-logo h1 a {\n              background: url(https://jspm.org/jspm.png) no-repeat left center;\n              color: var(--dl-color-gray-black);\n              background-size: contain;\n              padding-left: 2.5rem;\n            }\n          ")));
+    }, `
+            jspm-logo {
+              margin-right: var(--dl-space-space-unit);
+            }
+
+            jspm-logo h1 a {
+              background: url(https://jspm.org/jspm.png) no-repeat left center;
+              color: var(--dl-color-gray-black);
+              background-size: contain;
+              padding-left: 2.5rem;
+            }
+          `)));
 }
 function Search(params) {
     return Pt("jspm-search", null, Pt("form", null, Pt("input", {
@@ -2695,7 +2726,52 @@ function Search(params) {
         class: "search_button"
     }, Pt("span", null, "Import"))), Pt(kt, null, Pt("style", {
         "data-component-name": "jspm-nav"
-    }, "\n          jspm-search, jspm-search form{\n            display: flex;\n          }\n          .search_button {\n            color: var(--dl-color-gray-black);\n            display: inline-block;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            height: 40px;\n            display: flex;\n            align-items: center;\n            border-width: 0px;\n            padding-left: var(--dl-space-space-oneandhalfunits);\n            padding-right: var(--dl-space-space-oneandhalfunits);\n            background-color: var(--dl-color-primary-js-primary);\n            border-top-left-radius: none;\n            border-top-right-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: none;\n            border-bottom-right-radius: var(--dl-radius-radius-radius8);\n        }\n          \n          .search_input {\n            color: var(--dl-color-gray-black);\n            cursor: auto;\n            padding: 0.5rem 1rem;\n            border-color: var(--dl-color-gray-black);\n            border-width: 1px;\n            background-color: var(--dl-color-gray-white);\n            height: 40px;\n            padding: var(--dl-space-space-halfunit);\n            max-width: 500px;\n            border-color: var(--dl-color-jspm-placeholder);\n            background-color: var(--dl-color-jspm-placeholder);\n            border-top-left-radius: var(--dl-radius-radius-radius8);\n            border-bottom-left-radius: var(--dl-radius-radius-radius8);\n          }\n          jspm-nav nav ul {\n              display: flex;\n            list-style: none;\n          }\n          jspm-nav nav ul li{\n              margin: 20px;\n          }\n          ")));
+    }, `
+          jspm-search, jspm-search form{
+            display: flex;
+          }
+          .search_button {
+            color: var(--dl-color-gray-black);
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-color: var(--dl-color-gray-black);
+            border-width: 1px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            border-width: 0px;
+            padding-left: var(--dl-space-space-oneandhalfunits);
+            padding-right: var(--dl-space-space-oneandhalfunits);
+            background-color: var(--dl-color-primary-js-primary);
+            border-top-left-radius: none;
+            border-top-right-radius: var(--dl-radius-radius-radius8);
+            border-bottom-left-radius: none;
+            border-bottom-right-radius: var(--dl-radius-radius-radius8);
+        }
+          
+          .search_input {
+            color: var(--dl-color-gray-black);
+            cursor: auto;
+            padding: 0.5rem 1rem;
+            border-color: var(--dl-color-gray-black);
+            border-width: 1px;
+            background-color: var(--dl-color-gray-white);
+            height: 40px;
+            padding: var(--dl-space-space-halfunit);
+            max-width: 500px;
+            border-color: var(--dl-color-jspm-placeholder);
+            background-color: var(--dl-color-jspm-placeholder);
+            border-top-left-radius: var(--dl-radius-radius-radius8);
+            border-bottom-left-radius: var(--dl-radius-radius-radius8);
+          }
+          jspm-nav nav ul {
+              display: flex;
+            list-style: none;
+          }
+          jspm-nav nav ul li{
+              margin: 20px;
+          }
+          `)));
 }
 function Nav() {
     return Pt("div", null, Pt("nav", null, Pt("ul", {
@@ -2718,7 +2794,16 @@ function Nav() {
         href: "https://github.com/jspm/generator"
     }, "Github")))), Pt(kt, null, Pt("style", {
         "data-component-name": "jspm-nav"
-    }, "\n          .nav-list-style {\n              display: flex;\n              list-style: none;\n          }\n\n          .nav-list-item {\n              margin-right: var(--dl-space-space-twounits);\n          }\n          ")));
+    }, `
+          .nav-list-style {
+              display: flex;
+              list-style: none;
+          }
+
+          .nav-list-item {
+              margin-right: var(--dl-space-space-twounits);
+          }
+          `)));
 }
 function Header() {
     return Pt("jspm-header", null, Pt("header", {
@@ -2727,7 +2812,21 @@ function Header() {
         class: "header"
     }, Pt(Logo, null), Pt(Search, null)), Pt(Nav, null)), Pt(kt, null, Pt("style", {
         "data-component-name": "header"
-    }, "\n            .header {\n              display: flex;\n              justify-content: space-between;\n              align-items: center;\n              flex-wrap: wrap;\n              align-content: center;\n            }\n\n            @media(max-width: 768px) {\n              .header {\n                justify-content: center;\n              }\n            }\n          ")));
+    }, `
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              align-content: center;
+            }
+
+            @media(max-width: 768px) {
+              .header {
+                justify-content: center;
+              }
+            }
+          `)));
 }
 function Footer() {
     return Pt("div", null, Pt("div", {
@@ -2795,10 +2894,209 @@ function Footer() {
         d: "M925.714 233.143c-25.143 36.571-56.571 69.143-92.571 95.429 0.571 8 0.571 16 0.571 24 0 244-185.714 525.143-525.143 525.143-104.571 0-201.714-30.286-283.429-82.857 14.857 1.714 29.143 2.286 44.571 2.286 86.286 0 165.714-29.143 229.143-78.857-81.143-1.714-149.143-54.857-172.571-128 11.429 1.714 22.857 2.857 34.857 2.857 16.571 0 33.143-2.286 48.571-6.286-84.571-17.143-148-91.429-148-181.143v-2.286c24.571 13.714 53.143 22.286 83.429 23.429-49.714-33.143-82.286-89.714-82.286-153.714 0-34.286 9.143-65.714 25.143-93.143 90.857 112 227.429 185.143 380.571 193.143-2.857-13.714-4.571-28-4.571-42.286 0-101.714 82.286-184.571 184.571-184.571 53.143 0 101.143 22.286 134.857 58.286 41.714-8 81.714-23.429 117.143-44.571-13.714 42.857-42.857 78.857-81.143 101.714 37.143-4 73.143-14.286 106.286-28.571z"
     }))))))), Pt(kt, null, Pt("style", {
         "data-component-name": "footer"
-    }, "\n        .footer-container {\n            width: 100%;\n            display: flex;\n            position: relative;\n            align-items: flex-start;\n            flex-direction: column;\n            background-color: var(--dl-color-jspm-footer);\n          }\n          .footer-footer {\n            width: 100%;\n            display: flex;\n            max-width: var(--dl-size-size-maxwidth);\n            align-items: center;\n            padding-top: var(--dl-space-space-twounits);\n            padding-left: var(--dl-space-space-threeunits);\n            padding-right: var(--dl-space-space-threeunits);\n            flex-direction: column;\n            padding-bottom: var(--dl-space-space-twounits);\n            justify-content: space-between;\n            background-color: var(--dl-color-gray-900);\n            margin-top: var(--dl-space-space-unit);\n          }\n          .footer-container1 {\n            width: 100%;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: row;\n            justify-content: center;\n          }\n          .footer-image {\n            width: 45px;\n            object-fit: cover;\n            margin-right: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-container2 {\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: row;\n            justify-content: space-between;\n            flex-wrap: wrap;\n          }\n          .footer-product-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text01 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text02 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text03 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            margin-right: 5rem;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text04 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text05 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text06 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text07 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-company-container1 {\n            flex: 0 0 auto;\n            display: flex;\n            align-items: flex-start;\n            flex-direction: column;\n            justify-content: flex-start;\n          }\n          .footer-text08 {\n            font-weight: 700;\n            margin-bottom: var(--dl-space-space-oneandhalfunits);\n          }\n          .footer-text09 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text10 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-text11 {\n            margin-bottom: var(--dl-space-space-unit);\n          }\n          .footer-separator {\n            width: 100%;\n            height: 1px;\n            margin-top: var(--dl-space-space-twounits);\n            margin-bottom: var(--dl-space-space-twounits);\n            background-color: var(--dl-color-gray-900);\n          }\n          .footer-copyright {\n            flex: 0 0 auto;\n            width: 100%;\n            height: auto;\n            display: flex;\n            align-items: flex-start;\n            justify-content: space-between;\n          }\n          .footer-text12 {\n            align-self: center;\n          }\n          .footer-socials {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: flex-start;\n          }\n          .footer-text14 {\n            font-style: normal;\n            font-weight: 400;\n            margin-right: var(--dl-space-space-unit);\n            margin-bottom: 0px;\n          }\n          .footer-icon-group {\n            display: flex;\n            align-items: center;\n            flex-direction: row;\n            justify-content: space-between;\n          }\n          .footer-image1 {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            object-fit: cover;\n            margin-right: var(--dl-space-space-unit);\n          }\n          .footer-icon {\n            width: var(--dl-size-size-xsmall);\n            height: var(--dl-size-size-xsmall);\n            margin-left: 0px;\n            margin-right: 0px;\n          }\n          \n          @media(max-width: 991px) {\n            .footer-footer {\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 767px) {\n            .footer-footer {\n              padding-left: var(--dl-space-space-twounits);\n              padding-right: var(--dl-space-space-twounits);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n              justify-content: space-between;\n            }\n            .footer-image {\n              display: none;\n            }\n            .footer-container2 {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n            .footer-product-container {\n              margin-right: var(--dl-space-space-fourunits);\n            }\n          }\n          @media(max-width: 479px) {\n            .footer-footer {\n              padding: var(--dl-space-space-unit);\n            }\n            .footer-container1 {\n              align-items: center;\n              flex-direction: column;\n            }\n            .footer-container2 {\n              margin-right: 0px;\n            }\n            .footer-text12 {\n              text-align: center;\n            }\n          }          \n        ")));
+    }, `
+        .footer-container {
+            width: 100%;
+            display: flex;
+            position: relative;
+            align-items: flex-start;
+            flex-direction: column;
+            background-color: var(--dl-color-jspm-footer);
+          }
+          .footer-footer {
+            width: 100%;
+            display: flex;
+            max-width: var(--dl-size-size-maxwidth);
+            align-items: center;
+            padding-top: var(--dl-space-space-twounits);
+            padding-left: var(--dl-space-space-threeunits);
+            padding-right: var(--dl-space-space-threeunits);
+            flex-direction: column;
+            padding-bottom: var(--dl-space-space-twounits);
+            justify-content: space-between;
+            background-color: var(--dl-color-gray-900);
+            margin-top: var(--dl-space-space-unit);
+          }
+          .footer-container1 {
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            flex-direction: row;
+            justify-content: center;
+          }
+          .footer-image {
+            width: 45px;
+            object-fit: cover;
+            margin-right: var(--dl-space-space-oneandhalfunits);
+          }
+          .footer-container2 {
+            display: flex;
+            align-items: flex-start;
+            margin-right: 5rem;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: wrap;
+          }
+          .footer-product-container {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: flex-start;
+            margin-right: 5rem;
+            flex-direction: column;
+            justify-content: flex-start;
+          }
+          .footer-text {
+            font-weight: 700;
+            margin-bottom: var(--dl-space-space-oneandhalfunits);
+          }
+          .footer-text01 {
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .footer-text02 {
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .footer-text03 {
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .footer-company-container {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: flex-start;
+            margin-right: 5rem;
+            flex-direction: column;
+            justify-content: flex-start;
+          }
+          .footer-text04 {
+            font-weight: 700;
+            margin-bottom: var(--dl-space-space-oneandhalfunits);
+          }
+          .footer-text05 {
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .footer-text06 {
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .footer-text07 {
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .footer-company-container1 {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
+            justify-content: flex-start;
+          }
+          .footer-text08 {
+            font-weight: 700;
+            margin-bottom: var(--dl-space-space-oneandhalfunits);
+          }
+          .footer-text09 {
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .footer-text10 {
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .footer-text11 {
+            margin-bottom: var(--dl-space-space-unit);
+          }
+          .footer-separator {
+            width: 100%;
+            height: 1px;
+            margin-top: var(--dl-space-space-twounits);
+            margin-bottom: var(--dl-space-space-twounits);
+            background-color: var(--dl-color-gray-900);
+          }
+          .footer-copyright {
+            flex: 0 0 auto;
+            width: 100%;
+            height: auto;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+          }
+          .footer-text12 {
+            align-self: center;
+          }
+          .footer-socials {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: flex-start;
+          }
+          .footer-text14 {
+            font-style: normal;
+            font-weight: 400;
+            margin-right: var(--dl-space-space-unit);
+            margin-bottom: 0px;
+          }
+          .footer-icon-group {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: space-between;
+          }
+          .footer-image1 {
+            width: var(--dl-size-size-xsmall);
+            height: var(--dl-size-size-xsmall);
+            object-fit: cover;
+            margin-right: var(--dl-space-space-unit);
+          }
+          .footer-icon {
+            width: var(--dl-size-size-xsmall);
+            height: var(--dl-size-size-xsmall);
+            margin-left: 0px;
+            margin-right: 0px;
+          }
+          
+          @media(max-width: 991px) {
+            .footer-footer {
+              flex-direction: column;
+            }
+            .footer-container2 {
+              margin-right: var(--dl-space-space-fourunits);
+            }
+            .footer-product-container {
+              margin-right: var(--dl-space-space-fourunits);
+            }
+          }
+          @media(max-width: 767px) {
+            .footer-footer {
+              padding-left: var(--dl-space-space-twounits);
+              padding-right: var(--dl-space-space-twounits);
+            }
+            .footer-container1 {
+              align-items: center;
+              flex-direction: column;
+              justify-content: space-between;
+            }
+            .footer-image {
+              display: none;
+            }
+            .footer-container2 {
+              margin-right: var(--dl-space-space-fourunits);
+            }
+            .footer-product-container {
+              margin-right: var(--dl-space-space-fourunits);
+            }
+          }
+          @media(max-width: 479px) {
+            .footer-footer {
+              padding: var(--dl-space-space-unit);
+            }
+            .footer-container1 {
+              align-items: center;
+              flex-direction: column;
+            }
+            .footer-container2 {
+              margin-right: 0px;
+            }
+            .footer-text12 {
+              text-align: center;
+            }
+          }          
+        `)));
 }
-function Package(param) {
-    var name = param.name, description = param.description, keywords = param.keywords, version = param.version, homepage = param.homepage, license = param.license, files = param.files, exports = param.exports, readme = param.readme, stateHash = param.stateHash, downloads = param.downloads, created = param.created, updated = param.updated, type = param.type, types = param.types, features2 = param.features, links = param.links, maintainers = param.maintainers;
+function Package({ name , description , keywords , version , homepage , license , files , exports , readme , stateHash , downloads , created , updated , type , types , features: features2 , links , maintainers ,  }) {
     return Pt("jspm-package", null, Pt(Header, null), Pt("jspm-package-hero", {
         "data-exports": JSON.stringify(exports),
         "data-name": name,
@@ -2828,21 +3126,72 @@ function Package(param) {
         href: "https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css"
     }), Pt("style", {
         "data-page": "package-details"
-    }, "\n          jspm-package{\n            display: block;\n            max-width: 1140px;\n            margin: 0 auto;\n          }\n          jspm-highlight{\n            text-align: center;\n          }\n          jspm-highlight h2{\n            font-family: 'Source Sans Pro', sans-serif;\n          }\n        jspm-content {\n          display: grid;\n          grid-template-columns: minmax(800px, 1fr) minmax(350px, 1fr);\n          grid-gap: 1rem;\n        }\n        \n        jspm-readme {\n          min-width: 800px;\n          display: block;\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-aside {\n          padding: var(--dl-space-space-oneandhalfunits);\n        }\n        \n        jspm-name,\n        jspm-version,\n        jspm-description,\n        jspm-license {\n          display: block;\n        }\n        \n        jspm-name h1 {\n          font-family: \"Major Mono Display\", monospace;\n          font-size: var(--step-5);\n        }\n        \n        jspm-name h1 a {\n          color: black;\n        }\n\n        @media(max-width: 767px) {\n          jspm-content {\n            justify-content: space-between;\n          }\n\n          jspm-readme {\n            width: 100%;\n          }\n        }\n        ")));
+    }, `
+          jspm-package{
+            display: block;
+            max-width: 1140px;
+            margin: 0 auto;
+          }
+          jspm-highlight{
+            text-align: center;
+          }
+          jspm-highlight h2{
+            font-family: 'Source Sans Pro', sans-serif;
+          }
+        jspm-content {
+          display: grid;
+          grid-template-columns: minmax(800px, 1fr) minmax(350px, 1fr);
+          grid-gap: 1rem;
+        }
+        
+        jspm-readme {
+          min-width: 800px;
+          display: block;
+          padding: var(--dl-space-space-oneandhalfunits);
+        }
+        
+        jspm-aside {
+          padding: var(--dl-space-space-oneandhalfunits);
+        }
+        
+        jspm-name,
+        jspm-version,
+        jspm-description,
+        jspm-license {
+          display: block;
+        }
+        
+        jspm-name h1 {
+          font-family: "Major Mono Display", monospace;
+          font-size: var(--step-5);
+        }
+        
+        jspm-name h1 a {
+          color: black;
+        }
+
+        @media(max-width: 767px) {
+          jspm-content {
+            justify-content: space-between;
+          }
+
+          jspm-readme {
+            width: 100%;
+          }
+        }
+        `)));
 }
-function FeaturedPackages(param1) {
-    var _packages = param1.packages, packages = _packages === void 0 ? [] : _packages;
+function FeaturedPackages({ packages =[]  }) {
     return Pt("div", {
         id: "featured-packages"
     }, Pt("ul", {
         class: "list-style"
-    }, packages.map(function(param) {
-        var name = param.name, description = param.description, version = param.version;
+    }, packages.map(({ name , description , version  })=>{
         return Pt("li", {
             class: "package-item-wrapper"
         }, Pt("a", {
             class: "package-name",
-            href: "/package/".concat(name, "@").concat(version)
+            href: `/package/${name}@${version}`
         }, name, " ", Pt("span", {
             class: "package-version"
         }, version)), Pt("span", {
@@ -2850,15 +3199,49 @@ function FeaturedPackages(param1) {
         }, description));
     })), Pt(kt, null, Pt("style", {
         "data-component-name": "featured-packages"
-    }, "\n          .list-style {\n            list-style: none;\n            padding-left: 0px;\n            margin: 0px;\n            width: 100%;\n          }\n          \n          .package-item-wrapper {\n            font-weight: 200;\n            margin: var(--dl-space-space-unit);\n          }\n\n          .package-version {\n            font-weight: 200;\n            font-size: var(--dl-space-space-unit);\n          }\n\n          .package-name {\n            display: block;\n            font-size: var(--dl-space-space-oneandhalfunits);\n            font-family: 'Inter';\n            font-weight: 400;\n            margin-bottom: var(--dl-space-space-halfunit);\n          }\n\n          .description {\n            overflow: hidden;\n            white-space: normal;\n            word-break: break-word;\n            line-height: 1.5;\n          }\n\n        ")));
+    }, `
+          .list-style {
+            list-style: none;
+            padding-left: 0px;
+            margin: 0px;
+            width: 100%;
+          }
+          
+          .package-item-wrapper {
+            font-weight: 200;
+            margin: var(--dl-space-space-unit);
+          }
+
+          .package-version {
+            font-weight: 200;
+            font-size: var(--dl-space-space-unit);
+          }
+
+          .package-name {
+            display: block;
+            font-size: var(--dl-space-space-oneandhalfunits);
+            font-family: 'Inter';
+            font-weight: 400;
+            margin-bottom: var(--dl-space-space-halfunit);
+          }
+
+          .description {
+            overflow: hidden;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.5;
+          }
+
+        `)));
 }
-function Home(param) {
-    var packages = param.packages;
+function Home({ packages  }) {
     return Pt("jspm-home", null, Pt("jspm-home-header", null, Pt(Header, null)), Pt("jspm-home-main", null, Pt("main", null, Pt(FeaturedPackages, {
         packages: packages
     }))), Pt("jspm-home-footer", null, Pt(Footer, null)), Pt(kt, null, Pt("style", {
         "data-component-name": "jspm-home"
-    }, "\n          \n        ")));
+    }, `
+          
+        `)));
 }
 const emojis = [
     {
@@ -24239,8 +24622,8 @@ function get(alias2) {
 }
 function emojify(str) {
     if (!str) return "";
-    return str.split(reEmojiName).map((s4, i8)=>{
-        if (i8 % 2 === 0) return s4;
+    return str.split(reEmojiName).map((s4, i5)=>{
+        if (i5 % 2 === 0) return s4;
         let emoji7 = get(s4);
         if (!emoji7) emoji7 = wrapColons(s4);
         return emoji7;
@@ -25876,7 +26259,7 @@ var a3 = {
     var c13 = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
     var l13 = /[\x01-\x7F]/g;
     var i13 = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
-    var n6 = /<\u20D2|=\u20E5|>\u20D2|\u205F\u200A|\u219D\u0338|\u2202\u0338|\u2220\u20D2|\u2229\uFE00|\u222A\uFE00|\u223C\u20D2|\u223D\u0331|\u223E\u0333|\u2242\u0338|\u224B\u0338|\u224D\u20D2|\u224E\u0338|\u224F\u0338|\u2250\u0338|\u2261\u20E5|\u2264\u20D2|\u2265\u20D2|\u2266\u0338|\u2267\u0338|\u2268\uFE00|\u2269\uFE00|\u226A\u0338|\u226A\u20D2|\u226B\u0338|\u226B\u20D2|\u227F\u0338|\u2282\u20D2|\u2283\u20D2|\u228A\uFE00|\u228B\uFE00|\u228F\u0338|\u2290\u0338|\u2293\uFE00|\u2294\uFE00|\u22B4\u20D2|\u22B5\u20D2|\u22D8\u0338|\u22D9\u0338|\u22DA\uFE00|\u22DB\uFE00|\u22F5\u0338|\u22F9\u0338|\u2933\u0338|\u29CF\u0338|\u29D0\u0338|\u2A6D\u0338|\u2A70\u0338|\u2A7D\u0338|\u2A7E\u0338|\u2AA1\u0338|\u2AA2\u0338|\u2AAC\uFE00|\u2AAD\uFE00|\u2AAF\u0338|\u2AB0\u0338|\u2AC5\u0338|\u2AC6\u0338|\u2ACB\uFE00|\u2ACC\uFE00|\u2AFD\u20E5|[\xA0-\u0113\u0116-\u0122\u0124-\u012B\u012E-\u014D\u0150-\u017E\u0192\u01B5\u01F5\u0237\u02C6\u02C7\u02D8-\u02DD\u0311\u0391-\u03A1\u03A3-\u03A9\u03B1-\u03C9\u03D1\u03D2\u03D5\u03D6\u03DC\u03DD\u03F0\u03F1\u03F5\u03F6\u0401-\u040C\u040E-\u044F\u0451-\u045C\u045E\u045F\u2002-\u2005\u2007-\u2010\u2013-\u2016\u2018-\u201A\u201C-\u201E\u2020-\u2022\u2025\u2026\u2030-\u2035\u2039\u203A\u203E\u2041\u2043\u2044\u204F\u2057\u205F-\u2063\u20AC\u20DB\u20DC\u2102\u2105\u210A-\u2113\u2115-\u211E\u2122\u2124\u2127-\u2129\u212C\u212D\u212F-\u2131\u2133-\u2138\u2145-\u2148\u2153-\u215E\u2190-\u219B\u219D-\u21A7\u21A9-\u21AE\u21B0-\u21B3\u21B5-\u21B7\u21BA-\u21DB\u21DD\u21E4\u21E5\u21F5\u21FD-\u2205\u2207-\u2209\u220B\u220C\u220F-\u2214\u2216-\u2218\u221A\u221D-\u2238\u223A-\u2257\u2259\u225A\u225C\u225F-\u2262\u2264-\u228B\u228D-\u229B\u229D-\u22A5\u22A7-\u22B0\u22B2-\u22BB\u22BD-\u22DB\u22DE-\u22E3\u22E6-\u22F7\u22F9-\u22FE\u2305\u2306\u2308-\u2310\u2312\u2313\u2315\u2316\u231C-\u231F\u2322\u2323\u232D\u232E\u2336\u233D\u233F\u237C\u23B0\u23B1\u23B4-\u23B6\u23DC-\u23DF\u23E2\u23E7\u2423\u24C8\u2500\u2502\u250C\u2510\u2514\u2518\u251C\u2524\u252C\u2534\u253C\u2550-\u256C\u2580\u2584\u2588\u2591-\u2593\u25A1\u25AA\u25AB\u25AD\u25AE\u25B1\u25B3-\u25B5\u25B8\u25B9\u25BD-\u25BF\u25C2\u25C3\u25CA\u25CB\u25EC\u25EF\u25F8-\u25FC\u2605\u2606\u260E\u2640\u2642\u2660\u2663\u2665\u2666\u266A\u266D-\u266F\u2713\u2717\u2720\u2736\u2758\u2772\u2773\u27C8\u27C9\u27E6-\u27ED\u27F5-\u27FA\u27FC\u27FF\u2902-\u2905\u290C-\u2913\u2916\u2919-\u2920\u2923-\u292A\u2933\u2935-\u2939\u293C\u293D\u2945\u2948-\u294B\u294E-\u2976\u2978\u2979\u297B-\u297F\u2985\u2986\u298B-\u2996\u299A\u299C\u299D\u29A4-\u29B7\u29B9\u29BB\u29BC\u29BE-\u29C5\u29C9\u29CD-\u29D0\u29DC-\u29DE\u29E3-\u29E5\u29EB\u29F4\u29F6\u2A00-\u2A02\u2A04\u2A06\u2A0C\u2A0D\u2A10-\u2A17\u2A22-\u2A27\u2A29\u2A2A\u2A2D-\u2A31\u2A33-\u2A3C\u2A3F\u2A40\u2A42-\u2A4D\u2A50\u2A53-\u2A58\u2A5A-\u2A5D\u2A5F\u2A66\u2A6A\u2A6D-\u2A75\u2A77-\u2A9A\u2A9D-\u2AA2\u2AA4-\u2AB0\u2AB3-\u2AC8\u2ACB\u2ACC\u2ACF-\u2ADB\u2AE4\u2AE6-\u2AE9\u2AEB-\u2AF3\u2AFD\uFB00-\uFB04]|\uD835[\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDCCF\uDD04\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDD6B]/g;
+    var n5 = /<\u20D2|=\u20E5|>\u20D2|\u205F\u200A|\u219D\u0338|\u2202\u0338|\u2220\u20D2|\u2229\uFE00|\u222A\uFE00|\u223C\u20D2|\u223D\u0331|\u223E\u0333|\u2242\u0338|\u224B\u0338|\u224D\u20D2|\u224E\u0338|\u224F\u0338|\u2250\u0338|\u2261\u20E5|\u2264\u20D2|\u2265\u20D2|\u2266\u0338|\u2267\u0338|\u2268\uFE00|\u2269\uFE00|\u226A\u0338|\u226A\u20D2|\u226B\u0338|\u226B\u20D2|\u227F\u0338|\u2282\u20D2|\u2283\u20D2|\u228A\uFE00|\u228B\uFE00|\u228F\u0338|\u2290\u0338|\u2293\uFE00|\u2294\uFE00|\u22B4\u20D2|\u22B5\u20D2|\u22D8\u0338|\u22D9\u0338|\u22DA\uFE00|\u22DB\uFE00|\u22F5\u0338|\u22F9\u0338|\u2933\u0338|\u29CF\u0338|\u29D0\u0338|\u2A6D\u0338|\u2A70\u0338|\u2A7D\u0338|\u2A7E\u0338|\u2AA1\u0338|\u2AA2\u0338|\u2AAC\uFE00|\u2AAD\uFE00|\u2AAF\u0338|\u2AB0\u0338|\u2AC5\u0338|\u2AC6\u0338|\u2ACB\uFE00|\u2ACC\uFE00|\u2AFD\u20E5|[\xA0-\u0113\u0116-\u0122\u0124-\u012B\u012E-\u014D\u0150-\u017E\u0192\u01B5\u01F5\u0237\u02C6\u02C7\u02D8-\u02DD\u0311\u0391-\u03A1\u03A3-\u03A9\u03B1-\u03C9\u03D1\u03D2\u03D5\u03D6\u03DC\u03DD\u03F0\u03F1\u03F5\u03F6\u0401-\u040C\u040E-\u044F\u0451-\u045C\u045E\u045F\u2002-\u2005\u2007-\u2010\u2013-\u2016\u2018-\u201A\u201C-\u201E\u2020-\u2022\u2025\u2026\u2030-\u2035\u2039\u203A\u203E\u2041\u2043\u2044\u204F\u2057\u205F-\u2063\u20AC\u20DB\u20DC\u2102\u2105\u210A-\u2113\u2115-\u211E\u2122\u2124\u2127-\u2129\u212C\u212D\u212F-\u2131\u2133-\u2138\u2145-\u2148\u2153-\u215E\u2190-\u219B\u219D-\u21A7\u21A9-\u21AE\u21B0-\u21B3\u21B5-\u21B7\u21BA-\u21DB\u21DD\u21E4\u21E5\u21F5\u21FD-\u2205\u2207-\u2209\u220B\u220C\u220F-\u2214\u2216-\u2218\u221A\u221D-\u2238\u223A-\u2257\u2259\u225A\u225C\u225F-\u2262\u2264-\u228B\u228D-\u229B\u229D-\u22A5\u22A7-\u22B0\u22B2-\u22BB\u22BD-\u22DB\u22DE-\u22E3\u22E6-\u22F7\u22F9-\u22FE\u2305\u2306\u2308-\u2310\u2312\u2313\u2315\u2316\u231C-\u231F\u2322\u2323\u232D\u232E\u2336\u233D\u233F\u237C\u23B0\u23B1\u23B4-\u23B6\u23DC-\u23DF\u23E2\u23E7\u2423\u24C8\u2500\u2502\u250C\u2510\u2514\u2518\u251C\u2524\u252C\u2534\u253C\u2550-\u256C\u2580\u2584\u2588\u2591-\u2593\u25A1\u25AA\u25AB\u25AD\u25AE\u25B1\u25B3-\u25B5\u25B8\u25B9\u25BD-\u25BF\u25C2\u25C3\u25CA\u25CB\u25EC\u25EF\u25F8-\u25FC\u2605\u2606\u260E\u2640\u2642\u2660\u2663\u2665\u2666\u266A\u266D-\u266F\u2713\u2717\u2720\u2736\u2758\u2772\u2773\u27C8\u27C9\u27E6-\u27ED\u27F5-\u27FA\u27FC\u27FF\u2902-\u2905\u290C-\u2913\u2916\u2919-\u2920\u2923-\u292A\u2933\u2935-\u2939\u293C\u293D\u2945\u2948-\u294B\u294E-\u2976\u2978\u2979\u297B-\u297F\u2985\u2986\u298B-\u2996\u299A\u299C\u299D\u29A4-\u29B7\u29B9\u29BB\u29BC\u29BE-\u29C5\u29C9\u29CD-\u29D0\u29DC-\u29DE\u29E3-\u29E5\u29EB\u29F4\u29F6\u2A00-\u2A02\u2A04\u2A06\u2A0C\u2A0D\u2A10-\u2A17\u2A22-\u2A27\u2A29\u2A2A\u2A2D-\u2A31\u2A33-\u2A3C\u2A3F\u2A40\u2A42-\u2A4D\u2A50\u2A53-\u2A58\u2A5A-\u2A5D\u2A5F\u2A66\u2A6A\u2A6D-\u2A75\u2A77-\u2A9A\u2A9D-\u2AA2\u2AA4-\u2AB0\u2AB3-\u2AC8\u2ACB\u2ACC\u2ACF-\u2ADB\u2AE4\u2AE6-\u2AE9\u2AEB-\u2AF3\u2AFD\uFB00-\uFB04]|\uD835[\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDCCF\uDD04\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDD6B]/g;
     var p12 = {
         "­": "shy",
         "‌": "zwnj",
@@ -29848,7 +30231,7 @@ var a3 = {
         var a4 = e5.strict;
         a4 && f11.test(r8) && parseError("forbidden code point");
         var t4 = e5.encodeEverything;
-        var o5 = e5.useNamedReferences;
+        var o4 = e5.useNamedReferences;
         var s5 = e5.allowUnsafeSymbols;
         var u4 = e5.decimal ? decEscape : hexEscape;
         var escapeBmpSymbol = function(r9) {
@@ -29856,18 +30239,18 @@ var a3 = {
         };
         if (t4) {
             r8 = r8.replace(l13, function(r10) {
-                return o5 && has(p12, r10) ? "&" + p12[r10] + ";" : escapeBmpSymbol(r10);
+                return o4 && has(p12, r10) ? "&" + p12[r10] + ";" : escapeBmpSymbol(r10);
             });
-            o5 && (r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;").replace(/&#x66;&#x6A;/g, "&fjlig;"));
-            o5 && (r8 = r8.replace(n6, function(r11) {
+            o4 && (r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;").replace(/&#x66;&#x6A;/g, "&fjlig;"));
+            o4 && (r8 = r8.replace(n5, function(r11) {
                 return "&" + p12[r11] + ";";
             }));
-        } else if (o5) {
+        } else if (o4) {
             s5 || (r8 = r8.replace(d13, function(r12) {
                 return "&" + p12[r12] + ";";
             }));
             r8 = r8.replace(/&gt;\u20D2/g, "&nvgt;").replace(/&lt;\u20D2/g, "&nvlt;");
-            r8 = r8.replace(n6, function(r13) {
+            r8 = r8.replace(n5, function(r13) {
                 return "&" + p12[r13] + ";";
             });
         } else s5 || (r8 = r8.replace(d13, escapeBmpSymbol));
@@ -29889,7 +30272,7 @@ var a3 = {
         e7 = merge1(e7, decode.options);
         var a6 = e7.strict;
         a6 && m12.test(r15) && parseError("malformed character reference");
-        return r15.replace(b12, function(r16, t6, o6, s6, u5, c4, l4, i9, n) {
+        return r15.replace(b12, function(r16, t6, o5, s6, u5, c4, l4, i6, n) {
             var p4;
             var d4;
             var g4;
@@ -29900,8 +30283,8 @@ var a3 = {
                 f3 = t6;
                 return h4[f3];
             }
-            if (o6) {
-                f3 = o6;
+            if (o5) {
+                f3 = o5;
                 b2 = s6;
                 if (b2 && e7.isAttributeValue) {
                     a6 && "=" == b2 && parseError("`&` did not start a character reference");
@@ -29919,7 +30302,7 @@ var a3 = {
             }
             if (l4) {
                 m4 = l4;
-                d4 = i9;
+                d4 = i6;
                 a6 && !d4 && parseError("character reference was not terminated by a semicolon");
                 p4 = parseInt(m4, 16);
                 return codePointToSymbol(p4, a6);
@@ -30048,9 +30431,9 @@ var n4 = function(t15) {
                 r42 = r42 || i14.languages;
                 var s7 = r42[t8];
                 var l5 = {};
-                for(var o7 in s7)if (s7.hasOwnProperty(o7)) {
-                    if (o7 == a6) for(var u6 in n7)n7.hasOwnProperty(u6) && (l5[u6] = n7[u6]);
-                    n7.hasOwnProperty(o7) || (l5[o7] = s7[o7]);
+                for(var o6 in s7)if (s7.hasOwnProperty(o6)) {
+                    if (o6 == a6) for(var u6 in n7)n7.hasOwnProperty(u6) && (l5[u6] = n7[u6]);
+                    n7.hasOwnProperty(o6) || (l5[o6] = s7[o6]);
                 }
                 var g5 = r42[t8];
                 r42[t8] = l5;
@@ -30065,9 +30448,9 @@ var n4 = function(t15) {
                 for(var s8 in e11)if (e11.hasOwnProperty(s8)) {
                     t9.call(e11, s8, e11[s8], a8 || s8);
                     var l6 = e11[s8];
-                    var o8 = i14.util.type(l6);
-                    if ("Object" !== o8 || n9[r5(l6)]) {
-                        if ("Array" === o8 && !n9[r5(l6)]) {
+                    var o7 = i14.util.type(l6);
+                    if ("Object" !== o7 || n9[r5(l6)]) {
+                        if ("Array" === o7 && !n9[r5(l6)]) {
                             n9[r5(l6)] = true;
                             DFS(l6, t9, s8, n9);
                         }
@@ -30099,12 +30482,12 @@ var n4 = function(t15) {
             i14.util.setLanguage(e14, r7);
             var l7 = e14.parentElement;
             l7 && "pre" === l7.nodeName.toLowerCase() && i14.util.setLanguage(l7, r7);
-            var o9 = e14.textContent;
+            var o8 = e14.textContent;
             var u7 = {
                 element: e14,
                 language: r7,
                 grammar: s10,
-                code: o9
+                code: o8
             };
             function insertHighlightedCode(e15) {
                 u7.highlightedCode = e15;
@@ -30210,21 +30593,21 @@ var n4 = function(t15) {
         e23.lastIndex = t18;
         var r12 = e23.exec(a17);
         if (r12 && n17 && r12[1]) {
-            var i10 = r12[1].length;
-            r12.index += i10;
-            r12[0] = r12[0].slice(i10);
+            var i7 = r12[1].length;
+            r12.index += i7;
+            r12[0] = r12[0].slice(i7);
         }
         return r12;
     }
     function matchGrammar(e24, t19, a18, n18, r13, s15) {
         for(var l9 in a18)if (a18.hasOwnProperty(l9) && a18[l9]) {
-            var o10 = a18[l9];
-            o10 = Array.isArray(o10) ? o10 : [
-                o10
+            var o9 = a18[l9];
+            o9 = Array.isArray(o9) ? o9 : [
+                o9
             ];
-            for(var u8 = 0; u8 < o10.length; ++u8){
+            for(var u8 = 0; u8 < o9.length; ++u8){
                 if (s15 && s15.cause == l9 + "," + u8) return;
-                var g7 = o10[u8];
+                var g7 = o9[u8];
                 var c5 = g7.inside;
                 var d5 = !!g7.lookbehind;
                 var p5 = !!g7.greedy;
@@ -30463,8 +30846,8 @@ Object.defineProperty(n4.languages.markup.tag, "addInlined", {
             pattern: /[\s\S]+/,
             inside: n4.languages[t24]
         };
-        var i15 = {};
-        i15[e30] = {
+        var i8 = {};
+        i8[e30] = {
             pattern: RegExp(/(<__[^>]*>)(?:<!\[CDATA\[(?:[^\]]|\](?!\]>))*\]\]>|(?!<!\[CDATA\[)[\s\S])*?(?=<\/__>)/.source.replace(/__/g, function() {
                 return e30;
             }), "i"),
@@ -30472,7 +30855,7 @@ Object.defineProperty(n4.languages.markup.tag, "addInlined", {
             greedy: true,
             inside: r17
         };
-        n4.languages.insertBefore("markup", "cdata", i15);
+        n4.languages.insertBefore("markup", "cdata", i8);
     }
 });
 Object.defineProperty(n4.languages.markup.tag, "addAttribute", {
@@ -30738,11 +31121,11 @@ n4.languages.js = n4.languages.javascript;
             h: "c",
             tex: "latex"
         };
-        var i16 = "data-src-status";
+        var i9 = "data-src-status";
         var s22 = "loading";
         var l10 = "loaded";
-        var o16 = "failed";
-        var u9 = "pre[data-src]:not([" + i16 + '="' + l10 + '"]):not([' + i16 + '="' + s22 + '"])';
+        var o15 = "failed";
+        var u9 = "pre[data-src]:not([" + i9 + '="' + l10 + '"]):not([' + i9 + '="' + s22 + '"])';
         n4.hooks.add("before-highlightall", function(e34) {
             e34.selector += ", " + u9;
         });
@@ -30750,7 +31133,7 @@ n4.languages.js = n4.languages.javascript;
             var a28 = e35.element;
             if (a28.matches(u9)) {
                 e35.code = "";
-                a28.setAttribute(i16, s22);
+                a28.setAttribute(i9, s22);
                 var g8 = a28.appendChild(document.createElement("CODE"));
                 g8.textContent = t27;
                 var c6 = a28.getAttribute("data-src");
@@ -30767,23 +31150,23 @@ n4.languages.js = n4.languages.javascript;
                 var h6 = n4.plugins.autoloader;
                 h6 && h6.loadLanguages(d6);
                 loadFile(c6, function(e36) {
-                    a28.setAttribute(i16, l10);
+                    a28.setAttribute(i9, l10);
                     var t30 = parseRange(a28.getAttribute("data-range"));
                     if (t30) {
                         var r19 = e36.split(/\r\n?|\n/g);
                         var s18 = t30[0];
-                        var o15 = null == t30[1] ? r19.length : t30[1];
+                        var o10 = null == t30[1] ? r19.length : t30[1];
                         s18 < 0 && (s18 += r19.length);
                         s18 = Math.max(0, Math.min(s18 - 1, r19.length));
-                        o15 < 0 && (o15 += r19.length);
-                        o15 = Math.max(0, Math.min(o15, r19.length));
-                        e36 = r19.slice(s18, o15).join("\n");
+                        o10 < 0 && (o10 += r19.length);
+                        o10 = Math.max(0, Math.min(o10, r19.length));
+                        e36 = r19.slice(s18, o10).join("\n");
                         a28.hasAttribute("data-start") || a28.setAttribute("data-start", String(s18 + 1));
                     }
                     g8.textContent = e36;
                     n4.highlightElement(g8);
                 }, function(e37) {
-                    a28.setAttribute(i16, o16);
+                    a28.setAttribute(i9, o15);
                     g8.textContent = e37;
                 });
             }
@@ -31038,7 +31421,7 @@ function features(packageJson) {
     };
 }
 const importMeta = {
-    url: "file:///Users/shukla001/@jspm/jspm-packages/server.jsx",
+    url: "file:///C:/Users/Guy/Projects/jspm-packages/server.jsx",
     main: import.meta.main
 };
 const staticResources = {
@@ -31148,7 +31531,7 @@ const staticResources = {
     }
 };
 async function generateHTML({ template , body , head , footer  } = {
-    template: "./lib/shell.html"
+    template: "./shell.html"
 }) {
     const content = await Deno.readTextFile(template);
     const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content.split(/<!-- __[A-Z]*__ -->/i);
@@ -31210,7 +31593,7 @@ async function requestHandler(request) {
             }));
             const { body , head , footer  } = kt.SSR(indexPage);
             const html = await generateHTML({
-                template: "./lib/shell.html",
+                template: "./shell.html",
                 body,
                 head,
                 footer
@@ -31278,7 +31661,7 @@ async function requestHandler(request) {
                     }));
                     const { body , head , footer  } = kt.SSR(app);
                     const html = await generateHTML({
-                        template: "./lib/shell.html",
+                        template: "./shell.html",
                         body,
                         head,
                         footer
