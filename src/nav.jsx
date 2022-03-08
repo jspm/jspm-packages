@@ -1,4 +1,6 @@
-import { h, Helmet } from "nano-jsx";
+import nano, { h } from "nano-jsx";
+
+const { Helmet } = nano;
 
 function Nav() {
   return (

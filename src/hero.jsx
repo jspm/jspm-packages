@@ -1,5 +1,7 @@
 /** @jsx h */
-import { Component, h, Helmet } from "nano-jsx";
+import nano, { Component, h } from "nano-jsx";
+
+const { Helmet  } = nano;
 
 class Hero extends Component {
   constructor(props) {

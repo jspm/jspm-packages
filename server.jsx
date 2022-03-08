@@ -1,14 +1,16 @@
 /** @jsx h */
 
 import { serve } from "https://deno.land/std@0.121.0/http/server.ts";
-import { h, Helmet, renderSSR } from "nano-jsx";
-import dayjsEsm from "dayjs/esm";
+import nano, { h, renderSSR } from "nano-jsx";
+import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
 import { Package } from "./lib/package.js";
 import { Home } from "./lib/home.js";
 import { pageServingHeaders, renderMarkdownContent } from "./utils.js";
 import { FEATURED_PACKAGES } from "./lib/featured-packages-list.js";
 import { features, parseURL } from "./lib/package-quality-check.js";
+
+const { Helmet } = nano;
 
 const staticResources = {
   "/style.css": { path: "./style.css", contentType: "text/css; charset=utf-8" },
@@ -163,6 +165,8 @@ function removeSlashes(path) {
 
 async function requestHandler(request) {
   try {
+
+    console.log('Helmet: ', Helmet);
     const { pathname, searchParams } = new URL(request.url);
 
     const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
@@ -255,9 +259,9 @@ async function requestHandler(request) {
         );
         const { maintainers, readme, time: { created: createdISO, modified } } = await packageMetaData.json();
 
-        dayjsEsm.extend(dayjsPluginRelativeTime);
-        const updated = dayjsEsm(modified).fromNow();
-        const created = dayjsEsm(createdISO).fromNow();
+        dayjs.extend(dayjsPluginRelativeTime);
+        const updated = dayjs(modified).fromNow();
+        const created = dayjs(createdISO).fromNow();
         try {
           // `readme` is preferred here but this content always refers to the latest version
           // hence using it as fallback

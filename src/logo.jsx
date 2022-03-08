@@ -1,5 +1,7 @@
 /** @jsx h */
-import { h, Helmet } from "nano-jsx";
+import nano, { h } from "nano-jsx";
+
+const { Helmet } = nano;
 
 function Logo({ name, version }) {
   return (

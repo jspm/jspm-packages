@@ -1,8 +1,10 @@
 /** @jsx h */
-import { h, Helmet } from "nano-jsx";
+import nano, { h } from "nano-jsx";
 import { Logo } from "./logo.js";
 import { Search } from "./search.js";
 import { Nav } from "./nav.js";
+
+const { Helmet } = nano;
 
 function Header() {
   return (

@@ -1,9 +1,11 @@
 /** @jsx h */
-import { h, Helmet } from "nano-jsx";
+import nano, { h } from "nano-jsx";
 import { Readme } from "./readme.js";
 import { Aside } from "./aside.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
+
+const { Helmet } = nano;
 
 function Package({
   name,

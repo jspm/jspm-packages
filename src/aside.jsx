@@ -1,7 +1,9 @@
 /** @jsx h */
-import { h, Helmet } from "nano-jsx";
+import nano, { h } from "nano-jsx";
 import { Seperator } from "./separator.js";
 import { Exports } from "./exports.js";
+
+const { Helmet } = nano;
 
 function Aside(
   {
