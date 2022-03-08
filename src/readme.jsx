@@ -1,6 +1,8 @@
-import { h, Helmet } from "nano-jsx";
+import nano, { h } from "nano-jsx";
 
-function Readme({__html}) {
+const { Helmet } = nano;
+
+function Readme({ __html }) {
   return (
     <jspm-readme>
       <div innerHTML={{ __dangerousHtml: __html }} />
