@@ -40,24 +40,21 @@ async function hydrateExports() {
   }
 }
 
-async function hydratePackage() {
-  const mountElement = document.querySelector("jspm-package");
+async function hydrateRoot() {
+  const mountElement = document.querySelector("jspm-package-root");
 
   if (mountElement) {
-    const { exports, name, version } = mountElement.dataset;
+    const { exports, name, version, features, links, maintainers } = mountElement.dataset;
     const parsedExports = exports ? JSON.parse(exports) : [];
-    const { Package } = await import("./package.js");
+    const { DomRoot } = await import("./dom-root.js");
+    
     hydrate(
-      <Package
-        exports={parsedExports}
-        name={name}
-        version={version}
-      />,
+      <DomRoot name={name} version={version} exports={parsedExports} features={JSON.parse(features)} links={JSON.parse(links)} maintainers={JSON.parse(maintainers)} />,
       mountElement,
     );
   }
 }
 
 if (typeof globalThis.document !== "undefined") {
-  hydrateHero();
+  hydrateRoot();
 }

@@ -4,6 +4,7 @@ import { Readme } from "./readme.js";
 import { Aside } from "./aside.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
+import {ImportMapDialog} from './importmap-dialog.js';
 
 const { Helmet } = nano;
 
@@ -17,7 +18,8 @@ function Package({
   files,
   exports,
   readme,
-  stateHash,
+  generatorHash,
+  selectedDeps,
   downloads,
   created,
   updated,
@@ -26,10 +28,12 @@ function Package({
   features,
   links,
   maintainers,
+  toggleExportSelection,
 }) {
   return (
     <jspm-package>
-      <Header />
+      <ImportMapDialog generatorHash={generatorHash} dependencies={selectedDeps} />
+      <Header generatorHash={generatorHash} dependencies={selectedDeps} />
       <jspm-package-hero
         data-exports={JSON.stringify(exports)}
         data-name={name}
@@ -47,29 +51,54 @@ function Package({
           <h3>{description}</h3>
         </jspm-highlight>
       </jspm-package-hero>
-      <jspm-package>
-        <jspm-content>
-          <main>
-            <Readme __html={readme} />
-          </main>
-          <Aside
-            created={created}
-            updated={updated}
-            downloads={downloads}
-            version={version}
-            name={name}
-            license={license}
-            files={files}
-            exports={exports}
-            keywords={keywords}
-            type={type}
-            types={types}
-            features={features}
-            links={links}
-            maintainers={maintainers}
-          />
-        </jspm-content>
-      </jspm-package>
+      <jspm-content>
+        <main>
+          <table>
+            <thead>
+              <tr colspan="2">
+                <th>Package exports</th>
+              </tr>
+            </thead>
+            <tbody>
+              {exports.map((subpath) => (
+                <tr>
+                  <td>{`${name}${subpath.slice(1)}`}</td>
+                  <td>
+                    {toggleExportSelection && (
+                      <button
+                        type="button"
+                        class="code"
+                        onClick={toggleExportSelection}
+                        value={`${name}@${version}${subpath.slice(1)}`}
+                      >
+                        + Add to importmap
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Readme __html={readme} />
+        </main>
+        <Aside
+          created={created}
+          updated={updated}
+          downloads={downloads}
+          version={version}
+          name={name}
+          license={license}
+          files={files}
+          exports={exports}
+          keywords={keywords}
+          type={type}
+          types={types}
+          features={features}
+          links={links}
+          maintainers={maintainers}
+        />
+      </jspm-content>
+
       <Footer />
 
       <Helmet>

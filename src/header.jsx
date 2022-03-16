@@ -6,7 +6,7 @@ import { Nav } from "./nav.js";
 
 const { Helmet } = nano;
 
-function Header() {
+function Header({ generatorHash = "", dependencies = [] }) {
   return (
     <jspm-header>
       <header class="header">
@@ -14,7 +14,7 @@ function Header() {
           <Logo />
           <Search />
         </div>
-        <Nav />
+        <Nav generatorHash={generatorHash} dependencies={dependencies} />
       </header>
       <Helmet>
         <style data-component-name="header">
@@ -35,7 +35,7 @@ function Header() {
           `}
         </style>
       </Helmet>
-      </jspm-header>
+    </jspm-header>
   );
 }
 

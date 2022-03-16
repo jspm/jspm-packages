@@ -2,13 +2,18 @@ import nano, { h } from "nano-jsx";
 
 const { Helmet } = nano;
 
-function Nav() {
+function Nav({ generatorHash = "", dependencies = [] }) {
   return (
     <div>
       <nav>
         <ul class="nav-list-style">
           <li class="nav-list-item">
-            <a href="https://generator.jspm.io">Generator</a>
+            <a
+              target="_blank"
+              href={`https://generator.jspm.io/${generatorHash}`}
+            >
+              Generator [{dependencies?.length}]
+            </a>
           </li>
           <li class="nav-list-item">
             <a href="https://jspm.org/docs/cdn">Docs</a>
@@ -35,7 +40,7 @@ function Nav() {
           `}
         </style>
       </Helmet>
-    </div> 
+    </div>
   );
 }
 export { Nav };
