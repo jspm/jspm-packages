@@ -5,24 +5,25 @@ import { Package } from "./package.js";
 class DomRoot extends Component {
   constructor(props) {
     super(props);
-    const selectedExports = {};
-    if (props.selectedExports) {
-      Object.entries(props.selectedExports).forEach(([subpath, selected]) => {
-        if (selected === true) {
-          selectedExports[subpath] = selected;
-        }
-      });
-    }
-    this.selectedExports = selectedExports;
+    // const selectedExports = {};
+    // if (props.selectedExports) {
+    //   Object.entries(props.selectedExports).forEach(([subpath, selected]) => {
+    //     if (selected === true) {
+    //       selectedExports[subpath] = selected;
+    //     }
+    //   });
+    // }
+    this.selectedExports = localStorage.getItem('selectedExports') ? JSON.parse(localStorage.getItem('selectedExports')) : this.selectedExports;
+    this.selectedDeps = localStorage.getItem('selectedDeps') ? JSON.parse(localStorage.getItem('selectedDeps')) : this.selectedDeps;
+    this.generatorHash = localStorage.getItem('generatorHash') || this.generatorHash;
   }
 
-  selectedExports;
+  selectedExports = {};
   selectedDeps = [];
-  generatorHash;
+  generatorHash = '';
 
   generateHash = async () => {
     if (typeof globalThis.document !== "undefined") {
-      const { name, version } = this.props;
 
       const { getStateHash } = await import("./generate-statehash.js");
       const selectedDeps = this.selectedDeps.map((
@@ -52,6 +53,16 @@ class DomRoot extends Component {
     this.update();
   };
 
+  didMount() {
+    if (!this.generatorHash) {
+      this.generateHash();
+    }
+  }
+  didUpdate() {
+    localStorage.setItem('selectedExports', JSON.stringify(this.selectedExports));
+    localStorage.setItem('selectedDeps', JSON.stringify(this.selectedDeps));
+    localStorage.setItem('generatorHash', this.generatorHash);
+  }
   render() {
     const {
       created,
