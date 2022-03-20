@@ -174,6 +174,10 @@ const staticResources = {
     path: "./images/icon-typescript-logo.svg",
     contentType: "image/svg+xml; charset=utf-8",
   },
+  "/icon-distributed.png": {
+    path: "./images/icon-distributed.png",
+    contentType: "image/png",
+  },
   "/favicon.ico": {
     path: "./favicon.ico",
     contentType: "image/vnd.microsoft.icon",

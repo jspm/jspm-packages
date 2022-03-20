@@ -44,12 +44,12 @@ async function hydrateRoot() {
   const mountElement = document.querySelector("jspm-package-root");
 
   if (mountElement) {
-    const { exports, name, version, features, links, maintainers } = mountElement.dataset;
+    const { exports, name, version, features, links, maintainers, readme } = mountElement.dataset;
     const parsedExports = exports ? JSON.parse(exports) : [];
     const { DomRoot } = await import("./dom-root.js");
     
     hydrate(
-      <DomRoot name={name} version={version} exports={parsedExports} features={JSON.parse(features)} links={JSON.parse(links)} maintainers={JSON.parse(maintainers)} />,
+      <DomRoot name={name} version={version} exports={parsedExports} features={JSON.parse(features)} links={JSON.parse(links)} maintainers={JSON.parse(maintainers)} readme={readme} />,
       mountElement,
     );
   }

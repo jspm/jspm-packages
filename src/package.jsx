@@ -4,7 +4,7 @@ import { Readme } from "./readme.js";
 import { Aside } from "./aside.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
-import {ImportMapDialog} from './importmap-dialog.js';
+import { ImportMapDialog } from "./importmap-dialog.js";
 
 const { Helmet } = nano;
 
@@ -29,11 +29,24 @@ function Package({
   links,
   maintainers,
   toggleExportSelection,
+  openImportmapDialog,
+  toggleImportmapDialog,
 }) {
   return (
     <jspm-package>
-      <ImportMapDialog generatorHash={generatorHash} dependencies={selectedDeps} />
-      <Header generatorHash={generatorHash} dependencies={selectedDeps} />
+      <ImportMapDialog
+        generatorHash={generatorHash}
+        dependencies={selectedDeps}
+        open={openImportmapDialog}
+        toggleImportmapDialog={toggleImportmapDialog}
+        toggleExportSelection={toggleExportSelection}
+      />
+      <Header
+        generatorHash={generatorHash}
+        dependencies={selectedDeps}
+        open={openImportmapDialog}
+        toggleImportmapDialog={toggleImportmapDialog}
+      />
       <jspm-package-hero
         data-exports={JSON.stringify(exports)}
         data-name={name}
@@ -53,32 +66,31 @@ function Package({
       </jspm-package-hero>
       <jspm-content>
         <main>
-          <table>
-            <thead>
-              <tr colspan="2">
-                <th>Package exports</th>
-              </tr>
-            </thead>
-            <tbody>
-              {exports.map((subpath) => (
-                <tr>
-                  <td>{`${name}${subpath.slice(1)}`}</td>
-                  <td>
+          <jspm-package-exports>
+            <h4>Package exports</h4>
+            <ul class="code">
+              {exports.map((subpath) => {
+                const packageExport = `${name}@${version}${subpath.slice(1)}`;
+                const addedToImportMap = selectedDeps?.includes(packageExport);
+                return (
+                  <li>
+                    {`${name}${subpath.slice(1)}`}
                     {toggleExportSelection && (
                       <button
                         type="button"
-                        class="code"
                         onClick={toggleExportSelection}
-                        value={`${name}@${version}${subpath.slice(1)}`}
+                        value={packageExport}
                       >
-                        + Add to importmap
+                        {addedToImportMap
+                          ? "− Remove from importmap"
+                          : "+ Add to importmap"}
                       </button>
                     )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </li>
+                );
+              })}
+            </ul>
+          </jspm-package-exports>
           <Readme __html={readme} />
         </main>
         <Aside
@@ -159,6 +171,28 @@ function Package({
           jspm-readme {
             width: 100%;
           }
+        }
+        jspm-package-exports ul{
+          margin: 0;
+          padding: 0;
+        }
+        jspm-package-exports ul li{
+          display: flex;
+          align-content: center;
+          justify-content: space-between;
+          align-items: center;
+          padding: 5px;
+          margin: 10px;
+          border-bottom: 1px dotted #ccc;
+        }
+        jspm-package-exports ul li button{
+          background: var(--dl-color-primary-js-primary);
+          color: black;
+          padding: 10px;
+          display: inline-block;
+          border: 3px solid black;
+          min-width: 250px;
+          font-family: "Bebas Neue", cursive;
         }
         `}
         </style>

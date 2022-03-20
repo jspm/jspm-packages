@@ -2,7 +2,9 @@ import nano, { h } from "nano-jsx";
 
 const { Helmet } = nano;
 
-function Nav({ generatorHash = "", dependencies = [] }) {
+function Nav(
+  { generatorHash = "", dependencies = [], open, toggleImportmapDialog },
+) {
   return (
     <div>
       <nav>
@@ -12,7 +14,7 @@ function Nav({ generatorHash = "", dependencies = [] }) {
               target="_blank"
               href={`https://generator.jspm.io/${generatorHash}`}
             >
-              Generator [{dependencies?.length}]
+              Generator
             </a>
           </li>
           <li class="nav-list-item">
@@ -23,6 +25,11 @@ function Nav({ generatorHash = "", dependencies = [] }) {
           </li>
           <li class="nav-list-item">
             <a href="https://github.com/jspm/generator">Github</a>
+          </li>
+          <li class="nav-list-item">
+            <button class="toggle-dialog" title="Explore Importmap" onClick={toggleImportmapDialog}>
+              [{dependencies?.length}]
+            </button>
           </li>
         </ul>
       </nav>
@@ -36,6 +43,14 @@ function Nav({ generatorHash = "", dependencies = [] }) {
 
           .nav-list-item {
               margin-right: var(--dl-space-space-twounits);
+          }
+          .nav-list-item .toggle-dialog{
+            background: transparent url('/icon-distributed.png') left center no-repeat;
+            background-size: contain;
+            padding-left: 25px;
+            border: 0;
+            cursor: pointer;
+            color: crimson;
           }
           `}
         </style>

@@ -23,6 +23,7 @@ function SsrRoot({
       data-features={JSON.stringify(features)}
       data-links={JSON.stringify(links)}
       data-maintainers={JSON.stringify(maintainers)}
+      data-readme={readme}
     >
       <Package
         created={created}

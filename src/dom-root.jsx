@@ -21,6 +21,7 @@ class DomRoot extends Component {
   selectedExports = {};
   selectedDeps = [];
   generatorHash = '';
+  openImportmapDialog= false;
 
   generateHash = async () => {
     if (typeof globalThis.document !== "undefined") {
@@ -50,6 +51,12 @@ class DomRoot extends Component {
     );
     this.generateHash();
     console.log(JSON.stringify(this.selectedExports));
+    this.update();
+  };
+
+  toggleImportmapDialog = (event) => {
+    event.preventDefault();
+    this.openImportmapDialog = !this.openImportmapDialog;
     this.update();
   };
 
@@ -94,6 +101,8 @@ class DomRoot extends Component {
         version={version}
         generatorHash={this.generatorHash}
         selectedDeps={this.selectedDeps}
+        openImportmapDialog={this.openImportmapDialog}
+        toggleImportmapDialog={this.toggleImportmapDialog}
       />
     );
   }

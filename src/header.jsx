@@ -6,7 +6,9 @@ import { Nav } from "./nav.js";
 
 const { Helmet } = nano;
 
-function Header({ generatorHash = "", dependencies = [] }) {
+function Header(
+  { generatorHash = "", dependencies = [], open, toggleImportmapDialog },
+) {
   return (
     <jspm-header>
       <header class="header">
@@ -14,7 +16,12 @@ function Header({ generatorHash = "", dependencies = [] }) {
           <Logo />
           <Search />
         </div>
-        <Nav generatorHash={generatorHash} dependencies={dependencies} />
+        <Nav
+          generatorHash={generatorHash}
+          dependencies={dependencies}
+          open={open}
+          toggleImportmapDialog={toggleImportmapDialog}
+        />
       </header>
       <Helmet>
         <style data-component-name="header">
