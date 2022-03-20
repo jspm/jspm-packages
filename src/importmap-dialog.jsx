@@ -59,19 +59,29 @@ function ImportMapDialog(
             return (
               <details>
                 <summary>
-                  <span>{name}</span>
-                  <span>{version}</span>
+                  <jspm-importmap-entry-summary>
+                    <jspm-importmap-entry-name>
+                      {name}
+                    </jspm-importmap-entry-name>
+                    <jspm-importmap-entry-version class="code">
+                      v{version}
+                    </jspm-importmap-entry-version>
+                  </jspm-importmap-entry-summary>
                 </summary>
                 <ol>
                   {subpaths.map((subpath) => (
                     <li>
-                      {subpath}
-                      <button
-                        onClick={toggleExportSelection}
-                        value={`${name}@${version}${subpath.slice(1)}`}
-                      >
-                        &minus; Remove
-                      </button>
+                      <jspm-importmap-entry>
+                        <jspm-importmap-entry-subpath class="code">
+                          {subpath}
+                        </jspm-importmap-entry-subpath>
+                        <button
+                          onClick={toggleExportSelection}
+                          value={`${name}@${version}${subpath.slice(1)}`}
+                        >
+                          &minus; Remove
+                        </button>
+                      </jspm-importmap-entry>
                     </li>
                   ))}
                 </ol>
@@ -80,22 +90,32 @@ function ImportMapDialog(
           }
           return (
             <details>
-              <summary>{name}</summary>
+              <summary>
+                <jspm-importmap-entry-summary>
+                  {name}
+                </jspm-importmap-entry-summary>
+              </summary>
 
               {mapEntries.map(([version, subpaths]) => {
                 return (
                   <details>
-                    <summary>{version}</summary>
+                    <summary>
+                      <jspm-importmap-entry-version class="code">
+                        v{version}
+                      </jspm-importmap-entry-version>
+                    </summary>
                     <ol>
                       {subpaths.map((subpath) => (
                         <li>
-                          {subpath}
-                          <button
-                            onClick={toggleExportSelection}
-                            value={`${name}@${version}${subpath.slice(1)}`}
-                          >
-                            &minus; Remove
-                          </button>
+                          <jspm-importmap-entry>
+                            {subpath}
+                            <button
+                              onClick={toggleExportSelection}
+                              value={`${name}@${version}${subpath.slice(1)}`}
+                            >
+                              &minus; Remove
+                            </button>
+                          </jspm-importmap-entry>
                         </li>
                       ))}
                     </ol>
@@ -131,8 +151,28 @@ function ImportMapDialog(
             -webkit-box-shadow: 12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
             box-shadow: -12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
           }
-          jspm-importmap-dialog dialog details summary{
+          jspm-importmap-dialog dialog details summary, jspm-importmap-entry-summary{
             padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-content: center;
+            justify-content: space-between;
+            align-items: center;
+          }
+          jspm-importmap-dialog dialog details summary:after{
+            content: '›';
+            margin-right: 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+          }
+          jspm-importmap-dialog dialog details[open] summary:after{
+            content: '⌄';
+          }
+          jspm-importmap-entry-name{
+            font-weight: 700;
+          }
+          jspm-importmap-entry-version{
+            margin-left: 10px;
           }
           jspm-importmap-dialog dialog .icon-close{
             background: white;
@@ -140,6 +180,18 @@ function ImportMapDialog(
             background: black;
             color: var(--dl-color-primary-js-primary);
             cursor: pointer;
+          }
+          jspm-importmap-entry{
+            display: flex;
+            align-content: center;
+            justify-content: space-between;
+            align-items: center;
+          }
+          jspm-importmap-entry button{
+            background: white;
+            border: none;
+            cursor: pointer;
+            color: crimson;
           }
           `}
         </style>
