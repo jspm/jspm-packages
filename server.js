@@ -3052,7 +3052,7 @@ function ImportMapDialog({ generatorHash ="" , dependencies =[] , open: dialogOp
     return xt("jspm-importmap-dialog", null, xt("dialog", _extends({}, open), xt("button", {
         class: "icon-close",
         onClick: toggleImportmapDialog
-    }, "✕"), generatorHash && xt("h4", null, xt("a", {
+    }, "\u2715"), generatorHash && xt("h4", null, xt("a", {
         target: "_blank",
         href: `https://generator.jspm.io/${generatorHash}`
     }, "Customize importmap at JSPM Generator")), Object.entries(map).map(([name, versions])=>{
@@ -3066,7 +3066,7 @@ function ImportMapDialog({ generatorHash ="" , dependencies =[] , open: dialogOp
                 }, subpath), xt("button", {
                     onClick: toggleExportSelection,
                     value: `${name}@${version}${subpath.slice(1)}`
-                }, "− Remove")))
+                }, "\u2212 Remove")))
             )));
         }
         return xt("details", null, xt("summary", null, xt("jspm-importmap-entry-summary", null, name)), mapEntries.map(([version, subpaths])=>{
@@ -3075,7 +3075,7 @@ function ImportMapDialog({ generatorHash ="" , dependencies =[] , open: dialogOp
             }, "v", version)), xt("ol", null, subpaths.map((subpath)=>xt("li", null, xt("jspm-importmap-entry", null, subpath, xt("button", {
                     onClick: toggleExportSelection,
                     value: `${name}@${version}${subpath.slice(1)}`
-                }, "− Remove")))
+                }, "\u2212 Remove")))
             )));
         }));
     })), xt(Helmet9, null, xt("style", {
@@ -3167,7 +3167,7 @@ function Package({ name , description , keywords , version , homepage , license 
         "data-description": description,
         "data-updated": updated,
         "data-types": types
-    }, xt("jspm-highlight", null, xt("h2", null, name), xt("div", null, xt("span", null, version), "•", xt("span", null, "Published ", updated)), xt("div", null), xt("h3", null, description))), xt("jspm-content", null, xt("main", null, xt("jspm-package-exports", null, xt("h4", null, "Package exports"), xt("ul", {
+    }, xt("jspm-highlight", null, xt("h2", null, name), xt("div", null, xt("span", null, version), "\u2022", xt("span", null, "Published ", updated)), xt("div", null), xt("h3", null, description))), xt("jspm-content", null, xt("main", null, xt("jspm-package-exports", null, xt("h4", null, "Package exports"), xt("ul", {
         class: "code"
     }, exports.map((subpath)=>{
         const packageExport = `${name}@${version}${subpath.slice(1)}`;
