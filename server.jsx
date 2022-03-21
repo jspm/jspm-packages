@@ -4,7 +4,7 @@ import { serve } from "https://deno.land/std@0.121.0/http/server.ts";
 import nano, { h, renderSSR } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
-import { Package } from "./lib/package.js";
+import { SsrRoot } from "./lib/ssr-root.js";
 import { Home } from "./lib/home.js";
 import { pageServingHeaders, renderMarkdownContent } from "./utils.js";
 import { FEATURED_PACKAGES } from "./lib/featured-packages-list.js";
@@ -22,6 +22,30 @@ const staticResources = {
     path: "./lib/dom-main.js.map",
     contentType: "application/javascript; charset=utf-8",
   },
+  "/main.js": {
+    path: "./lib/main.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/main.js.map": {
+    path: "./lib/main.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/dom-root.js": {
+    path: "./lib/dom-root.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/dom-root.js.map": {
+    path: "./lib/dom-root.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/importmap-dialog.js": {
+    path: "./lib/importmap-dialog.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/importmap-dialog.js.map": {
+    path: "./lib/importmap-dialog.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
   "/statehash.js": {
     path: "./lib/statehash.js",
     contentType: "application/javascript; charset=utf-8",
@@ -36,6 +60,46 @@ const staticResources = {
   },
   "/header.js.map": {
     path: "./lib/header.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package.js": {
+    path: "./lib/package.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package.js.map": {
+    path: "./lib/package.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/readme.js": {
+    path: "./lib/readme.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/readme.js.map": {
+    path: "./lib/readme.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/aside.js": {
+    path: "./lib/aside.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/aside.js.map": {
+    path: "./lib/aside.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/footer.js": {
+    path: "./lib/footer.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/footer.js.map": {
+    path: "./lib/footer.js.map",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/separator.js": {
+    path: "./lib/separator.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/separator.js.map": {
+    path: "./lib/separator.js.map",
     contentType: "application/javascript; charset=utf-8",
   },
   "/exports.js": {
@@ -110,6 +174,10 @@ const staticResources = {
     path: "./images/icon-typescript-logo.svg",
     contentType: "image/svg+xml; charset=utf-8",
   },
+  "/icon-distributed.png": {
+    path: "./images/icon-distributed.png",
+    contentType: "image/png",
+  },
   "/favicon.ico": {
     path: "./favicon.ico",
     contentType: "image/vnd.microsoft.icon",
@@ -165,8 +233,6 @@ function removeSlashes(path) {
 
 async function requestHandler(request) {
   try {
-
-    console.log('Helmet: ', Helmet);
     const { pathname, searchParams } = new URL(request.url);
 
     const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
@@ -279,7 +345,7 @@ async function requestHandler(request) {
           }
 
           const app = renderSSR(
-            <Package
+            <SsrRoot
               name={name}
               description={description}
               version={version}

@@ -4,6 +4,7 @@ import { Readme } from "./readme.js";
 import { Aside } from "./aside.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
+import { ImportMapDialog } from "./importmap-dialog.js";
 
 const { Helmet } = nano;
 
@@ -17,7 +18,8 @@ function Package({
   files,
   exports,
   readme,
-  stateHash,
+  generatorHash,
+  selectedDeps,
   downloads,
   created,
   updated,
@@ -26,10 +28,25 @@ function Package({
   features,
   links,
   maintainers,
+  toggleExportSelection,
+  openImportmapDialog,
+  toggleImportmapDialog,
 }) {
   return (
     <jspm-package>
-      <Header />
+      <ImportMapDialog
+        generatorHash={generatorHash}
+        dependencies={selectedDeps}
+        open={openImportmapDialog}
+        toggleImportmapDialog={toggleImportmapDialog}
+        toggleExportSelection={toggleExportSelection}
+      />
+      <Header
+        generatorHash={generatorHash}
+        dependencies={selectedDeps}
+        open={openImportmapDialog}
+        toggleImportmapDialog={toggleImportmapDialog}
+      />
       <jspm-package-hero
         data-exports={JSON.stringify(exports)}
         data-name={name}
@@ -47,29 +64,53 @@ function Package({
           <h3>{description}</h3>
         </jspm-highlight>
       </jspm-package-hero>
-      <jspm-package>
-        <jspm-content>
-          <main>
-            <Readme __html={readme} />
-          </main>
-          <Aside
-            created={created}
-            updated={updated}
-            downloads={downloads}
-            version={version}
-            name={name}
-            license={license}
-            files={files}
-            exports={exports}
-            keywords={keywords}
-            type={type}
-            types={types}
-            features={features}
-            links={links}
-            maintainers={maintainers}
-          />
-        </jspm-content>
-      </jspm-package>
+      <jspm-content>
+        <main>
+          <jspm-package-exports>
+            <h4>Package exports</h4>
+            <ul class="code">
+              {exports.map((subpath) => {
+                const packageExport = `${name}@${version}${subpath.slice(1)}`;
+                const addedToImportMap = selectedDeps?.includes(packageExport);
+                return (
+                  <li>
+                    {`${name}${subpath.slice(1)}`}
+                    {toggleExportSelection && (
+                      <button
+                        type="button"
+                        onClick={toggleExportSelection}
+                        value={packageExport}
+                      >
+                        {addedToImportMap
+                          ? "− Remove from importmap"
+                          : "+ Add to importmap"}
+                      </button>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </jspm-package-exports>
+          <Readme __html={readme} />
+        </main>
+        <Aside
+          created={created}
+          updated={updated}
+          downloads={downloads}
+          version={version}
+          name={name}
+          license={license}
+          files={files}
+          exports={exports}
+          keywords={keywords}
+          type={type}
+          types={types}
+          features={features}
+          links={links}
+          maintainers={maintainers}
+        />
+      </jspm-content>
+
       <Footer />
 
       <Helmet>
@@ -130,6 +171,28 @@ function Package({
           jspm-readme {
             width: 100%;
           }
+        }
+        jspm-package-exports ul{
+          margin: 0;
+          padding: 0;
+        }
+        jspm-package-exports ul li{
+          display: flex;
+          align-content: center;
+          justify-content: space-between;
+          align-items: center;
+          padding: 5px;
+          margin: 10px;
+          border-bottom: 1px dotted #ccc;
+        }
+        jspm-package-exports ul li button{
+          background: var(--dl-color-primary-js-primary);
+          color: black;
+          padding: 10px;
+          display: inline-block;
+          border: 3px solid black;
+          min-width: 250px;
+          font-family: "Bebas Neue", cursive;
         }
         `}
         </style>
