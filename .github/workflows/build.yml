@@ -20,10 +20,12 @@ jobs:
       uses: guybedford/chomp-action@v1
     - name: Build with Chomp
       run: chomp build
-    - name: Upload to Deno Deploy
-      uses: denoland/deployctl@v1
+    - name: List files in the repository
       run: |
         ls ${{ github.workspace }}
+    - run: echo "🍏 This job's status is ${{ job.status }}."
+    - name: Upload to Deno Deploy
+      uses: denoland/deployctl@v1
       with:
         project: "jspm-packages"
         import-map: "file:///deno.importmap"
