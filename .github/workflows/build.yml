@@ -22,11 +22,9 @@ jobs:
       run: chomp build
     - name: Upload to Deno Deploy
       uses: denoland/deployctl@v1
+      run: |
+        ls ${{ github.workspace }}
       with:
         project: "jspm-packages"
         import-map: "file:///deno.importmap"
         entrypoint: "file:///server.jsx"
-    - name: List files in the repository
-      run: |
-        ls ${{ github.workspace }}
-    - run: echo "🍏 This job's status is ${{ job.status }}."
