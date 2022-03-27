@@ -8,11 +8,11 @@ on:
 
 jobs:
   test-ubuntu:
-    name: Test
+    name: Build with Chomp
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Setup Chomp
       uses: guybedford/chomp-action@v1
-    - name: generate importmap for deno
+    - name: Generate importmap for Deno
       run: chomp deno.importmap
