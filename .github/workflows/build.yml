@@ -20,7 +20,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: deno.importmap
-          path: deno.importmap
+          path: |
+            lib/
+            deno.importmap
+            shell.html
 
   deploy:
     name: deploy
