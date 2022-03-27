@@ -1,0 +1,18 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-ubuntu:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Chomp
+      uses: guybedford/chomp-action@v1
+    - name: generate importmap for deno
+      run: chomp deno.importmap
