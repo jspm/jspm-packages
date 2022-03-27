@@ -7,12 +7,22 @@ on:
     branches: [ main ]
 
 jobs:
-  test-ubuntu:
-    name: Build with Chomp
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Needed for auth with Deno Deploy
+      contents: read # Needed to clone the repository
     steps:
-    - uses: actions/checkout@v2
+    - name: Clone repository
+      uses: actions/checkout@v2
     - name: Setup Chomp
       uses: guybedford/chomp-action@v1
-    - name: Generate importmap for Deno
-      run: chomp deno.importmap
+    - name: Build with Chomp
+      run: chomp build
+    - name: Upload to Deno Deploy
+      uses: denoland/deployctl@v1
+      with:
+        project: "jspm-packages"
+        import-map: "deno.importmap"
+        entrypoint: "./server.jsx"

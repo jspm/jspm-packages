@@ -13,7 +13,7 @@ run = 'deno run -A --unstable server.js'
 
 [[task]]
 name = 'build'
-deps = ['server.js', 'shell.html']
+deps = ['deno.importmap', 'shell.html']
 
 [[task]]
 name = 'serve:dev'
