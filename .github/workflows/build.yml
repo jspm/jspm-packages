@@ -7,26 +7,40 @@ on:
     branches: [ main ]
 
 jobs:
-  deploy:
-    name: Deploy
+  build:
+    name: build using chomp
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write # Needed for auth with Deno Deploy
-      contents: read # Needed to clone the repository
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
       - name: Setup Chomp
         uses: guybedford/chomp-action@v1
-      - name: Build with Chomp
-        run: chomp build
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
-      - name: Upload to Deno Deploy
+      - run: chomp deno.importmap
+      - name: Upload importmap
+        uses: actions/upload-artifact@v3
+        with:
+          name: deno.importmap
+          path: deno.importmap
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Download deno importmap
+        uses: actions/download-artifact@v3
+        with:
+          name: deno.importmap
+      - name: list importmap content
+        run: cat deno.importmap
+      - name: Deploy to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: "jspm-packages"
-          import-map: "file:///deno.importmap"
-          entrypoint: "file:///server.jsx"
+          project: jspm-packages # the name of the project on Deno Deploy
+          import-map: deno.importmap
+          entrypoint: server.jsx # the entrypoint to deploy
