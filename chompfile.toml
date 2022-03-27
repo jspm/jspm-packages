@@ -3,6 +3,9 @@ default-task = 'serve'
 
 extensions = ['chomp@0.1:swc', 'chomp@0.1:jspm', 'chomp@0.1:npm']
 
+[template-options.npm]
+auto-install = true
+
 [[task]]
 name = 'serve'
 deps = [':build']
