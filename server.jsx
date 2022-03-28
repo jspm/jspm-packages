@@ -1,6 +1,6 @@
 /** @jsx h */
 
-import { serve } from "https://deno.land/std@0.121.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.132.0/http/server.ts";
 import nano, { h, renderSSR } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
