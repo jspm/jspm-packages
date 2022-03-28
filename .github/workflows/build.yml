@@ -1,0 +1,49 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: build using chomp
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Setup Chomp
+        uses: guybedford/chomp-action@v1
+      - run: chomp build
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: |
+            lib/
+            deno.importmap
+            shell.html
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Download built artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+      - name: list importmap content
+        run: cat deno.importmap
+      - name: Deploy to Deno Deploy
+        uses: denoland/deployctl@v1
+        with:
+          project: jspm-packages # the name of the project on Deno Deploy
+          import-map: deno.importmap
+          entrypoint: server.jsx # the entrypoint to deploy

@@ -1,10 +1,8 @@
+deno.importmap
+dist
 node_modules
 package-lock.json
 lib
-deno.importmap
-.swcrc_
-deno.jsonc
-deno2.importmap
-dev.jsx
-src/importmap-generator.js
-dist
+server.js
+server.js.map
+shell.html
