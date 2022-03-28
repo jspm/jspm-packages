@@ -1,5 +1,5 @@
 version = 0.1
-default-task = 'serve'
+default-task = 'build'
 
 extensions = ['chomp@0.1:swc', 'chomp@0.1:jspm', 'chomp@0.1:npm']
 
@@ -7,16 +7,11 @@ extensions = ['chomp@0.1:swc', 'chomp@0.1:jspm', 'chomp@0.1:npm']
 auto-install = true
 
 [[task]]
-name = 'serve'
-deps = [':build']
-run = 'deno run -A --unstable server.js'
-
-[[task]]
 name = 'build'
 deps = ['deno.importmap', 'shell.html']
 
 [[task]]
-name = 'serve:dev'
+name = 'serve'
 deps = ['lib/**/*.js', 'deno.importmap', 'server.jsx', 'shell.html']
 run = 'deno run -A --import-map=deno.importmap --unstable --no-check server.jsx'
 
@@ -31,17 +26,12 @@ template = 'swc'
 [[task]]
 name = 'clean'
 validation = 'none'
-run = 'rm deno.importmap ; rm lib/* ; rm server.js'
+run = 'rm deno.importmap ; rm lib/* ; rm shell.html'
 
 [[task]]
 target = 'lib/#.js'
 dep = 'src/#.js'
 run = 'cp $DEP $TARGET'
-
-[[task]]
-target = 'server.js'
-deps = ['lib/**/*.js', 'deno.importmap', 'server.jsx']
-run = 'deno bundle --import-map=deno.importmap --unstable --no-check server.jsx server.js'
 
 [[task]]
 target = 'deno.importmap'
