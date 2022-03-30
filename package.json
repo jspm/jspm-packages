@@ -1,5 +1,5 @@
 {
-  "name": "@jspm/jspm-packages",
+  "name": "@jspm/packages",
   "devDependencies": {
     "@jspm/generator": "^1.0.0-beta.30",
     "@jspm/plugin-rollup": "github:jspm/rollup-plugin-jspm",
@@ -7,6 +7,76 @@
     "@swc/core": "^1.2.161",
     "mkdirp": "^1.0.4",
     "rollup": "^2.70.1"
+  },
+  "exports": {
+    "./ssr-root": {
+      "browser": "./lib/ssr-root.js",
+      "default": "./src/ssr-root.jsx"
+    },
+    "./utils": {
+      "browser": "./lib/utils.js",
+      "default": "./utils.js"
+    },
+    "./home": {
+      "browser": "./lib/home.js",
+      "default": "./src/home.jsx"
+    },
+    "./featured-packages-list": {
+      "browser": "./lib/featured-packages-list.js",
+      "default": "./src/featured-packages-list.js"
+    },
+    "./package-quality-check": {
+      "browser": "./lib/package-quality-check.js",
+      "default": "./src/package-quality-check.js"
+    },
+    "./renderer": {
+      "browser": "./lib/renderer.js",
+      "default": "./src/renderer.js"
+    },
+    "./package": {
+      "browser": "./lib/package.js",
+      "default": "./src/package.jsx"
+    },
+    "./header": {
+      "browser": "./lib/header.js",
+      "default": "./src/header.jsx"
+    },
+    "./footer": {
+      "browser": "./lib/footer.js",
+      "default": "./src/footer.jsx"
+    },
+    "./featured-packages": {
+      "browser": "./lib/featured-packages.js",
+      "default": "./src/featured-packages.jsx"
+    },
+    "./readme": {
+      "browser": "./lib/readme.js",
+      "default": "./src/readme.jsx"
+    },
+    "./aside": {
+      "browser": "./lib/aside.js",
+      "default": "./src/aside.jsx"
+    },
+    "./logo": {
+      "browser": "./lib/logo.js",
+      "default": "./src/logo.jsx"
+    },
+    "./search": {
+      "browser": "./lib/search.js",
+      "default": "./src/search.jsx"
+    },
+    "./nav": {
+      "browser": "./lib/nav.js",
+      "default": "./src/nav.jsx"
+    },
+    "./separator": {
+      "browser": "./lib/separator.js",
+      "default": "./src/separator.jsx"
+    },
+    "./importmap-dialog": {
+      "browser": "./lib/importmap-dialog.js",
+      "default": "./src/importmap-dialog.jsx"
+    }
   },
   "type": "module"
 }

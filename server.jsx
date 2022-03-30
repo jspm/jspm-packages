@@ -4,11 +4,11 @@ import { serve } from "https://deno.land/std@0.132.0/http/server.ts";
 import nano, { h, renderSSR } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
-import { SsrRoot } from "./lib/ssr-root.js";
-import { Home } from "./lib/home.js";
-import { pageServingHeaders, renderMarkdownContent } from "./utils.js";
-import { FEATURED_PACKAGES } from "./lib/featured-packages-list.js";
-import { features, parseURL } from "./lib/package-quality-check.js";
+import { SsrRoot } from "@jspm/packages/ssr-root";
+import { Home } from "@jspm/packages/home";
+import { pageServingHeaders, renderMarkdownContent } from "@jspm/packages/utils";
+import { FEATURED_PACKAGES } from "@jspm/packages/featured-packages-list";
+import { features, parseURL } from "@jspm/packages/package-quality-check";
 
 const { Helmet } = nano;
 

@@ -1,3 +1,4 @@
+/** @jsx h */
 import { h, Helmet } from "nano-jsx";
 
 function PackageHeader({ homepage, name, version, description }) {

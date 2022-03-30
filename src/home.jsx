@@ -1,8 +1,8 @@
 /** @jsx h */
 import nano, { h } from "nano-jsx";
-import { Header } from "./header.js";
-import { FeaturedPackages } from "./featured-packages.js";
-import { Footer } from "./footer.js";
+import { Header } from "@jspm/packages/header";
+import { FeaturedPackages } from "@jspm/packages/featured-packages";
+import { Footer } from "@jspm/packages/footer";
 
 const { Helmet } = nano;
 

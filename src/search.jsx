@@ -1,3 +1,4 @@
+/** @jsx h */
 import nano, { h } from "nano-jsx";
 
 const { Helmet } = nano;

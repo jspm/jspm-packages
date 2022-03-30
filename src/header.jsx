@@ -1,8 +1,8 @@
 /** @jsx h */
 import nano, { h } from "nano-jsx";
-import { Logo } from "./logo.js";
-import { Search } from "./search.js";
-import { Nav } from "./nav.js";
+import { Logo } from "@jspm/packages/logo";
+import { Search } from "@jspm/packages/search";
+import { Nav } from "@jspm/packages/nav";
 
 const { Helmet } = nano;
 
