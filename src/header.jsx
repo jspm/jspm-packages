@@ -16,22 +16,30 @@ function Header(
           <Logo />
           <Search />
         </div>
+        <div class="header">
         <Nav
           generatorHash={generatorHash}
           dependencies={dependencies}
           open={open}
           toggleImportmapDialog={toggleImportmapDialog}
         />
+        </div>
       </header>
       <Helmet>
         <style data-component-name="header">
           {`
+
+            jspm-header {
+              width: 100%;
+            }
+
             .header {
               display: flex;
               justify-content: space-between;
               align-items: center;
               flex-wrap: wrap;
               align-content: center;
+              margin: auto;
             }
 
             @media(max-width: 768px) {

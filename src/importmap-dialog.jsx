@@ -47,7 +47,7 @@ function ImportMapDialog(
               target="_blank"
               href={`https://generator.jspm.io/${generatorHash}`}
             >
-              Customize importmap at JSPM Generator
+              Customize importmap
             </a>
           </h4>
         )}
@@ -63,7 +63,7 @@ function ImportMapDialog(
                     <jspm-importmap-entry-name>
                       {name}
                     </jspm-importmap-entry-name>
-                    <jspm-importmap-entry-version class="code">
+                    <jspm-importmap-entry-version>
                       v{version}
                     </jspm-importmap-entry-version>
                   </jspm-importmap-entry-summary>
@@ -72,7 +72,7 @@ function ImportMapDialog(
                   {subpaths.map((subpath) => (
                     <li>
                       <jspm-importmap-entry>
-                        <jspm-importmap-entry-subpath class="code">
+                        <jspm-importmap-entry-subpath>
                           {subpath}
                         </jspm-importmap-entry-subpath>
                         <button
@@ -100,7 +100,7 @@ function ImportMapDialog(
                 return (
                   <details>
                     <summary>
-                      <jspm-importmap-entry-version class="code">
+                      <jspm-importmap-entry-version>
                         v{version}
                       </jspm-importmap-entry-version>
                     </summary>
@@ -143,21 +143,18 @@ function ImportMapDialog(
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
           }
           jspm-importmap-dialog dialog details  {
-            margin: 15px;
+            margin: 15px 0px;
             padding: 10px;
             -webkit-border-radius: 50px;
             border-radius: 10px;
             background: #ffffff;
-            -webkit-box-shadow: 12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
-            box-shadow: -12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
           }
           jspm-importmap-dialog dialog details summary, jspm-importmap-entry-summary{
-            padding: 10px;
             cursor: pointer;
             display: flex;
-            align-content: center;
             justify-content: space-between;
-            align-items: center;
+            align-items: end;
+            font-family: 'Source Code Pro';
           }
           jspm-importmap-dialog dialog details summary:after{
             content: '›';
@@ -169,17 +166,17 @@ function ImportMapDialog(
             content: '⌄';
           }
           jspm-importmap-entry-name{
-            font-weight: 700;
+            font-size: 18px;
           }
           jspm-importmap-entry-version{
+            font-size: 10px;
             margin-left: 10px;
+            margin-bottom: 3px;
           }
           jspm-importmap-dialog dialog .icon-close{
-            background: white;
-            border: 2px solid black;
-            background: black;
-            color: var(--dl-color-primary-js-primary);
-            cursor: pointer;
+            color: black;
+            background: none;
+            border-style: none;
           }
           jspm-importmap-entry{
             display: flex;

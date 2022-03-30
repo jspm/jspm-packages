@@ -1,4 +1,4 @@
-import nano, { h } from "nano-jsx";
+import nano, { h, Fragment } from "nano-jsx";
 
 const { Helmet } = nano;
 
@@ -6,7 +6,7 @@ function Nav(
   { generatorHash = "", dependencies = [], open, toggleImportmapDialog },
 ) {
   return (
-    <div>
+    <Fragment>
       <nav>
         <ul class="nav-list-style">
           <li class="nav-list-item">
@@ -55,7 +55,7 @@ function Nav(
           `}
         </style>
       </Helmet>
-    </div>
+    </Fragment>
   );
 }
 export { Nav };

@@ -51,10 +51,10 @@ function Aside(
             </ul>
           ))}
         </jspm-features>
+        <Seperator />
         <div>
           <h3>License</h3>
           <jspm-license>{license}</jspm-license>
-          <Seperator />
         </div>
         <jspm-links>
           <h3>Links</h3>

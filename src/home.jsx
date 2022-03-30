@@ -26,7 +26,11 @@ function Home({ packages }) {
       <Helmet>
         <style data-component-name="jspm-home">
           {`
-          
+            jspm-home {
+              display: block;
+              max-width: 1140px;
+              margin: 0 auto;
+            }
         `}
         </style>
       </Helmet>

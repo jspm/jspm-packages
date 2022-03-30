@@ -5,6 +5,7 @@ import { Aside } from "./aside.js";
 import { Header } from "./header.js";
 import { Footer } from "./footer.js";
 import { ImportMapDialog } from "./importmap-dialog.js";
+import { Seperator } from "./separator.js";
 
 const { Helmet } = nano;
 
@@ -57,6 +58,7 @@ function Package({
       >
         <jspm-highlight>
           <h2>{name}</h2>
+          <Seperator />
           <div>
             <span>{version}</span>•<span>Published {updated}</span>
           </div>
@@ -64,7 +66,7 @@ function Package({
           <h3>{description}</h3>
         </jspm-highlight>
       </jspm-package-hero>
-      <jspm-content>
+      <jspm-content class="content">
         <main>
           <jspm-package-exports>
             <h4>Package exports</h4>
@@ -82,8 +84,8 @@ function Package({
                         value={packageExport}
                       >
                         {addedToImportMap
-                          ? "− Remove from importmap"
-                          : "+ Add to importmap"}
+                          ? "−"
+                          : "+"}
                       </button>
                     )}
                   </li>
@@ -124,17 +126,21 @@ function Package({
             display: block;
             max-width: 1140px;
             margin: 0 auto;
+            padding: 0 6px;
           }
           jspm-highlight{
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
           }
           jspm-highlight h2{
             font-family: 'Source Sans Pro', sans-serif;
+            margin-bottom: 6px;
           }
-        jspm-content {
-          display: grid;
-          grid-template-columns: minmax(800px, 1fr) minmax(350px, 1fr);
-          grid-gap: 1rem;
+        
+        .content {
+          display: flex;
+          gap: 1rem;
         }
         
         jspm-readme {
@@ -150,7 +156,8 @@ function Package({
         jspm-name,
         jspm-version,
         jspm-description,
-        jspm-license {
+        jspm-license,
+        jspm-content {
           display: block;
         }
         
@@ -163,15 +170,6 @@ function Package({
           color: black;
         }
 
-        @media(max-width: 767px) {
-          jspm-content {
-            justify-content: space-between;
-          }
-
-          jspm-readme {
-            width: 100%;
-          }
-        }
         jspm-package-exports ul{
           margin: 0;
           padding: 0;
@@ -188,11 +186,20 @@ function Package({
         jspm-package-exports ul li button{
           background: var(--dl-color-primary-js-primary);
           color: black;
-          padding: 10px;
+          padding: 4px 8px;
           display: inline-block;
-          border: 3px solid black;
-          min-width: 250px;
           font-family: "Bebas Neue", cursive;
+          border-style: none;
+        }
+
+        @media(max-width: 767px) {
+          .content {
+            flex-wrap: wrap;
+          }
+
+          jspm-readme {
+            width: 100%;
+          }
         }
         `}
         </style>
