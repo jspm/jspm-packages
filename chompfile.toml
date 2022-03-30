@@ -35,7 +35,7 @@ run = 'cp $DEP $TARGET'
 
 [[task]]
 target = 'deno.importmap'
-deps = ['server.jsx', 'lib/**/*.js']
+deps = ['server.jsx']
 template = 'jspm'
 [task.template-options]
 env = ['deno', 'production']

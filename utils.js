@@ -1,6 +1,6 @@
 import { emojify } from "https://deno.land/x/emoji@0.1.2/mod.ts";
 import { marked } from "marked";
-import { Renderer } from "./lib/renderer.js";
+import { Renderer } from "@jspm/packages/renderer";
 
 function getRandomFloat(min, max) {
   return (Math.random() * (max - min) + min).toFixed(2);

@@ -1,10 +1,10 @@
 /** @jsx h */
 import nano, { h } from "nano-jsx";
-import { Readme } from "./readme.js";
-import { Aside } from "./aside.js";
-import { Header } from "./header.js";
-import { Footer } from "./footer.js";
-import { ImportMapDialog } from "./importmap-dialog.js";
+import { Readme } from "@jspm/packages/readme";
+import { Aside } from "@jspm/packages/aside";
+import { Header } from "@jspm/packages/header";
+import { Footer } from "@jspm/packages/footer";
+import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
 
 const { Helmet } = nano;
 
