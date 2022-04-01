@@ -111,8 +111,6 @@ function Package({
         />
       </jspm-content>
 
-      <Footer />
-
       <Helmet>
         <link
           rel="stylesheet"
