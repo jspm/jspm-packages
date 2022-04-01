@@ -9,6 +9,12 @@
     "rollup": "^2.70.1"
   },
   "exports": {
+    ".": {
+      "browser": "./lib/dom-main.js"
+    },
+    "./dom-root": {
+      "browser": "./lib/dom-root.js"
+    },
     "./ssr-root": {
       "browser": "./lib/ssr-root.js",
       "default": "./src/ssr-root.jsx"
@@ -16,6 +22,10 @@
     "./utils": {
       "browser": "./lib/utils.js",
       "default": "./utils.js"
+    },
+    "./hero": {
+      "browser": "./lib/hero.js",
+      "default": "./src/hero.jsx"
     },
     "./home": {
       "browser": "./lib/home.js",
