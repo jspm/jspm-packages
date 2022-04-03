@@ -7,14 +7,14 @@ import { Nav } from "@jspm/packages/nav";
 const { Helmet } = nano;
 
 function Header(
-  { generatorHash = "", dependencies = [], open, toggleImportmapDialog },
+  { generatorHash = "", dependencies = [], open, toggleImportmapDialog, search=true },
 ) {
   return (
     <jspm-header>
       <header class="header">
         <div class="header">
           <Logo />
-          <Search />
+          {search && <Search />}
         </div>
         <Nav
           generatorHash={generatorHash}
