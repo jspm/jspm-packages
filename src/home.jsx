@@ -14,7 +14,10 @@ function Home({ packages }) {
 
       <jspm-home-main>
         <main>
-          <Search />
+          <jspm-home-hero>
+            <h1>Find &amp; add NPM packages in importmap</h1>
+            <Search />
+          </jspm-home-hero>
         </main>
       </jspm-home-main>
 
@@ -27,12 +30,15 @@ function Home({ packages }) {
             max-width: 1140px;
             margin: 0 auto;
           }
+          jspm-home-hero h1{
+            text-align: center;
+            font-size: var(--step-5);
+          }
           jspm-home jspm-search {
             display: flex;
             align-content: center;
             justify-content: center;
             align-items: center;
-            min-height: 60vh;
           }
           jspm-home jspm-search input[type="search"] {
             width: 80vw;
