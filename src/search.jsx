@@ -58,6 +58,9 @@ function Search(params) {
             background-color: var(--dl-color-jspm-placeholder);
             border-top-left-radius: var(--dl-radius-radius-radius8);
             border-bottom-left-radius: var(--dl-radius-radius-radius8);
+            background: url('/npm-n-block-16.png') no-repeat 8px center;
+            font-size: var(--step--2);
+            padding-left: 32px;
           }
           jspm-nav nav ul {
               display: flex;

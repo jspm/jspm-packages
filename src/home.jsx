@@ -15,7 +15,7 @@ function Home({ packages }) {
       <jspm-home-main>
         <main>
           <jspm-home-hero>
-            <h1>Find &amp; add NPM packages in importmap</h1>
+            <h1>A CDN to serve NPM packages as standard ECMA Script &amp; Importmaps.</h1>
             <Search />
           </jspm-home-hero>
         </main>
@@ -42,6 +42,18 @@ function Home({ packages }) {
           }
           jspm-home jspm-search input[type="search"] {
             width: 80vw;
+          }
+          jspm-home-hero{
+            margin-bottom: 50px;
+          }
+          jspm-home-hero .search_button{
+            height: 70px;
+          }
+          jspm-home-hero .search_input{
+            height: 70px;
+            padding: var(--dl-space-space-halfunit) 70px;
+            font-size: var(--step-0);
+            background: url('/npm-n-block-32.jpeg') no-repeat 18px center;
           }
         `}
         </style>
