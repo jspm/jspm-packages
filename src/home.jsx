@@ -46,6 +46,15 @@ function Home({ packages }) {
           jspm-home-hero{
             margin-bottom: 50px;
           }
+          jspm-home-hero .search_button{
+            height: 70px;
+          }
+          jspm-home-hero .search_input{
+            height: 70px;
+            padding: var(--dl-space-space-halfunit) 70px;
+            font-size: var(--step-0);
+            background: url('/npm-n-block-32.jpeg') no-repeat 18px center;
+          }
         `}
         </style>
       </Helmet>
