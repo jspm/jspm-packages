@@ -178,6 +178,10 @@ const staticResources = {
     path: "./images/icon-distributed.png",
     contentType: "image/png",
   },
+  "/npm-n-block-32.jpeg": {
+    path: "./images/npm-n-block-32.jpeg",
+    contentType: "image/png",
+  },
   "/favicon.ico": {
     path: "./favicon.ico",
     contentType: "image/vnd.microsoft.icon",

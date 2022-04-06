@@ -31,7 +31,7 @@ function Search(params) {
             padding: 0.5rem 1rem;
             border-color: var(--dl-color-gray-black);
             border-width: 1px;
-            height: 40px;
+            height: 70px;
             display: flex;
             align-items: center;
             border-width: 0px;
@@ -47,17 +47,18 @@ function Search(params) {
           .search_input {
             color: var(--dl-color-gray-black);
             cursor: auto;
-            padding: 0.5rem 1rem;
             border-color: var(--dl-color-gray-black);
             border-width: 1px;
             background-color: var(--dl-color-gray-white);
-            height: 40px;
-            padding: var(--dl-space-space-halfunit);
+            height: 70px;
+            padding: var(--dl-space-space-halfunit) 70px;
             max-width: 500px;
             border-color: var(--dl-color-jspm-placeholder);
             background-color: var(--dl-color-jspm-placeholder);
             border-top-left-radius: var(--dl-radius-radius-radius8);
             border-bottom-left-radius: var(--dl-radius-radius-radius8);
+            background: url('/npm-n-block-32.jpeg') no-repeat 18px center;
+            font-size: var(--step-0);
           }
           jspm-nav nav ul {
               display: flex;
