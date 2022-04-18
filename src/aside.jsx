@@ -24,13 +24,15 @@ function Aside(
   return (
     <jspm-aside>
       <aside>
-        {/* <jspm-aside-exports
+        {
+          /* <jspm-aside-exports
           data-exports={JSON.stringify(exports)}
           data-name={name}
           data-version={version}
         >
           <Exports exports={exports} name={name} version={version} />
-        </jspm-aside-exports> */}
+        </jspm-aside-exports> */
+        }
         <jspm-created>
           <h3>Created</h3>
           {created}
@@ -67,8 +69,8 @@ function Aside(
             )
           )}
         </jspm-links>
+        <h3>Collaborators</h3>
         <jspm-maintainers>
-          <h3>Collaborators</h3>
           {maintainers.map(({ name, email }) => (
             <jspm-maintainer>
               <figure>
@@ -92,16 +94,18 @@ function Aside(
           jspm-features li[data-feature-supported="false"]{
             list-style-type: '✖';
           }
-          jspm-maintainer {
+          jspm-maintainers {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: nowrap;
-            align-content: center;
-            align-items: center;
+            flex-wrap: wrap;
+          }
+          jspm-maintainer {
+            text-align: center;
+            margin: 5px;
           }
           jspm-maintainer figure{
             width: 80px;
-            display: inline-block;
+            display: block;
+            margin: 0;
           }
           jspm-maintainer figure img{
             width: 100%;
