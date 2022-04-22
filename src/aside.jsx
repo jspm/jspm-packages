@@ -35,29 +35,29 @@ function Aside(
         }
         <jspm-created>
           <h3>Created</h3>
-          {created}
+          <span>{created}</span>
         </jspm-created>
         <jspm-weekly-updated>
           <h3>Updated</h3>
-          {updated}
+          <span>{updated}</span>
         </jspm-weekly-updated>
         <jspm-weekly-downloads>
           <h3>Downloads (weekly)</h3>
-          {downloads}
+          <span>{downloads}</span>
         </jspm-weekly-downloads>
         <jspm-features>
           <h3>Features</h3>
-          {Object.entries(features).map(([feature, supported]) => (
-            <ul>
+          <ul>
+            {Object.entries(features).map(([feature, supported]) => (
               <li data-feature-supported={supported}>{feature}</li>
-            </ul>
-          ))}
+            ))}
+          </ul>
         </jspm-features>
-        <div>
+        <jspm-license>
           <h3>License</h3>
-          <jspm-license>{license}</jspm-license>
-          <Seperator />
-        </div>
+          <span>{license}</span>
+        </jspm-license>
+        <Seperator />
         <jspm-links>
           <h3>Links</h3>
           {Object.entries(links).map(([text, link]) =>
@@ -85,6 +85,13 @@ function Aside(
       <Helmet>
         <style data-component-name="jspm-aside">
           {`
+          jspm-features{
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: nowrap;
+            align-items: flex-end;
+            flex-direction: column;
+          }
           jspm-features li{
             padding-inline-start: 1ch;
           }
@@ -93,6 +100,12 @@ function Aside(
           }
           jspm-features li[data-feature-supported="false"]{
             list-style-type: '✖';
+          }
+          jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license{
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: flex-end;
           }
           jspm-maintainers {
             display: flex;

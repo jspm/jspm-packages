@@ -331,10 +331,10 @@ async function requestHandler(request) {
         const packageMetaData = await fetch(
           `https://registry.npmjs.org/${name}`,
         );
-        const { maintainers, readme, time: { created: createdISO, modified } } = await packageMetaData.json();
-
+        const { maintainers, readme, time } = await packageMetaData.json();
+        const { created: createdISO, modified } = time;
         dayjs.extend(dayjsPluginRelativeTime);
-        const updated = dayjs(modified).fromNow();
+        const updated = dayjs(time[version]).fromNow();
         const created = dayjs(createdISO).fromNow();
         try {
           // `readme` is preferred here but this content always refers to the latest version

@@ -54,7 +54,7 @@ function Package({
             <h3>v{version}</h3>
           </jspm-package-title>
           <jspm-summary>
-            <span>{version}</span>
+            <span>{license}</span>
             <span>Published {updated}</span>
             {types && <img height="20" src="/icon-typescript-logo.svg" />}
           </jspm-summary>

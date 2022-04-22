@@ -61,6 +61,7 @@ function Search(params) {
             background: url('/npm-n-block-16.png') no-repeat 8px center;
             font-size: var(--step--2);
             padding-left: 32px;
+            width: 70vw;
           }
           jspm-nav nav ul {
               display: flex;
