@@ -47,7 +47,7 @@ function Nav(
           }
 
           .nav-list-item .toggle-dialog{
-            background: transparent url('/icon-distributed.png') left center no-repeat;
+            background: transparent url('/icon-importmap.png') left center no-repeat;
             background-size: contain;
             padding-left: 25px;
             border: 0;

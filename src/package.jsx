@@ -120,6 +120,12 @@ function Package({
             display: block;
             max-width: 1140px;
             margin: 0 auto;
+            padding: 0 var(--dl-space-space-oneandhalfunits);
+          }
+          @media(min-width: 768px) {
+            jspm-package{
+              padding: 0;
+            }
           }
           jspm-highlight{
             text-align: center;
@@ -127,15 +133,9 @@ function Package({
           jspm-highlight h2{
             font-family: 'Source Sans Pro', sans-serif;
           }
-        jspm-content {
-          display: grid;
-          grid-template-columns: 1fr 0.618fr;
-          grid-gap: 1rem;
-        }
         
         jspm-readme {
           display: block;
-          padding: var(--dl-space-space-oneandhalfunits);
         }
         
         jspm-aside {
@@ -144,8 +144,7 @@ function Package({
         
         jspm-name,
         jspm-version,
-        jspm-description,
-        jspm-license {
+        jspm-description {
           display: block;
         }
         
@@ -170,12 +169,17 @@ function Package({
           color: black;
         }
 
-        @media(max-width: 767px) {
-          jspm-content {
-            justify-content: space-between;
-            grid-template-columns: 1fr;
-          }
+        jspm-content {
+          justify-content: space-between;
+          grid-template-columns: 1fr;
+        }
 
+        @media(min-width: 810px) {
+          jspm-content {
+            display: grid;
+            grid-template-columns: 1fr 0.618fr;
+            grid-gap: 1rem;
+          }
           jspm-readme {
             width: 100%;
           }
@@ -190,6 +194,9 @@ function Package({
           position: sticky;
           top: 0;
           background: white;
+          margin: 0;
+          padding: 1rem 0;
+          text-align: center;
         }
         jspm-package-exports ul{
           margin: 0;

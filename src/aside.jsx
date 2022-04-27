@@ -85,13 +85,6 @@ function Aside(
       <Helmet>
         <style data-component-name="jspm-aside">
           {`
-          jspm-features{
-            display: flex;
-            justify-content: flex-end;
-            flex-wrap: nowrap;
-            align-items: flex-end;
-            flex-direction: column;
-          }
           jspm-features li{
             padding-inline-start: 1ch;
           }
@@ -105,7 +98,7 @@ function Aside(
             display: flex;
             align-items: center;
             gap: 15px;
-            justify-content: flex-end;
+            justify-content: normal;
           }
           jspm-maintainers {
             display: flex;
@@ -123,6 +116,23 @@ function Aside(
           jspm-maintainer figure img{
             width: 100%;
             display: block;
+          }
+          jspm-link h5{
+            margin-bottom: 0;
+          }
+
+          @media(min-width: 810px) {
+            jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license{
+              justify-content: flex-end;
+            }
+            
+            jspm-features{
+              display: flex;
+              justify-content: flex-end;
+              flex-wrap: nowrap;
+              align-items: flex-end;
+              flex-direction: column;
+            }
           }
           `}
         </style>

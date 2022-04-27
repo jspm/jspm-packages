@@ -28,15 +28,15 @@ function Header(
           {`
             .header {
               display: flex;
-              justify-content: space-between;
+              justify-content: center;
               align-items: center;
               flex-wrap: wrap;
               align-content: center;
             }
 
-            @media(max-width: 768px) {
+            @media(min-width: 1100px) {
               .header {
-                justify-content: center;
+                justify-content: space-between;
               }
             }
           `}
