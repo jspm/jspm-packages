@@ -10,7 +10,8 @@
   },
   "exports": {
     ".": {
-      "browser": "./lib/dom-main.js"
+      "browser": "./lib/dom-main.js",
+      "default": "./src/server-main.jsx"
     },
     "./dom-root": {
       "browser": "./lib/dom-root.js"

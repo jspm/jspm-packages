@@ -40,16 +40,25 @@ function ImportMapDialog(
   return (
     <jspm-importmap-dialog>
       <dialog {...open}>
-        <button class="icon-close" onClick={toggleImportmapDialog}>✕</button>
+        <header>
+          <jspm-importmap-dialog-close-button>
+            <button class="icon-close" onClick={toggleImportmapDialog}>
+              ✕
+            </button>
+          </jspm-importmap-dialog-close-button>
+          <jspm-importmap-dialog-title>
+            <h4>Importmap Dependencies</h4>
+          </jspm-importmap-dialog-title>
+        </header>
         {generatorHash && (
-          <h4>
+          <jspm-generator-link>
             <a
               target="_blank"
               href={`https://generator.jspm.io/${generatorHash}`}
             >
               Customize importmap at JSPM Generator
             </a>
-          </h4>
+          </jspm-generator-link>
         )}
 
         {Object.entries(map).map(([name, versions]) => {
@@ -92,7 +101,12 @@ function ImportMapDialog(
             <details>
               <summary>
                 <jspm-importmap-entry-summary>
-                  {name}
+                  <jspm-importmap-entry-name>
+                    {name}
+                  </jspm-importmap-entry-name>
+                  <jspm-importmap-entry-version class="code">
+                    [{mapEntries.length} versions]
+                  </jspm-importmap-entry-version>
                 </jspm-importmap-entry-summary>
               </summary>
 
@@ -130,18 +144,42 @@ function ImportMapDialog(
         <style data-component-name="jspm-importmap-dialog">
           {`
           jspm-importmap-dialog dialog  {
+            z-index: 2;
             min-height: 100vh;
             min-width: 350px;
             background: white;
             left: unset;
             border: 0 solid black;
-
-            
             border-radius: 0;
             /*background: linear-gradient(225deg, #e6e6e6, #ffffff);*/
             /*box-shadow:  -5px 5px 10px #d9d9d9, 5px -5px 10px #ffffff;*/
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
           }
+
+          jspm-importmap-dialog dialog header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+          }
+
+          jspm-importmap-dialog dialog header h4{
+            margin: 0;
+          }
+
+          jspm-importmap-dialog dialog jspm-generator-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+          }
+
+          jspm-importmap-dialog dialog jspm-generator-link a{
+            display: inline-block;
+            margin-bottom: 1rem;
+            background: url(/images/icon-external-link.png) no-repeat right center;
+            background-size: contain;
+            padding-right: 25px;
+          }
+
           jspm-importmap-dialog dialog details  {
             margin: 15px;
             padding: 10px;
@@ -151,6 +189,7 @@ function ImportMapDialog(
             -webkit-box-shadow: 12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
             box-shadow: -12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
           }
+
           jspm-importmap-dialog dialog details summary, jspm-importmap-entry-summary{
             padding: 10px;
             cursor: pointer;
@@ -159,34 +198,41 @@ function ImportMapDialog(
             justify-content: space-between;
             align-items: center;
           }
+
           jspm-importmap-dialog dialog details summary:after{
             content: '›';
             margin-right: 10px;
             font-weight: 700;
             font-size: 1.2rem;
           }
+
           jspm-importmap-dialog dialog details[open] summary:after{
             content: '⌄';
           }
+
           jspm-importmap-entry-name{
             font-weight: 700;
           }
+
           jspm-importmap-entry-version{
             margin-left: 10px;
           }
+
           jspm-importmap-dialog dialog .icon-close{
             background: white;
-            border: 2px solid black;
-            background: black;
-            color: var(--dl-color-primary-js-primary);
+            border: none;
+            background: transparent;
+            font-size: var(--step-0);
             cursor: pointer;
           }
+
           jspm-importmap-entry{
             display: flex;
             align-content: center;
             justify-content: space-between;
             align-items: center;
           }
+
           jspm-importmap-entry button{
             background: white;
             border: none;

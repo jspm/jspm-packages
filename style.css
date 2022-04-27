@@ -68,10 +68,12 @@ pre {
   overflow-x: scroll;
   padding: 10px;
   background-color: var(--dl-color-jspm-placeholder);
+  white-space: pre-wrap;
 }
 
 code, .code {
   font-family: "Source Code Pro", monospace;
+  font-family: 'DM Mono', monospace;
   font-size: var(--step--2);
 }
 
@@ -94,4 +96,7 @@ a {
 }
 * { box-sizing: border-box; }
 
-  label { margin-right: 10px; }
+label { margin-right: 10px; }
+button {
+  cursor: pointer;
+}

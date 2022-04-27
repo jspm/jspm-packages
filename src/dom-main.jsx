@@ -1,18 +1,30 @@
 /** @jsx h */
 import { h, hydrate } from "nano-jsx";
 
-
-
 async function hydrateRoot() {
   const mountElement = document.querySelector("jspm-package-root");
 
   if (mountElement) {
-    const { exports, name, version, features, links, maintainers, readme } = mountElement.dataset;
+    const { created, downloads, exports, features, license, links, maintainers, name, readme, types, updated, version } =
+      mountElement.dataset;
     const parsedExports = exports ? JSON.parse(exports) : [];
     const { DomRoot } = await import("@jspm/packages/dom-root");
-    
+
     hydrate(
-      <DomRoot name={name} version={version} exports={parsedExports} features={JSON.parse(features)} links={JSON.parse(links)} maintainers={JSON.parse(maintainers)} readme={readme} />,
+      <DomRoot
+        created={created}
+        downloads={downloads}
+        exports={parsedExports}
+        features={JSON.parse(features)}
+        license={license}
+        links={JSON.parse(links)}
+        name={name}
+        readme={readme}
+        maintainers={JSON.parse(maintainers)}
+        types={types}
+        updated={updated}
+        version={version}
+      />,
       mountElement,
     );
   }

@@ -38,15 +38,16 @@ function Nav(
         <style data-component-name="jspm-nav">
           {`
           .nav-list-style {
-              display: flex;
-              list-style: none;
+            display: flex;
+            list-style: none;
+            gap: 15px;
+            justify-content: space-between;
+            margin: 30px 0;
+            padding: 0;
           }
 
-          .nav-list-item {
-              margin-right: var(--dl-space-space-twounits);
-          }
           .nav-list-item .toggle-dialog{
-            background: transparent url('/icon-distributed.png') left center no-repeat;
+            background: transparent url('/icon-importmap.png') left center no-repeat;
             background-size: contain;
             padding-left: 25px;
             border: 0;

@@ -79,6 +79,7 @@ class DomRoot extends Component {
       license,
       links,
       maintainers,
+      types,
       name,
       readme,
       updated,
@@ -97,6 +98,7 @@ class DomRoot extends Component {
         readme={readme}
         toggleExportSelection={this.toggleExportSelection}
         maintainers={maintainers}
+        types={types}
         updated={updated}
         version={version}
         generatorHash={this.generatorHash}

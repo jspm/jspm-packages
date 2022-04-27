@@ -33,7 +33,7 @@ function Package({
   toggleImportmapDialog,
 }) {
   return (
-    <jspm-package>
+    <jspm-package data-meta={JSON.stringify(import.meta)}>
       <ImportMapDialog
         generatorHash={generatorHash}
         dependencies={selectedDeps}
@@ -47,21 +47,18 @@ function Package({
         open={openImportmapDialog}
         toggleImportmapDialog={toggleImportmapDialog}
       />
-      <jspm-package-hero
-        data-exports={JSON.stringify(exports)}
-        data-name={name}
-        data-version={version}
-        data-description={description}
-        data-updated={updated}
-        data-types={types}
-      >
+      <jspm-package-hero>
         <jspm-highlight>
-          <h2>{name}</h2>
-          <div>
-            <span>{version}</span>•<span>Published {updated}</span>
-          </div>
-          <div></div>
-          <h3>{description}</h3>
+          <jspm-package-title>
+            <h2>{name}</h2>
+            <h3>v{version}</h3>
+          </jspm-package-title>
+          <jspm-summary>
+            <span>{license}</span>
+            <span>Published {updated}</span>
+            {types && <img height="20" src="/icon-typescript-logo.svg" />}
+          </jspm-summary>
+          <p>{description}</p>
         </jspm-highlight>
       </jspm-package-hero>
       <jspm-content>
@@ -77,6 +74,7 @@ function Package({
                     {`${name}${subpath.slice(1)}`}
                     {toggleExportSelection && (
                       <button
+                        data-selected={addedToImportMap}
                         type="button"
                         onClick={toggleExportSelection}
                         value={packageExport}
@@ -114,7 +112,7 @@ function Package({
       <Helmet>
         <link
           rel="stylesheet"
-          href="https://ga.jspm.io/npm:prismjs@1.25.0/themes/prism.css"
+          href="https://cdn.jsdelivr.net/gh/PrismJS/prism-themes@master/themes/prism-gruvbox-light.css"
         />
         <style data-page="package-details">
           {`
@@ -122,6 +120,12 @@ function Package({
             display: block;
             max-width: 1140px;
             margin: 0 auto;
+            padding: 0 var(--dl-space-space-oneandhalfunits);
+          }
+          @media(min-width: 768px) {
+            jspm-package{
+              padding: 0;
+            }
           }
           jspm-highlight{
             text-align: center;
@@ -129,16 +133,9 @@ function Package({
           jspm-highlight h2{
             font-family: 'Source Sans Pro', sans-serif;
           }
-        jspm-content {
-          display: grid;
-          grid-template-columns: minmax(800px, 1fr) minmax(350px, 1fr);
-          grid-gap: 1rem;
-        }
         
         jspm-readme {
-          min-width: 800px;
           display: block;
-          padding: var(--dl-space-space-oneandhalfunits);
         }
         
         jspm-aside {
@@ -147,8 +144,7 @@ function Package({
         
         jspm-name,
         jspm-version,
-        jspm-description,
-        jspm-license {
+        jspm-description {
           display: block;
         }
         
@@ -156,19 +152,51 @@ function Package({
           font-family: "Major Mono Display", monospace;
           font-size: var(--step-5);
         }
+        jspm-summary{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 15px;
+        }
+        jspm-package-title{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 15px;
+        }
         
         jspm-name h1 a {
           color: black;
         }
 
-        @media(max-width: 767px) {
-          jspm-content {
-            justify-content: space-between;
-          }
+        jspm-content {
+          justify-content: space-between;
+          grid-template-columns: 1fr;
+        }
 
+        @media(min-width: 810px) {
+          jspm-content {
+            display: grid;
+            grid-template-columns: 1fr 0.618fr;
+            grid-gap: 1rem;
+          }
           jspm-readme {
             width: 100%;
           }
+        }
+        jspm-package-exports {
+          display: block;
+          max-height: 500px;
+          overflow: scroll;
+        }
+
+        jspm-package-exports h4 {
+          position: sticky;
+          top: 0;
+          background: white;
+          margin: 0;
+          padding: 1rem 0;
+          text-align: center;
         }
         jspm-package-exports ul{
           margin: 0;
@@ -179,18 +207,19 @@ function Package({
           align-content: center;
           justify-content: space-between;
           align-items: center;
-          padding: 5px;
-          margin: 10px;
-          border-bottom: 1px dotted #ccc;
+          padding: 5px 0;
+          margin: 10px 0;
         }
         jspm-package-exports ul li button{
-          background: var(--dl-color-primary-js-primary);
           color: black;
           padding: 10px;
           display: inline-block;
-          border: 3px solid black;
-          min-width: 250px;
+          border: none;
+          min-width: 155px;
           font-family: "Bebas Neue", cursive;
+        }
+        jspm-package-exports ul li button[data-selected='false']{
+          background: var(--dl-color-primary-js-primary);
         }
         `}
         </style>

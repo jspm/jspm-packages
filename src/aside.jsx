@@ -24,38 +24,40 @@ function Aside(
   return (
     <jspm-aside>
       <aside>
-        {/* <jspm-aside-exports
+        {
+          /* <jspm-aside-exports
           data-exports={JSON.stringify(exports)}
           data-name={name}
           data-version={version}
         >
           <Exports exports={exports} name={name} version={version} />
-        </jspm-aside-exports> */}
+        </jspm-aside-exports> */
+        }
         <jspm-created>
           <h3>Created</h3>
-          {created}
+          <span>{created}</span>
         </jspm-created>
         <jspm-weekly-updated>
           <h3>Updated</h3>
-          {updated}
+          <span>{updated}</span>
         </jspm-weekly-updated>
         <jspm-weekly-downloads>
           <h3>Downloads (weekly)</h3>
-          {downloads}
+          <span>{downloads}</span>
         </jspm-weekly-downloads>
         <jspm-features>
           <h3>Features</h3>
-          {Object.entries(features).map(([feature, supported]) => (
-            <ul>
+          <ul>
+            {Object.entries(features).map(([feature, supported]) => (
               <li data-feature-supported={supported}>{feature}</li>
-            </ul>
-          ))}
+            ))}
+          </ul>
         </jspm-features>
-        <div>
+        <jspm-license>
           <h3>License</h3>
-          <jspm-license>{license}</jspm-license>
-          <Seperator />
-        </div>
+          <span>{license}</span>
+        </jspm-license>
+        <Seperator />
         <jspm-links>
           <h3>Links</h3>
           {Object.entries(links).map(([text, link]) =>
@@ -67,8 +69,8 @@ function Aside(
             )
           )}
         </jspm-links>
+        <h3>Collaborators</h3>
         <jspm-maintainers>
-          <h3>Collaborators</h3>
           {maintainers.map(({ name, email }) => (
             <jspm-maintainer>
               <figure>
@@ -92,20 +94,45 @@ function Aside(
           jspm-features li[data-feature-supported="false"]{
             list-style-type: '✖';
           }
-          jspm-maintainer {
+          jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license{
             display: flex;
-            justify-content: space-between;
-            flex-wrap: nowrap;
-            align-content: center;
             align-items: center;
+            gap: 15px;
+            justify-content: normal;
+          }
+          jspm-maintainers {
+            display: flex;
+            flex-wrap: wrap;
+          }
+          jspm-maintainer {
+            text-align: center;
+            margin: 5px;
           }
           jspm-maintainer figure{
             width: 80px;
-            display: inline-block;
+            display: block;
+            margin: 0;
           }
           jspm-maintainer figure img{
             width: 100%;
             display: block;
+          }
+          jspm-link h5{
+            margin-bottom: 0;
+          }
+
+          @media(min-width: 810px) {
+            jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license{
+              justify-content: flex-end;
+            }
+            
+            jspm-features{
+              display: flex;
+              justify-content: flex-end;
+              flex-wrap: nowrap;
+              align-items: flex-end;
+              flex-direction: column;
+            }
           }
           `}
         </style>
