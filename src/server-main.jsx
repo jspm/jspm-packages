@@ -3,6 +3,7 @@
 import nano, { h, renderSSR } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
+import { Semver } from "sver";
 import { SsrRoot } from "@jspm/packages/ssr-root";
 import { Home } from "@jspm/packages/home";
 import {
@@ -184,6 +185,10 @@ const staticResources = {
     path: "./images/icon-external-link.png",
     contentType: "image/png",
   },
+  "/icon-arrow-down.png": {
+    path: "./images/icon-arrow-down.png",
+    contentType: "image/png",
+  },
   "/icon-importmap.png": {
     path: "./images/icon-importmap.png",
     contentType: "image/png",
@@ -341,7 +346,8 @@ async function requestHandler(request) {
         const packageMetaData = await fetch(
           `https://registry.npmjs.org/${name}`,
         );
-        const { maintainers, readme, time } = await packageMetaData.json();
+        const packageMetaDataJson = await packageMetaData.json();
+        const { maintainers, readme, time, versions } = packageMetaDataJson;
         const { created: createdISO, modified } = time;
         dayjs.extend(dayjsPluginRelativeTime);
         const updated = dayjs(time[version]).fromNow();
@@ -362,11 +368,14 @@ async function requestHandler(request) {
             issues: parseURL(bugs),
           };
 
+          const sortedVersions = Object.keys(versions).sort(Semver.compare)
+            .reverse();
           const app = renderSSR(
             <SsrRoot
               name={name}
               description={description}
               version={version}
+              versions={sortedVersions}
               homepage={homepage}
               license={license}
               files={files}

@@ -21,7 +21,8 @@ class DomRoot extends Component {
   selectedExports = {};
   selectedDeps = [];
   generatorHash = '';
-  openImportmapDialog= false;
+  openImportmapDialog = false;
+  openVersionSelector = false;
 
   generateHash = async () => {
     if (typeof globalThis.document !== "undefined") {
@@ -60,6 +61,12 @@ class DomRoot extends Component {
     this.update();
   };
 
+  toggleVersionSelector = (event) => {
+    event.preventDefault();
+    this.openVersionSelector = !this.openVersionSelector;
+    this.update();
+  };
+
   didMount() {
     if (!this.generatorHash) {
       this.generateHash();
@@ -73,6 +80,7 @@ class DomRoot extends Component {
   render() {
     const {
       created,
+      description,
       downloads,
       exports,
       features,
@@ -84,11 +92,13 @@ class DomRoot extends Component {
       readme,
       updated,
       version,
+      versions
     } = this.props;
 
     return (
       <Package
         created={created}
+        description={description}
         downloads={downloads}
         exports={exports}
         features={features}
@@ -101,10 +111,13 @@ class DomRoot extends Component {
         types={types}
         updated={updated}
         version={version}
+        versions={versions}
         generatorHash={this.generatorHash}
         selectedDeps={this.selectedDeps}
         openImportmapDialog={this.openImportmapDialog}
         toggleImportmapDialog={this.toggleImportmapDialog}
+        openVersionSelector={this.openVersionSelector}
+        toggleVersionSelector={this.toggleVersionSelector}
       />
     );
   }

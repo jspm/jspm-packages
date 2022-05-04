@@ -5,14 +5,16 @@ async function hydrateRoot() {
   const mountElement = document.querySelector("jspm-package-root");
 
   if (mountElement) {
-    const { created, downloads, exports, features, license, links, maintainers, name, readme, types, updated, version } =
+    const { created, description, downloads, exports, features, license, links, maintainers, name, readme, types, updated, version, versions } =
       mountElement.dataset;
     const parsedExports = exports ? JSON.parse(exports) : [];
+    const parsedVersions = versions ? JSON.parse(versions) : [];
     const { DomRoot } = await import("@jspm/packages/dom-root");
 
     hydrate(
       <DomRoot
         created={created}
+        description={description}
         downloads={downloads}
         exports={parsedExports}
         features={JSON.parse(features)}
@@ -24,6 +26,7 @@ async function hydrateRoot() {
         types={types}
         updated={updated}
         version={version}
+        versions={parsedVersions}
       />,
       mountElement,
     );
