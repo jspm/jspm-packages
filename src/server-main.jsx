@@ -3,11 +3,12 @@
 import nano, { h, renderSSR } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
+import { Semver } from "sver";
 import { SsrRoot } from "@jspm/packages/ssr-root";
 import { Home } from "@jspm/packages/home";
 import {
   pageServingHeaders,
-  renderMarkdownContent
+  renderMarkdownContent,
 } from "@jspm/packages/utils";
 import { FEATURED_PACKAGES } from "@jspm/packages/featured-packages-list";
 import { features, parseURL } from "@jspm/packages/package-quality-check";
@@ -367,8 +368,8 @@ async function requestHandler(request) {
             issues: parseURL(bugs),
           };
 
-          const {Semver } = await import('sver');
-          const sortedVersions = Object.keys(versions).sort(Semver.compare).reverse();
+          const sortedVersions = Object.keys(versions).sort(Semver.compare)
+            .reverse();
           const app = renderSSR(
             <SsrRoot
               name={name}
