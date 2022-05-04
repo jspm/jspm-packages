@@ -1,12 +1,12 @@
 {
   "name": "@jspm/packages",
   "devDependencies": {
-    "@jspm/generator": "^1.0.0-beta.30",
+    "@jspm/generator": "^1.0.0-beta.31",
     "@jspm/plugin-rollup": "github:jspm/rollup-plugin-jspm",
     "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.161",
+    "@swc/core": "^1.2.177",
     "mkdirp": "^1.0.4",
-    "rollup": "^2.70.1"
+    "rollup": "^2.71.1"
   },
   "exports": {
     ".": {

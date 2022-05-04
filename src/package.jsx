@@ -13,6 +13,7 @@ function Package({
   description,
   keywords,
   version,
+  versions,
   homepage,
   license,
   files,
@@ -31,6 +32,8 @@ function Package({
   toggleExportSelection,
   openImportmapDialog,
   toggleImportmapDialog,
+  openVersionSelector,
+  toggleVersionSelector,
 }) {
   return (
     <jspm-package data-meta={JSON.stringify(import.meta)}>
@@ -51,7 +54,19 @@ function Package({
         <jspm-highlight>
           <jspm-package-title>
             <h2>{name}</h2>
-            <h3>v{version}</h3>
+
+            <jspm-package-version>
+              <h3>
+                <button onClick={toggleVersionSelector}>v{version}</button>
+              </h3>
+                <ul data-open={openVersionSelector}>
+                  {versions?.map((v) => (
+                    <li data-active={v === version}>
+                      <a href={`/package/${name}@${v}`}>{v}</a>
+                    </li>
+                  ))}
+                </ul>
+            </jspm-package-version>
           </jspm-package-title>
           <jspm-summary>
             <span>{license}</span>
@@ -110,6 +125,8 @@ function Package({
       </jspm-content>
 
       <Helmet>
+        <title>JSPM &ndash; {name}@{version}</title>
+        <meta name="description" content={description} />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/PrismJS/prism-themes@master/themes/prism-gruvbox-light.css"
@@ -164,7 +181,68 @@ function Package({
           align-items: center;
           gap: 15px;
         }
+        jspm-package-version h3{
+          margin: 0;
+        }
+        jspm-package-version ul{
+          margin: -3px 0 0 0;
+          position: absolute;
+          background: var(--dl-color-jspm-300);
+          z-index: 2;
+          list-style: none;
+          padding: 0;
+          text-align: left;
+          line-height: 2rem;
+          max-height: 50vh;
+          overflow: scroll;
+        }
+        jspm-package-version ul[data-open="false"]{
+          display: none;
+        }
+        jspm-package-version ul li a {
+          display: block;
+          padding: 0.25rem 1rem;
+          min-width: 124px;
+        }
+        jspm-package-version ul li a:hover {
+          background: var(--dl-color-jspm-400);
+        }
+        jspm-package-version ul li[data-active="false"]{
+          margin: 0;
+        }
+
+        /* <select> styles */
+        jspm-package-version button, jspm-package-title select {
+          /* Reset */
+          appearance: none;
+          border: 0;
+          outline: 0;
+          font: inherit;
+          /* Personalize */
+          height: 3em;
+          padding: 0 45px 0 1em;
+          background: var(--dl-color-jspm-300) url(icon-arrow-down.png)
+              no-repeat right 0.8em center / 1.4em;
+          border-radius: 0.25em;
+          cursor: pointer;
+          background-size: 7%;
+        }
+
+        /* <option> colors */
+        jspm-package-title select option {
+          color: inherit;
+          background-color: gray;
+        }
+        /* Remove focus outline */
+        jspm-package-title select:focus {
+          outline: none;
+        }
+        /* Remove IE arrow */
+        &::-ms-expand {
+          display: none;
+        }
         
+
         jspm-name h1 a {
           color: black;
         }
@@ -174,16 +252,6 @@ function Package({
           grid-template-columns: 1fr;
         }
 
-        @media(min-width: 810px) {
-          jspm-content {
-            display: grid;
-            grid-template-columns: 1fr 0.618fr;
-            grid-gap: 1rem;
-          }
-          jspm-readme {
-            width: 100%;
-          }
-        }
         jspm-package-exports {
           display: block;
           max-height: 500px;
@@ -220,6 +288,24 @@ function Package({
         }
         jspm-package-exports ul li button[data-selected='false']{
           background: var(--dl-color-primary-js-primary);
+        }
+
+
+        @media(min-width: 810px) {
+          jspm-content {
+            display: grid;
+            grid-template-columns: 1fr 0.618fr;
+            grid-gap: 1rem;
+          }
+          
+          jspm-readme {
+            width: 100%;
+          }
+          
+          jspm-package-exports h4{
+            text-align: left;
+          }
+          
         }
         `}
         </style>

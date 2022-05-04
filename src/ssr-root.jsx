@@ -4,6 +4,7 @@ import { Package } from "@jspm/packages/package";
 
 function SsrRoot({
   created,
+  description,
   downloads,
   exports,
   features,
@@ -15,10 +16,12 @@ function SsrRoot({
   types,
   updated,
   version,
+  versions
 }) {
   return (
     <jspm-package-root
       data-created={created}
+      data-description={description}
       data-downloads={downloads}
       data-exports={JSON.stringify(exports)}
       data-features={JSON.stringify(features)}
@@ -30,9 +33,11 @@ function SsrRoot({
       data-name={name}
       data-types={types}
       data-version={version}
+      data-versions={JSON.stringify(versions)}
     >
       <Package
         created={created}
+        description={description}
         downloads={downloads}
         exports={exports}
         features={features}
@@ -44,6 +49,7 @@ function SsrRoot({
         types={types}
         updated={updated}
         version={version}
+        versions={versions}
       />
     </jspm-package-root>
   );

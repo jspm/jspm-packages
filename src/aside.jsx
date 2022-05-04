@@ -72,12 +72,14 @@ function Aside(
         <h3>Collaborators</h3>
         <jspm-maintainers>
           {maintainers.map(({ name, email }) => (
-            <jspm-maintainer>
-              <figure>
-                <img src={`https://unavatar.io/${email}`} />
-              </figure>
-              {name}
-            </jspm-maintainer>
+            <a href={`https://www.github.com/${name}`}>
+              <jspm-maintainer>
+                <figure>
+                  <img src={`https://unavatar.io/${email}`} />
+                </figure>
+                {name}
+              </jspm-maintainer>
+            </a>
           ))}
         </jspm-maintainers>
       </aside>
@@ -103,10 +105,10 @@ function Aside(
           jspm-maintainers {
             display: flex;
             flex-wrap: wrap;
+            gap: 1rem;
           }
           jspm-maintainer {
             text-align: center;
-            margin: 5px;
           }
           jspm-maintainer figure{
             width: 80px;
@@ -117,8 +119,11 @@ function Aside(
             width: 100%;
             display: block;
           }
+          jspm-link{
+            display: flex;
+          }
           jspm-link h5{
-            margin-bottom: 0;
+            margin: 0 15px 0 0;
           }
 
           @media(min-width: 810px) {
