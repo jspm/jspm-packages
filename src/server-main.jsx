@@ -259,8 +259,9 @@ async function requestHandler(request) {
     const { pathname, searchParams } = new URL(request.url);
 
     const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
-    const npmPackage = searchParams.get("q");
-    if (npmPackage) {
+    const searchTerm = searchParams.get("q");
+    if (searchTerm) {
+      const npmPackage = searchTerm.trim();
       const npmPackageProbe = await fetch(`${NPM_PROVIDER_URL}${npmPackage}`);
       const npmPackageVersion = await npmPackageProbe.text();
 

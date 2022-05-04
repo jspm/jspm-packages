@@ -9,12 +9,36 @@ function Search(params) {
       <form>
         <input
           type="search"
+          list="featured-packages"
           autofocus="true"
           placeholder="Package"
           autocomplete="on"
           class="header-textinput search_input"
           name="q"
         />
+        <datalist id="featured-packages">
+            <option value="@jspm/import-map" />
+            <option value="@jspm/generator" />
+            <option value="angular" />
+            <option value="react" />
+            <option value="svelte" />
+            <option value="vue" />
+            <option value="preact" />
+            <option value="nano-jsx" />
+            <option value="marko" />
+            <option value="@hotwired/stimulus" />
+            <option value="lit" />
+            <option value="rollup" />
+            <option value="webpack" />
+            <option value="lodash" />
+            <option value="strapi" />
+            <option value="three" />
+            <option value="axios" />
+            <option value="moment" />
+            <option value="dayjs" />
+            <option value="marked" />
+            <option value="sver" />
+        </datalist>
         <button class="search_button">
           <span>Import</span>
         </button>
