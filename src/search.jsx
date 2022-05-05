@@ -1,14 +1,20 @@
 /** @jsx h */
 import nano, { h } from "nano-jsx";
-
+import { FEATURED_PACKAGES } from "./featured-packages-list.js";
 const { Helmet } = nano;
 
-function Search(params) {
+function Search() {
   return (
     <jspm-search>
       <form>
+        <datalist id="featured-packages">
+          {FEATURED_PACKAGES.map(FEATURED_PACKAGE => (
+            <option value={FEATURED_PACKAGE} />
+          ))}
+        </datalist>
         <input
           type="search"
+          list="featured-packages"
           autofocus="true"
           placeholder="Package"
           autocomplete="on"

@@ -165,6 +165,10 @@ const staticResources = {
     path: "./lib/imports-hash-store.js",
     contentType: "application/javascript; charset=utf-8",
   },
+  "/featured-packages-list.js": {
+    path: "./lib/featured-packages-list.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
   "/icon-add.svg": {
     path: "./images/icon-add.svg",
     contentType: "image/svg+xml; charset=utf-8",
