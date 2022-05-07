@@ -1,7 +1,6 @@
 /** @jsx h */
 import nano, { Component, h } from "nano-jsx";
 import { Package } from "./package.js";
-
 class DomRoot extends Component {
   constructor(props) {
     super(props);
@@ -13,20 +12,25 @@ class DomRoot extends Component {
     //     }
     //   });
     // }
-    this.selectedExports = localStorage.getItem('selectedExports') ? JSON.parse(localStorage.getItem('selectedExports')) : this.selectedExports;
-    this.selectedDeps = localStorage.getItem('selectedDeps') ? JSON.parse(localStorage.getItem('selectedDeps')) : this.selectedDeps;
-    this.generatorHash = localStorage.getItem('generatorHash') || this.generatorHash;
+    this.selectedExports = localStorage.getItem("selectedExports")
+      ? JSON.parse(localStorage.getItem("selectedExports"))
+      : this.selectedExports;
+    this.selectedDeps = localStorage.getItem("selectedDeps")
+      ? JSON.parse(localStorage.getItem("selectedDeps"))
+      : this.selectedDeps;
+    this.generatorHash = localStorage.getItem("generatorHash") ||
+      this.generatorHash;
   }
 
   selectedExports = {};
   selectedDeps = [];
-  generatorHash = '';
+  generatorHash = "";
   openImportmapDialog = false;
   openVersionSelector = false;
+  sandboxHashes = {};
 
   generateHash = async () => {
     if (typeof globalThis.document !== "undefined") {
-
       const { getStateHash } = await import("./generate-statehash.js");
       const selectedDeps = this.selectedDeps.map((
         subpath,
@@ -38,6 +42,42 @@ class DomRoot extends Component {
         this.generatorHash = generatorHash;
         this.update();
       }
+    }
+  };
+
+  generateSandboxURL = () => {
+    if (typeof globalThis.document !== "undefined") {
+      const codeBlocks = document.querySelectorAll(
+        ".highlight-source-javascript pre",
+        ".highlight-source-js pre",
+      );
+
+      codeBlocks.forEach(async (codeBlock, index) => {
+        const { Generator } = await import("@jspm/generator");
+
+        const generator = new Generator({
+          env: ["production", "browser", "module"],
+        });
+
+        const outHtml = await generator.htmlGenerate(
+          `
+          <!doctype html>
+          <script type="module">
+          ${codeBlock.textContent}
+          </script>
+        `,
+          { esModuleShims: true },
+        );
+
+        const { getSandboxHash } = await import("./statehash.js");
+        const hash = await getSandboxHash(outHtml);
+        const sandboxURL = `https://jspm.org/sandbox${hash}`;
+        const sandboxLink = document.createElement("a");
+        sandboxLink.href = sandboxURL;
+        sandboxLink.innerText = 'Run in JSPM Sandbox';
+        sandboxLink.target = '_blank';
+        codeBlock.parentNode.prepend(sandboxLink);
+      });
     }
   };
 
@@ -71,11 +111,15 @@ class DomRoot extends Component {
     if (!this.generatorHash) {
       this.generateHash();
     }
+    this.generateSandboxURL();
   }
   didUpdate() {
-    localStorage.setItem('selectedExports', JSON.stringify(this.selectedExports));
-    localStorage.setItem('selectedDeps', JSON.stringify(this.selectedDeps));
-    localStorage.setItem('generatorHash', this.generatorHash);
+    localStorage.setItem(
+      "selectedExports",
+      JSON.stringify(this.selectedExports),
+    );
+    localStorage.setItem("selectedDeps", JSON.stringify(this.selectedDeps));
+    localStorage.setItem("generatorHash", this.generatorHash);
   }
   render() {
     const {
@@ -92,7 +136,7 @@ class DomRoot extends Component {
       readme,
       updated,
       version,
-      versions
+      versions,
     } = this.props;
 
     return (

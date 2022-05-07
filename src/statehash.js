@@ -144,5 +144,7 @@ export async function hashToState (hash) {
 }
 
 export async function getSandboxHash (code) {
-  return '#' + zlib.gzipSync(Buffer.from(code)).toString('base64');
+  await initPromise;
+  const hash = '#' + zlib.gzipSync(Buffer.from(code)).toString('base64');
+  return hash;
 }
