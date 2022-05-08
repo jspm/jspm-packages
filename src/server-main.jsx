@@ -258,25 +258,32 @@ function removeSlashes(path) {
   return removeTrailingSlash(removeLeadingSlash(path));
 }
 
+const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
+
+async function redirectToJSPMPackageVersion(packageName) {
+  const npmPackageProbe = await fetch(`${NPM_PROVIDER_URL}${packageName}`);
+  const npmPackageVersion = await npmPackageProbe.text();
+
+  if (npmPackageVersion) {
+    return new Response(packageName, {
+      status: 302,
+      headers: {
+        "Location": `/package/${packageName}@${npmPackageVersion}`,
+      },
+    });
+  }
+  return new Response("404", { status: 404 });
+}
+
 async function requestHandler(request) {
   try {
     const { pathname, searchParams } = new URL(request.url);
+    const packageName = searchParams.get("q");
 
-    const NPM_PROVIDER_URL = "https://ga.jspm.io/npm:";
-    const npmPackage = searchParams.get("q");
-    if (npmPackage) {
-      const npmPackageProbe = await fetch(`${NPM_PROVIDER_URL}${npmPackage}`);
-      const npmPackageVersion = await npmPackageProbe.text();
-
-      if (npmPackageVersion) {
-        return new Response(npmPackage, {
-          status: 302,
-          headers: {
-            "Location": `/package/${npmPackage}@${npmPackageVersion}`,
-          },
-        });
-      }
+    if (packageName) {
+      return redirectToJSPMPackageVersion(packageName)
     }
+
     const pathSegments = removeSlashes(pathname).split("/");
     const staticResource =
       staticResources[`/${pathSegments[pathSegments.length - 1]}`];
@@ -312,6 +319,10 @@ async function requestHandler(request) {
       const [, packageName] = pathname.split(BASE_PATH);
 
       if (packageName) {
+        const pathSegments = packageName.split("@");
+        if (pathSegments.length === 1) {
+          return redirectToJSPMPackageVersion(packageName);
+        }
         const baseURL = `${NPM_PROVIDER_URL}${packageName}`;
         const filesToFetch = ["package.json", ...maybeReadmeFiles];
 
