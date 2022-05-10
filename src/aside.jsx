@@ -45,20 +45,20 @@ function Aside(
           <h3>Downloads (weekly)</h3>
           <span>{downloads}</span>
         </jspm-weekly-downloads>
-        <jspm-features>
+        {features && <jspm-features>
           <h3>Features</h3>
           <ul>
             {Object.entries(features).map(([feature, supported]) => (
               <li data-feature-supported={supported}>{feature}</li>
             ))}
           </ul>
-        </jspm-features>
+        </jspm-features>}
         <jspm-license>
           <h3>License</h3>
           <span>{license}</span>
         </jspm-license>
         <Seperator />
-        <jspm-links>
+        {links && <jspm-links>
           <h3>Links</h3>
           {Object.entries(links).map(([text, link]) =>
             link && (
@@ -68,7 +68,7 @@ function Aside(
               </jspm-link>
             )
           )}
-        </jspm-links>
+        </jspm-links>}
         <h3>Collaborators</h3>
         <jspm-maintainers>
           {maintainers.map(({ name, email }) => (

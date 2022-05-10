@@ -1,5 +1,7 @@
 import he from "he";
+import sanitizeHtml from 'sanitize-html';
 import Prism from "prismjs";
+// import { emojify } from "https://deno.land/x/emoji@0.1.2/mod.ts";
 import { marked } from "marked";
 
 class Renderer extends marked.Renderer {
@@ -29,4 +31,78 @@ class Renderer extends marked.Renderer {
   }
 }
 
-export { Renderer };
+function render(markdown, opts = {}) {
+  // markdown = emojify(markdown);
+
+  const html = marked(markdown, {
+    baseUrl: opts.baseUrl,
+    gfm: true,
+    renderer: new Renderer(),
+  });
+
+  const allowedTags = sanitizeHtml.defaults.allowedTags.concat([
+    "img",
+    "video",
+    "svg",
+    "path",
+  ]);
+  if (opts.allowIframes) {
+    allowedTags.push("iframe");
+  }
+
+  return sanitizeHtml(html, {
+    allowedTags,
+    allowedAttributes: {
+      ...sanitizeHtml.defaults.allowedAttributes,
+      img: ["src", "alt", "height", "width", "align"],
+      video: [
+        "src",
+        "alt",
+        "height",
+        "width",
+        "autoplay",
+        "muted",
+        "loop",
+        "playsinline",
+      ],
+      a: ["id", "aria-hidden", "href", "tabindex", "rel"],
+      svg: ["viewbox", "width", "height", "aria-hidden"],
+      path: ["fill-rule", "d"],
+      h1: ["id"],
+      h2: ["id"],
+      h3: ["id"],
+      h4: ["id"],
+      h5: ["id"],
+      h6: ["id"],
+      iframe: ["src", "width", "height"], // Only used when iframe tags are allowed in the first place.
+    },
+    allowedClasses: {
+      div: ["highlight"],
+      span: [
+        "token",
+        "keyword",
+        "operator",
+        "number",
+        "boolean",
+        "function",
+        "string",
+        "comment",
+        "class-name",
+        "regex",
+        "regex-delimiter",
+        "tag",
+        "attr-name",
+        "punctuation",
+        "script-punctuation",
+        "script",
+        "plain-text",
+        "property",
+      ],
+      a: ["anchor"],
+      svg: ["octicon", "octicon-link"],
+    },
+    allowProtocolRelative: false,
+  });
+}
+
+export { render };

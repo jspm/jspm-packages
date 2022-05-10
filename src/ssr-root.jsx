@@ -20,20 +20,8 @@ function SsrRoot({
 }) {
   return (
     <jspm-package-root
-      data-created={created}
-      data-description={description}
-      data-downloads={downloads}
-      data-exports={JSON.stringify(exports)}
-      data-features={JSON.stringify(features)}
-      data-license={license}
-      data-links={JSON.stringify(links)}
-      data-maintainers={JSON.stringify(maintainers)}
-      data-readme={readme}
-      data-updated={updated}
       data-name={name}
-      data-types={types}
       data-version={version}
-      data-versions={JSON.stringify(versions)}
     >
       <Package
         created={created}
@@ -43,9 +31,9 @@ function SsrRoot({
         features={features}
         license={license}
         links={links}
+        maintainers={maintainers}
         name={name}
         readme={readme}
-        maintainers={maintainers}
         types={types}
         updated={updated}
         version={version}
