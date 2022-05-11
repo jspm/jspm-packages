@@ -1,5 +1,6 @@
 import he from "he";
 import Prism from "prismjs";
+// import { emojify } from "https://deno.land/x/emoji@0.1.2/mod.ts";
 import { marked } from "marked";
 
 class Renderer extends marked.Renderer {
@@ -29,4 +30,16 @@ class Renderer extends marked.Renderer {
   }
 }
 
-export { Renderer };
+function render(markdown, opts = {}) {
+  // markdown = emojify(markdown);
+
+  const html = marked(markdown, {
+    baseUrl: opts.baseUrl,
+    gfm: true,
+    renderer: new Renderer(),
+  });
+
+  return html;
+}
+
+export { render };

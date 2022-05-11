@@ -1,7 +1,3 @@
-import { emojify } from "https://deno.land/x/emoji@0.1.2/mod.ts";
-import { marked } from "marked";
-import { Renderer } from "@jspm/packages/renderer";
-
 function getRandomFloat(min, max) {
   return (Math.random() * (max - min) + min).toFixed(2);
 }
@@ -25,18 +21,8 @@ const pageServingHeaders = {
   Link: `<https://ga.jspm.io>; rel="preconnect",<https://fonts.googleapis.com>; rel="preconnect", <https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css>; rel="preload"; as="style", <https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap>; rel="preload"; as="style"`,
 };
 
-function renderMarkdownContent(markdown, opts = {}) {
-  markdown = emojify(markdown);
-
-  return marked(markdown, {
-    gfm: true,
-    renderer: new Renderer(),
-  });
-}
-
 export {
   getRandomFloat,
   getRecentPackages,
   pageServingHeaders,
-  renderMarkdownContent,
 };

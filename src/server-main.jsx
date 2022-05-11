@@ -8,8 +8,8 @@ import { SsrRoot } from "@jspm/packages/ssr-root";
 import { Home } from "@jspm/packages/home";
 import {
   pageServingHeaders,
-  renderMarkdownContent,
 } from "@jspm/packages/utils";
+import { render } from "@jspm/packages/renderer";
 import { FEATURED_PACKAGES } from "@jspm/packages/featured-packages-list";
 import { features, parseURL } from "@jspm/packages/package-quality-check";
 
@@ -167,6 +167,14 @@ const staticResources = {
   },
   "/featured-packages-list.js": {
     path: "./lib/featured-packages-list.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/renderer.js": {
+    path: "./lib/renderer.js",
+    contentType: "application/javascript; charset=utf-8",
+  },
+  "/package-quality-check.js": {
+    path: "./lib/package-quality-check.js",
     contentType: "application/javascript; charset=utf-8",
   },
   "/icon-add.svg": {
@@ -370,7 +378,7 @@ async function requestHandler(request) {
         try {
           // `readme` is preferred here but this content always refers to the latest version
           // hence using it as fallback
-          const readmeHTML = renderMarkdownContent(readmeFileContent || readme);
+          const readmeHTML = render(readmeFileContent || readme);
           // https://github.com/jspm/generator.jspm.io/blob/main/src/api.js#L137
           const filteredExport = Object.keys(exports).filter((expt) =>
             !expt.endsWith("!cjs") && !expt.endsWith("/") &&
