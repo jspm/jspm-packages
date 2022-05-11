@@ -1,5 +1,4 @@
 import he from "he";
-import sanitizeHtml from 'sanitize-html';
 import Prism from "prismjs";
 // import { emojify } from "https://deno.land/x/emoji@0.1.2/mod.ts";
 import { marked } from "marked";
