@@ -40,69 +40,7 @@ function render(markdown, opts = {}) {
     renderer: new Renderer(),
   });
 
-  const allowedTags = sanitizeHtml.defaults.allowedTags.concat([
-    "img",
-    "video",
-    "svg",
-    "path",
-  ]);
-  if (opts.allowIframes) {
-    allowedTags.push("iframe");
-  }
-
-  return sanitizeHtml(html, {
-    allowedTags,
-    allowedAttributes: {
-      ...sanitizeHtml.defaults.allowedAttributes,
-      img: ["src", "alt", "height", "width", "align"],
-      video: [
-        "src",
-        "alt",
-        "height",
-        "width",
-        "autoplay",
-        "muted",
-        "loop",
-        "playsinline",
-      ],
-      a: ["id", "aria-hidden", "href", "tabindex", "rel"],
-      svg: ["viewbox", "width", "height", "aria-hidden"],
-      path: ["fill-rule", "d"],
-      h1: ["id"],
-      h2: ["id"],
-      h3: ["id"],
-      h4: ["id"],
-      h5: ["id"],
-      h6: ["id"],
-      iframe: ["src", "width", "height"], // Only used when iframe tags are allowed in the first place.
-    },
-    allowedClasses: {
-      div: ["highlight"],
-      span: [
-        "token",
-        "keyword",
-        "operator",
-        "number",
-        "boolean",
-        "function",
-        "string",
-        "comment",
-        "class-name",
-        "regex",
-        "regex-delimiter",
-        "tag",
-        "attr-name",
-        "punctuation",
-        "script-punctuation",
-        "script",
-        "plain-text",
-        "property",
-      ],
-      a: ["anchor"],
-      svg: ["octicon", "octicon-link"],
-    },
-    allowProtocolRelative: false,
-  });
+  return html;
 }
 
 export { render };
