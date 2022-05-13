@@ -1,5 +1,5 @@
 /** @jsx h */
-import nano, { h } from "nano-jsx";
+import { h } from "nano-jsx";
 import { Package } from "@jspm/packages/package";
 
 function SsrRoot({

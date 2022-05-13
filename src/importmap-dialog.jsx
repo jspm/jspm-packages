@@ -1,7 +1,5 @@
 /** @jsx h */
-import nano, { h } from "nano-jsx";
-
-const { Helmet } = nano;
+import { h } from "nano-jsx";
 
 function fromPkgStr(pkg) {
   const versionIndex = pkg.indexOf("@", 1);
@@ -140,108 +138,6 @@ function ImportMapDialog(
           );
         })}
       </dialog>
-      <Helmet>
-        <style data-component-name="jspm-importmap-dialog">
-          {`
-          jspm-importmap-dialog dialog  {
-            z-index: 2;
-            min-height: 100vh;
-            min-width: 350px;
-            background: white;
-            left: unset;
-            border: 0 solid black;
-            border-radius: 0;
-            /*background: linear-gradient(225deg, #e6e6e6, #ffffff);*/
-            /*box-shadow:  -5px 5px 10px #d9d9d9, 5px -5px 10px #ffffff;*/
-            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-          }
-
-          jspm-importmap-dialog dialog header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-          }
-
-          jspm-importmap-dialog dialog header h4{
-            margin: 0;
-          }
-
-          jspm-importmap-dialog dialog jspm-generator-link {
-            display: inline-block;
-            margin-bottom: 1rem;
-          }
-
-          jspm-importmap-dialog dialog jspm-generator-link a{
-            display: inline-block;
-            margin-bottom: 1rem;
-            background: url(/images/icon-external-link.png) no-repeat right center;
-            background-size: contain;
-            padding-right: 25px;
-          }
-
-          jspm-importmap-dialog dialog details  {
-            margin: 15px;
-            padding: 10px;
-            -webkit-border-radius: 50px;
-            border-radius: 10px;
-            background: #ffffff;
-            -webkit-box-shadow: 12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
-            box-shadow: -12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
-          }
-
-          jspm-importmap-dialog dialog details summary, jspm-importmap-entry-summary{
-            padding: 10px;
-            cursor: pointer;
-            display: flex;
-            align-content: center;
-            justify-content: space-between;
-            align-items: center;
-          }
-
-          jspm-importmap-dialog dialog details summary:after{
-            content: '›';
-            margin-right: 10px;
-            font-weight: 700;
-            font-size: 1.2rem;
-          }
-
-          jspm-importmap-dialog dialog details[open] summary:after{
-            content: '⌄';
-          }
-
-          jspm-importmap-entry-name{
-            font-weight: 700;
-          }
-
-          jspm-importmap-entry-version{
-            margin-left: 10px;
-          }
-
-          jspm-importmap-dialog dialog .icon-close{
-            background: white;
-            border: none;
-            background: transparent;
-            font-size: var(--step-0);
-            cursor: pointer;
-          }
-
-          jspm-importmap-entry{
-            display: flex;
-            align-content: center;
-            justify-content: space-between;
-            align-items: center;
-          }
-
-          jspm-importmap-entry button{
-            background: white;
-            border: none;
-            cursor: pointer;
-            color: crimson;
-          }
-          `}
-        </style>
-      </Helmet>
     </jspm-importmap-dialog>
   );
 }

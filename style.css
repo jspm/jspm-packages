@@ -5,7 +5,7 @@
 
   for css-references
 */
-
+@import url('https://cdn.jsdelivr.net/gh/PrismJS/prism-themes@master/themes/prism-gruvbox-light.css');
 :root {
   --step--2: clamp(0.91rem, 0.89rem + 0.1vw, 0.96rem);
   --step--1: clamp(1.09rem, 1.05rem + 0.21vw, 1.2rem);
@@ -16,10 +16,10 @@
   --step-4: clamp(2.72rem, 2.36rem + 1.83vw, 3.66rem);
   --step-5: clamp(3.27rem, 2.75rem + 2.56vw, 4.58rem);
   --dl-color-gray-black: #000000;
-  --dl-color-gray-white: #FFFFFF;
+  --dl-color-gray-white: #ffffff;
   --dl-color-gray-500: #595959;
   --dl-color-gray-700: #999999;
-  --dl-color-gray-900: #D9D9D9;
+  --dl-color-gray-900: #d9d9d9;
   --dl-color-jspm-200: #fdf5e2ff;
   --dl-color-jspm-300: #ffe4adff;
   --dl-color-jspm-400: #ffbf76ff;
@@ -71,9 +71,10 @@ pre {
   white-space: pre-wrap;
 }
 
-code, .code {
+code,
+.code {
   font-family: "Source Code Pro", monospace;
-  font-family: 'DM Mono', monospace;
+  font-family: "DM Mono", monospace;
   font-size: var(--step--2);
 }
 
@@ -84,19 +85,521 @@ body {
   margin-left: auto;
 }
 
-jspm-package, jspm-featured {
+jspm-package,
+jspm-featured {
   display: block;
   margin: 0 auto;
 }
 
 a {
-    cursor: pointer;
-    color: crimson;
-    text-decoration: none;
+  cursor: pointer;
+  color: crimson;
+  text-decoration: none;
 }
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-label { margin-right: 10px; }
+label {
+  margin-right: 10px;
+}
 button {
   cursor: pointer;
+}
+
+jspm-home {
+  display: block;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+jspm-home-hero h1 {
+  text-align: center;
+  font-size: var(--step-5);
+}
+jspm-home jspm-search {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+jspm-home jspm-search input[type="search"] {
+  width: 80vw;
+}
+jspm-home-hero {
+  margin-bottom: 50px;
+}
+jspm-home-hero .search_button {
+  height: 70px;
+}
+jspm-home-hero .search_input {
+  height: 70px;
+  padding: var(--dl-space-space-halfunit) 70px;
+  font-size: var(--step-0);
+  background: url("/npm-n-block-32.jpeg") no-repeat 18px center;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  align-content: center;
+}
+
+@media (min-width: 1100px) {
+  .header {
+    justify-content: space-between;
+  }
+}
+
+jspm-logo {
+  margin-right: var(--dl-space-space-unit);
+}
+
+jspm-logo h1 a {
+  background: url(https://jspm.org/jspm.png) no-repeat left center;
+  color: var(--dl-color-gray-black);
+  background-size: contain;
+  padding-left: 2.5rem;
+}
+
+jspm-search,
+jspm-search form {
+  display: flex;
+}
+.search_button {
+  color: var(--dl-color-gray-black);
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-gray-black);
+  border-width: 1px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-width: 0px;
+  padding-left: var(--dl-space-space-oneandhalfunits);
+  padding-right: var(--dl-space-space-oneandhalfunits);
+  background-color: var(--dl-color-primary-js-primary);
+  border-top-left-radius: none;
+  border-top-right-radius: var(--dl-radius-radius-radius8);
+  border-bottom-left-radius: none;
+  border-bottom-right-radius: var(--dl-radius-radius-radius8);
+}
+
+.search_input {
+  color: var(--dl-color-gray-black);
+  cursor: auto;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-gray-black);
+  border-width: 1px;
+  background-color: var(--dl-color-gray-white);
+  height: 40px;
+  padding: var(--dl-space-space-halfunit);
+  max-width: 500px;
+  border-color: var(--dl-color-jspm-placeholder);
+  background-color: var(--dl-color-jspm-placeholder);
+  border-top-left-radius: var(--dl-radius-radius-radius8);
+  border-bottom-left-radius: var(--dl-radius-radius-radius8);
+  background: url("/npm-n-block-16.png") no-repeat 8px center;
+  font-size: var(--step--2);
+  padding-left: 32px;
+  width: 70vw;
+}
+jspm-nav nav ul {
+  display: flex;
+  list-style: none;
+}
+jspm-nav nav ul li {
+  margin: 20px;
+}
+
+.nav-list-style {
+  display: flex;
+  list-style: none;
+  gap: 15px;
+  justify-content: space-between;
+  margin: 30px 0;
+  padding: 0;
+}
+
+.nav-list-item .toggle-dialog {
+  background: transparent url("/icon-importmap.png") left center no-repeat;
+  background-size: contain;
+  padding-left: 25px;
+  border: 0;
+  cursor: pointer;
+  color: crimson;
+}
+
+jspm-package {
+  display: block;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 var(--dl-space-space-oneandhalfunits);
+}
+@media (min-width: 768px) {
+  jspm-package {
+    padding: 0;
+  }
+}
+jspm-highlight {
+  text-align: center;
+}
+jspm-highlight h2 {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+jspm-readme {
+  display: block;
+}
+
+jspm-aside {
+  padding: var(--dl-space-space-oneandhalfunits);
+}
+
+jspm-name,
+jspm-version,
+jspm-description {
+  display: block;
+}
+
+jspm-name h1 {
+  font-family: "Major Mono Display", monospace;
+  font-size: var(--step-5);
+}
+jspm-summary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+jspm-package-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+jspm-package-version h3 {
+  margin: 0;
+}
+jspm-package-version ul {
+  margin: -3px 0 0 0;
+  position: absolute;
+  background: var(--dl-color-jspm-300);
+  z-index: 2;
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  line-height: 2rem;
+  max-height: 50vh;
+  overflow: scroll;
+}
+jspm-package-version ul[data-open="false"] {
+  display: none;
+}
+jspm-package-version ul li a {
+  display: block;
+  padding: 0.25rem 1rem;
+  min-width: 124px;
+}
+jspm-package-version ul li a:hover {
+  background: var(--dl-color-jspm-400);
+}
+jspm-package-version ul li[data-active="false"] {
+  margin: 0;
+}
+
+/* <select> styles */
+jspm-package-version button,
+jspm-package-title select {
+  /* Reset */
+  appearance: none;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  /* Personalize */
+  height: 3em;
+  padding: 0 45px 0 1em;
+  background: var(--dl-color-jspm-300) url(icon-arrow-down.png) no-repeat right
+    0.8em center / 1.4em;
+  border-radius: 0.25em;
+  cursor: pointer;
+  background-size: 7%;
+}
+
+/* <option> colors */
+jspm-package-title select option {
+  color: inherit;
+  background-color: gray;
+}
+/* Remove focus outline */
+jspm-package-title select:focus {
+  outline: none;
+}
+/* Remove IE arrow */
+&::-ms-expand {
+  display: none;
+}
+
+jspm-name h1 a {
+  color: black;
+}
+
+jspm-content {
+  justify-content: space-between;
+  grid-template-columns: 1fr;
+}
+
+jspm-package-exports {
+  display: block;
+  max-height: 500px;
+  overflow: scroll;
+}
+
+jspm-package-exports h4 {
+  position: sticky;
+  top: 0;
+  background: white;
+  margin: 0;
+  padding: 1rem 0;
+  text-align: center;
+}
+jspm-package-exports ul {
+  margin: 0;
+  padding: 0;
+}
+jspm-package-exports ul li {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  margin: 10px 0;
+}
+jspm-package-exports ul li button {
+  color: black;
+  padding: 10px;
+  display: inline-block;
+  border: none;
+  min-width: 155px;
+  font-family: "Bebas Neue", cursive;
+}
+jspm-package-exports ul li button[data-selected="false"] {
+  background: var(--dl-color-primary-js-primary);
+}
+
+@media (min-width: 810px) {
+  jspm-content {
+    display: grid;
+    grid-template-columns: 1fr 0.618fr;
+    grid-gap: 1rem;
+  }
+
+  jspm-readme {
+    width: 100%;
+  }
+
+  jspm-package-exports h4 {
+    text-align: left;
+  }
+}
+
+jspm-readme img {
+  max-width: 100%;
+}
+
+jspm-features li{
+  padding-inline-start: 1ch;
+}
+jspm-features li[data-feature-supported="true"]{
+  list-style-type: '✔';
+}
+jspm-features li[data-feature-supported="false"]{
+  list-style-type: '✖';
+}
+jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: normal;
+}
+jspm-maintainers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+jspm-maintainer {
+  text-align: center;
+}
+jspm-maintainer figure{
+  width: 80px;
+  display: block;
+  margin: 0;
+}
+jspm-maintainer figure img{
+  width: 100%;
+  display: block;
+}
+jspm-link{
+  display: flex;
+}
+jspm-link h5{
+  margin: 0 15px 0 0;
+}
+
+@media(min-width: 810px) {
+  jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license{
+    justify-content: flex-end;
+  }
+  
+  jspm-features{
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    flex-direction: column;
+  }
+}
+
+.seperator-seperator {
+  flex: 0 0 auto;
+  width: 100%;
+  height: auto;
+  display: flex;
+  margin-top: var(--dl-space-space-unit);
+  align-items: center;
+  margin-bottom: var(--dl-space-space-unit);
+}
+.seperator-container {
+  flex: 0 0 auto;
+  width: 50px;
+  height: 8px;
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--dl-color-jspm-500);
+  border-top-left-radius: var(--dl-radius-radius-radius8);
+  border-bottom-left-radius: var(--dl-radius-radius-radius8);
+}
+.seperator-container1 {
+  flex: 0 0 auto;
+  width: 50px;
+  height: 8px;
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--dl-color-jspm-400);
+}
+.seperator-container2 {
+  flex: 0 0 auto;
+  width: 50px;
+  height: 8px;
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--dl-color-jspm-300);
+}
+.seperator-container3 {
+  flex: 0 0 auto;
+  width: 50px;
+  height: 8px;
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--dl-color-jspm-200);
+  border-top-right-radius: var(--dl-radius-radius-radius8);
+  border-bottom-right-radius: var(--dl-radius-radius-radius8);
+}
+
+jspm-importmap-dialog dialog  {
+  z-index: 2;
+  min-height: 100vh;
+  min-width: 350px;
+  background: white;
+  left: unset;
+  border: 0 solid black;
+  border-radius: 0;
+  /*background: linear-gradient(225deg, #e6e6e6, #ffffff);*/
+  /*box-shadow:  -5px 5px 10px #d9d9d9, 5px -5px 10px #ffffff;*/
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+jspm-importmap-dialog dialog header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+jspm-importmap-dialog dialog header h4{
+  margin: 0;
+}
+
+jspm-importmap-dialog dialog jspm-generator-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+jspm-importmap-dialog dialog jspm-generator-link a{
+  display: inline-block;
+  margin-bottom: 1rem;
+  background: url(/images/icon-external-link.png) no-repeat right center;
+  background-size: contain;
+  padding-right: 25px;
+}
+
+jspm-importmap-dialog dialog details  {
+  margin: 15px;
+  padding: 10px;
+  -webkit-border-radius: 50px;
+  border-radius: 10px;
+  background: #ffffff;
+  -webkit-box-shadow: 12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
+  box-shadow: -12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
+}
+
+jspm-importmap-dialog dialog details summary, jspm-importmap-entry-summary{
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
+jspm-importmap-dialog dialog details summary:after{
+  content: '›';
+  margin-right: 10px;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+jspm-importmap-dialog dialog details[open] summary:after{
+  content: '⌄';
+}
+
+jspm-importmap-entry-name{
+  font-weight: 700;
+}
+
+jspm-importmap-entry-version{
+  margin-left: 10px;
+}
+
+jspm-importmap-dialog dialog .icon-close{
+  background: white;
+  border: none;
+  background: transparent;
+  font-size: var(--step-0);
+  cursor: pointer;
+}
+
+jspm-importmap-entry{
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
+jspm-importmap-entry button{
+  background: white;
+  border: none;
+  cursor: pointer;
+  color: crimson;
 }
