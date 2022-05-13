@@ -1,10 +1,8 @@
 /** @jsx h */
-import nano, { h } from "nano-jsx";
+import { h } from "nano-jsx";
 import { Logo } from "@jspm/packages/logo";
 import { Search } from "@jspm/packages/search";
 import { Nav } from "@jspm/packages/nav";
-
-const { Helmet } = nano;
 
 function Header(
   { generatorHash = "", dependencies = [], open, toggleImportmapDialog, search=true },
@@ -23,25 +21,6 @@ function Header(
           toggleImportmapDialog={toggleImportmapDialog}
         />
       </header>
-      <Helmet>
-        <style data-component-name="header">
-          {`
-            .header {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              flex-wrap: wrap;
-              align-content: center;
-            }
-
-            @media(min-width: 1100px) {
-              .header {
-                justify-content: space-between;
-              }
-            }
-          `}
-        </style>
-      </Helmet>
     </jspm-header>
   );
 }
