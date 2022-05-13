@@ -8,11 +8,11 @@ auto-install = true
 
 [[task]]
 name = 'build'
-deps = ['deno.importmap', 'shell.html']
+deps = ['deno.importmap', 'shell.html', 'lib/static-resources.json']
 
 [[task]]
 name = 'serve'
-deps = ['lib/**/*.js', 'deno.importmap', 'server.jsx', 'shell.html']
+deps = ['lib/**/*.js', 'deno.importmap', 'server.jsx', 'shell.html', 'lib/static-resources.json']
 run = 'deno run -A --import-map=deno.importmap --unstable --no-check server.jsx'
 
 [[task]]
@@ -35,7 +35,7 @@ run = 'cp $DEP $TARGET'
 
 [[task]]
 target = 'deno.importmap'
-deps = ['server.jsx']
+deps = ['server.jsx', 'lib/static-resources.json']
 template = 'jspm'
 [task.template-options]
 env = ['deno', 'production']
@@ -64,4 +64,22 @@ run = '''
       // custom task required to set this up for now!
       htmlUrl: pathToFileURL('lib/shell.html')
     }));
+'''
+
+[[task]]
+target = 'lib/static-resources.json'
+deps = ['src/shell.html', 'lib/**/*.js', 'npm:install']
+invalidation = 'always'
+engine = 'node'
+run = '''
+   import './generate-static-resources-map.js';
+'''
+
+[[task]]
+name = 'exportmap'
+deps = ['package.json', 'npm:install']
+invalidation = 'always'
+engine = 'node'
+run = '''
+   import './generate-exportmap.js';
 '''

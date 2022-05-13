@@ -4,25 +4,43 @@
     "@jspm/generator": "^1.0.0-beta.31",
     "@jspm/plugin-rollup": "github:jspm/rollup-plugin-jspm",
     "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.177",
+    "@swc/core": "^1.2.182",
     "mkdirp": "^1.0.4",
-    "rollup": "^2.71.1"
+    "rollup": "^2.72.1"
   },
   "exports": {
     ".": {
       "browser": "./lib/dom-main.js",
       "default": "./src/server-main.jsx"
     },
+    "./aside": {
+      "browser": "./lib/aside.js",
+      "default": "./src/aside.jsx"
+    },
+    "./dom-main": {
+      "browser": "./lib/dom-main.js"
+    },
     "./dom-root": {
       "browser": "./lib/dom-root.js"
     },
-    "./ssr-root": {
-      "browser": "./lib/ssr-root.js",
-      "default": "./src/ssr-root.jsx"
+    "./featured-packages": {
+      "browser": "./lib/featured-packages.js",
+      "default": "./src/featured-packages.jsx"
     },
-    "./utils": {
-      "browser": "./lib/utils.js",
-      "default": "./utils.js"
+    "./featured-packages-list": {
+      "browser": "./lib/featured-packages-list.js",
+      "default": "./src/featured-packages-list.js"
+    },
+    "./footer": {
+      "browser": "./lib/footer.js",
+      "default": "./src/footer.jsx"
+    },
+    "./generate-statehash": {
+      "browser": "./lib/generate-statehash.js"
+    },
+    "./header": {
+      "browser": "./lib/header.js",
+      "default": "./src/header.jsx"
     },
     "./hero": {
       "browser": "./lib/hero.js",
@@ -32,61 +50,55 @@
       "browser": "./lib/home.js",
       "default": "./src/home.jsx"
     },
-    "./featured-packages-list": {
-      "browser": "./lib/featured-packages-list.js",
-      "default": "./src/featured-packages-list.js"
-    },
-    "./package-quality-check": {
-      "browser": "./lib/package-quality-check.js",
-      "default": "./src/package-quality-check.js"
-    },
-    "./renderer": {
-      "browser": "./lib/renderer.js",
-      "default": "./src/renderer.js"
-    },
-    "./package": {
-      "browser": "./lib/package.js",
-      "default": "./src/package.jsx"
-    },
-    "./header": {
-      "browser": "./lib/header.js",
-      "default": "./src/header.jsx"
-    },
-    "./footer": {
-      "browser": "./lib/footer.js",
-      "default": "./src/footer.jsx"
-    },
-    "./featured-packages": {
-      "browser": "./lib/featured-packages.js",
-      "default": "./src/featured-packages.jsx"
-    },
-    "./readme": {
-      "browser": "./lib/readme.js",
-      "default": "./src/readme.jsx"
-    },
-    "./aside": {
-      "browser": "./lib/aside.js",
-      "default": "./src/aside.jsx"
+    "./importmap-dialog": {
+      "browser": "./lib/importmap-dialog.js",
+      "default": "./src/importmap-dialog.jsx"
     },
     "./logo": {
       "browser": "./lib/logo.js",
       "default": "./src/logo.jsx"
     },
-    "./search": {
-      "browser": "./lib/search.js",
-      "default": "./src/search.jsx"
-    },
     "./nav": {
       "browser": "./lib/nav.js",
       "default": "./src/nav.jsx"
+    },
+    "./package": {
+      "browser": "./lib/package.js",
+      "default": "./src/package.jsx"
+    },
+    "./package-quality-check": {
+      "browser": "./lib/package-quality-check.js",
+      "default": "./src/package-quality-check.js"
+    },
+    "./readme": {
+      "browser": "./lib/readme.js",
+      "default": "./src/readme.jsx"
+    },
+    "./renderer": {
+      "browser": "./lib/renderer.js",
+      "default": "./src/renderer.js"
+    },
+    "./search": {
+      "browser": "./lib/search.js",
+      "default": "./src/search.jsx"
     },
     "./separator": {
       "browser": "./lib/separator.js",
       "default": "./src/separator.jsx"
     },
-    "./importmap-dialog": {
-      "browser": "./lib/importmap-dialog.js",
-      "default": "./src/importmap-dialog.jsx"
+    "./ssr-root": {
+      "browser": "./lib/ssr-root.js",
+      "default": "./src/ssr-root.jsx"
+    },
+    "./statehash": {
+      "browser": "./lib/statehash.js"
+    },
+    "./static-resources": {
+      "default": "./lib/static-resources.json"
+    },
+    "./utils": {
+      "browser": "./lib/utils.js",
+      "default": "./utils.js"
     }
   },
   "type": "module"
