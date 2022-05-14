@@ -24,6 +24,7 @@
   --dl-color-jspm-300: #ffe4adff;
   --dl-color-jspm-400: #ffbf76ff;
   --dl-color-jspm-500: #f69220ff;
+  --dl-color-success-100: #18A818;
   --dl-color-jspm-placeholder: #fbf6f5ff;
   --dl-color-primary-js-primary: #ffc95dff;
   --dl-space-space-halfunit: 8px;
@@ -51,14 +52,13 @@ h2,
 h4,
 h5,
 h6 {
-  font-family: "Playfair Display", serif;
-  font-family: "Bebas Neue", cursive;
+  font-family: 'Roboto' sans-serif;
 }
 h2 {
   font-size: var(--step-3);
 }
 h3 {
-  font-weight: 800;
+  font-weight: 600;
 }
 h4 {
   font-size: var(--step-1);
@@ -114,7 +114,7 @@ jspm-home {
 }
 jspm-home-hero h1 {
   text-align: center;
-  font-size: var(--step-5);
+  font-size: var(--step-4);
 }
 jspm-home jspm-search {
   display: flex;
@@ -126,8 +126,14 @@ jspm-home jspm-search input[type="search"] {
   width: 80vw;
 }
 jspm-home-hero {
-  margin-bottom: 50px;
+  display: block;
+  margin-bottom: 50px; 
 }
+
+jspm-name h1 {
+  font-size: var(--step-5);
+}
+
 jspm-home-hero .search_button {
   height: 70px;
 }
@@ -237,11 +243,13 @@ jspm-package {
   margin: 0 auto;
   padding: 0 var(--dl-space-space-oneandhalfunits);
 }
+
 @media (min-width: 768px) {
   jspm-package {
-    padding: 0;
+    padding: var(--dl-space-space-unit);
   }
 }
+
 jspm-highlight {
   text-align: center;
 }
@@ -259,14 +267,17 @@ jspm-aside {
 
 jspm-name,
 jspm-version,
+jspm-home-header,
+jspm-home-main,
 jspm-description {
   display: block;
 }
 
-jspm-name h1 {
-  font-family: "Major Mono Display", monospace;
-  font-size: var(--step-5);
+jspm-home-main {
+  margin-top: 50px;
+  font-family: 'Roboto', sans-serif;
 }
+
 jspm-summary {
   display: flex;
   justify-content: center;
@@ -347,7 +358,6 @@ jspm-name h1 a {
 
 jspm-content {
   justify-content: space-between;
-  grid-template-columns: 1fr;
 }
 
 jspm-package-exports {
@@ -378,21 +388,25 @@ jspm-package-exports ul li {
 }
 jspm-package-exports ul li button {
   color: black;
-  padding: 10px;
   display: inline-block;
   border: none;
-  min-width: 155px;
-  font-family: "Bebas Neue", cursive;
+  font-size: 20px;
+  padding: 2px 8px;
 }
+
+.package-version-selector {
+  max-width: 150px;
+}
+
 jspm-package-exports ul li button[data-selected="false"] {
   background: var(--dl-color-primary-js-primary);
 }
 
-@media (min-width: 810px) {
+@media (min-width: 767px) {
   jspm-content {
     display: grid;
-    grid-template-columns: 1fr 0.618fr;
-    grid-gap: 1rem;
+    grid-template-columns: 1fr 0.5fr;
+    grid-gap: 2rem;
   }
 
   jspm-readme {
@@ -408,6 +422,14 @@ jspm-readme img {
   max-width: 100%;
 }
 
+jspm-features {
+  display: block;
+}
+
+jspm-features ul {
+  padding-left: 5px;
+}
+
 jspm-features li{
   padding-inline-start: 1ch;
 }
@@ -417,12 +439,16 @@ jspm-features li[data-feature-supported="true"]{
 jspm-features li[data-feature-supported="false"]{
   list-style-type: '✖';
 }
-jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license{
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  justify-content: normal;
+
+jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license, jspm-features {
+  line-height: 1.5;
+  margin-bottom: 8px;
 }
+
+jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license, jspm-features h3 {
+  margin-bottom: 5px;
+}
+
 jspm-maintainers {
   display: flex;
   flex-wrap: wrap;
@@ -431,33 +457,33 @@ jspm-maintainers {
 jspm-maintainer {
   text-align: center;
 }
+
 jspm-maintainer figure{
   width: 80px;
   display: block;
   margin: 0;
 }
-jspm-maintainer figure img{
+
+jspm-maintainer figure img {
   width: 100%;
   display: block;
-}
-jspm-link{
-  display: flex;
-}
-jspm-link h5{
-  margin: 0 15px 0 0;
+  margin-bottom: 8px;
 }
 
-@media(min-width: 810px) {
+jspm-link {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+jspm-link b {
+  text-transform: capitalize;
+}
+
+@media(min-width: 767px) {
   jspm-created, jspm-weekly-updated, jspm-weekly-downloads, jspm-license{
-    justify-content: flex-end;
-  }
-  
-  jspm-features{
-    display: flex;
-    justify-content: flex-end;
-    flex-wrap: nowrap;
-    align-items: flex-end;
-    flex-direction: column;
+    /* justify-content: flex-end; */
   }
 }
 
@@ -508,6 +534,7 @@ jspm-link h5{
 }
 
 jspm-importmap-dialog dialog  {
+  position: fixed;
   z-index: 2;
   min-height: 100vh;
   min-width: 350px;
@@ -518,50 +545,46 @@ jspm-importmap-dialog dialog  {
   /*background: linear-gradient(225deg, #e6e6e6, #ffffff);*/
   /*box-shadow:  -5px 5px 10px #d9d9d9, 5px -5px 10px #ffffff;*/
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-top: -17px;
 }
 
 jspm-importmap-dialog dialog header {
+  font-family: 'Roboto' sans-serif;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  font-size: 16px;
+  margin-bottom: var(--dl-space-space-unit);
 }
 
-jspm-importmap-dialog dialog header h4{
-  margin: 0;
-}
-
-jspm-importmap-dialog dialog jspm-generator-link {
+jspm-generator-link {
+  font-size: 14px;
   display: inline-block;
-  margin-bottom: 1rem;
+  margin-bottom: var(--dl-space-space-unit);
 }
 
-jspm-importmap-dialog dialog jspm-generator-link a{
+jspm-importmap-dialog dialog jspm-generator-link a {
   display: inline-block;
-  margin-bottom: 1rem;
   background: url(/images/icon-external-link.png) no-repeat right center;
   background-size: contain;
-  padding-right: 25px;
+  padding-right: var(--dl-space-space-twounits);
 }
 
 jspm-importmap-dialog dialog details  {
-  margin: 15px;
-  padding: 10px;
-  -webkit-border-radius: 50px;
-  border-radius: 10px;
-  background: #ffffff;
-  -webkit-box-shadow: 12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
-  box-shadow: -12px 12px 24px #d9d9d9, -12px -12px 24px #ffffff;
+  margin: var(--dl-space-space-halfunit) 0px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
-jspm-importmap-dialog dialog details summary, jspm-importmap-entry-summary{
-  padding: 10px;
+jspm-importmap-dialog dialog details summary, jspm-importmap-entry-summary {
+  padding: var(--dl-space-space-halfunit);
   cursor: pointer;
   display: flex;
   align-content: center;
   justify-content: space-between;
   align-items: center;
 }
+
 
 jspm-importmap-dialog dialog details summary:after{
   content: '›';
@@ -590,16 +613,38 @@ jspm-importmap-dialog dialog .icon-close{
   cursor: pointer;
 }
 
-jspm-importmap-entry{
+jspm-importmap-entry {
   display: flex;
   align-content: center;
   justify-content: space-between;
   align-items: center;
+  margin-right: var(--dl-space-space-unit);
 }
 
 jspm-importmap-entry button{
-  background: white;
+  background: var(--dl-color-gray-900);
   border: none;
   cursor: pointer;
-  color: crimson;
+  color: var(--dl-color-gray-black);
+}
+
+.jspm-features {
+  font-family: 'Roboto' sans-serif;
+  padding: 16px 24px;
+  border-radius: 8px;
+  background-color: var(--dl-color-jspm-300);
+  list-style: none;
+}
+
+.jspm-features li {
+  margin-top: 5px;
+  display: flex;
+  line-height: 35px;
+  align-items: center;
+}
+
+.check-icon {
+  margin-right: 5px;
+  width: 18px;
+  fill:var(--dl-color-success-100);
 }

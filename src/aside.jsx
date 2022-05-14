@@ -18,7 +18,7 @@ function Aside(
       <aside>
         <jspm-created>
           <h3>Created</h3>
-          <span>{created}</span>
+          <p>{created}</p>
         </jspm-created>
         <jspm-weekly-updated>
           <h3>Updated</h3>
@@ -38,10 +38,6 @@ function Aside(
             </ul>
           </jspm-features>
         )}
-        <jspm-license>
-          <h3>License</h3>
-          <span>{license}</span>
-        </jspm-license>
         <Seperator />
         {links && (
           <jspm-links>
@@ -49,7 +45,7 @@ function Aside(
             {Object.entries(links).map(([text, link]) =>
               link && (
                 <jspm-link>
-                  <h5>{text}</h5>
+                  <b>{text}</b>
                   <a href={link}>{link}</a>
                 </jspm-link>
               )
