@@ -54,7 +54,15 @@ function Package({
           <jspm-package-title>
             <h2>{name}</h2>
 
-            <jspm-package-version>
+            <select value={version} class="package-version-selector">
+              {versions?.map((v) => (
+                <option data-active={v === version}>
+                  <a href={`/package/${name}@${v}`}>{v}</a>
+                </option>
+              ))}
+            </select>
+
+            {/* <jspm-package-version>
               <h3>
                 <button onClick={toggleVersionSelector}>v{version}</button>
               </h3>
@@ -65,11 +73,10 @@ function Package({
                     </li>
                   ))}
                 </ul>
-            </jspm-package-version>
+            </jspm-package-version> */}
           </jspm-package-title>
           <jspm-summary>
-            <span>{license}</span>
-            <span>Published {updated}</span>
+            <span>{license}</span> | <span>Published {updated}</span>
             {types && <img height="20" src="/icon-typescript-logo.svg" />}
           </jspm-summary>
           <p>{description}</p>
@@ -94,8 +101,8 @@ function Package({
                         value={packageExport}
                       >
                         {addedToImportMap
-                          ? "− Remove from importmap"
-                          : "+ Add to importmap"}
+                          ? "−"
+                          : "+"}
                       </button>
                     )}
                   </li>

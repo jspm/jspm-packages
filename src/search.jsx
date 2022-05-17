@@ -21,7 +21,7 @@ function Search() {
           name="q"
         />
         <button class="search_button">
-          <span>Import</span>
+          <span>Search</span>
         </button>
       </form>
     </jspm-search>

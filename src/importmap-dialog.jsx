@@ -35,18 +35,19 @@ function ImportMapDialog(
     }
     map[name][version] = [...map[name][version], subpath];
   });
+
   return (
     <jspm-importmap-dialog>
       <dialog {...open}>
         <header>
+          <jspm-importmap-dialog-title>
+            Dependencies from import-map
+          </jspm-importmap-dialog-title>
           <jspm-importmap-dialog-close-button>
             <button class="icon-close" onClick={toggleImportmapDialog}>
               ✕
             </button>
           </jspm-importmap-dialog-close-button>
-          <jspm-importmap-dialog-title>
-            <h4>Importmap Dependencies</h4>
-          </jspm-importmap-dialog-title>
         </header>
         {generatorHash && (
           <jspm-generator-link>
@@ -86,7 +87,7 @@ function ImportMapDialog(
                           onClick={toggleExportSelection}
                           value={`${name}@${version}${subpath.slice(1)}`}
                         >
-                          &minus; Remove
+                          &minus;
                         </button>
                       </jspm-importmap-entry>
                     </li>
@@ -125,7 +126,7 @@ function ImportMapDialog(
                               onClick={toggleExportSelection}
                               value={`${name}@${version}${subpath.slice(1)}`}
                             >
-                              &minus; Remove
+                              &minus;
                             </button>
                           </jspm-importmap-entry>
                         </li>
