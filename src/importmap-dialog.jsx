@@ -1,5 +1,6 @@
 /** @jsx h */
-import { h } from "nano-jsx";
+import { h, Component } from "nano-jsx";
+import { store } from "@jspm/packages/store";
 
 function fromPkgStr(pkg) {
   const versionIndex = pkg.indexOf("@", 1);
@@ -12,54 +13,86 @@ function fromPkgStr(pkg) {
   const subpath = "." + pkg.slice(name.length + version.length + 1);
   return { name, version, subpath };
 }
+class ImportMapDialog extends Component{
+  store = store.use();
 
-function ImportMapDialog(
-  {
-    generatorHash = "",
-    dependencies = [],
-    open: dialogOpen,
-    toggleImportmapDialog,
-    toggleExportSelection,
-  },
-) {
-  const shouldOpen = dialogOpen && dependencies.length > 0;
-  const open = shouldOpen ? { open: shouldOpen } : {};
-  let map = {};
-  dependencies.forEach((dependency) => {
-    const { name, version, subpath } = fromPkgStr(dependency);
-    if (typeof map[name] === "undefined") {
-      map[name] = { [version]: [] };
-    }
-    if (typeof map[name][version] === "undefined") {
-      map[name][version] = [];
-    }
-    map[name][version] = [...map[name][version], subpath];
-  });
+  toggleImportmapDialog = (event) => {
+    event.preventDefault();
+    const {openImportmapDialog} = this.store.state;
+    this.store.setState({ ...this.store.state, openImportmapDialog: !openImportmapDialog });
+  };
 
-  return (
-    <jspm-importmap-dialog>
+  toggleExportSelection = (event) => {
+    event.preventDefault();
+
+    const { value } = event.target;
+    const { selectedExports } = this.store.state;
+    
+    selectedExports[value] = !selectedExports[value];
+    
+    const selectedDeps = Object.keys(selectedExports).filter((subpath) =>
+      selectedExports[subpath] === true
+    );
+
+    this.store.setState({ ...this.store.state, selectedDeps, selectedExports });
+    this.generateHash();
+  };
+
+  didMount() {
+    // subscribe to store changes
+    this.store.subscribe((newState, prevState) => {
+      // check if you need to update your component or not
+      if (JSON.stringify(newState) !== JSON.stringify(prevState)) {
+        this.update();
+      }
+    });
+  }
+
+  didUnmount() {
+    // cancel the store subscription
+    this.store.cancel();
+  }
+
+  render () {
+    const {
+      generatorHash = "",
+      selectedDeps = [],
+      openImportmapDialog: dialogOpen,
+    } = this.store.state;
+
+    const shouldOpen = dialogOpen && selectedDeps.length > 0;
+    const open = shouldOpen ? { open: shouldOpen } : {};
+    const map = {};
+    selectedDeps.forEach((dependency) => {
+      const { name, version, subpath } = fromPkgStr(dependency);
+      if (typeof map[name] === "undefined") {
+        map[name] = { [version]: [] };
+      }
+      if (typeof map[name][version] === "undefined") {
+        map[name][version] = [];
+      }
+      map[name][version] = [...map[name][version], subpath];
+    });
+  
+    return (
       <dialog {...open}>
         <header>
-          <jspm-importmap-dialog-title>
+          <h4>
             Dependencies from import-map
-          </jspm-importmap-dialog-title>
-          <jspm-importmap-dialog-close-button>
-            <button class="icon-close" onClick={toggleImportmapDialog}>
-              ✕
-            </button>
-          </jspm-importmap-dialog-close-button>
+          </h4>
+          <button class="icon-close" onClick={this.toggleImportmapDialog}>
+            ✕
+          </button>
         </header>
         {generatorHash && (
-          <jspm-generator-link>
-            <a
-              target="_blank"
-              href={`https://generator.jspm.io/${generatorHash}`}
-            >
-              Customize importmap at JSPM Generator
-            </a>
-          </jspm-generator-link>
+          <a
+            target="_blank"
+            href={`https://generator.jspm.io/${generatorHash}`}
+          >
+            Customize importmap at JSPM Generator
+          </a>
         )}
-
+  
         {Object.entries(map).map(([name, versions]) => {
           const mapEntries = Object.entries(versions);
           if (mapEntries.length === 1) {
@@ -67,29 +100,27 @@ function ImportMapDialog(
             return (
               <details>
                 <summary>
-                  <jspm-importmap-entry-summary>
-                    <jspm-importmap-entry-name>
-                      {name}
-                    </jspm-importmap-entry-name>
-                    <jspm-importmap-entry-version class="code">
-                      v{version}
-                    </jspm-importmap-entry-version>
-                  </jspm-importmap-entry-summary>
+                  <span>
+                    {name}
+                  </span>
+                  <span class="code">
+                    v{version}
+                  </span>
                 </summary>
                 <ol>
                   {subpaths.map((subpath) => (
                     <li>
-                      <jspm-importmap-entry>
-                        <jspm-importmap-entry-subpath class="code">
+                      <span>
+                        <span class="code">
                           {subpath}
-                        </jspm-importmap-entry-subpath>
+                        </span>
                         <button
-                          onClick={toggleExportSelection}
+                          onClick={this.toggleExportSelection}
                           value={`${name}@${version}${subpath.slice(1)}`}
                         >
                           &minus;
                         </button>
-                      </jspm-importmap-entry>
+                      </span>
                     </li>
                   ))}
                 </ol>
@@ -99,36 +130,34 @@ function ImportMapDialog(
           return (
             <details>
               <summary>
-                <jspm-importmap-entry-summary>
-                  <jspm-importmap-entry-name>
-                    {name}
-                  </jspm-importmap-entry-name>
-                  <jspm-importmap-entry-version class="code">
-                    [{mapEntries.length} versions]
-                  </jspm-importmap-entry-version>
-                </jspm-importmap-entry-summary>
+                <span>
+                  {name}
+                </span>
+                <span class="code">
+                  [{mapEntries.length} versions]
+                </span>
               </summary>
-
+  
               {mapEntries.map(([version, subpaths]) => {
                 return (
                   <details>
                     <summary>
-                      <jspm-importmap-entry-version class="code">
+                      <span class="code">
                         v{version}
-                      </jspm-importmap-entry-version>
+                      </span>
                     </summary>
                     <ol>
                       {subpaths.map((subpath) => (
                         <li>
-                          <jspm-importmap-entry>
+                          <span>
                             {subpath}
                             <button
-                              onClick={toggleExportSelection}
+                              onClick={this.toggleExportSelection}
                               value={`${name}@${version}${subpath.slice(1)}`}
                             >
                               &minus;
                             </button>
-                          </jspm-importmap-entry>
+                          </span>
                         </li>
                       ))}
                     </ol>
@@ -139,8 +168,9 @@ function ImportMapDialog(
           );
         })}
       </dialog>
-    </jspm-importmap-dialog>
-  );
+    );
+  }
 }
+
 
 export { ImportMapDialog };

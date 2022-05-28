@@ -1,13 +1,11 @@
 /** @jsx h */
 import { h } from "nano-jsx";
 
-function Logo({ name, version }) {
+function Logo() {
   return (
-    <jspm-logo>
-      <h1>
-        <a href="/">JSPM</a>
-      </h1>
-    </jspm-logo>
+    <h1>
+      <a href="/">JSPM</a>
+    </h1>
   );
 }
 export { Logo };

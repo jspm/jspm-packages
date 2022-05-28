@@ -23,7 +23,6 @@ jobs:
           path: |
             lib/
             deno.importmap
-            shell.html
 
   deploy:
     name: deploy

@@ -7,11 +7,10 @@ import nano, { h, renderSSR } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
 import { Semver } from "sver";
-import { SsrRoot } from "@jspm/packages/ssr-root";
+import { PackageSSR } from "@jspm/packages/package-ssr";
 import { Home } from "@jspm/packages/home";
 import { pageServingHeaders } from "@jspm/packages/utils";
 import { render } from "@jspm/packages/renderer";
-import { FEATURED_PACKAGES } from "@jspm/packages/featured-packages-list";
 import { features, parseURL } from "@jspm/packages/package-quality-check";
 
 const { Helmet } = nano;
@@ -99,7 +98,7 @@ async function requestHandler(request) {
     }
 
     const pathSegments = removeSlashes(pathname).split("/");
-    
+
     const staticResource =
       staticResources[`/${pathSegments[pathSegments.length - 1]}`];
 
@@ -113,11 +112,12 @@ async function requestHandler(request) {
 
     if (pathname === "/") {
       const indexPage = renderSSR(
-        <Home packages={FEATURED_PACKAGES} />,
+          <Home />
       );
+
       const { body, head, footer } = Helmet.SSR(indexPage);
       const html = await generateHTML({
-        template: "./shell.html",
+        template: "./lib/composition-home.html",
         body,
         head,
         footer,
@@ -201,7 +201,7 @@ async function requestHandler(request) {
           const sortedVersions = Object.keys(versions).sort(Semver.compare)
             .reverse();
           const app = renderSSR(
-            <SsrRoot
+            <PackageSSR
               name={name}
               description={description}
               version={version}
@@ -225,7 +225,7 @@ async function requestHandler(request) {
           const { body, head, footer } = Helmet.SSR(app);
           /* Hack to SSR readme :! */
           const html = await generateHTML({
-            template: "./shell.html",
+            template: "./lib/composition-package.html",
             body,
             head,
             footer,

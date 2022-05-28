@@ -1,0 +1,307 @@
+/* @link https://utopia.fyi/type/calculator?c=320,21,1.2,1140,24,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l */
+/*
+  https://codesandbox.io/s/xewcm?file=/style.css:2541-2862
+  https://play.teleporthq.io/projects/jspm-registry
+
+  for css-references
+*/
+* {
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: var(--dl-space-space-twounits);
+}
+
+h1 a {
+  text-decoration: none;
+}
+
+h2,
+h4,
+h5,
+h6 {
+  font-family: 'Roboto' sans-serif;
+}
+h2 {
+  font-size: var(--step-3);
+}
+h3 {
+  font-weight: 600;
+}
+h4 {
+  font-size: var(--step-1);
+}
+pre {
+  border: dotted 1px grey;
+  overflow-x: scroll;
+  padding: 10px;
+  background-color: var(--dl-color-jspm-placeholder);
+  white-space: pre-wrap;
+}
+
+code,
+.code {
+  font-family: "Source Code Pro", monospace;
+  font-family: "DM Mono", monospace;
+  font-size: var(--step--2);
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  font-size: var(--dl-space-space-unit);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+a {
+  cursor: pointer;
+  color: crimson;
+  text-decoration: none;
+}
+
+label {
+  margin-right: 10px;
+}
+button {
+  cursor: pointer;
+}
+
+jspm-packages {
+  display: block;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+jspm-packages jspm-packages-search {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+jspm-packages jspm-packages-search input[type="search"] {
+  width: 80vw;
+}
+
+
+jspm-packages-header header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  align-content: center;
+}
+
+@media (min-width: 1100px) {
+  jspm-packages-header header {
+    justify-content: space-between;
+  }
+}
+
+jspm-packages-logo h1 {
+  margin-right: var(--dl-space-space-unit);
+}
+
+jspm-packages-logo h1 a {
+  background: url(https://jspm.org/jspm.png) no-repeat left center;
+  color: var(--dl-color-gray-black);
+  background-size: contain;
+  padding-left: 2.5rem;
+}
+
+jspm-packages-search,
+jspm-packages-search form {
+  display: flex;
+}
+.search_button {
+  color: var(--dl-color-gray-black);
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-gray-black);
+  border-width: 1px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-width: 0px;
+  padding-left: var(--dl-space-space-oneandhalfunits);
+  padding-right: var(--dl-space-space-oneandhalfunits);
+  background-color: var(--dl-color-primary-js-primary);
+  border-top-left-radius: none;
+  border-top-right-radius: var(--dl-radius-radius-radius8);
+  border-bottom-left-radius: none;
+  border-bottom-right-radius: var(--dl-radius-radius-radius8);
+}
+
+.search_input {
+  color: var(--dl-color-gray-black);
+  cursor: auto;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-gray-black);
+  border-width: 1px;
+  background-color: var(--dl-color-gray-white);
+  height: 40px;
+  padding: var(--dl-space-space-halfunit);
+  max-width: 500px;
+  border-color: var(--dl-color-jspm-placeholder);
+  background-color: var(--dl-color-jspm-placeholder);
+  border-top-left-radius: var(--dl-radius-radius-radius8);
+  border-bottom-left-radius: var(--dl-radius-radius-radius8);
+  background: url("/npm-n-block-16.png") no-repeat 8px center;
+  font-size: var(--step--2);
+  padding-left: 32px;
+  width: 70vw;
+}
+
+jspm-packages-nav nav ul {
+  display: flex;
+  list-style: none;
+}
+
+jspm-packages-nav nav ul li {
+  margin: 20px;
+}
+
+.nav-list-style {
+  display: flex;
+  list-style: none;
+  gap: 15px;
+  justify-content: space-between;
+  margin: 30px 0;
+  padding: 0;
+}
+
+.nav-list-item .toggle-dialog {
+  background: transparent url("/icon-importmap.png") left center no-repeat;
+  background-size: contain;
+  padding-left: 25px;
+  border: 0;
+  cursor: pointer;
+  color: crimson;
+}
+
+jspm-packages{
+  display: block;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 var(--dl-space-space-oneandhalfunits);
+}
+
+@media (min-width: 768px) {
+  jspm-packages {
+    padding: var(--dl-space-space-unit);
+  }
+}
+
+jspm-packages-importmap-dialog dialog  {
+  position: fixed;
+  z-index: 2;
+  min-height: 100vh;
+  min-width: 350px;
+  background: white;
+  left: unset;
+  border: 0 solid black;
+  border-radius: 0;
+  /*background: linear-gradient(225deg, #e6e6e6, #ffffff);*/
+  /*box-shadow:  -5px 5px 10px #d9d9d9, 5px -5px 10px #ffffff;*/
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-top: -17px;
+}
+
+jspm-packages-importmap-dialog dialog header {
+  font-family: 'Roboto' sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  margin-bottom: var(--dl-space-space-unit);
+}
+
+jspm-generator-link {
+  font-size: 14px;
+  display: inline-block;
+  margin-bottom: var(--dl-space-space-unit);
+}
+
+jspm-packages-importmap-dialog dialog jspm-generator-link a {
+  display: inline-block;
+  background: url(/images/icon-external-link.png) no-repeat right center;
+  background-size: contain;
+  padding-right: var(--dl-space-space-twounits);
+}
+
+jspm-packages-importmap-dialog dialog details  {
+  margin: var(--dl-space-space-halfunit) 0px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+jspm-packages-importmap-dialog dialog details summary, jspm-importmap-entry-summary {
+  padding: var(--dl-space-space-halfunit);
+  cursor: pointer;
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+jspm-packages-importmap-dialog dialog details summary:after{
+  content: '›';
+  margin-right: 10px;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+jspm-packages-importmap-dialog dialog details[open] summary:after{
+  content: '⌄';
+}
+
+jspm-importmap-entry-name{
+  font-weight: 700;
+}
+
+jspm-importmap-entry-version{
+  margin-left: 10px;
+}
+
+jspm-packages-importmap-dialog dialog .icon-close{
+  background: white;
+  border: none;
+  background: transparent;
+  font-size: var(--step-0);
+  cursor: pointer;
+}
+
+jspm-importmap-entry {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+  margin-right: var(--dl-space-space-unit);
+}
+
+jspm-importmap-entry button{
+  background: var(--dl-color-gray-900);
+  border: none;
+  cursor: pointer;
+  color: var(--dl-color-gray-black);
+}
+
+.check-icon {
+  margin-right: 5px;
+  width: 18px;
+  fill:var(--dl-color-success-100);
+}
+
+.package-file {
+  display: block;
+  line-height: 1.3;
+}
+.package-files {
+  list-style: none;
+  padding-left: 0px;
+  max-height: 500px;
+  overflow: scroll;
+}
+.package-files li {
+  line-height: 1.3;
+}

@@ -8,11 +8,11 @@ auto-install = true
 
 [[task]]
 name = 'build'
-deps = ['deno.importmap', 'shell.html', 'lib/static-resources.json']
+deps = ['lib/**/*.html', 'deno.importmap', 'lib/static-resources.json']
 
 [[task]]
 name = 'serve'
-deps = ['lib/**/*.js', 'deno.importmap', 'server.jsx', 'shell.html', 'lib/static-resources.json']
+deps = ['lib/**/*.js', 'lib/**/*.html', 'deno.importmap', 'server.jsx', 'lib/static-resources.json']
 run = 'deno run -A --import-map=deno.importmap --unstable --no-check server.jsx'
 
 [[task]]
@@ -26,7 +26,7 @@ template = 'swc'
 [[task]]
 name = 'clean'
 validation = 'none'
-run = 'rm deno.importmap ; rm lib/* ; rm shell.html'
+run = 'rm deno.importmap ; rm lib/* ;'
 
 [[task]]
 target = 'lib/#.js'
@@ -41,8 +41,8 @@ template = 'jspm'
 env = ['deno', 'production']
 
 [[task]]
-target = 'shell.html'
-deps = ['src/shell.html', 'lib/**/*.js', 'npm:install']
+target = 'lib/#.html'
+deps = ['src/#.html', 'lib/**/*.js', 'npm:install']
 invalidation = 'always'
 engine = 'node'
 run = '''
@@ -62,13 +62,18 @@ run = '''
     mkdirp.sync(dirname(process.env.TARGET));
     await writeFile(process.env.TARGET, await generator.htmlGenerate(htmlSource, {
       // custom task required to set this up for now!
-      htmlUrl: pathToFileURL('lib/shell.html')
+      htmlUrl: pathToFileURL('process.env.TARGET'),
+      preload: true,
+      integrity: false, // erring ATM
+      whitespace: true,
+      esModuleShims: true,
+      comment: true
     }));
 '''
 
 [[task]]
 target = 'lib/static-resources.json'
-deps = ['src/shell.html', 'lib/**/*.js', 'npm:install']
+deps = ['lib/**/*.html', 'lib/**/*.js', 'npm:install']
 invalidation = 'always'
 engine = 'node'
 run = '''

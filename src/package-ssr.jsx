@@ -2,7 +2,7 @@
 import { h } from "nano-jsx";
 import { Package } from "@jspm/packages/package";
 
-function SsrRoot({
+function PackageSSR({
   created,
   description,
   downloads,
@@ -19,7 +19,7 @@ function SsrRoot({
   versions
 }) {
   return (
-    <jspm-package-root
+    <jspm-packages-package
       data-name={name}
       data-version={version}
     >
@@ -39,8 +39,8 @@ function SsrRoot({
         version={version}
         versions={versions}
       />
-    </jspm-package-root>
+    </jspm-packages-package>
   );
 }
 
-export { SsrRoot };
+export { PackageSSR };

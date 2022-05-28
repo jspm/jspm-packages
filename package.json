@@ -4,24 +4,31 @@
     "@jspm/generator": "^1.0.0-beta.31",
     "@jspm/plugin-rollup": "github:jspm/rollup-plugin-jspm",
     "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.182",
+    "@swc/core": "^1.2.194",
     "mkdirp": "^1.0.4",
     "rollup": "^2.72.1"
   },
   "exports": {
     ".": {
-      "browser": "./lib/dom-main.js",
-      "default": "./src/server-main.jsx"
+      "default": "./src/request-handlers.jsx"
     },
     "./aside": {
       "browser": "./lib/aside.js",
       "default": "./src/aside.jsx"
     },
+    "./constants": {
+      "browser": "./lib/constants.js",
+      "default": "./src/constants.js"
+    },
+    "./dom": {
+      "browser": "./lib/home-dom.js"
+    },
     "./dom-main": {
       "browser": "./lib/dom-main.js"
     },
-    "./dom-root": {
-      "browser": "./lib/dom-root.js"
+    "./exports": {
+      "browser": "./lib/exports.js",
+      "default": "./src/exports.jsx"
     },
     "./featured-packages": {
       "browser": "./lib/featured-packages.js",
@@ -34,6 +41,10 @@
     "./footer": {
       "browser": "./lib/footer.js",
       "default": "./src/footer.jsx"
+    },
+    "./functions": {
+      "browser": "./lib/functions.js",
+      "default": "./src/functions.js"
     },
     "./generate-statehash": {
       "browser": "./lib/generate-statehash.js"
@@ -50,9 +61,21 @@
       "browser": "./lib/home.js",
       "default": "./src/home.jsx"
     },
+    "./home-ssr": {
+      "browser": "./lib/home-ssr.js",
+      "default": "./src/home-ssr.jsx"
+    },
     "./importmap-dialog": {
       "browser": "./lib/importmap-dialog.js",
       "default": "./src/importmap-dialog.jsx"
+    },
+    "./importmap-toggle-button": {
+      "browser": "./lib/importmap-toggle-button.js",
+      "default": "./src/importmap-toggle-button.jsx"
+    },
+    "./jspm-package-exports": {
+      "browser": "./lib/jspm-package-exports.js",
+      "default": "./src/jspm-package-exports.jsx"
     },
     "./logo": {
       "browser": "./lib/logo.js",
@@ -66,9 +89,22 @@
       "browser": "./lib/package.js",
       "default": "./src/package.jsx"
     },
+    "./package-dom": {
+      "browser": "./lib/package-dom.js"
+    },
+    "./package-dom-root": {
+      "browser": "./lib/package-dom-root.js"
+    },
+    "./package-exports": {
+      "browser": "./lib/package-exports.js",
+      "default": "./src/package-exports.jsx"
+    },
     "./package-quality-check": {
       "browser": "./lib/package-quality-check.js",
       "default": "./src/package-quality-check.js"
+    },
+    "./package-ssr": {
+      "default": "./src/package-ssr.jsx"
     },
     "./readme": {
       "browser": "./lib/readme.js",
@@ -90,11 +126,19 @@
       "browser": "./lib/ssr-root.js",
       "default": "./src/ssr-root.jsx"
     },
+    "./state": {
+      "browser": "./lib/state.js",
+      "default": "./src/state.js"
+    },
     "./statehash": {
       "browser": "./lib/statehash.js"
     },
     "./static-resources": {
       "default": "./lib/static-resources.json"
+    },
+    "./store": {
+      "browser": "./lib/store.js",
+      "default": "./src/store.js"
     },
     "./utils": {
       "browser": "./lib/utils.js",

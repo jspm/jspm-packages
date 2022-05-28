@@ -74,8 +74,8 @@ class DomRoot extends Component {
         const sandboxURL = `https://jspm.org/sandbox${hash}`;
         const sandboxLink = document.createElement("a");
         sandboxLink.href = sandboxURL;
-        sandboxLink.innerText = 'Run in JSPM Sandbox';
-        sandboxLink.target = '_blank';
+        sandboxLink.innerText = "Run in JSPM Sandbox";
+        sandboxLink.target = "_blank";
         codeBlock.parentNode.prepend(sandboxLink);
       });
     }
@@ -83,15 +83,14 @@ class DomRoot extends Component {
 
   toggleExportSelection = (event) => {
     event.preventDefault();
-    console.log(event);
+
     this.selectedExports[event.target.value] = !this
       .selectedExports[event.target.value];
-    console.log(event.target.value);
+
     this.selectedDeps = Object.keys(this.selectedExports).filter((subpath) =>
       this.selectedExports[subpath] === true
     );
     this.generateHash();
-    console.log(JSON.stringify(this.selectedExports));
     this.update();
   };
 

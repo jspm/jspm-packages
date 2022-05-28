@@ -21,8 +21,6 @@ async function getStateHash({ name, version, subpath, exports, selectedDeps }) {
     deps = [[importPath, !!subpath]];
   }
 
-  console.log("dependency: ", JSON.stringify(deps));
-
   const state = {
     name: "Untitled",
     deps,
@@ -44,9 +42,7 @@ async function getStateHash({ name, version, subpath, exports, selectedDeps }) {
     },
   };
 
-  console.table(state);
   const stateHash = await stateToHash(state);
-  console.log("stateHash", stateHash);
   JSPMGeneratorContext.set(stateHash)
   return stateHash;
 }

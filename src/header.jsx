@@ -5,23 +5,33 @@ import { Search } from "@jspm/packages/search";
 import { Nav } from "@jspm/packages/nav";
 
 function Header(
-  { generatorHash = "", dependencies = [], open, toggleImportmapDialog, search=true },
+  {
+    generatorHash = "",
+    dependencies = [],
+    open,
+    toggleImportmapDialog,
+    search = true,
+  },
 ) {
   return (
-    <jspm-header>
-      <header class="header">
-        <div class="header">
-          <Logo />
-          {search && <Search />}
-        </div>
+    <header>
+      <jspm-packages-logo>
+        <Logo />
+      </jspm-packages-logo>
+      {search && (
+        <jspm-packages-search>
+          <Search />
+        </jspm-packages-search>
+      )}
+      <jspm-packages-nav>
         <Nav
           generatorHash={generatorHash}
           dependencies={dependencies}
           open={open}
           toggleImportmapDialog={toggleImportmapDialog}
         />
-      </header>
-    </jspm-header>
+      </jspm-packages-nav>
+    </header>
   );
 }
 

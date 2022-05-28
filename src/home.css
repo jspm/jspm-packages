@@ -1,0 +1,35 @@
+jspm-packages-home main h1 {
+  text-align: center;
+  font-size: var(--step-4);
+}
+
+jspm-packages-home .search_button {
+  height: 70px;
+}
+
+jspm-packages-home .search_input {
+  height: 70px;
+  padding: var(--dl-space-space-halfunit) 70px;
+  font-size: var(--step-0);
+  background: url("/npm-n-block-32.jpeg") no-repeat 18px center;
+}
+
+jspm-packages-home main {
+  margin-top: 50px;
+  font-family: "Roboto", sans-serif;
+}
+
+.jspm-features {
+  font-family: "Roboto" sans-serif;
+  padding: 16px 24px;
+  border-radius: 8px;
+  background-color: var(--dl-color-jspm-300);
+  list-style: none;
+}
+
+.jspm-features li {
+  margin-top: 5px;
+  display: flex;
+  line-height: 35px;
+  align-items: center;
+}
