@@ -1,8 +1,8 @@
 /** @jsx h */
-import nano, { Component, h } from "nano-jsx";
+import { Component, h } from "nano-jsx";
 import { store } from "@jspm/packages/store";
 
-class PackageExports extends Component {
+class PackageExportAddToImportmapToggle extends Component {
   // use the store in your component
   store = store.use();
 
@@ -29,24 +29,15 @@ class PackageExports extends Component {
 
     const { value } = event.target;
     const { selectedExports } = this.store.state;
-    
+
     selectedExports[value] = !selectedExports[value];
-    
+
     const selectedDeps = Object.keys(selectedExports).filter((subpath) =>
       selectedExports[subpath] === true
     );
 
     this.store.setState({ ...this.store.state, selectedDeps, selectedExports });
     this.generateHash();
-  };
-
-  toggleVersionSelector = (event) => {
-    event.preventDefault();
-    const { openVersionSelector } = this.store.state;
-    this.store.setState({
-      ...this.store.state,
-      openVersionSelector: !openVersionSelector,
-    });
   };
 
   didMount() {
@@ -72,40 +63,24 @@ class PackageExports extends Component {
 
   render() {
     const {
-      exports,
-      name,
-      version,
+      packageExport,
     } = this.props;
 
     const { selectedDeps } = this.store.state;
-    // display the name property of your store's state
+    
+    const addedToImportMap = selectedDeps?.includes(packageExport);
+
     return (
-      <section>
-        <h4>Package exports</h4>
-        <ul class="code">
-          {exports.map((subpath) => {
-            const packageExport = `${name}@${version}${subpath.slice(1)}`;
-            const addedToImportMap = selectedDeps?.includes(packageExport);
-            return (
-              <li>
-                {`${name}${subpath.slice(1)}`}
-                <button
-                  data-selected={addedToImportMap}
-                  type="button"
-                  onClick={this.toggleExportSelection}
-                  value={packageExport}
-                >
-                  {addedToImportMap
-                    ? "− Remove from importmap"
-                    : "+ Add to importmap"}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+      <button
+        data-selected={addedToImportMap}
+        type="button"
+        onClick={this.toggleExportSelection}
+        value={packageExport}
+      >
+        {addedToImportMap ? "−" : "+"}
+      </button>
     );
   }
 }
 
-export { PackageExports };
+export { PackageExportAddToImportmapToggle };

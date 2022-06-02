@@ -1,7 +1,6 @@
 /** @jsx h */
 import { Component, h } from "nano-jsx";
 import { store } from "@jspm/packages/store";
-
 class PackageExports extends Component {
   // use the store in your component
   store = store.use();
@@ -50,6 +49,7 @@ class PackageExports extends Component {
   };
 
   didMount() {
+
     const { generatorHash } = this.store.state;
 
     if (!generatorHash) {
@@ -66,7 +66,6 @@ class PackageExports extends Component {
   }
 
   didUnmount() {
-    // cancel the store subscription
     this.store.cancel();
   }
 
@@ -78,7 +77,7 @@ class PackageExports extends Component {
     } = this.props;
 
     const { selectedDeps } = this.store.state;
-    // display the name property of your store's state
+    
     return (
       <section>
         <h4>Package exports</h4>
@@ -89,16 +88,7 @@ class PackageExports extends Component {
             return (
               <li>
                 {`${name}${subpath.slice(1)}`}
-                <button
-                  data-selected={addedToImportMap}
-                  type="button"
-                  onClick={this.toggleExportSelection}
-                  value={packageExport}
-                >
-                  {addedToImportMap
-                    ? "− Remove from importmap"
-                    : "+ Add to importmap"}
-                </button>
+                <jspm-packages-package-export-add-to-importmap-toggle data-package-export={packageExport}></jspm-packages-package-export-add-to-importmap-toggle>
               </li>
             );
           })}

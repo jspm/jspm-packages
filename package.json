@@ -99,6 +99,10 @@
       "browser": "./lib/package-exports.js",
       "default": "./src/package-exports.jsx"
     },
+    "./package-export-add-to-importmap-toggle": {
+      "browser": "./lib/package-export-add-to-importmap-toggle.js",
+      "default": "./src/package-export-add-to-importmap-toggle.jsx"
+    },
     "./package-quality-check": {
       "browser": "./lib/package-quality-check.js",
       "default": "./src/package-quality-check.js"

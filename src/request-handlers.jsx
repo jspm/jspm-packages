@@ -140,8 +140,13 @@ async function requestHandlerPackage(request) {
   const { maintainers, readme, time, versions } = packageMetaDataJson;
   const { created: createdISO, modified } = time;
   dayjs.extend(dayjsPluginRelativeTime);
-  const updated = dayjs(time[version]).fromNow();
+  const updatedTime = time[version];
+  const updated = dayjs(updatedTime).fromNow();
   const created = dayjs(createdISO).fromNow();
+
+  const packageScoreResponse = await fetch(`https://registry.npmjs.org/-/v1/search?text=${name}&size=1`);
+  const packageScoreJson = await packageScoreResponse.json();
+  const {score} = packageScoreJson.objects[0]
 
   // `readme` is preferred here but this content always refers to the latest version
   // hence using it as fallback
@@ -175,11 +180,14 @@ async function requestHandlerPackage(request) {
       downloads={downloads}
       created={created}
       updated={updated}
+      createdTime={createdISO}
+      updatedTime={updatedTime}
       type={type}
       types={types}
       features={features(packageJson)}
       links={links}
       maintainers={maintainers}
+      score={score}
     />,
   );
   const { body, head, footer } = Helmet.SSR(app);

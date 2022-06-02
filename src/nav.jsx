@@ -3,7 +3,7 @@ import { h } from "nano-jsx";
 import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
 
 function Nav(
-  { generatorHash = "", dependencies = [], open, toggleImportmapDialog },
+  { generatorHash = ""},
 ) {
   return (
     <nav>

@@ -1,22 +1,19 @@
 jspm-packages-home main h1 {
   text-align: center;
-  font-size: var(--step-4);
+  font-size: var(--step-3);
 }
 
-jspm-packages-home .search_button {
-  height: 70px;
+jspm-packages-home jspm-packages-header header {
+  justify-content: center;
 }
 
-jspm-packages-home .search_input {
-  height: 70px;
-  padding: var(--dl-space-space-halfunit) 70px;
-  font-size: var(--step-0);
-  background: url("/npm-n-block-32.jpeg") no-repeat 18px center;
+jspm-packages-home jspm-packages-search input[type="search"]{
+  padding: var(--dl-space-space-halfunit) 20px var(--dl-space-space-halfunit) 30px;
+  font-size: var(--step--2);
 }
 
 jspm-packages-home main {
   margin-top: 50px;
-  font-family: "Roboto", sans-serif;
 }
 
 .jspm-features {

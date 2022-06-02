@@ -8,40 +8,36 @@ jspm-packages-hero {
 
 jspm-packages-hero h2 {
   font-family: "Source Sans Pro", sans-serif;
-}
-
-jspm-packages-readme {
-  display: block;
-}
-
-jspm-packages-aside {
-  padding: var(--dl-space-space-oneandhalfunits);
-}
-
-jspm-name,
-jspm-version,
-jspm-home-header,
-jspm-home-main,
-jspm-description {
-  display: block;
-}
-
-jspm-summary {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-}
-jspm-package-title {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-}
-jspm-package-version h3 {
   margin: 0;
 }
-jspm-package-version ul {
+
+jspm-packages-hero jspm-packages-package-title {
+  display: flex;
+  align-content: center;
+  gap: 10px;
+  margin: 15px 0;
+  align-items: stretch;
+  flex-direction: column;
+}
+
+jspm-packages-hero jspm-packages-package-title details summary {
+  appearance: none;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  height: 3em;
+  padding: 0 45px 0 1em;
+  background: var(--dl-color-jspm-300) url(icon-arrow-down.png) no-repeat right
+    0.8em center / 1.4em;
+  border-radius: 0.25em;
+  cursor: pointer;
+  background-size: 7%;
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+
+jspm-packages-hero jspm-packages-package-title details ul {
   margin: -3px 0 0 0;
   position: absolute;
   background: var(--dl-color-jspm-300);
@@ -52,49 +48,57 @@ jspm-package-version ul {
   line-height: 2rem;
   max-height: 50vh;
   overflow: scroll;
+  width: calc(100% - 100px);
 }
-jspm-package-version ul[data-open="false"] {
-  display: none;
-}
-jspm-package-version ul li a {
+
+jspm-packages-hero jspm-packages-package-title details ul li a {
   display: block;
   padding: 0.25rem 1rem;
   min-width: 124px;
 }
-jspm-package-version ul li a:hover {
+
+jspm-packages-package-title details ul li a:hover {
   background: var(--dl-color-jspm-400);
 }
-jspm-package-version ul li[data-active="false"] {
+
+jspm-packages-package-links ul {
+  display: flex;
+  list-style: none;
+  justify-content: center;
+  margin: 10px 0;
+  padding: 0;
+  align-items: center;
+  gap: 20px;
+}
+
+jspm-packages-package-highlights ul {
+  display: flex;
+  list-style: none;
   margin: 0;
+  padding: 0;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  font-size: var(--step--2);
+  border-top: 1px solid;
+  border-bottom: 1px solid;
 }
 
-/* <select> styles */
-jspm-package-version button,
-jspm-package-title select {
-  /* Reset */
-  appearance: none;
-  border: 0;
-  outline: 0;
-  font: inherit;
-  /* Personalize */
-  height: 3em;
-  padding: 0 45px 0 1em;
-  background: var(--dl-color-jspm-300) url(icon-arrow-down.png) no-repeat right
-    0.8em center / 1.4em;
-  border-radius: 0.25em;
-  cursor: pointer;
-  background-size: 7%;
+jspm-packages-package-highlights ul li + li:before {
+  content: "|";
+  margin-right: 10px;
 }
 
-/* <option> colors */
-jspm-package-title select option {
-  color: inherit;
-  background-color: gray;
+jspm-packages-readme {
+  display: block;
 }
-/* Remove focus outline */
-jspm-package-title select:focus {
-  outline: none;
+
+jspm-packages-aside {
+  padding: var(--dl-space-space-oneandhalfunits);
 }
+
 /* Remove IE arrow */
 &::-ms-expand {
   display: none;
@@ -108,13 +112,13 @@ jspm-content {
   justify-content: space-between;
 }
 
-jspm-package-exports {
+jspm-packages-package-exports section {
   display: block;
   max-height: 500px;
   overflow: scroll;
 }
 
-jspm-package-exports h4 {
+jspm-packages-package-exports section h4 {
   position: sticky;
   top: 0;
   background: white;
@@ -122,19 +126,22 @@ jspm-package-exports h4 {
   padding: 1rem 0;
   text-align: center;
 }
-jspm-package-exports ul {
+
+jspm-packages-package-exports section ul {
   margin: 0;
   padding: 0;
 }
-jspm-package-exports ul li {
+
+jspm-packages-package-exports section ul li {
   display: flex;
   align-content: center;
   justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid;
   align-items: center;
-  padding: 5px 0;
-  margin: 10px 0;
 }
-jspm-package-exports ul li button {
+
+jspm-packages-package-exports section ul li button {
   color: black;
   display: inline-block;
   border: none;
@@ -142,11 +149,7 @@ jspm-package-exports ul li button {
   padding: 2px 8px;
 }
 
-.package-version-selector {
-  max-width: 150px;
-}
-
-jspm-package-exports ul li button[data-selected="false"] {
+jspm-packages-package-exports section ul li button[data-selected="false"] {
   background: var(--dl-color-primary-js-primary);
 }
 
@@ -161,7 +164,7 @@ jspm-package-exports ul li button[data-selected="false"] {
     width: 100%;
   }
 
-  jspm-package-exports h4 {
+  jspm-packages-package-exports section h4 {
     text-align: left;
   }
 }
@@ -242,14 +245,6 @@ jspm-featured {
   display: block;
   margin: 0 auto;
 }
-@media (min-width: 767px) {
-  jspm-created,
-  jspm-weekly-updated,
-  jspm-weekly-downloads,
-  jspm-license {
-    /* justify-content: flex-end; */
-  }
-}
 
 .seperator-seperator {
   flex: 0 0 auto;
@@ -270,6 +265,7 @@ jspm-featured {
   border-top-left-radius: var(--dl-radius-radius-radius8);
   border-bottom-left-radius: var(--dl-radius-radius-radius8);
 }
+
 .seperator-container1 {
   flex: 0 0 auto;
   width: 50px;
@@ -278,6 +274,7 @@ jspm-featured {
   align-items: flex-start;
   background-color: var(--dl-color-jspm-400);
 }
+
 .seperator-container2 {
   flex: 0 0 auto;
   width: 50px;
@@ -286,6 +283,7 @@ jspm-featured {
   align-items: flex-start;
   background-color: var(--dl-color-jspm-300);
 }
+
 .seperator-container3 {
   flex: 0 0 auto;
   width: 50px;

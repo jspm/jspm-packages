@@ -39,28 +39,14 @@ function Aside(
           </jspm-features>
         )}
         <Seperator />
-        {links && (
-          <jspm-links>
-            <h3>Links</h3>
-            {Object.entries(links).map(([text, link]) =>
-              link && (
-                <jspm-link>
-                  <b>{text}</b>
-                  <a href={link}>{link}</a>
-                </jspm-link>
-              )
-            )}
-          </jspm-links>
-        )}
         <h3>Collaborators</h3>
         <jspm-maintainers>
           {maintainers.map(({ name, email }) => (
             <a href={`https://www.github.com/${name}`}>
               <jspm-maintainer>
                 <figure>
-                  <img src={`https://unavatar.io/${email}`} />
+                  <img src={`https://unavatar.io/${email}`} alt={name} />
                 </figure>
-                {name}
               </jspm-maintainer>
             </a>
           ))}

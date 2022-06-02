@@ -10,7 +10,7 @@ function Header(
     dependencies = [],
     open,
     toggleImportmapDialog,
-    search = true,
+    search,
   },
 ) {
   return (
@@ -18,6 +18,7 @@ function Header(
       <jspm-packages-logo>
         <Logo />
       </jspm-packages-logo>
+
       {search && (
         <jspm-packages-search>
           <Search />

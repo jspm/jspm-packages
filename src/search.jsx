@@ -16,11 +16,10 @@ function Search() {
         autofocus="true"
         placeholder="Package"
         autocomplete="on"
-        class="header-textinput search_input"
         name="q"
       />
-      <button class="search_button">
-        <span>Import</span>
+      <button>
+        Import
       </button>
     </form>
   );

@@ -3,6 +3,7 @@ import { h, hydrate } from "nano-jsx";
 import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
 import { PackageExports } from "@jspm/packages/package-exports";
 import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
+import {PackageExportAddToImportmapToggle} from "@jspm/packages/package-export-add-to-importmap-toggle"
 
 function hydrateImportmapToggleButton() {
   const mountElement = document.querySelector(
@@ -30,8 +31,8 @@ function hydrateImportMapDialog() {
   }
 }
 
-async function hydrateJSPMPackageExports() {
-  const mountElement = document.querySelector("jspm-package-exports");
+async function hydratePackageExports() {
+  const mountElement = document.querySelector("jspm-packages-package-exports");
 
   if (mountElement) {
     const {
@@ -75,8 +76,27 @@ async function hydrateJSPMPackageExports() {
   }
 }
 
+function hydratePackageExportAddToImportmapToggles() {
+  const mountElements = document.querySelectorAll(
+    "jspm-packages-package-export-add-to-importmap-toggle",
+  );
+  mountElements.forEach((mountElement) => {
+    const {
+      packageExport,
+    } = mountElement.dataset;
+
+    hydrate(
+      <PackageExportAddToImportmapToggle
+        packageExport={packageExport}
+      />,
+      mountElement,
+    );
+  });
+}
+
 if (typeof globalThis.document !== "undefined") {
   hydrateImportmapToggleButton();
-  hydrateJSPMPackageExports();
+  //hydratePackageExports();
   hydrateImportMapDialog();
+  hydratePackageExportAddToImportmapToggles();
 }

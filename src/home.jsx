@@ -22,11 +22,15 @@ function Home() {
       </jspm-packages-header>
       <main>
         <h1>
-          A CDN to serve NPM packages as standard ECMA Script &amp; Importmaps.
+          {/* A CDN to serve NPM packages as standard ECMA Script &amp; Importmaps. */}
+          Let's Just Serve Packages and Modules
         </h1>
         <jspm-packages-search>
           <Search />
         </jspm-packages-search>
+        <p>
+          A CDN to serve NPM packages as standard ECMA Script &amp; Importmaps.
+        </p>
         <ul class="jspm-features">
           {features.map((feat) => (
             <li>

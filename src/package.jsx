@@ -24,17 +24,15 @@ function Package({
   selectedDeps,
   downloads,
   created,
+  score,
   updated,
   type,
   types,
   features,
   links,
   maintainers,
-  toggleExportSelection,
-  openImportmapDialog,
-  toggleImportmapDialog,
-  openVersionSelector,
-  toggleVersionSelector,
+  createdTime,
+  updatedTime,
 }) {
   return (
     <Fragment>
@@ -42,12 +40,7 @@ function Package({
         <ImportMapDialog />
       </jspm-packages-importmap-dialog>
       <jspm-packages-header>
-        <Header
-          generatorHash={generatorHash}
-          dependencies={selectedDeps}
-          open={openImportmapDialog}
-          toggleImportmapDialog={toggleImportmapDialog}
-        />
+        <Header search />
       </jspm-packages-header>
       <jspm-packages-hero>
         <Hero
@@ -58,6 +51,9 @@ function Package({
           updated={updated}
           types={types}
           description={description}
+          links={links}
+          updatedTime={updatedTime}
+          score={score}
         />
       </jspm-packages-hero>
       <main>

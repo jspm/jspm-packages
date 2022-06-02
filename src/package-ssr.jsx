@@ -13,10 +13,13 @@ function PackageSSR({
   maintainers,
   name,
   readme,
+  score,
   types,
   updated,
+  createdTime,
+  updatedTime,
   version,
-  versions
+  versions,
 }) {
   return (
     <jspm-packages-package
@@ -34,8 +37,11 @@ function PackageSSR({
         maintainers={maintainers}
         name={name}
         readme={readme}
+        score={score}
         types={types}
         updated={updated}
+        createdTime={createdTime}
+        updatedTime={updatedTime}
         version={version}
         versions={versions}
       />
