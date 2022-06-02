@@ -1,7 +1,7 @@
 /** @jsx h */
 import { h, hydrate } from "nano-jsx";
 import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
-import { PackageExports } from "@jspm/packages/package-exports";
+// import { PackageExports } from "@jspm/packages/package-exports";
 import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
 import {PackageExportAddToImportmapToggle} from "@jspm/packages/package-export-add-to-importmap-toggle"
 
