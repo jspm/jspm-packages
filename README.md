@@ -1,7 +1,8 @@
 # JSPM package website
 
 # Develop
-- `chomp serve --watch`
+- `chomp serve --watch` or
+- `chrome build --watch` and run [server.jsx](./server.jsx) in debug mode 
 
 ## Naming convention
 
