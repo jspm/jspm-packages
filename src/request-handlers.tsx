@@ -226,46 +226,82 @@ async function requestHandlerPackage(request: Request): Promise<Response> {
 
 // https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
 const PAGE_SIZE = 20;
-async function getSearchResult(q = '', keyword='', page = 1) {
-  const response = await fetch(`https://registry.npmjs.org/-/v1/search?text=${q}${q ? '&' : ''}keywords:${keyword}&not:insecure&maintenance=1.0&quality=1.0&popularity=1.0${page > 1 ? `&from=${(page - 1) * PAGE_SIZE}` : ''}`);
+async function getSearchResult(q = "", keyword = "", page = 1) {
+  const response = await fetch(
+    `https://registry.npmjs.org/-/v1/search?text=${q}${
+      q ? "&" : ""
+    }keywords:${keyword}&not:insecure&maintenance=1.0&quality=1.0&popularity=1.0${
+      page > 1 ? `&from=${(page - 1) * PAGE_SIZE}` : ""
+    }`
+  );
   return response.json();
 }
 
-const __SEARCH_RESULT_PLACEHOLDER__ = '<!-- __SEARCH_RESULT__ -->';
+const __SEARCH_RESULT_PLACEHOLDER__ = "<!-- __SEARCH_RESULT__ -->";
 
 async function requestHandlerSearch(request: Request): Promise<Response> {
   try {
     const { pathname, searchParams } = new URL(request.url);
-    const url = new URL("./search.html", request.url);
-    const { body, status, headers } = await fetch(url);
 
-    const searchResults = body
-      .pipeThrough(new TextDecoderStream())
-      .pipeThrough(
-        new TransformStream({
-          transform: async (chunk, controller) => {
-            if(chunk.includes(__SEARCH_RESULT_PLACEHOLDER__)){
-              const searchTerm = searchParams.get("q") || '';
-              const searchKeyword = searchParams.get("keyword") || '';
-              const page = searchParams.get("page") || '';
-              const maintainer = searchParams.get("maintainer") || '';
-              
-              const results: Results = searchTerm || searchKeyword ? await getSearchResult(searchTerm, searchKeyword, parseInt(page)) : {objects: [], total: 0, time: new Date(Date.now())};
-              
-              const searchResults = renderSSR(<SearchResultsSSR {...results} size={(PAGE_SIZE)} searchTerm={searchTerm} searchKeyword={searchKeyword} page={parseInt(page)} />);
-              controller.enqueue(chunk.replace(__SEARCH_RESULT_PLACEHOLDER__, searchResults));
-            } else {
-              controller.enqueue(chunk);
-            }
-          },
-        })
-      )
-      .pipeThrough(new TextEncoderStream());
+    const searchTerm = searchParams.get("q") || "";
+    const searchKeyword = searchParams.get("keyword") || "";
+    const page = searchParams.get("page") || "";
+    const maintainer = searchParams.get("maintainer") || "";
 
-    return new Response(searchResults, {
-      status,
-      headers,
+    const results: Results =
+      searchTerm || searchKeyword
+        ? await getSearchResult(searchTerm, searchKeyword, parseInt(page))
+        : { objects: [], total: 0, time: new Date(Date.now()) };
+
+    const searchResults = renderSSR(
+      <SearchResultsSSR
+        {...results}
+        size={PAGE_SIZE}
+        searchTerm={searchTerm}
+        searchKeyword={searchKeyword}
+        page={parseInt(page)}
+      />
+    );
+
+    const { body, head, footer } = Helmet.SSR(searchResults);
+    const html = await generateHTML({
+      template: "./lib/search.html",
+      body,
+      head,
+      footer,
     });
+
+    return new Response(html, {
+      headers: pageServingHeaders,
+    });
+
+    // const searchResults = body
+    //   .pipeThrough(new TextDecoderStream())
+    //   .pipeThrough(
+    //     new TransformStream({
+    //       transform: async (chunk, controller) => {
+    //         if(chunk.includes(__SEARCH_RESULT_PLACEHOLDER__)){
+    //           const searchTerm = searchParams.get("q") || '';
+    //           const searchKeyword = searchParams.get("keyword") || '';
+    //           const page = searchParams.get("page") || '';
+    //           const maintainer = searchParams.get("maintainer") || '';
+
+    //           const results: Results = searchTerm || searchKeyword ? await getSearchResult(searchTerm, searchKeyword, parseInt(page)) : {objects: [], total: 0, time: new Date(Date.now())};
+
+    //           const searchResults = renderSSR(<SearchResultsSSR {...results} size={(PAGE_SIZE)} searchTerm={searchTerm} searchKeyword={searchKeyword} page={parseInt(page)} />);
+    //           controller.enqueue(chunk.replace(__SEARCH_RESULT_PLACEHOLDER__, searchResults));
+    //         } else {
+    //           controller.enqueue(chunk);
+    //         }
+    //       },
+    //     })
+    //   )
+    //   .pipeThrough(new TextEncoderStream());
+
+    // return new Response(searchResults, {
+    //   status,
+    //   headers,
+    // });
   } catch (error) {
     return new Response(error.message || error.toString(), { status: 500 });
   }
@@ -274,7 +310,7 @@ async function requestHandlerSearch(request: Request): Promise<Response> {
 type RequestHandler = {
   "/": () => Promise<Response>;
   "/search": (request: Request) => Promise<Response>;
-}
+};
 
 const requestHandlers: RequestHandler = {
   "/": requestHandlerHome,
