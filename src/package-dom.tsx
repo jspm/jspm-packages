@@ -1,33 +1,33 @@
 /** @jsx h */
 import { h, hydrate } from "nano-jsx";
 import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
-// import { PackageExports } from "@jspm/packages/package-exports";
 import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
-import {PackageExportAddToImportmapToggle} from "@jspm/packages/package-export-add-to-importmap-toggle"
+import { PackageExportAddToImportmapToggle } from "@jspm/packages/package-export-add-to-importmap-toggle";
+import { GeneratorLink } from "@jspm/packages/generator-link";
 
 function hydrateImportmapToggleButton() {
   const mountElement = document.querySelector(
-    "jspm-packages-importmap-toggle-button",
+    "jspm-packages-importmap-toggle-button"
   );
 
   if (mountElement) {
-    hydrate(
-      <ImportmapToggleButton />,
-      mountElement,
-    );
+    hydrate(<ImportmapToggleButton />, mountElement);
   }
 }
 
 function hydrateImportMapDialog() {
-  const mountElement = document.querySelector(
-    "jspm-packages-importmap-dialog",
-  );
+  const mountElement = document.querySelector("jspm-packages-importmap-dialog");
 
   if (mountElement) {
-    hydrate(
-      <ImportMapDialog />,
-      mountElement,
-    );
+    hydrate(<ImportMapDialog />, mountElement);
+  }
+}
+
+function hydrateGeneratorLink() {
+  const mountElement = document.querySelector("jspm-packages-generator-link");
+
+  if (mountElement) {
+    hydrate(<GeneratorLink />, mountElement);
   }
 }
 
@@ -35,10 +35,7 @@ async function hydratePackageExports() {
   const mountElement = document.querySelector("jspm-packages-package-exports");
 
   if (mountElement) {
-    const {
-      name,
-      version,
-    } = mountElement.dataset;
+    const { name, version } = mountElement.dataset;
 
     const jspmPackage = await import(
       `https://ga.jspm.io/npm:${name}@${version}/package.json`,
@@ -60,10 +57,14 @@ async function hydratePackageExports() {
       bugs,
     } = jspmPackage.default;
 
-    const filteredExports = Object.keys(exports).filter((expt) =>
-      !expt.endsWith("!cjs") && !expt.endsWith("/") &&
-      expt.indexOf("*") === -1
-    ).sort();
+    const filteredExports = Object.keys(exports)
+      .filter(
+        (expt) =>
+          !expt.endsWith("!cjs") &&
+          !expt.endsWith("/") &&
+          expt.indexOf("*") === -1
+      )
+      .sort();
 
     hydrate(
       <PackageExports
@@ -71,32 +72,28 @@ async function hydratePackageExports() {
         version={version}
         exports={filteredExports}
       />,
-      mountElement,
+      mountElement
     );
   }
 }
 
 function hydratePackageExportAddToImportmapToggles() {
   const mountElements = document.querySelectorAll(
-    "jspm-packages-package-export-add-to-importmap-toggle",
+    "jspm-packages-package-export-add-to-importmap-toggle"
   );
   mountElements.forEach((mountElement) => {
-    const {
-      packageExport,
-    } = mountElement.dataset;
+    const { packageExport } = mountElement.dataset;
 
     hydrate(
-      <PackageExportAddToImportmapToggle
-        packageExport={packageExport}
-      />,
-      mountElement,
+      <PackageExportAddToImportmapToggle packageExport={packageExport} />,
+      mountElement
     );
   });
 }
 
 if (typeof globalThis.document !== "undefined") {
   hydrateImportmapToggleButton();
-  //hydratePackageExports();
+  hydrateGeneratorLink();
   hydrateImportMapDialog();
   hydratePackageExportAddToImportmapToggles();
 }

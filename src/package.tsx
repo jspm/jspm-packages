@@ -1,5 +1,9 @@
 /** @jsx h */
-import nano, { Fragment, h } from "nano-jsx";
+
+/// <reference no-default-lib="true" />
+/// <reference types="https://unpkg.com/nano-jsx@0.0.32/lib/index.d.ts" />
+
+import { Fragment, Helmet, h } from "nano-jsx";
 import { Readme } from "@jspm/packages/readme";
 import { Aside } from "@jspm/packages/aside";
 import { Header } from "@jspm/packages/header";
@@ -7,33 +11,66 @@ import { Hero } from "@jspm/packages/hero";
 import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
 import { PackageExports } from "@jspm/packages/package-exports";
 
-const { Helmet } = nano;
+import type { Maintainer, ExportsTarget } from "@jspm/packages/types";
+
+type ExportsTarget =
+  | string
+  | null
+  | { [condition: string]: ExportsTarget }
+  | ExportsTarget[];
+
+type Prop = {
+  created: string;
+  dependencies: Record<string, string>,
+  description: string;
+  downloads: string;
+  exports: ExportsTarget | Record<string, ExportsTarget>;
+  features: Record<string, boolean>;
+  files: string[];
+  keywords: string[];
+  license: string;
+  links: { homepage: string; repository: string; issues: string };
+  maintainers: Maintainer[];
+  name: string;
+  readme: string;
+  score: {
+    final: number;
+    detail: {
+      quality: number;
+      popularity: number;
+      maintenance: number;
+    };
+  };
+  type: "commonjs" | "module";
+  types: string;
+  updated: string;
+  updatedTime: string;
+  version: string;
+  versions: string[]
+};
 
 function Package({
-  name,
-  description,
-  keywords,
-  version,
-  versions,
-  homepage,
-  license,
-  files,
-  exports,
-  readme,
-  generatorHash,
-  selectedDeps,
-  downloads,
   created,
-  score,
-  updated,
-  type,
-  types,
+  dependencies,
+  description,
+  downloads,
+  exports,
   features,
+  files,
+  keywords,
+  license,
   links,
   maintainers,
-  createdTime,
+  name,
+  readme,
+  score,
+  type,
+  types,
+  updated,
   updatedTime,
-}) {
+  version,
+  versions,
+}: Prop) {
   return (
     <Fragment>
       <jspm-packages-importmap-dialog>
@@ -73,8 +110,10 @@ function Package({
         <Aside
           created={created}
           updated={updated}
+          dependencies={dependencies}
           downloads={downloads}
           version={version}
+          versions={versions}
           name={name}
           license={license}
           files={files}

@@ -75,7 +75,7 @@ jspm-packages-package-highlights ul {
   display: flex;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 10px 0;
   gap: 10px;
   flex-wrap: wrap;
   align-items: center;

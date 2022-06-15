@@ -1,20 +1,16 @@
 /** @jsx h */
 import { h } from "nano-jsx";
 import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
+import { GeneratorLink } from "@jspm/packages/generator-link";
 
-function Nav(
-  { generatorHash = ""},
-) {
+function Nav() {
   return (
     <nav>
       <ul class="nav-list-style">
         <li class="nav-list-item">
-          <a
-            target="_blank"
-            href={`https://generator.jspm.io/${generatorHash}`}
-          >
-            Generator
-          </a>
+          <jspm-packages-generator-link>
+            <GeneratorLink />
+          </jspm-packages-generator-link>
         </li>
         <li class="nav-list-item">
           <a href="https://jspm.org/docs/cdn">Docs</a>

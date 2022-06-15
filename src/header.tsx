@@ -4,15 +4,11 @@ import { Logo } from "@jspm/packages/logo";
 import { Search } from "@jspm/packages/search";
 import { Nav } from "@jspm/packages/nav";
 
-function Header(
-  {
-    generatorHash = "",
-    dependencies = [],
-    open,
-    toggleImportmapDialog,
-    search,
-  },
-) {
+type Prop = {
+  search?: boolean;
+};
+
+function Header({ search }: Prop) {
   return (
     <header>
       <jspm-packages-logo>
@@ -24,13 +20,9 @@ function Header(
           <Search />
         </jspm-packages-search>
       )}
+      
       <jspm-packages-nav>
-        <Nav
-          generatorHash={generatorHash}
-          dependencies={dependencies}
-          open={open}
-          toggleImportmapDialog={toggleImportmapDialog}
-        />
+        <Nav />
       </jspm-packages-nav>
     </header>
   );

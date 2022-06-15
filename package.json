@@ -4,21 +4,25 @@
     "@jspm/generator": "^1.0.0-beta.31",
     "@jspm/plugin-rollup": "github:jspm/rollup-plugin-jspm",
     "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.194",
+    "@swc/core": "^1.2.196",
     "mkdirp": "^1.0.4",
-    "rollup": "^2.72.1"
+    "rollup": "^2.75.5",
+    "typescript": "^4.7.3"
+  },
+  "scripts": {
+    "em": "tsc --emitDeclarationOnly"
   },
   "exports": {
     ".": {
-      "default": "./src/request-handlers.jsx"
+      "default": "./src/request-handlers.tsx"
     },
     "./aside": {
       "browser": "./lib/aside.js",
-      "default": "./src/aside.jsx"
+      "default": "./src/aside.tsx"
     },
     "./constants": {
       "browser": "./lib/constants.js",
-      "default": "./src/constants.js"
+      "default": "./src/constants.ts"
     },
     "./dom": {
       "browser": "./lib/home-dom.js"
@@ -28,66 +32,71 @@
     },
     "./exports": {
       "browser": "./lib/exports.js",
-      "default": "./src/exports.jsx"
+      "default": "./src/exports.tsx"
     },
     "./featured-packages": {
       "browser": "./lib/featured-packages.js",
-      "default": "./src/featured-packages.jsx"
+      "default": "./src/featured-packages.tsx"
     },
     "./featured-packages-list": {
       "browser": "./lib/featured-packages-list.js",
-      "default": "./src/featured-packages-list.js"
+      "default": "./src/featured-packages-list.ts"
     },
     "./footer": {
       "browser": "./lib/footer.js",
-      "default": "./src/footer.jsx"
+      "default": "./src/footer.tsx"
     },
     "./functions": {
       "browser": "./lib/functions.js",
-      "default": "./src/functions.js"
+      "default": "./src/functions.ts"
     },
     "./generate-statehash": {
-      "browser": "./lib/generate-statehash.js"
+      "browser": "./lib/generate-statehash.js",
+      "default": "./src/generate-statehash.ts"
+    },
+    "./generator-link": {
+      "browser": "./lib/generator-link.js",
+      "default": "./src/generator-link.tsx"
     },
     "./header": {
       "browser": "./lib/header.js",
-      "default": "./src/header.jsx"
+      "default": "./src/header.tsx"
     },
     "./hero": {
       "browser": "./lib/hero.js",
-      "default": "./src/hero.jsx"
+      "default": "./src/hero.tsx"
     },
     "./home": {
       "browser": "./lib/home.js",
-      "default": "./src/home.jsx"
+      "default": "./src/home.tsx"
     },
     "./home-ssr": {
       "browser": "./lib/home-ssr.js",
-      "default": "./src/home-ssr.jsx"
+      "default": "./src/home-ssr.tsx"
     },
     "./importmap-dialog": {
       "browser": "./lib/importmap-dialog.js",
-      "default": "./src/importmap-dialog.jsx"
+      "default": "./src/importmap-dialog.tsx"
     },
     "./importmap-toggle-button": {
       "browser": "./lib/importmap-toggle-button.js",
-      "default": "./src/importmap-toggle-button.jsx"
+      "default": "./src/importmap-toggle-button.tsx"
     },
     "./jspm-package-exports": {
       "browser": "./lib/jspm-package-exports.js",
-      "default": "./src/jspm-package-exports.jsx"
+      "default": "./src/jspm-package-exports.tsx"
     },
     "./logo": {
       "browser": "./lib/logo.js",
-      "default": "./src/logo.jsx"
+      "default": "./src/logo.tsx"
     },
     "./nav": {
       "browser": "./lib/nav.js",
-      "default": "./src/nav.jsx"
+      "default": "./src/nav.tsx"
     },
     "./package": {
       "browser": "./lib/package.js",
-      "default": "./src/package.jsx"
+      "default": "./src/package.tsx"
     },
     "./package-dom": {
       "browser": "./lib/package-dom.js"
@@ -97,56 +106,74 @@
     },
     "./package-exports": {
       "browser": "./lib/package-exports.js",
-      "default": "./src/package-exports.jsx"
+      "default": "./src/package-exports.tsx"
     },
     "./package-export-add-to-importmap-toggle": {
       "browser": "./lib/package-export-add-to-importmap-toggle.js",
-      "default": "./src/package-export-add-to-importmap-toggle.jsx"
+      "default": "./src/package-export-add-to-importmap-toggle.tsx"
     },
     "./package-quality-check": {
       "browser": "./lib/package-quality-check.js",
-      "default": "./src/package-quality-check.js"
+      "default": "./src/package-quality-check.ts"
     },
     "./package-ssr": {
-      "default": "./src/package-ssr.jsx"
+      "default": "./src/package-ssr.tsx"
     },
     "./readme": {
       "browser": "./lib/readme.js",
-      "default": "./src/readme.jsx"
+      "default": "./src/readme.tsx"
     },
     "./renderer": {
       "browser": "./lib/renderer.js",
-      "default": "./src/renderer.js"
+      "default": "./src/renderer.ts"
     },
     "./search": {
       "browser": "./lib/search.js",
-      "default": "./src/search.jsx"
+      "default": "./src/search.tsx"
+    },
+    "./search-dom": {
+      "browser": "./lib/search-dom.js"
+    },
+    "./search-result": {
+      "browser": "./lib/search-result.js",
+      "default": "./src/search-result.tsx"
+    },
+    "./search-results": {
+      "browser": "./lib/search-results.js",
+      "default": "./src/search-results.tsx"
+    },
+    "./search-results-ssr": {
+      "default": "./src/search-results-ssr.tsx"
     },
     "./separator": {
       "browser": "./lib/separator.js",
-      "default": "./src/separator.jsx"
+      "default": "./src/separator.tsx"
     },
     "./ssr-root": {
       "browser": "./lib/ssr-root.js",
-      "default": "./src/ssr-root.jsx"
+      "default": "./src/ssr-root.tsx"
     },
     "./state": {
       "browser": "./lib/state.js",
-      "default": "./src/state.js"
+      "default": "./src/state.ts"
     },
     "./statehash": {
-      "browser": "./lib/statehash.js"
+      "browser": "./lib/statehash.js",
+      "default": "./src/statehash.ts"
     },
     "./static-resources": {
       "default": "./lib/static-resources.json"
     },
     "./store": {
       "browser": "./lib/store.js",
-      "default": "./src/store.js"
+      "default": "./src/store.ts"
+    },
+    "./types": {
+      "default": "./types.ts"
     },
     "./utils": {
       "browser": "./lib/utils.js",
-      "default": "./utils.js"
+      "default": "./utils.ts"
     }
   },
   "type": "module"

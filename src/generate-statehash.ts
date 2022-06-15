@@ -4,7 +4,7 @@ const JSPMGeneratorContext = createContext('');
 
 async function getStateHash({ name, version, subpath, exports, selectedDeps }) {
   const { stateToHash } = await import(
-    "./statehash.js"
+    "@jspm/packages/statehash"
   );
 
   let deps = [];

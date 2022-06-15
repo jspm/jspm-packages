@@ -1,10 +1,16 @@
 /** @jsx h */
 
+/// <reference no-default-lib="true" />
+/// <reference lib="dom" />
+/// <reference lib="deno.ns" />
+/// <reference lib="deno.unstable" />
+/// <reference types="https://unpkg.com/nano-jsx@0.0.32/lib/index.d.ts" />
+
 import {
   contentType,
   lookup,
 } from "https://deno.land/x/media_types@v2.12.3/mod.ts";
-import nano, { h, renderSSR } from "nano-jsx";
+import { h, renderSSR, Helmet } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
 import { Semver } from "sver";
@@ -19,14 +25,14 @@ import {
   removeSlashes,
 } from "@jspm/packages/functions";
 import { HomeSSR } from "@jspm/packages/home-ssr";
+import { SearchResultsSSR } from "@jspm/packages/search-results-ssr";
+import type { Results } from "@jspm/packages/search-results";
 import { PackageSSR } from "@jspm/packages/package-ssr";
 import { features, parseURL } from "@jspm/packages/package-quality-check";
 import { render } from "@jspm/packages/renderer";
 
-const { Helmet } = nano;
-
 const staticResourcesFile = await Deno.readTextFile(
-  "./lib/static-resources.json",
+  "./lib/static-resources.json"
 );
 
 const staticResources = {
@@ -34,31 +40,41 @@ const staticResources = {
   "/style.css": "./src/style.css",
   "/package.css": "./src/package.css",
   "/home.css": "./src/home.css",
+  "/search.css": "./src/search.css",
+  "/search.html": "./lib/search.html",
   "/favicon.ico": "./favicon.ico",
   ...JSON.parse(staticResourcesFile),
 };
 
 async function generateHTML(
-  { template, body, head, footer } = { template: "./shell.html" },
-) {
+  {
+    template,
+    body,
+    head,
+    footer,
+  }: {
+    template: string;
+    body?: string;
+    head?: HTMLElement[];
+    footer?: HTMLElement[];
+  } = { template: "./shell.html" }
+): Promise<string> {
   const content = await Deno.readTextFile(template);
-  const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content
-    .split(/<!-- __[A-Z]*__ -->/i);
+  const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] =
+    content.split(/<!-- __[A-Z]*__ -->/i);
   return [
     START,
-    head.join("\n"),
+    head?.join("\n"),
     AFTER_HEADER_BEFORE_CONTENT,
     body,
     DOM_SCRIPT,
-    footer.join("\n"),
+    footer?.join("\n"),
     END,
   ].join("\n");
 }
 
 async function requestHandlerHome() {
-  const indexPage = renderSSR(
-    <HomeSSR />,
-  );
+  const indexPage = renderSSR(<HomeSSR />);
 
   const { body, head, footer } = Helmet.SSR(indexPage);
   const html = await generateHTML({
@@ -73,7 +89,7 @@ async function requestHandlerHome() {
   });
 }
 
-async function redirectToJSPMPackageVersion(packageName) {
+async function redirectToJSPMPackageVersion(packageName: string) {
   const npmPackageProbe = await fetch(`${NPM_PROVIDER_URL}${packageName}`);
   const npmPackageVersion = await npmPackageProbe.text();
 
@@ -81,14 +97,14 @@ async function redirectToJSPMPackageVersion(packageName) {
     return new Response(packageName, {
       status: 302,
       headers: {
-        "Location": `/package/${packageName}@${npmPackageVersion}`,
+        Location: `/package/${packageName}@${npmPackageVersion}`,
       },
     });
   }
   return new Response("404", { status: 404 });
 }
 
-async function requestHandlerPackage(request) {
+async function requestHandlerPackage(request: Request): Promise<Response> {
   const { pathname } = new URL(request.url);
   const [, packagePath] = pathname.split(PACKAGE_BASE_PATH);
 
@@ -98,44 +114,42 @@ async function requestHandlerPackage(request) {
     return redirectToJSPMPackageVersion(packageInfo.name);
   }
 
-  const baseURL =
-    `${NPM_PROVIDER_URL}${packageInfo.name}@${packageInfo.version}`;
+  const baseURL = `${NPM_PROVIDER_URL}${packageInfo.name}@${packageInfo.version}`;
   const filesToFetch = ["package.json", ...MAYBE_README_FILES];
 
   const [jspmPackage, READMEFile, readmeFile] = await Promise.all(
-    filesToFetch.map((file) => fetch(`${baseURL}/${file}`)),
+    filesToFetch.map((file) => fetch(`${baseURL}/${file}`))
   );
   const packageJson = await jspmPackage.json();
   const {
-    name,
-    description,
-    keywords,
-    version,
-    license,
-    files,
-    exports,
-    types,
-    type,
-    homepage,
-    repository,
     bugs,
+    dependencies,
+    description,
+    exports,
+    files,
+    homepage,
+    keywords,
+    license,
+    name,
+    repository,
+    type,
+    types,
+    version,
   } = packageJson;
 
   const readmeFileContent = await [READMEFile, readmeFile]
     .find(
-      (readmeFile) => readmeFile.status === 200 || readmeFile.status === 304,
+      (readmeFile) => readmeFile.status === 200 || readmeFile.status === 304
     )
     .text();
   // https://github.com/npm/registry/blob/master/docs/download-counts.md
   const weeklyDownloadsResponse = await fetch(
-    `https://api.npmjs.org/downloads/point/last-week/${name}`,
+    `https://api.npmjs.org/downloads/point/last-week/${name}`
   );
 
   const { downloads } = await weeklyDownloadsResponse.json();
   // https://github.com/npm/registry
-  const packageMetaData = await fetch(
-    `https://registry.npmjs.org/${name}`,
-  );
+  const packageMetaData = await fetch(`https://registry.npmjs.org/${name}`);
   const packageMetaDataJson = await packageMetaData.json();
   const { maintainers, readme, time, versions } = packageMetaDataJson;
   const { created: createdISO, modified } = time;
@@ -144,30 +158,36 @@ async function requestHandlerPackage(request) {
   const updated = dayjs(updatedTime).fromNow();
   const created = dayjs(createdISO).fromNow();
 
-  const packageScoreResponse = await fetch(`https://registry.npmjs.org/-/v1/search?text=${name}&size=1`);
+  const packageScoreResponse = await fetch(
+    `https://registry.npmjs.org/-/v1/search?text=${name}&size=1`
+  );
   const packageScoreJson = await packageScoreResponse.json();
-  const {score} = packageScoreJson.objects[0]
+  const { score } = packageScoreJson.objects[0];
 
   // `readme` is preferred here but this content always refers to the latest version
   // hence using it as fallback
   const readmeHTML = render(readmeFileContent || readme);
   // https://github.com/jspm/generator.jspm.io/blob/main/src/api.js#L137
-  const filteredExport = Object.keys(exports).filter((expt) =>
-    !expt.endsWith("!cjs") && !expt.endsWith("/") &&
-    expt.indexOf("*") === -1
-  ).sort();
+  const filteredExport = Object.keys(exports)
+    .filter(
+      (expt) =>
+        !expt.endsWith("!cjs") &&
+        !expt.endsWith("/") &&
+        expt.indexOf("*") === -1
+    )
+    .sort();
 
   const links = {
-    homepage,
-    repository: parseURL(repository),
-    issues: parseURL(bugs),
+    homepage: homepage || "",
+    repository: parseURL(repository) || "",
+    issues: parseURL(bugs) || "",
   };
 
-  const sortedVersions = Object.keys(versions).sort(Semver.compare)
-    .reverse();
+  const sortedVersions = Object.keys(versions).sort(Semver.compare).reverse();
   const app = renderSSR(
     <PackageSSR
       name={name}
+      dependencies={dependencies}
       description={description}
       version={version}
       versions={sortedVersions}
@@ -188,7 +208,7 @@ async function requestHandlerPackage(request) {
       links={links}
       maintainers={maintainers}
       score={score}
-    />,
+    />
   );
   const { body, head, footer } = Helmet.SSR(app);
   /* Hack to SSR readme :! */
@@ -204,19 +224,76 @@ async function requestHandlerPackage(request) {
   });
 }
 
-const requestHandlers = {
-  "/": requestHandlerHome,
-};
+// https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
+const PAGE_SIZE = 20;
+async function getSearchResult(q = '', keyword='', page = 1) {
+  const response = await fetch(`https://registry.npmjs.org/-/v1/search?text=${q}${q ? '&' : ''}keywords:${keyword}&not:insecure&maintenance=1.0&quality=1.0&popularity=1.0${page > 1 ? `&from=${(page - 1) * PAGE_SIZE}` : ''}`);
+  return response.json();
+}
 
-async function requestHandler(request) {
+const __SEARCH_RESULT_PLACEHOLDER__ = '<!-- __SEARCH_RESULT__ -->';
+
+async function requestHandlerSearch(request: Request): Promise<Response> {
   try {
     const { pathname, searchParams } = new URL(request.url);
+    const url = new URL("./search.html", request.url);
+    const { body, status, headers } = await fetch(url);
 
-    const packageName = searchParams.get("q");
+    const searchResults = body
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(
+        new TransformStream({
+          transform: async (chunk, controller) => {
+            if(chunk.includes(__SEARCH_RESULT_PLACEHOLDER__)){
+              const searchTerm = searchParams.get("q") || '';
+              const searchKeyword = searchParams.get("keyword") || '';
+              const page = searchParams.get("page") || '';
+              const maintainer = searchParams.get("maintainer") || '';
+              
+              const results: Results = searchTerm || searchKeyword ? await getSearchResult(searchTerm, searchKeyword, parseInt(page)) : {objects: [], total: 0, time: new Date(Date.now())};
+              
+              const searchResults = renderSSR(<SearchResultsSSR {...results} size={(PAGE_SIZE)} searchTerm={searchTerm} searchKeyword={searchKeyword} page={parseInt(page)} />);
+              controller.enqueue(chunk.replace(__SEARCH_RESULT_PLACEHOLDER__, searchResults));
+            } else {
+              controller.enqueue(chunk);
+            }
+          },
+        })
+      )
+      .pipeThrough(new TextEncoderStream());
 
-    if (packageName) {
-      return redirectToJSPMPackageVersion(packageName);
-    }
+    return new Response(searchResults, {
+      status,
+      headers,
+    });
+  } catch (error) {
+    return new Response(error.message || error.toString(), { status: 500 });
+  }
+}
+
+type RequestHandler = {
+  "/": () => Promise<Response>;
+  "/search": (request: Request) => Promise<Response>;
+}
+
+const requestHandlers: RequestHandler = {
+  "/": requestHandlerHome,
+  "/search": requestHandlerSearch,
+};
+
+/**
+ * @param {request} Request
+ * @returns Response
+ */
+async function requestHandler(request: { url: string }) {
+  try {
+    const { pathname } = new URL(request.url);
+
+    // const packageName = searchParams.get("q");
+
+    // if (packageName && pathname === "/search") {
+    //   return requestHandlerSearch(request);
+    // }
 
     const pathSegments = removeSlashes(pathname).split("/");
 

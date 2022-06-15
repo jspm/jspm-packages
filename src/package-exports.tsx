@@ -7,7 +7,7 @@ class PackageExports extends Component {
 
   generateHash = async () => {
     if (typeof globalThis.document !== "undefined") {
-      const { getStateHash } = await import("./generate-statehash.js");
+      const { getStateHash } = await import("@jspm/packages/generate-statehash");
 
       const { selectedDeps } = this.store.state;
 

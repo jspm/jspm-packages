@@ -1,10 +1,10 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import { FEATURED_PACKAGES } from "./featured-packages-list.js";
+import { FEATURED_PACKAGES } from "@jspm/packages/featured-packages-list";
 
 function Search() {
   return (
-    <form>
+    <form method="GET" action="/search">
       <datalist id="featured-packages">
         {FEATURED_PACKAGES.map((FEATURED_PACKAGE) => (
           <option value={FEATURED_PACKAGE} />

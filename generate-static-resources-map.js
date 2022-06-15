@@ -44,7 +44,8 @@ async function generateStaticResourceMap(entryModule) {
 
 const staticResources = {
   ...await generateStaticResourceMap("@jspm/packages/dom"), 
-  ...await generateStaticResourceMap("@jspm/packages/package-dom")
+  ...await generateStaticResourceMap("@jspm/packages/package-dom"),
+  ...await generateStaticResourceMap("@jspm/packages/search-dom")
 }
 const sortedStaticResources = {};
 

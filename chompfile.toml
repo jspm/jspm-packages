@@ -1,5 +1,5 @@
-version = 0.1
 default-task = 'build'
+version = 0.1
 
 extensions = ['chomp@0.1:swc', 'chomp@0.1:jspm', 'chomp@0.1:npm']
 
@@ -7,44 +7,54 @@ extensions = ['chomp@0.1:swc', 'chomp@0.1:jspm', 'chomp@0.1:npm']
 auto-install = true
 
 [[task]]
-name = 'build'
 deps = ['lib/**/*.html', 'deno.importmap', 'lib/static-resources.json']
+name = 'build'
 
 [[task]]
+deps = ['browser', 'lib/**/*.html', 'deno.importmap', 'server.tsx', 'lib/static-resources.json']
 name = 'serve'
-deps = ['lib/**/*.js', 'lib/**/*.html', 'deno.importmap', 'server.jsx', 'lib/static-resources.json']
-run = 'deno run -A --import-map=deno.importmap --unstable --no-check server.jsx'
+run = 'deno run -A --import-map=deno.importmap --unstable --no-check server.tsx'
 
 [[task]]
+name = 'browser'
+deps = ['jsx', 'ts']
+
+[[task]]
+name = 'ts'
+dep = 'src/#.ts'
 target = 'lib/#.js'
-dep = 'src/#.jsx'
+template = 'swc'
+
+[[task]]
+name = 'jsx'
+dep = 'src/#.tsx'
+target = 'lib/#.js'
 template = 'swc'
 [task.template-options.config]
-'jsc.transform.react.pragma' = 'h'
 'jsc.parser.tsx' = true
+'jsc.transform.react.pragma' = 'h'
 
 [[task]]
 name = 'clean'
-validation = 'none'
 run = 'rm deno.importmap ; rm lib/* ;'
+validation = 'none'
 
 [[task]]
-target = 'lib/#.js'
 dep = 'src/#.js'
 run = 'cp $DEP $TARGET'
+target = 'lib/#.js'
 
 [[task]]
+deps = ['server.tsx', 'lib/static-resources.json']
 target = 'deno.importmap'
-deps = ['server.jsx', 'lib/static-resources.json']
 template = 'jspm'
 [task.template-options]
 env = ['deno', 'production']
 
 [[task]]
-target = 'lib/#.html'
-deps = ['src/#.html', 'lib/**/*.js', 'npm:install']
-invalidation = 'always'
+deps = ['src/#.html', 'browser', 'npm:install']
 engine = 'node'
+invalidation = 'always'
 run = '''
     import { Generator } from '@jspm/generator';
     import { readFile, writeFile } from 'fs/promises';
@@ -70,21 +80,22 @@ run = '''
       comment: true
     }));
 '''
+target = 'lib/#.html'
 
 [[task]]
-target = 'lib/static-resources.json'
-deps = ['lib/**/*.html', 'lib/**/*.js', 'npm:install']
-invalidation = 'always'
+deps = ['lib/**/*.html', 'browser', 'npm:install']
 engine = 'node'
+invalidation = 'always'
 run = '''
    import './generate-static-resources-map.js';
 '''
+target = 'lib/static-resources.json'
 
 [[task]]
-name = 'exportmap'
 deps = ['package.json', 'npm:install']
-invalidation = 'always'
 engine = 'node'
+invalidation = 'always'
+name = 'exportmap'
 run = '''
    import './generate-exportmap.js';
 '''

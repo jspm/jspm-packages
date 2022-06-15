@@ -2,7 +2,7 @@
 import { h, Component } from "nano-jsx";
 import { store } from "@jspm/packages/store";
 
-function fromPkgStr(pkg) {
+function fromPkgStr(pkg: string) {
   const versionIndex = pkg.indexOf("@", 1);
   const name = pkg.slice(0, versionIndex);
   let subpathIndex = pkg.indexOf("/", versionIndex);
@@ -16,13 +16,13 @@ function fromPkgStr(pkg) {
 class ImportMapDialog extends Component{
   store = store.use();
 
-  toggleImportmapDialog = (event) => {
+  toggleImportmapDialog = (event: Event) => {
     event.preventDefault();
     const {openImportmapDialog} = this.store.state;
     this.store.setState({ ...this.store.state, openImportmapDialog: !openImportmapDialog });
   };
 
-  toggleExportSelection = (event) => {
+  toggleExportSelection = (event: Event) => {
     event.preventDefault();
 
     const { value } = event.target;
