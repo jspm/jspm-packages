@@ -45,4 +45,4 @@ jobs:
         with:
           project: jspm-packages # the name of the project on Deno Deploy
           import-map: deno.importmap
-          entrypoint: server.jsx # the entrypoint to deploy
+          entrypoint: server.tsx # the entrypoint to deploy
