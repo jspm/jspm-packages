@@ -29,33 +29,45 @@ function Aside({
 }: Prop) {
   return (
     <aside>
-      <h3>Created</h3>
-      <p>{created}</p>
-      <h3>Updated</h3>
-      <span>{updated}</span>
-      <h3>Downloads (weekly)</h3>
-      <span>{downloads}</span>
+      <div>
+        <h3>Created</h3>
+        <p>{created}</p>
+      </div>
+      <div>
+        <h3>Updated</h3>
+        <span>{updated}</span>
+      </div>
+      <div>
+        <h3>Downloads (weekly)</h3>
+        <span>{downloads}</span>
+      </div>
       {features && (
-        <Fragment>
+        <div>
           <h3>Features</h3>
           <ul>
             {Object.entries(features).map(([feature, supported]) => (
               <li data-feature-supported={supported}>{feature}</li>
             ))}
           </ul>
-        </Fragment>
+        </div>
       )}
-      <h3>Collaborators</h3>
-      {maintainers.map(({ name, email }) => (
-        <a href={`https://www.github.com/${name}`}>
-          <figure>
-            <img src={`https://unavatar.io/${email}`} alt={name} />
-          </figure>
-        </a>
-      ))}
+      <div class="maintainers">
+        <h3>Collaborators</h3>
+        <ul>
+          {maintainers.map(({ name, email }) => (
+            <li>
+              <a href={`https://www.github.com/${name}`}>
+                <figure>
+                  <img src={`https://unavatar.io/${email}`} alt={name} />
+                </figure>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {dependencies && (
-        <Fragment>
+        <div>
           <h3>Dependencies</h3>
           <ul>
             {Object.entries(dependencies).map(([dependency, version]) => (
@@ -64,11 +76,11 @@ function Aside({
               </li>
             ))}
           </ul>
-        </Fragment>
+        </div>
       )}
 
       {keywords && (
-        <Fragment>
+        <div>
           <h3>Keywords</h3>
           <ul>
             {keywords.map((keyword) => (
@@ -77,7 +89,7 @@ function Aside({
               </li>
             ))}
           </ul>
-        </Fragment>
+        </div>
       )}
     </aside>
   );

@@ -274,34 +274,6 @@ async function requestHandlerSearch(request: Request): Promise<Response> {
     return new Response(html, {
       headers: pageServingHeaders,
     });
-
-    // const searchResults = body
-    //   .pipeThrough(new TextDecoderStream())
-    //   .pipeThrough(
-    //     new TransformStream({
-    //       transform: async (chunk, controller) => {
-    //         if(chunk.includes(__SEARCH_RESULT_PLACEHOLDER__)){
-    //           const searchTerm = searchParams.get("q") || '';
-    //           const searchKeyword = searchParams.get("keyword") || '';
-    //           const page = searchParams.get("page") || '';
-    //           const maintainer = searchParams.get("maintainer") || '';
-
-    //           const results: Results = searchTerm || searchKeyword ? await getSearchResult(searchTerm, searchKeyword, parseInt(page)) : {objects: [], total: 0, time: new Date(Date.now())};
-
-    //           const searchResults = renderSSR(<SearchResultsSSR {...results} size={(PAGE_SIZE)} searchTerm={searchTerm} searchKeyword={searchKeyword} page={parseInt(page)} />);
-    //           controller.enqueue(chunk.replace(__SEARCH_RESULT_PLACEHOLDER__, searchResults));
-    //         } else {
-    //           controller.enqueue(chunk);
-    //         }
-    //       },
-    //     })
-    //   )
-    //   .pipeThrough(new TextEncoderStream());
-
-    // return new Response(searchResults, {
-    //   status,
-    //   headers,
-    // });
   } catch (error) {
     return new Response(error.message || error.toString(), { status: 500 });
   }
