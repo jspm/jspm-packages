@@ -3,7 +3,7 @@
 // - https://github.com/skypackjs/package-check/blob/ee925e7410bdd8252c0582b54f841231a4ae9bbf/src/get-repo-url.ts
 
 /** Turn repo URL into normal URL */
-function repoURL(url) {
+function repoURL(url: string) {
   return url
     .trim()
     .replace(/^git\+/i, "")

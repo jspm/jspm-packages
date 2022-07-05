@@ -7,16 +7,81 @@ jspm-packages-home jspm-packages-header header {
   justify-content: center;
 }
 
-jspm-packages-home jspm-packages-search input[type="search"]{
-  padding: var(--dl-space-space-halfunit) 20px var(--dl-space-space-halfunit) 30px;
+@media (min-width: 500px) {
+  jspm-packages-home jspm-packages-header header {
+    align-items: center;
+    justify-content: space-between;
+    align-content: stretch;
+    flex-direction: row;
+  }
+}
+
+jspm-packages-home jspm-packages-search form {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 30px;
+}
+
+@media (min-width: 768px) {
+  jspm-packages-home jspm-packages-search form {
+    max-width: 650px;
+    margin: 0 auto 50px;
+  }
+
+  jspm-packages-home jspm-packages-search form input[type="search"] {
+    height: 50px;
+  }
+
+  jspm-packages-home jspm-packages-search form button {
+    height: 50px;
+  }
+}
+
+jspm-packages-home jspm-packages-search input[type="search"] {
+  padding: var(--dl-space-space-halfunit) 20px var(--dl-space-space-halfunit)
+    30px;
   font-size: var(--step--2);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+jspm-packages-home jspm-packages-search form button {
+  margin: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 jspm-packages-home main {
   margin-top: 50px;
 }
 
-.jspm-features {
+jspm-packages-home jspm-packages-search + h2 {
+  text-align: center;
+  font-size: var(--step-1);
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+jspm-packages-home main section {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 25px;
+}
+
+jspm-packages-home main section article {
+  max-width: 350px;
+}
+/* @media (min-width: 768px) {
+  jspm-packages-home main section {
+    display: flex;
+    gap: 10px;
+  }
+} */
+/* .jspm-features {
   font-family: "Roboto" sans-serif;
   padding: 16px 24px;
   border-radius: 8px;
@@ -29,4 +94,4 @@ jspm-packages-home main {
   display: flex;
   line-height: 35px;
   align-items: center;
-}
+} */

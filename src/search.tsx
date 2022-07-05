@@ -19,7 +19,7 @@ function Search() {
         name="q"
       />
       <button>
-        Import
+        Search
       </button>
     </form>
   );

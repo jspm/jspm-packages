@@ -21,17 +21,14 @@ function Home() {
         <Header search={false} />
       </jspm-packages-header>
       <main>
-        <h1>
-          {/* A CDN to serve NPM packages as standard ECMA Script &amp; Importmaps. */}
-          Let's Just Serve Packages and Modules
-        </h1>
+        <h1>Let's Just Serve Packages and Modules</h1>
         <jspm-packages-search>
           <Search />
         </jspm-packages-search>
-        <p>
+        <h2>
           A CDN to serve NPM packages as standard ECMA Script &amp; Importmaps.
-        </p>
-        <ul class="jspm-features">
+        </h2>
+        {/* <ul class="jspm-features">
           {features.map((feat) => (
             <li>
               <svg viewBox="0 0 877.7142857142857 1024" class="check-icon">
@@ -41,7 +38,38 @@ function Home() {
               {feat}
             </li>
           ))}
-        </ul>
+        </ul> */}
+        <section>
+          <article>
+            <h3>Importmap</h3>
+            <ol>
+              <li>Find NPM package</li>
+              <li>Add package exports to Importmap</li>
+              <li>Download and use the Importmap</li>
+            </ol>
+          </article>
+
+          <article>
+            <h3>Pre-transpiled</h3>
+            <p>Common JS pre-transpiled to ESM</p>
+          </article>
+
+          <article>
+            <h3>Edge caching</h3>
+            <p>
+              Production ready, extreamly performant edge caching to serve
+              request closer to user.
+            </p>
+          </article>
+
+          <article>
+            <h3>Module water-fall optimization</h3>
+            <p>
+              Dependencies are deduped and statically analysed to avoid delayed
+              discovery and roundtrips to server.
+            </p>
+          </article>
+        </section>
       </main>
     </Fragment>
   );

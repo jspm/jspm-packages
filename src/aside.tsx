@@ -1,6 +1,6 @@
 /** @jsx h */
 
-import { h, Fragment } from "nano-jsx";
+import { h } from "nano-jsx";
 
 import type { Maintainer } from "@jspm/packages/types";
 
@@ -66,31 +66,6 @@ function Aside({
         </ul>
       </div>
 
-      {dependencies && (
-        <div>
-          <h3>Dependencies</h3>
-          <ul>
-            {Object.entries(dependencies).map(([dependency, version]) => (
-              <li>
-                <a href={`/package/${dependency}`}>{dependency}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {keywords && (
-        <div>
-          <h3>Keywords</h3>
-          <ul>
-            {keywords.map((keyword) => (
-              <li>
-                <a href={`/search?keyword=${keyword}`}>#{keyword}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </aside>
   );
 }

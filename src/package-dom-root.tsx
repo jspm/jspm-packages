@@ -31,7 +31,7 @@ class DomRoot extends Component {
 
   generateHash = async () => {
     if (typeof globalThis.document !== "undefined") {
-      const { getStateHash } = await import("./generate-statehash.js");
+      const { getStateHash } = await import("@jspm/packages/generate-statehash");
       const selectedDeps = this.selectedDeps.map((
         subpath,
       ) => [subpath, !!subpath]);
@@ -69,7 +69,7 @@ class DomRoot extends Component {
           { esModuleShims: true },
         );
 
-        const { getSandboxHash } = await import("./statehash.js");
+        const { getSandboxHash } = await import("@jspm/packages/statehash");
         const hash = await getSandboxHash(outHtml);
         const sandboxURL = `https://jspm.org/sandbox${hash}`;
         const sandboxLink = document.createElement("a");

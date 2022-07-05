@@ -1,5 +1,6 @@
 /** @jsx h */
 import { Fragment, h } from "nano-jsx";
+import hostedGitInfo from "hosted-git-info";
 
 function GithubIcon() {
   return (
@@ -83,8 +84,9 @@ function PackageTitle({ name, version, versions }) {
 }
 
 function PackageLinks({ homepage, repository, issues }) {
-  const isGithubRepository =
-    repository && new URL(repository).hostname === "github.com";
+  const repositoryInfo = hostedGitInfo.fromUrl(repository);
+  const repositoryURL = repositoryInfo.browse();
+  const isGithubRepository = repositoryInfo.domain === "github.com";
 
   return (
     <ul>
@@ -140,9 +142,9 @@ function PackageLinks({ homepage, repository, issues }) {
           </a>
         </li>
       )}
-      {repository && (
+      {repositoryURL && (
         <li>
-          <a href={repository} class="link-repository">
+          <a href={repositoryURL} class="link-repository">
             {isGithubRepository ? (
               <GithubIcon />
             ) : (

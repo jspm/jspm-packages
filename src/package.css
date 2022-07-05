@@ -20,6 +20,14 @@ jspm-packages-hero jspm-packages-package-title {
   flex-direction: column;
 }
 
+@media (min-width: 768px) {
+  jspm-packages-hero jspm-packages-package-title {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 jspm-packages-hero jspm-packages-package-title details summary {
   appearance: none;
   border: 0;
@@ -31,12 +39,16 @@ jspm-packages-hero jspm-packages-package-title details summary {
     0.8em center / 1.4em;
   border-radius: 0.25em;
   cursor: pointer;
-  background-size: 7%;
+  background-size: 3%;
   display: flex;
   align-items: center;
   align-content: center;
 }
-
+@media (min-width: 768px) {
+  jspm-packages-hero jspm-packages-package-title details summary {
+    background-size: 10%;
+  }
+}
 jspm-packages-hero jspm-packages-package-title details ul {
   margin: -3px 0 0 0;
   position: absolute;
@@ -48,7 +60,7 @@ jspm-packages-hero jspm-packages-package-title details ul {
   line-height: 2rem;
   max-height: 50vh;
   overflow: scroll;
-  width: calc(100% - 100px);
+  /* width: calc(100% - 100px); */
 }
 
 jspm-packages-hero jspm-packages-package-title details ul li a {
@@ -91,12 +103,19 @@ jspm-packages-package-highlights ul li + li:before {
   margin-right: 10px;
 }
 
+jspm-packages-hero + section {
+  display: flex;
+  gap: var(--dl-space-space-oneandhalfunits);
+}
+
 jspm-packages-readme {
   display: block;
 }
 
 jspm-packages-aside {
   padding: var(--dl-space-space-oneandhalfunits);
+  min-width: 350px;
+  font-size: var(--step--2);
 }
 
 jspm-packages-aside aside > div {
@@ -124,6 +143,15 @@ jspm-packages-aside aside > div.maintainers ul li a figure {
 jspm-packages-aside aside > div.maintainers ul li a figure img {
   width: 75px;
 }
+
+.secondary-aside ul {
+  font-size: var(--step--2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
 /* Remove IE arrow */
 &::-ms-expand {
   display: none;
