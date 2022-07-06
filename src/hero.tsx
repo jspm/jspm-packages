@@ -1,6 +1,6 @@
 /** @jsx h */
 import { Fragment, h } from "nano-jsx";
-import hostedGitInfo from "hosted-git-info";
+import hostedGitInfo from "@jspm/packages/repository-url";
 
 function GithubIcon() {
   return (
