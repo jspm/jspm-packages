@@ -2,7 +2,7 @@
 
 import { Fragment, Helmet, h } from "nano-jsx";
 import { Readme } from "@jspm/packages/readme";
-import { Aside } from "@jspm/packages/aside";
+// import { Aside } from "@jspm/packages/aside";
 import { Header } from "@jspm/packages/header";
 import { Hero } from "@jspm/packages/hero";
 import { ImportMapDialog } from "@jspm/packages/importmap-dialog";

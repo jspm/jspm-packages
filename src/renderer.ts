@@ -7,7 +7,9 @@
 
 import he from "he";
 import Prism from "prismjs";
-import sanitizeHtml from "sanitize-html";
+// import sanitizeHtml from "sanitize-html";
+import sanitizeHtml from "https://jspm.dev/sanitize-html";
+
 import { emojify } from "https://deno.land/x/emoji@0.1.2/mod.ts";
 import { marked } from "marked";
 import type { Slugger } from "marked";
