@@ -1,3 +1,6 @@
+
+import hostedGitInfo from "@jspm/packages/repository-url";
+
 // 🙏🏻🙏🏻🙏🏻 Gratefully taken from
 // - https://github.com/skypackjs/package-check/blob/ee925e7410bdd8252c0582b54f841231a4ae9bbf/src/index.ts
 // - https://github.com/skypackjs/package-check/blob/ee925e7410bdd8252c0582b54f841231a4ae9bbf/src/get-repo-url.ts
@@ -13,6 +16,16 @@ function repoURL(url: string) {
     .replace(/bitbucket:/, "$1.org/")
     .replace(/(github|gitlab):/, "$1.com/")
     .replace(/^(http\s*:\/\/|https\s*:\/\/|\/\/)?/, "https://");
+}
+
+function repositoryURL(repository: string | {type: string, url: string}) {
+  if(!repository){
+    return false;
+  }
+  const url = repository.url || repository;
+  const repositoryInfo = hostedGitInfo.fromUrl(url);
+  const repositoryURL = repositoryInfo.browse();
+  return repositoryURL;
 }
 
 function runCheck({ pass, title }) {
@@ -114,7 +127,7 @@ function supportsRepositoryURL(packageJson) {
   return runCheck({
     title: "Repository URL",
     url: "https://docs.skypack.dev/package-authors/package-checks#repository",
-    pass: () => !!parseURL(packageJson.repository)
+    pass: () => !!repositoryURL(packageJson.repository)
   });
 }
 
@@ -167,4 +180,4 @@ function features(packageJson) {
   };
 }
 
-export { features, parseURL };
+export { features, parseURL, repositoryURL };

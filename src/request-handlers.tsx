@@ -28,7 +28,8 @@ import { HomeSSR } from "@jspm/packages/home-ssr";
 import { SearchResultsSSR } from "@jspm/packages/search-results-ssr";
 import type { Results } from "@jspm/packages/search-results";
 import { PackageSSR } from "@jspm/packages/package-ssr";
-import { features, parseURL } from "@jspm/packages/package-quality-check";
+import { features, parseURL, repositoryURL } from "@jspm/packages/package-quality-check";
+// import { CSS, render } from "https://deno.land/x/gfm/mod.ts";
 import { render } from "@jspm/packages/renderer";
 
 const staticResourcesFile = await Deno.readTextFile(
@@ -179,7 +180,7 @@ async function requestHandlerPackage(request: Request): Promise<Response> {
 
   const links = {
     homepage: homepage || "",
-    repository: parseURL(repository) || "",
+    repository: repositoryURL(repository) || "",
     issues: parseURL(bugs) || "",
   };
 

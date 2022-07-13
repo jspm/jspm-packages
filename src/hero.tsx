@@ -1,6 +1,5 @@
 /** @jsx h */
 import { Fragment, h } from "nano-jsx";
-import hostedGitInfo from "@jspm/packages/repository-url";
 
 function GithubIcon() {
   return (
@@ -84,15 +83,19 @@ function PackageTitle({ name, version, versions }) {
 }
 
 function PackageLinks({ homepage, repository, issues }) {
-  const repositoryInfo = hostedGitInfo.fromUrl(repository);
-  const repositoryURL = repositoryInfo.browse();
-  const isGithubRepository = repositoryInfo.domain === "github.com";
+  const { hostname } = repository ? new URL(repository) : { hostname: "" };
+  const isGithubRepository = hostname === "github.com";
 
   return (
     <ul>
       {homepage && (
         <li>
-          <a href={homepage} class="link-homepage" target="_blank" rel="noopener noreferrer nofollow">
+          <a
+            href={homepage}
+            class="link-homepage"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               x="0px"
@@ -142,9 +145,14 @@ function PackageLinks({ homepage, repository, issues }) {
           </a>
         </li>
       )}
-      {repositoryURL && (
+      {repository && (
         <li>
-          <a href={repositoryURL} class="link-repository" target="_blank" rel="noopener noreferrer nofollow">
+          <a
+            href={repository}
+            class="link-repository"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+          >
             {isGithubRepository ? (
               <GithubIcon />
             ) : (
@@ -155,7 +163,12 @@ function PackageLinks({ homepage, repository, issues }) {
       )}
       {issues && (
         <li>
-          <a href={issues} class="link-issues" target="_blank" rel="noopener noreferrer nofollow">
+          <a
+            href={issues}
+            class="link-issues"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+          >
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAC3UlEQVRYhcWXy29MYRjGf+93aEQqSpNSt4VeqI1ozEzbhI0WEenGQoozhIWFxMLGdhY2+Bvq0imVsJogtLosHRWxcStlQYhIKEJD53yvxfQ2THvOmaF9Vt/5zvs+zy/n9p1PKEB6/9ByNFODMaWoVZTvqDcoDV0fwnpJoEBNGB682oHVNqAZqMzvJu9Q24NwhUh1t0jCFg2gA/FmrJ4BNgWBnaInQEJiyasFAWg6Xg7aCewMGfynbuKVuNLU/ikwgKbjtaApYF2R4eMaQm2rNFx64gug/fs3IKYPKPMxzSBcQ8WA7gEcn/rPOE6TbL7wbOqkyQlPx8sRkwoQDqLHJZpsk1jHXoQTvvWwBM+m9O6RpdMCjN3zqgBmoHIr73jmphqcXxfzAmi/u4swD5zMy0wxHg3cB7u1/0BLDoBqwiCcCmFSnETOqibMBAADL7cT/j0vRhtJv26eBFDZN4vhY7JtkwAi22Y9X8heAX1woBLVFbMOAKu0z60wqLN2DsKzmidVBs8unjMAQ5nxr/rfDI75MmfplmGDylBBzV6mdGKssqggj4wOCYCm3bfAypDt5/jx5iiLagVvpB1wQ/a/kVhyzfgz0BuyGeAwC1e/xxt5X0A4iNyBiQ+RdhUAAKBAxrcqn6ztmgSIVHeDPgppcZJochnRZCUix0J1Cg+JVfdmh2PStLsDCLauK8+kIVmXM5V2B4DNgfqNtEikY8otACSWvA3cDGQgMpxn9mvA3tR4eA4AAF6JC/LC30Wjev/g1omjgXgU2BIgfpD55mAOz1/W99w6DH3AEh+zn0AKREFbgQU+9Z8x2iiRzuczAgBo/74acFII631Mg+olllZpTD7980TetUAaLr9g1GsCrhcdLZKixInkC4egWzPV0yj1IaMfg56UWOeNGfmCOKkmTPYfzrYhtDD9Z/stIj1Y20WsuvefbE7zAvW5FThSi7HZBUmcbzhmUOrPfwzr9Ruoe+916F7M1AAAAABJRU5ErkJggg==" />
           </a>
         </li>

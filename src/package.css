@@ -349,14 +349,26 @@ footer > section > h3 {
 }
 
 footer > section > h3 + ul {
+  font-family: "Sen", sans-serif;
   font-size: var(--step--2);
   list-style: none;
   margin: 0;
   padding: 0;
   white-space: nowrap;
-  display: grid;
+  /* display: grid;
   gap: 15px;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); */
+  display: flex;
+  column-gap: 40px;
+  row-gap: 20px;
+  flex-wrap: wrap;
+}
+footer .maintainers ul {
+  column-gap: 20px;
+}
+footer .maintainers ul li figure{
+  margin: 0;
+  padding: 0;
 }
 
 /* @media (min-width: 768px) {
