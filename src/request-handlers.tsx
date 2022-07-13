@@ -184,6 +184,7 @@ async function requestHandlerPackage(request: Request): Promise<Response> {
   };
 
   const sortedVersions = Object.keys(versions).sort(Semver.compare).reverse();
+  const nativePackageExports = versions[version].exports;
   const app = renderSSR(
     <PackageSSR
       name={name}
@@ -208,6 +209,7 @@ async function requestHandlerPackage(request: Request): Promise<Response> {
       links={links}
       maintainers={maintainers}
       score={score}
+      jspmExports={!nativePackageExports}
     />
   );
   const { body, head, footer } = Helmet.SSR(app);

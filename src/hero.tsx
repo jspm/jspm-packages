@@ -92,7 +92,7 @@ function PackageLinks({ homepage, repository, issues }) {
     <ul>
       {homepage && (
         <li>
-          <a href={homepage} class="link-homepage">
+          <a href={homepage} class="link-homepage" target="_blank" rel="noopener noreferrer nofollow">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               x="0px"
@@ -144,7 +144,7 @@ function PackageLinks({ homepage, repository, issues }) {
       )}
       {repositoryURL && (
         <li>
-          <a href={repositoryURL} class="link-repository">
+          <a href={repositoryURL} class="link-repository" target="_blank" rel="noopener noreferrer nofollow">
             {isGithubRepository ? (
               <GithubIcon />
             ) : (
@@ -155,7 +155,7 @@ function PackageLinks({ homepage, repository, issues }) {
       )}
       {issues && (
         <li>
-          <a href={issues} class="link-issues">
+          <a href={issues} class="link-issues" target="_blank" rel="noopener noreferrer nofollow">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAC3UlEQVRYhcWXy29MYRjGf+93aEQqSpNSt4VeqI1ozEzbhI0WEenGQoozhIWFxMLGdhY2+Bvq0imVsJogtLosHRWxcStlQYhIKEJD53yvxfQ2THvOmaF9Vt/5zvs+zy/n9p1PKEB6/9ByNFODMaWoVZTvqDcoDV0fwnpJoEBNGB682oHVNqAZqMzvJu9Q24NwhUh1t0jCFg2gA/FmrJ4BNgWBnaInQEJiyasFAWg6Xg7aCewMGfynbuKVuNLU/ikwgKbjtaApYF2R4eMaQm2rNFx64gug/fs3IKYPKPMxzSBcQ8WA7gEcn/rPOE6TbL7wbOqkyQlPx8sRkwoQDqLHJZpsk1jHXoQTvvWwBM+m9O6RpdMCjN3zqgBmoHIr73jmphqcXxfzAmi/u4swD5zMy0wxHg3cB7u1/0BLDoBqwiCcCmFSnETOqibMBAADL7cT/j0vRhtJv26eBFDZN4vhY7JtkwAi22Y9X8heAX1woBLVFbMOAKu0z60wqLN2DsKzmidVBs8unjMAQ5nxr/rfDI75MmfplmGDylBBzV6mdGKssqggj4wOCYCm3bfAypDt5/jx5iiLagVvpB1wQ/a/kVhyzfgz0BuyGeAwC1e/xxt5X0A4iNyBiQ+RdhUAAKBAxrcqn6ztmgSIVHeDPgppcZJochnRZCUix0J1Cg+JVfdmh2PStLsDCLauK8+kIVmXM5V2B4DNgfqNtEikY8otACSWvA3cDGQgMpxn9mvA3tR4eA4AAF6JC/LC30Wjev/g1omjgXgU2BIgfpD55mAOz1/W99w6DH3AEh+zn0AKREFbgQU+9Z8x2iiRzuczAgBo/74acFII631Mg+olllZpTD7980TetUAaLr9g1GsCrhcdLZKixInkC4egWzPV0yj1IaMfg56UWOeNGfmCOKkmTPYfzrYhtDD9Z/stIj1Y20WsuvefbE7zAvW5FThSi7HZBUmcbzhmUOrPfwzr9Ruoe+916F7M1AAAAABJRU5ErkJggg==" />
           </a>
         </li>
@@ -164,14 +164,55 @@ function PackageLinks({ homepage, repository, issues }) {
   );
 }
 
-function PackageHighlights({ updatedTime, updated, score, license, types }) {
+function PackageFeatures({ features }) {
+  return (
+    <section>
+      <ul>
+        {Object.entries(features).map(([feature, supported]) => (
+          <li data-feature-supported={supported}>{feature}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function PackageHighlights({
+  createdTime,
+  created,
+  updatedTime,
+  updated,
+  downloads,
+  score,
+  license,
+  types,
+}) {
   return (
     <ul>
-      <li>
-        Published <time datetime={updatedTime}>{updated}</time>
-      </li>
-      <li>Score: {parseFloat(Number(score.final)).toFixed(2)}</li>
-      {license && <li>{license}</li>}
+      {created && (
+        <li>
+          <span>Created</span> <time datetime={createdTime}>{created}</time>
+        </li>
+      )}
+      {updated && (
+        <li>
+          <span>Published</span> <time datetime={updatedTime}>{updated}</time>
+        </li>
+      )}
+      {downloads && (
+        <li>
+          <span>Downloads</span> <span>{downloads}</span>
+        </li>
+      )}
+      {score && (
+        <li>
+          <span>Score</span> {parseFloat(Number(score.final)).toFixed(2)}
+        </li>
+      )}
+      {license && (
+        <li>
+          <span>License</span> <span>{license}</span>
+        </li>
+      )}
       {types && (
         <li>
           <img height="20" src="/icon-typescript-logo.svg" />
@@ -194,6 +235,8 @@ type Prop = {
       maintenance: number;
     };
   };
+  createdTime: string;
+  created: string;
   updated: string;
   updatedTime: string;
   types?: string;
@@ -205,9 +248,14 @@ type Prop = {
     bugs: string;
     issues: string;
   };
+  features: Record<string, boolean>;
+  downloads: string;
 };
 
 function Hero({
+  createdTime,
+  created,
+  downloads,
   name,
   version,
   versions,
@@ -217,33 +265,45 @@ function Hero({
   updatedTime,
   types,
   description,
+  features,
   links,
 }: Prop) {
   return (
     <Fragment>
-      <jspm-packages-package-title>
-        <PackageTitle name={name} version={version} versions={versions} />
-      </jspm-packages-package-title>
+      <div class="package-stamp">
+        <div>
+          <jspm-packages-package-title>
+            <PackageTitle name={name} version={version} versions={versions} />
+          </jspm-packages-package-title>
+          <jspm-packages-package-links>
+            <PackageLinks
+              homepage={links?.homepage}
+              repository={links?.repository}
+              issues={links?.issues}
+            />
+          </jspm-packages-package-links>
+        </div>
+        {features && (
+          <jspm-packages-package-features>
+            <PackageFeatures features={features} />
+          </jspm-packages-package-features>
+        )}
+      </div>
       <div>
-        <jspm-packages-package-links>
-          <PackageLinks
-            homepage={links?.homepage}
-            repository={links?.repository}
-            issues={links?.issues}
-          />
-        </jspm-packages-package-links>
-
         <jspm-packages-package-highlights>
           <PackageHighlights
+            createdTime={createdTime}
+            created={created}
             updatedTime={updatedTime}
             updated={updated}
+            downloads={downloads}
             score={score}
             license={license}
             types={types}
           />
         </jspm-packages-package-highlights>
       </div>
-      <p>{description}</p>
+      <p class="package-description">{description}</p>
     </Fragment>
   );
 }

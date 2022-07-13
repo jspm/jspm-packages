@@ -17,6 +17,7 @@ type ExportsTarget =
   | ExportsTarget[];
 
 type Prop = {
+  createdTime: string;
   created: string;
   dependencies: Record<string, string>;
   description: string;
@@ -44,9 +45,11 @@ type Prop = {
   updatedTime: string;
   version: string;
   versions: string[];
+  jspmExports: boolean;
 };
 
 function Package({
+  createdTime,
   created,
   dependencies,
   description,
@@ -67,6 +70,7 @@ function Package({
   updatedTime,
   version,
   versions,
+  jspmExports,
 }: Prop) {
   return (
     <Fragment>
@@ -79,6 +83,9 @@ function Package({
 
       <jspm-packages-hero>
         <Hero
+          createdTime={createdTime}
+          created={created}
+          downloads={downloads}
           name={name}
           version={version}
           versions={versions}
@@ -89,49 +96,73 @@ function Package({
           links={links}
           updatedTime={updatedTime}
           score={score}
+          features={features}
         />
       </jspm-packages-hero>
       <section>
-        <aside class="secondary-aside">
-          {keywords && (
-            <div class="keywords">
-              <h3>Keywords</h3>
-              <ul>
-                {keywords.map((keyword) => (
-                  <li>
-                    <a href={`/search?keyword=${keyword}`}>#{keyword}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {dependencies && Object.entries(dependencies).length > 0 && (
-            <div>
-              <h3>Dependencies</h3>
-              <ul>
-                {Object.entries(dependencies).map(([dependency, version]) => (
-                  <li>
-                    <a href={`/package/${dependency}`}>{dependency}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </aside>
         <main>
-          <jspm-packages-package-exports
-            data-name={name}
-            data-version={version}
-          >
-            {/* <Exports exports={exports} name={name} version={version} selectedDeps={selectedDeps} toggleExportSelection={toggleExportSelection} /> */}
-            <PackageExports name={name} version={version} exports={exports} />
-          </jspm-packages-package-exports>
-          <jspm-packages-readme>
-            <Readme __html={readme} />
-          </jspm-packages-readme>
+          <details class="package-exports" open>
+            <summary>
+              <h3>Package Exports</h3>
+            </summary>
+            <jspm-packages-package-exports
+              data-name={name}
+              data-version={version}
+            >
+              {/* <Exports exports={exports} name={name} version={version} selectedDeps={selectedDeps} toggleExportSelection={toggleExportSelection} /> */}
+              <PackageExports name={name} version={version} exports={exports} />
+            </jspm-packages-package-exports>
+            {jspmExports && (
+              <section>
+                <p>
+                  This package does not declare an{" "}
+                  <a href="https://jspm.org/docs/cdn#exports-field">exports</a>{" "}
+                  field, so the exports above have been automatically detected
+                  and optimized by <em>JSPM</em> instead. If any package subpath is
+                  missing, it is recommended to{" "}
+                  <a
+                    href={
+                      links.issues ||
+                      links.repository ||
+                      links.homepage ||
+                      links.npm
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                  >
+                    post an issue
+                  </a>{" "}
+                  to the{" "}
+                  <a
+                    href={links.homepage || links.repository || links.npm}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                  >
+                    original package ({name})
+                  </a>{" "}
+                  to support the "exports" field. If that is not possible,{" "}
+                  <a
+                    href="https://github.com/jspm/overrides"
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                  >
+                    create a JSPM override
+                  </a>{" "}
+                  to customize the exports field for this package.
+                </p>
+              </section>
+            )}
+          </details>
+          <details>
+            <summary>
+              <h3>Readme</h3>
+            </summary>
+            <jspm-packages-readme>
+              <Readme __html={readme} />
+            </jspm-packages-readme>
+          </details>
         </main>
-        <jspm-packages-aside>
+        {/* <jspm-packages-aside>
           <Aside
             created={created}
             updated={updated}
@@ -150,8 +181,55 @@ function Package({
             links={links}
             maintainers={maintainers}
           />
-        </jspm-packages-aside>
+        </jspm-packages-aside> */}
       </section>
+      <footer>
+        <section class="maintainers">
+          <h3>Collaborators</h3>
+          <ul>
+            {maintainers.map(({ name, email }) => (
+              <li>
+                <a href={`https://www.github.com/${name}`}>
+                  <figure>
+                    <img
+                      height="75"
+                      width="75"
+                      src={`https://unavatar.io/${email}`}
+                      alt={name}
+                      loading="lazy"
+                    />
+                  </figure>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+        {keywords && (
+          <section class="keywords">
+            <h3>Keywords</h3>
+            <ul>
+              {keywords.map((keyword) => (
+                <li>
+                  <a href={`/search?keyword=${keyword}`}>#{keyword}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {dependencies && Object.entries(dependencies).length > 0 && (
+          <section>
+            <h3>Dependencies</h3>
+            <ul>
+              {Object.entries(dependencies).map(([dependency, version]) => (
+                <li>
+                  <a href={`/package/${dependency}`}>{dependency}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </footer>
       <Helmet>
         <title>
           JSPM &ndash; {name}@{version}

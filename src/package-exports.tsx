@@ -7,14 +7,14 @@ class PackageExports extends Component {
 
   generateHash = async () => {
     if (typeof globalThis.document !== "undefined") {
-      const { getStateHash } = await import("@jspm/packages/generate-statehash");
+      const { getStateHash } = await import(
+        "@jspm/packages/generate-statehash"
+      );
 
       const { selectedDeps } = this.store.state;
 
       const generatorHash = await getStateHash({
-        selectedDeps: selectedDeps.map((
-          subpath,
-        ) => [subpath, !!subpath]),
+        selectedDeps: selectedDeps.map((subpath) => [subpath, !!subpath]),
       });
 
       if (generatorHash) {
@@ -28,11 +28,11 @@ class PackageExports extends Component {
 
     const { value } = event.target;
     const { selectedExports } = this.store.state;
-    
+
     selectedExports[value] = !selectedExports[value];
-    
-    const selectedDeps = Object.keys(selectedExports).filter((subpath) =>
-      selectedExports[subpath] === true
+
+    const selectedDeps = Object.keys(selectedExports).filter(
+      (subpath) => selectedExports[subpath] === true
     );
 
     this.store.setState({ ...this.store.state, selectedDeps, selectedExports });
@@ -49,7 +49,6 @@ class PackageExports extends Component {
   };
 
   didMount() {
-
     const { generatorHash } = this.store.state;
 
     if (!generatorHash) {
@@ -70,25 +69,26 @@ class PackageExports extends Component {
   }
 
   render() {
-    const {
-      exports,
-      name,
-      version,
-    } = this.props;
+    const { exports, name, version } = this.props;
 
     const { selectedDeps } = this.store.state;
-    
+
     return (
       <section>
-        <h4>Package exports</h4>
         <ul class="code">
           {exports.map((subpath) => {
-            const packageExport = `${name}@${version}${subpath.slice(1)}`;
+            const subpathName = subpath.slice(1);
+            const packageExport = `${name}@${version}${subpathName}`;
             const addedToImportMap = selectedDeps?.includes(packageExport);
             return (
               <li>
-                {`${name}${subpath.slice(1)}`}
-                <jspm-packages-package-export-add-to-importmap-toggle data-package-export={packageExport}></jspm-packages-package-export-add-to-importmap-toggle>
+                <span class="export-name">
+                  {subpathName && <span>{name}</span>}
+                  <span class="export-subpath">{subpathName || name}</span>
+                </span>
+                <jspm-packages-package-export-add-to-importmap-toggle
+                  data-package-export={packageExport}
+                ></jspm-packages-package-export-add-to-importmap-toggle>
               </li>
             );
           })}

@@ -10,7 +10,7 @@ import type { Maintainer, ExportsTarget } from "@jspm/packages/types";
 type Prop = {
   created: string;
   createdTime: string;
-  dependencies: Record<string, string>,
+  dependencies: Record<string, string>;
   description: string;
   downloads: string;
   exports: ExportsTarget | Record<string, ExportsTarget>;
@@ -37,6 +37,7 @@ type Prop = {
   updatedTime: string;
   version: string;
   versions: string[];
+  jspmExports: boolean;
 };
 
 function PackageSSR({
@@ -62,10 +63,12 @@ function PackageSSR({
   updatedTime,
   version,
   versions,
+  jspmExports
 }: Prop) {
   return (
     <jspm-packages-package data-name={name} data-version={version}>
       <Package
+        createdTime={createdTime}
         created={created}
         dependencies={dependencies}
         description={description}
@@ -86,6 +89,7 @@ function PackageSSR({
         updatedTime={updatedTime}
         version={version}
         versions={versions}
+        jspmExports={jspmExports}
       />
     </jspm-packages-package>
   );
