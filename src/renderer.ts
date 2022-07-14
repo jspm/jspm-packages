@@ -72,7 +72,7 @@ function render(markdown: string, opts: RenderOptions = {}) {
     allowedTags.push("iframe");
   }
 
-  return sanitizeHtml(html, {
+  const sanitizedHTML = sanitizeHtml(html, {
     allowedTags,
     allowedAttributes: {
       ...sanitizeHtml.defaults.allowedAttributes,
@@ -99,7 +99,7 @@ function render(markdown: string, opts: RenderOptions = {}) {
       iframe: ["src", "width", "height"], // Only used when iframe tags are allowed in the first place.
     },
     allowedClasses: {
-      div: ["highlight"],
+      div: ["highlight", "highlight-source-*"],
       span: [
         "token",
         "keyword",
@@ -125,6 +125,7 @@ function render(markdown: string, opts: RenderOptions = {}) {
     },
     allowProtocolRelative: false,
   });
+  return sanitizedHTML;
 }
 
 export { render };

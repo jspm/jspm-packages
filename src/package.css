@@ -293,7 +293,26 @@ jspm-packages-readme > section {
 
 @media (min-width: 768px) {
   jspm-packages-readme > section {
-    column-count: 2;
+    column-width: 350px;
+    column-gap: 20px;
+  }
+
+  jspm-packages-readme > section .highlight {
+    column-span: all;
+  }
+  jspm-packages-readme > section h1,
+  jspm-packages-readme > section h2,
+  jspm-packages-readme > section h3,
+  jspm-packages-readme > section h4,
+  jspm-packages-readme > section h5,
+  jspm-packages-readme > section h6 {
+    break-after: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  jspm-packages-readme > section p, jspm-packages-readme > section ul, jspm-packages-readme > section ol, jspm-packages-readme > section div, jspm-packages-readme > section table {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
 
@@ -366,7 +385,7 @@ footer > section > h3 + ul {
 footer .maintainers ul {
   column-gap: 20px;
 }
-footer .maintainers ul li figure{
+footer .maintainers ul li figure {
   margin: 0;
   padding: 0;
 }

@@ -13,6 +13,7 @@ type Prop = {
   dependencies: Record<string, string>;
   description: string;
   downloads: string;
+  subpaths: string[]
   exports: ExportsTarget | Record<string, ExportsTarget>;
   features: Record<string, boolean>;
   files: string[];
@@ -46,6 +47,7 @@ function PackageSSR({
   dependencies,
   description,
   downloads,
+  subpaths,
   exports,
   features,
   files,
@@ -73,6 +75,7 @@ function PackageSSR({
         dependencies={dependencies}
         description={description}
         downloads={downloads}
+        subpaths={subpaths}
         exports={exports}
         features={features}
         files={files}

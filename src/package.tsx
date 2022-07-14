@@ -22,6 +22,7 @@ type Prop = {
   dependencies: Record<string, string>;
   description: string;
   downloads: string;
+  subpaths: string[]
   exports: ExportsTarget | Record<string, ExportsTarget>;
   features: Record<string, boolean>;
   files: string[];
@@ -54,6 +55,7 @@ function Package({
   dependencies,
   description,
   downloads,
+  subpaths,
   exports,
   features,
   files,
@@ -110,7 +112,7 @@ function Package({
               data-version={version}
             >
               {/* <Exports exports={exports} name={name} version={version} selectedDeps={selectedDeps} toggleExportSelection={toggleExportSelection} /> */}
-              <PackageExports name={name} version={version} exports={exports} />
+              <PackageExports name={name} version={version} exports={exports} subpaths={subpaths} />
             </jspm-packages-package-exports>
             {jspmExports && (
               <section>

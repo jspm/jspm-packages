@@ -8,6 +8,7 @@ const store = new Store(
     openImportmapDialog: false,
     openVersionSelector: false,
     sandboxHashes: {},
+    importMap: {}
   },
   "@jspm/packages/store",
   "local",

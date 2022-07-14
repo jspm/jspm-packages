@@ -138,11 +138,11 @@ async function requestHandlerPackage(request: Request): Promise<Response> {
     version,
   } = packageJson;
 
-  const readmeFileContent = await [READMEFile, readmeFile]
+  const readmeFileContent_ = await [READMEFile, readmeFile]
     .find(
       (readmeFile) => readmeFile.status === 200 || readmeFile.status === 304
-    )
-    .text();
+    );
+    const readmeFileContent = await readmeFileContent_?.text();
   // https://github.com/npm/registry/blob/master/docs/download-counts.md
   const weeklyDownloadsResponse = await fetch(
     `https://api.npmjs.org/downloads/point/last-week/${name}`
@@ -196,7 +196,8 @@ async function requestHandlerPackage(request: Request): Promise<Response> {
       homepage={homepage}
       license={license}
       files={files}
-      exports={filteredExport}
+      subpaths={filteredExport}
+      exports={exports}
       readme={readmeHTML}
       keywords={keywords}
       downloads={downloads}

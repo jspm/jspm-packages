@@ -7,6 +7,41 @@ class ImportmapToggleButton extends Component {
   // use the store in your component
   store = store.use();
 
+  generateSandboxURL = () => {
+    if (typeof globalThis.document !== "undefined") {
+      const codeBlocks = document.querySelectorAll(
+        ".highlight-source-javascript pre, .highlight-source-js pre",
+      );
+
+      codeBlocks.forEach(async (codeBlock, index) => {
+        const { Generator } = await import("@jspm/generator");
+
+        const generator = new Generator({
+          env: ["production", "browser", "module"],
+        });
+
+        const outHtml = await generator.htmlGenerate(
+          `
+          <!doctype html>
+          <script type="module">
+          ${codeBlock.textContent}
+          </script>
+        `,
+          { esModuleShims: true },
+        );
+
+        const { getSandboxHash } = await import("@jspm/packages/statehash");
+        const hash = await getSandboxHash(outHtml);
+        const sandboxURL = `https://jspm.org/sandbox${hash}`;
+        const sandboxLink = document.createElement("a");
+        sandboxLink.href = sandboxURL;
+        sandboxLink.innerText = "Run in JSPM Sandbox";
+        sandboxLink.target = "_blank";
+        codeBlock.parentNode.prepend(sandboxLink);
+      });
+    }
+  };
+
   toggleImportmapDialog = (event) => {
     event.preventDefault();
     const {openImportmapDialog} = this.store.state;
@@ -21,6 +56,7 @@ class ImportmapToggleButton extends Component {
         this.update();
       }
     });
+    this.generateSandboxURL();
   }
 
   didUnmount() {

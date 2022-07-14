@@ -199,8 +199,9 @@ jspm-packages-nav nav ul li {
 
 jspm-packages-importmap-dialog dialog {
   position: fixed;
+  overflow: scroll;
   z-index: 2;
-  min-height: 100vh;
+  height: 100vh;
   min-width: 350px;
   background: white;
   left: unset;
@@ -210,6 +211,16 @@ jspm-packages-importmap-dialog dialog {
   /*box-shadow:  -5px 5px 10px #d9d9d9, 5px -5px 10px #ffffff;*/
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   margin-top: -17px;
+}
+
+jspm-packages-importmap-dialog dialog .importmap-text {
+  max-width: 480px;
+  overflow: scroll;
+  font-size: var(--step--2);
+}
+
+jspm-packages-importmap-dialog dialog .importmap-text pre {
+  width: max-content;
 }
 
 jspm-packages-importmap-dialog dialog header {
