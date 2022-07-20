@@ -72,7 +72,7 @@ class ImportmapToggleButton extends Component {
         title="Explore Importmap"
         onClick={this.toggleImportmapDialog}
       >
-        [{`${this.store.state.selectedDeps.length}`}]
+        [{`${this.store.state.jspmGeneratorState.deps.length}`}]
       </button>
     );
   }

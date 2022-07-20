@@ -8,8 +8,8 @@
 
 import {
   contentType,
-  lookup,
-} from "https://deno.land/x/media_types@v2.12.3/mod.ts";
+} from "https://deno.land/std@0.148.0/media_types/mod.ts";
+import {extname} from "https://deno.land/std@0.148.0/path/mod.ts";
 import { h, renderSSR, Helmet } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
@@ -29,7 +29,6 @@ import { SearchResultsSSR } from "@jspm/packages/search-results-ssr";
 import type { Results } from "@jspm/packages/search-results";
 import { PackageSSR } from "@jspm/packages/package-ssr";
 import { features, parseURL, repositoryURL } from "@jspm/packages/package-quality-check";
-// import { CSS, render } from "https://deno.land/x/gfm/mod.ts";
 import { render } from "@jspm/packages/renderer";
 
 const staticResourcesFile = await Deno.readTextFile(
@@ -316,7 +315,7 @@ async function requestHandler(request: { url: string }) {
       const response = await Deno.readFile(staticResource);
 
       return new Response(response, {
-        headers: { "content-type": contentType(lookup(staticResource)) },
+        headers: { "content-type": contentType(extname(staticResource)) },
       });
     }
 

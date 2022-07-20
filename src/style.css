@@ -212,9 +212,13 @@ jspm-packages-importmap-dialog dialog {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   margin-top: -17px;
 }
-
+jspm-packages-importmap-dialog dialog .selected-dependencies{
+  max-height: 50%;
+  overflow: scroll;
+}
 jspm-packages-importmap-dialog dialog .importmap-text {
   max-width: 480px;
+  max-height: 50%;
   overflow: scroll;
   font-size: var(--step--2);
 }

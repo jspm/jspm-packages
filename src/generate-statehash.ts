@@ -2,28 +2,28 @@ import { createContext } from 'nano-jsx'
 
 const JSPMGeneratorContext = createContext('');
 
-async function getStateHash({ name, version, subpath, exports, selectedDeps }) {
+async function getStateHash({ name, version, subpath, exports, deps }) {
   const { stateToHash } = await import(
     "@jspm/packages/statehash"
   );
 
-  let deps = [];
+  let dependencies = [];
   
-  if(selectedDeps){
-    deps = selectedDeps;
+  if(deps){
+    dependencies = deps;
   } else if (exports && exports.length > 0) {
-    deps = exports.map((subpath) => {
+    dependencies = exports.map((subpath) => {
       const importPath = `${name}@${version}${subpath.slice(1)}`;
       return [importPath, !!subpath];
     });
   } else if (subpath) {
     const importPath = `${name}@${version}${subpath.slice(1)}`;
-    deps = [[importPath, !!subpath]];
+    dependencies = [[importPath, !!subpath]];
   }
 
   const state = {
     name: "Untitled",
-    deps,
+    deps: dependencies,
     env: {
       development: true,
       production: true,

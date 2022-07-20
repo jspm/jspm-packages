@@ -295,6 +295,7 @@ jspm-packages-readme > section {
   jspm-packages-readme > section {
     column-width: 350px;
     column-gap: 20px;
+    column-count: 2;
   }
 
   jspm-packages-readme > section .highlight {
@@ -310,7 +311,11 @@ jspm-packages-readme > section {
     break-inside: avoid;
     page-break-inside: avoid;
   }
-  jspm-packages-readme > section p, jspm-packages-readme > section ul, jspm-packages-readme > section ol, jspm-packages-readme > section div, jspm-packages-readme > section table {
+  jspm-packages-readme > section p,
+  jspm-packages-readme > section ul,
+  jspm-packages-readme > section ol,
+  jspm-packages-readme > section div,
+  jspm-packages-readme > section table {
     break-inside: avoid;
     page-break-inside: avoid;
   }
