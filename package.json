@@ -124,7 +124,7 @@
       "browser": "./lib/renderer.js",
       "default": "./src/renderer.ts"
     },
-    "./repository-url":{
+    "./repository-url": {
       "default": "./src/repository-url.js"
     },
     "./search": {
@@ -176,8 +176,5 @@
       "default": "./utils.ts"
     }
   },
-  "type": "module",
-  "dependencies": {
-    "nano-jsx": "^0.0.32"
-  }
+  "type": "module"
 }

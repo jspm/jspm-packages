@@ -68,7 +68,7 @@ class PackageExportAddToImportmapToggle extends Component {
 
     const { deps } = this.store.state.jspmGeneratorState;
     
-    const addedToImportMap = deps?.includes(packageExport);
+    const addedToImportMap = deps?.map(([dependency]) => dependency).includes(packageExport);
 
     return (
       <button

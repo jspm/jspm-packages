@@ -8,8 +8,8 @@
 
 import {
   contentType,
-} from "https://deno.land/std@0.148.0/media_types/mod.ts";
-import {extname} from "https://deno.land/std@0.148.0/path/mod.ts";
+} from "https://deno.land/std@0.149.0/media_types/mod.ts";
+import {extname} from "https://deno.land/std@0.149.0/path/mod.ts";
 import { h, renderSSR, Helmet } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
@@ -299,12 +299,6 @@ const requestHandlers: RequestHandler = {
 async function requestHandler(request: { url: string }) {
   try {
     const { pathname } = new URL(request.url);
-
-    // const packageName = searchParams.get("q");
-
-    // if (packageName && pathname === "/search") {
-    //   return requestHandlerSearch(request);
-    // }
 
     const pathSegments = removeSlashes(pathname).split("/");
 
