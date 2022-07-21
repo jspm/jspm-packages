@@ -1,0 +1,46 @@
+:root {
+    /**
+    Typography
+    */
+  --step--2: clamp(0.91rem, 0.89rem + 0.1vw, 0.96rem);
+  --step--1: clamp(1.09rem, 1.05rem + 0.21vw, 1.2rem);
+  --step-0: clamp(1.31rem, 1.24rem + 0.37vw, 1.5rem);
+  --step-1: clamp(1.58rem, 1.46rem + 0.59vw, 1.88rem);
+  --step-2: clamp(1.89rem, 1.71rem + 0.89vw, 2.34rem);
+  --step-3: clamp(2.27rem, 2.01rem + 1.29vw, 2.93rem);
+  --step-4: clamp(2.72rem, 2.36rem + 1.83vw, 3.66rem);
+  --step-5: clamp(3.27rem, 2.75rem + 2.56vw, 4.58rem);
+
+
+    /**
+    Colours
+    */
+  --dl-color-gray-black: #000000;
+  --dl-color-gray-white: #ffffff;
+  --dl-color-gray-500: #595959;
+  --dl-color-gray-700: #999999;
+  --dl-color-gray-900: #d9d9d9;
+  --dl-color-jspm-200: #fdf5e2ff;
+  --dl-color-jspm-300: #ffe4adff;
+  --dl-color-jspm-400: #ffbf76ff;
+  --dl-color-jspm-500: #f69220ff;
+  --dl-color-success-100: #18a818;
+  --dl-color-jspm-placeholder: #fbf6f5ff;
+  --dl-color-primary-js-primary: #ffc95dff;
+
+
+    /**
+    Spacing
+    */
+  --dl-space-space-halfunit: 8px;
+  --dl-space-space-unit: 16px;
+  --dl-space-space-oneandhalfunits: 24px;
+  --dl-space-space-sixunits: 96px;
+  --dl-space-space-twounits: 32px;
+  --dl-space-space-fiveunits: 80px;
+  --dl-space-space-fourunits: 64px;
+  --dl-space-space-threeunits: 48px;
+  --dl-radius-radius-radius2: 2px;
+  --dl-radius-radius-radius4: 4px;
+  --dl-radius-radius-radius8: 8px;
+}
