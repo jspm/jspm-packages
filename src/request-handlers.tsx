@@ -6,10 +6,8 @@
 /// <reference lib="deno.unstable" />
 /// <reference types="https://unpkg.com/nano-jsx@0.0.32/lib/index.d.ts" />
 
-import {
-  contentType,
-} from "https://deno.land/std@0.149.0/media_types/mod.ts";
-import {extname} from "https://deno.land/std@0.149.0/path/mod.ts";
+import { contentType } from "https://deno.land/std@0.150.0/media_types/mod.ts";
+import { extname } from "https://deno.land/std@0.150.0/path/mod.ts";
 import { h, renderSSR, Helmet } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
@@ -20,7 +18,7 @@ import {
   PACKAGE_BASE_PATH,
 } from "@jspm/packages/constants";
 import {
-  packageDetail,
+  parsePackageNameVersion,
   pageServingHeaders,
   removeSlashes,
 } from "@jspm/packages/functions";
@@ -28,7 +26,7 @@ import { HomeSSR } from "@jspm/packages/home-ssr";
 import { SearchResultsSSR } from "@jspm/packages/search-results-ssr";
 import type { Results } from "@jspm/packages/search-results";
 import { PackageSSR } from "@jspm/packages/package-ssr";
-import { features, parseURL, repositoryURL } from "@jspm/packages/package-quality-check";
+import { features } from "@jspm/packages/package-quality-check";
 import { render } from "@jspm/packages/renderer";
 
 const staticResourcesFile = await Deno.readTextFile(
@@ -104,65 +102,90 @@ async function redirectToJSPMPackageVersion(packageName: string) {
   return new Response("404", { status: 404 });
 }
 
-async function requestHandlerPackage(request: Request): Promise<Response> {
-  const { pathname } = new URL(request.url);
-  const [, packagePath] = pathname.split(PACKAGE_BASE_PATH);
+async function getPackageJSON(baseURL: string) {
+  const packageJSON = await fetch(`${baseURL}/package.json`);
+  return packageJSON.json();
+}
 
-  const packageInfo = packageDetail(packagePath);
-
-  if (!packageInfo.version && packageInfo.name) {
-    return redirectToJSPMPackageVersion(packageInfo.name);
-  }
-
-  const baseURL = `${NPM_PROVIDER_URL}${packageInfo.name}@${packageInfo.version}`;
-  const filesToFetch = ["package.json", ...MAYBE_README_FILES];
-
-  const [jspmPackage, READMEFile, readmeFile] = await Promise.all(
-    filesToFetch.map((file) => fetch(`${baseURL}/${file}`))
+async function getReadmeContent(baseURL: string) {
+  const [READMEFile, readmeFile] = await Promise.all(
+    MAYBE_README_FILES.map((file) => fetch(`${baseURL}/${file}`))
   );
-  const packageJson = await jspmPackage.json();
-  const {
-    bugs,
-    dependencies,
-    description,
-    exports,
-    files,
-    homepage,
-    keywords,
-    license,
-    name,
-    repository,
-    type,
-    types,
-    version,
-  } = packageJson;
 
-  const readmeFileContent_ = await [READMEFile, readmeFile]
-    .find(
-      (readmeFile) => readmeFile.status === 200 || readmeFile.status === 304
-    );
-    const readmeFileContent = await readmeFileContent_?.text();
+  const validReadmeFileContent = await [READMEFile, readmeFile].find(
+    (readmeFile) => readmeFile.status === 200 || readmeFile.status === 304
+  );
+  return validReadmeFileContent?.text();
+}
+
+async function getWeeklyDownloads(name: string) {
   // https://github.com/npm/registry/blob/master/docs/download-counts.md
   const weeklyDownloadsResponse = await fetch(
     `https://api.npmjs.org/downloads/point/last-week/${name}`
   );
 
-  const { downloads } = await weeklyDownloadsResponse.json();
+  return weeklyDownloadsResponse.json();
+}
+
+async function getPackageMetaData(name: string) {
   // https://github.com/npm/registry
   const packageMetaData = await fetch(`https://registry.npmjs.org/${name}`);
-  const packageMetaDataJson = await packageMetaData.json();
-  const { maintainers, readme, time, versions } = packageMetaDataJson;
-  const { created: createdISO, modified } = time;
+  return packageMetaData.json();
+}
+
+async function getPackageScore(name: string) {
+  const packageScoreResponse = await fetch(
+    `https://registry.npmjs.org/-/v1/search?text=${name}&size=1`
+  );
+  return packageScoreResponse.json();
+}
+
+async function getPackageComponentProps(packageNameVersion: {
+  name: string;
+  version: string;
+}) {
+  const baseURL = `${NPM_PROVIDER_URL}${packageNameVersion.name}@${packageNameVersion.version}`;
+
+  const [
+    packageJson,
+    readmeFileContent,
+    weeklyDownloads,
+    packageMetaData,
+    packageScore,
+  ] = await Promise.all([
+    getPackageJSON(baseURL),
+    getReadmeContent(baseURL),
+    getWeeklyDownloads(packageNameVersion.name),
+    getPackageMetaData(packageNameVersion.name),
+    getPackageScore(packageNameVersion.name),
+  ]);
+
+  const {
+    dependencies,
+    description,
+    exports,
+    files,
+    keywords,
+    license,
+    name,
+    type,
+    types,
+    version,
+  } = packageJson;
+
+  const { maintainers, readme, time, versions } = packageMetaData;
+  const { created: createdISO } = time;
+
   dayjs.extend(dayjsPluginRelativeTime);
+
   const updatedTime = time[version];
   const updated = dayjs(updatedTime).fromNow();
   const created = dayjs(createdISO).fromNow();
 
-  const packageScoreResponse = await fetch(
-    `https://registry.npmjs.org/-/v1/search?text=${name}&size=1`
-  );
-  const packageScoreJson = await packageScoreResponse.json();
-  const { score } = packageScoreJson.objects[0];
+  const {
+    score,
+    package: { links },
+  } = packageScore.objects[0];
 
   // `readme` is preferred here but this content always refers to the latest version
   // hence using it as fallback
@@ -177,40 +200,91 @@ async function requestHandlerPackage(request: Request): Promise<Response> {
     )
     .sort();
 
-  const links = {
-    homepage: homepage || "",
-    repository: repositoryURL(repository) || "",
-    issues: parseURL(bugs) || "",
-  };
-
   const sortedVersions = Object.keys(versions).sort(Semver.compare).reverse();
   const nativePackageExports = versions[version].exports;
+
+  return {
+    name,
+    dependencies,
+    description,
+    version,
+    versions: sortedVersions,
+    license,
+    files,
+    subpaths: filteredExport,
+    exports,
+    readme: readmeHTML,
+    keywords,
+    downloads: weeklyDownloads.downloads,
+    created,
+    updated,
+    createdTime: createdISO,
+    updatedTime,
+    type,
+    types,
+    features: features(packageJson),
+    links,
+    maintainers,
+    score,
+    jspmExports: !nativePackageExports,
+  };
+}
+
+async function renderPackagePage(packageNameVersion: {
+  name: string;
+  version: string;
+}) {
+  const {
+    name,
+    dependencies,
+    description,
+    version,
+    versions,
+    license,
+    files,
+    subpaths,
+    exports,
+    readme,
+    keywords,
+    downloads,
+    created,
+    updated,
+    createdTime,
+    updatedTime,
+    type,
+    types,
+    features,
+    links,
+    maintainers,
+    score,
+    jspmExports,
+  } = await getPackageComponentProps(packageNameVersion);
+
   const app = renderSSR(
     <PackageSSR
       name={name}
       dependencies={dependencies}
       description={description}
       version={version}
-      versions={sortedVersions}
-      homepage={homepage}
+      versions={versions}
       license={license}
       files={files}
-      subpaths={filteredExport}
+      subpaths={subpaths}
       exports={exports}
-      readme={readmeHTML}
+      readme={readme}
       keywords={keywords}
       downloads={downloads}
       created={created}
       updated={updated}
-      createdTime={createdISO}
+      createdTime={createdTime}
       updatedTime={updatedTime}
       type={type}
       types={types}
-      features={features(packageJson)}
+      features={features}
       links={links}
       maintainers={maintainers}
       score={score}
-      jspmExports={!nativePackageExports}
+      jspmExports={jspmExports}
     />
   );
   const { body, head, footer } = Helmet.SSR(app);
@@ -225,6 +299,18 @@ async function requestHandlerPackage(request: Request): Promise<Response> {
   return new Response(html, {
     headers: pageServingHeaders,
   });
+}
+
+function requestHandlerPackage(request: Request): Promise<Response> {
+  const { pathname } = new URL(request.url);
+  const [, packagePath] = pathname.split(PACKAGE_BASE_PATH);
+
+  const packageNameVersion = parsePackageNameVersion(packagePath);
+
+  if (!packageNameVersion.version && packageNameVersion.name) {
+    return redirectToJSPMPackageVersion(packageNameVersion.name);
+  }
+  return renderPackagePage(packageNameVersion);
 }
 
 // https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search

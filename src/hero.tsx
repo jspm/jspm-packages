@@ -82,7 +82,7 @@ function PackageTitle({ name, version, versions }) {
   );
 }
 
-function PackageLinks({ homepage, repository, issues }) {
+function PackageLinks({ homepage, repository, bugs, npm }) {
   const { hostname } = repository ? new URL(repository) : { hostname: "" };
   const isGithubRepository = hostname === "github.com";
 
@@ -161,10 +161,10 @@ function PackageLinks({ homepage, repository, issues }) {
           </a>
         </li>
       )}
-      {issues && (
+      {bugs && (
         <li>
           <a
-            href={issues}
+            href={bugs}
             class="link-issues"
             target="_blank"
             rel="noopener noreferrer nofollow"
@@ -259,7 +259,6 @@ type Prop = {
     homepage: string;
     repository: string;
     bugs: string;
-    issues: string;
   };
   features: Record<string, boolean>;
   downloads: string;
@@ -292,7 +291,8 @@ function Hero({
             <PackageLinks
               homepage={links?.homepage}
               repository={links?.repository}
-              issues={links?.issues}
+              bugs={links?.bugs}
+              npm={links?.npm}
             />
           </jspm-packages-package-links>
         </div>

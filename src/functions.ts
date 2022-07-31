@@ -1,4 +1,4 @@
-function fromPkgStr(pkg) {
+function fromPkgStr(pkg: string) {
   const versionIndex = pkg.indexOf("@", 1);
   const name = pkg.slice(0, versionIndex);
   let subpathIndex = pkg.indexOf("/", versionIndex);
@@ -10,14 +10,14 @@ function fromPkgStr(pkg) {
   return { name, version, subpath };
 }
 
-function packageDetail(pkg) {
+function parsePackageNameVersion(pkg: string) {
   const isScopedPackage = pkg.startsWith('@');
   const packageNameVersion = isScopedPackage ? pkg.slice(1, pkg.length) : pkg;
   const [name, version] = packageNameVersion.split('@')
   return {name: isScopedPackage ? `@${name}` : name, version}
 }
 
-function getRandomFloat(min, max) {
+function getRandomFloat(min: number, max: number) {
   return (Math.random() * (max - min) + min).toFixed(2);
 }
 
@@ -47,7 +47,7 @@ const pageServingHeaders = {
  * @param {string} path
  * @returns {string}
  */
- function removeLeadingSlash(path) {
+ function removeLeadingSlash(path: string) {
   if (path.startsWith("/")) {
     return path.slice(1);
   }
@@ -58,7 +58,7 @@ const pageServingHeaders = {
  * @param {string} path
  * @returns {string}
  */
-function removeTrailingSlash(path) {
+function removeTrailingSlash(path: string) {
   if (path.endsWith("/")) {
     return path.slice(0, -1);
   }
@@ -69,8 +69,8 @@ function removeTrailingSlash(path) {
  * @param {string} path
  * @returns {string}
  */
-function removeSlashes(path) {
+function removeSlashes(path: string) {
   return removeTrailingSlash(removeLeadingSlash(path));
 }
 
-export { fromPkgStr, packageDetail, getRandomFloat, getRecentPackages, pageServingHeaders, removeSlashes };
+export { fromPkgStr, parsePackageNameVersion, getRandomFloat, getRecentPackages, pageServingHeaders, removeSlashes };

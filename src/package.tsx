@@ -28,7 +28,7 @@ type Prop = {
   files: string[];
   keywords: string[];
   license: string;
-  links: { homepage: string; repository: string; issues: string; npm: string };
+  links: { homepage: string; repository: string; bugs: string; npm: string };
   maintainers: Maintainer[];
   name: string;
   readme: string;

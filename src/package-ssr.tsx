@@ -13,14 +13,13 @@ type Prop = {
   dependencies: Record<string, string>;
   description: string;
   downloads: string;
-  subpaths: string[]
+  subpaths: string[];
   exports: ExportsTarget | Record<string, ExportsTarget>;
   features: Record<string, boolean>;
   files: string[];
-  homepage: string;
   keywords: string[];
   license: string;
-  links: { homepage: string; repository: string; issues: string };
+  links: { homepage: string; repository: string; bugs: string; npm: string };
   maintainers: Maintainer[];
   name: string;
   readme: string;
@@ -51,7 +50,6 @@ function PackageSSR({
   exports,
   features,
   files,
-  homepage,
   keywords,
   license,
   links,
@@ -65,7 +63,7 @@ function PackageSSR({
   updatedTime,
   version,
   versions,
-  jspmExports
+  jspmExports,
 }: Prop) {
   return (
     <jspm-packages-package data-name={name} data-version={version}>
