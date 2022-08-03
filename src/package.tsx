@@ -5,7 +5,6 @@ import { Readme } from "@jspm/packages/readme";
 // import { Aside } from "@jspm/packages/aside";
 import { Header } from "@jspm/packages/header";
 import { Hero } from "@jspm/packages/hero";
-import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
 import { PackageExports } from "@jspm/packages/package-exports";
 
 import type { Maintainer, ExportsTarget } from "@jspm/packages/types";
@@ -78,7 +77,6 @@ function Package({
     <Fragment>
       <section>
         <jspm-packages-importmap-dialog>
-          <ImportMapDialog />
         </jspm-packages-importmap-dialog>
       </section>
       

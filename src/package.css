@@ -177,6 +177,10 @@ main details summary h3 {
   font-family: "Bebas Neue";
 }
 
+#packages-page.shrink{
+  margin-right: 520px;
+}
+
 .package-exports {
   padding: 20px;
   border: 20px solid #ffc95d;

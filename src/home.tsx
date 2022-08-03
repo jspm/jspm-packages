@@ -1,7 +1,6 @@
 /** @jsx h */
 import { Fragment, h } from "nano-jsx";
 import { Header } from "@jspm/packages/header";
-import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
 import { Search } from "@jspm/packages/search";
 
 function Home() {
@@ -15,7 +14,6 @@ function Home() {
   return (
     <Fragment>
       <jspm-packages-importmap-dialog>
-        <ImportMapDialog />
       </jspm-packages-importmap-dialog>
       <jspm-packages-header>
         <Header search={false} />

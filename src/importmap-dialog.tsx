@@ -34,16 +34,19 @@ class ImportMapDialog extends Component {
 
   generateImportmap = async (dependency?: string | string[]) => {
     if (typeof globalThis.document !== "undefined") {
-      const { deps = [], env = ["production", "browser", "module"] } =
-        this.store.state.jspmGeneratorState;
+      const {
+        selectedDeps,
+        jspmGeneratorState: { env = ["production", "browser", "module"] },
+      } = this.store.state;
 
       const { Generator } = await import("@jspm/generator");
 
       const generator = new Generator({
+        mapUrl: import.meta.url,
         env: Object.keys(env).filter((key) => env[key]),
       });
-      const dependencies = deps.map(([dependency]) => dependency);
-      await generator.install(dependency || dependencies);
+
+      await generator.install(dependency || selectedDeps);
       const importMap = generator.getMap();
 
       this.store.setState({ ...this.store.state, importMap: importMap });
@@ -109,15 +112,22 @@ class ImportMapDialog extends Component {
   };
 
   togglePagewidth = (openImportmapDialog: boolean) => {
-    const dialogRef = document.getElementById("importmap-dialog");
-    const dialogWidth = dialogRef?.offsetWidth || 0;
+    // const dialogRef = document.getElementById("importmap-dialog");
+    // const dialogWidth = dialogRef?.offsetWidth || 0;
+
+    // const packagePageRef = document.getElementById("packages-page");
+    // const pageWidth = packagePageRef?.offsetWidth || 0;
+    // if (packagePageRef) {
+    //   packagePageRef.style.width = openImportmapDialog
+    //     ? `${pageWidth - dialogWidth}px`
+    //     : "";
+    // }
 
     const packagePageRef = document.getElementById("packages-page");
-    const pageWidth = packagePageRef?.offsetWidth || 0;
-    if (packagePageRef) {
-      packagePageRef.style.width = openImportmapDialog
-        ? `${pageWidth - dialogWidth}px`
-        : "";
+    if (openImportmapDialog) {
+      packagePageRef?.classList.add("shrink");
+    } else {
+      packagePageRef?.classList.remove("shrink");
     }
   };
 
@@ -127,11 +137,11 @@ class ImportMapDialog extends Component {
       // check if you need to update your component or not
       if (JSON.stringify(newState) !== JSON.stringify(prevState)) {
         this.update();
-        // this.togglePagewidth(newState.openImportmapDialog);
+        this.togglePagewidth(newState.openImportmapDialog);
       }
     });
 
-    const { generatorHash, importMap } = this.store.state;
+    const { generatorHash, importMap, openImportmapDialog } = this.store.state;
 
     if (typeof globalThis.document !== "undefined") {
       this.generateImportmap();
@@ -143,7 +153,7 @@ class ImportMapDialog extends Component {
         this.generateImportmap();
       }
     }
-    // this.togglePagewidth(this.store.state.openImportmapDialog);
+    this.togglePagewidth(openImportmapDialog);
   }
 
   didUnmount() {

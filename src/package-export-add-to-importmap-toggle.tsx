@@ -8,16 +8,19 @@ class PackageExportAddToImportmapToggle extends Component {
 
   generateImportmap = async (dependency?: string | string[]) => {
     if (typeof globalThis.document !== "undefined") {
-      const { deps = [], env = ["production", "browser", "module"] } =
-        this.store.state.jspmGeneratorState;
+      const {
+        selectedDeps,
+        jspmGeneratorState: { env = ["production", "browser", "module"] },
+      } = this.store.state;
 
       const { Generator } = await import("@jspm/generator");
 
       const generator = new Generator({
+        mapUrl: import.meta.url,
         env: Object.keys(env).filter((key) => env[key]),
       });
-      const dependencies = deps.map(([dependency]) => dependency);
-      await generator.install(dependency || dependencies);
+      
+      await generator.install(dependency || selectedDeps);
       const importMap = generator.getMap();
 
       this.store.setState({ ...this.store.state, importMap: importMap });

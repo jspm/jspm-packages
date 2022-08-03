@@ -4,7 +4,6 @@ import { h, Fragment } from "nano-jsx";
 import { Header } from "@jspm/packages/header";
 import { SearchResult } from "@jspm/packages/search-result";
 import type { Result } from "@jspm/packages/search-result";
-import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
 
 type Results = {
   objects: Result[];
@@ -85,7 +84,6 @@ function SearchResults({
   return (
     <Fragment>
       <jspm-packages-importmap-dialog>
-        <ImportMapDialog />
       </jspm-packages-importmap-dialog>
       <jspm-packages-header>
         <Header search />
