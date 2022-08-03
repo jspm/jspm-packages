@@ -6,14 +6,35 @@ class PackageExportAddToImportmapToggle extends Component {
   // use the store in your component
   store = store.use();
 
+  generateImportmap = async (dependency?: string | string[]) => {
+    if (typeof globalThis.document !== "undefined") {
+      const { deps = [], env = ["production", "browser", "module"] } =
+        this.store.state.jspmGeneratorState;
+
+      const { Generator } = await import("@jspm/generator");
+
+      const generator = new Generator({
+        env: Object.keys(env).filter((key) => env[key]),
+      });
+      const dependencies = deps.map(([dependency]) => dependency);
+      await generator.install(dependency || dependencies);
+      const importMap = generator.getMap();
+
+      this.store.setState({ ...this.store.state, importMap: importMap });
+      return importMap;
+    }
+  };
+
   generateHash = async () => {
     if (typeof globalThis.document !== "undefined") {
-      const { getStateHash } = await import("@jspm/packages/generate-statehash");
+      const { getStateHash } = await import(
+        "@jspm/packages/generate-statehash"
+      );
 
-      const { deps } = this.store.state.jspmGeneratorState;
+      const { jspmGeneratorState } = this.store.state;
 
       const generatorHash = await getStateHash({
-        deps,
+        jspmGeneratorState,
       });
 
       if (generatorHash) {
@@ -25,27 +46,31 @@ class PackageExportAddToImportmapToggle extends Component {
   toggleExportSelection = (event) => {
     event.preventDefault();
 
-    const { value } = event.target;
+    const { value } = event.currentTarget;
     const { selectedExports, jspmGeneratorState } = this.store.state;
 
     selectedExports[value] = !selectedExports[value];
 
-    const deps = Object.keys(selectedExports).filter((subpath) =>
-      selectedExports[subpath] === true
-    ).map((
-      subpath,
-    ) => [subpath, !!subpath]);
+    const selectedDeps = Object.keys(selectedExports).filter(
+      (subpath) => selectedExports[subpath] === true
+    );
 
-    this.store.setState({ ...this.store.state, jspmGeneratorState: {...jspmGeneratorState, deps}, selectedExports });
-    this.generateHash();
+    const deps = selectedDeps.map((subpath) => [subpath, !!subpath]);
+
+    this.store.setState({
+      ...this.store.state,
+      jspmGeneratorState: { ...jspmGeneratorState, deps },
+      selectedDeps,
+      selectedExports,
+    });
+
+    if (typeof globalThis.document !== "undefined") {
+      this.generateHash();
+      this.generateImportmap();
+    }
   };
 
   didMount() {
-    const { generatorHash } = this.store.state;
-
-    if (!generatorHash) {
-      this.generateHash();
-    }
     // this.generateSandboxURL();
     // subscribe to store changes
     this.store.subscribe((newState, prevState) => {
@@ -54,6 +79,19 @@ class PackageExportAddToImportmapToggle extends Component {
         this.update();
       }
     });
+
+    const { generatorHash, importMap } = this.store.state;
+
+    if (typeof globalThis.document !== "undefined") {
+      this.generateImportmap();
+
+      if (!generatorHash) {
+        this.generateHash();
+      }
+      if (!importMap) {
+        this.generateImportmap();
+      }
+    }
   }
 
   didUnmount() {
@@ -62,13 +100,11 @@ class PackageExportAddToImportmapToggle extends Component {
   }
 
   render() {
-    const {
-      packageExport,
-    } = this.props;
+    const { packageExport } = this.props;
 
-    const { deps } = this.store.state.jspmGeneratorState;
-    
-    const addedToImportMap = deps?.map(([dependency]) => dependency).includes(packageExport);
+    const { selectedDeps } = this.store.state;
+
+    const addedToImportMap = selectedDeps?.includes(packageExport);
 
     return (
       <button

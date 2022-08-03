@@ -1,8 +1,5 @@
 /** @jsx h */
 
-/// <reference no-default-lib="true" />
-/// <reference types="https://unpkg.com/nano-jsx@0.0.32/lib/index.d.ts" />
-
 import { h } from "nano-jsx";
 import { Package } from "@jspm/packages/package";
 import type { Maintainer, ExportsTarget } from "@jspm/packages/types";

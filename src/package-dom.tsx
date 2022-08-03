@@ -1,9 +1,48 @@
 /** @jsx h */
+
+/// <reference lib="dom" />
+/// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
+
 import { h, hydrate } from "nano-jsx";
 import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
 import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
 import { PackageExportAddToImportmapToggle } from "@jspm/packages/package-export-add-to-importmap-toggle";
 import { GeneratorLink } from "@jspm/packages/generator-link";
+
+function generateSandboxURLs() {
+  if (typeof globalThis.document !== "undefined") {
+    const codeBlocks = document.querySelectorAll(
+      ".highlight-source-javascript pre, .highlight-source-js pre"
+    );
+
+    codeBlocks.forEach(async (codeBlock, index) => {
+      const { Generator } = await import("@jspm/generator");
+
+      const generator = new Generator({
+        env: ["production", "browser", "module"],
+      });
+
+      const outHtml = await generator.addMappings(
+        `
+        <!doctype html>
+        <script type="module">
+        ${codeBlock.textContent}
+        </script>
+      `,
+        { esModuleShims: true }
+      );
+
+      const { getSandboxHash } = await import("@jspm/packages/statehash");
+      const hash = await getSandboxHash(outHtml);
+      const sandboxURL = `https://jspm.org/sandbox${hash}`;
+      const sandboxLink = document.createElement("a");
+      sandboxLink.href = sandboxURL;
+      sandboxLink.innerText = "Run in JSPM Sandbox";
+      sandboxLink.target = "_blank";
+      codeBlock.parentNode.prepend(sandboxLink);
+    });
+  }
+}
 
 function hydrateImportmapToggleButton() {
   const mountElement = document.querySelector(
@@ -31,52 +70,6 @@ function hydrateGeneratorLink() {
   }
 }
 
-async function hydratePackageExports() {
-  const mountElement = document.querySelector("jspm-packages-package-exports");
-
-  if (mountElement) {
-    const { name, version } = mountElement.dataset;
-
-    const jspmPackage = await import(
-      `https://ga.jspm.io/npm:${name}@${version}/package.json`,
-      {
-        assert: { type: "json" },
-      }
-    );
-
-    const {
-      description,
-      keywords,
-      license,
-      files,
-      exports,
-      types,
-      type,
-      homepage,
-      repository,
-      bugs,
-    } = jspmPackage.default;
-
-    const filteredExports = Object.keys(exports)
-      .filter(
-        (expt) =>
-          !expt.endsWith("!cjs") &&
-          !expt.endsWith("/") &&
-          expt.indexOf("*") === -1
-      )
-      .sort();
-
-    hydrate(
-      <PackageExports
-        name={name}
-        version={version}
-        exports={filteredExports}
-      />,
-      mountElement
-    );
-  }
-}
-
 function hydratePackageExportAddToImportmapToggles() {
   const mountElements = document.querySelectorAll(
     "jspm-packages-package-export-add-to-importmap-toggle"
@@ -92,8 +85,11 @@ function hydratePackageExportAddToImportmapToggles() {
 }
 
 if (typeof globalThis.document !== "undefined") {
-  hydrateImportmapToggleButton();
-  hydrateGeneratorLink();
-  hydrateImportMapDialog();
-  hydratePackageExportAddToImportmapToggles();
+  Promise.all([
+    hydrateImportmapToggleButton(),
+    hydrateGeneratorLink(),
+    hydrateImportMapDialog(),
+    hydratePackageExportAddToImportmapToggles(),
+    generateSandboxURLs()
+  ]);
 }

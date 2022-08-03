@@ -4,7 +4,7 @@
 /// <reference lib="dom" />
 /// <reference lib="deno.ns" />
 /// <reference lib="deno.unstable" />
-/// <reference types="https://unpkg.com/nano-jsx@0.0.32/lib/index.d.ts" />
+/// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
 
 import { contentType } from "https://deno.land/std@0.150.0/media_types/mod.ts";
 import { extname } from "https://deno.land/std@0.150.0/path/mod.ts";

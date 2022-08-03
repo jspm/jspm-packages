@@ -1,48 +1,16 @@
 /** @jsx h */
+
+/// <reference lib="dom" />
+/// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
+
 import { Component, h } from "nano-jsx";
 import { store } from "@jspm/packages/store";
 
-//const machine = interpret(toggleMachine);
 class ImportmapToggleButton extends Component {
   // use the store in your component
   store = store.use();
 
-  generateSandboxURL = () => {
-    if (typeof globalThis.document !== "undefined") {
-      const codeBlocks = document.querySelectorAll(
-        ".highlight-source-javascript pre, .highlight-source-js pre",
-      );
-
-      codeBlocks.forEach(async (codeBlock, index) => {
-        const { Generator } = await import("@jspm/generator");
-
-        const generator = new Generator({
-          env: ["production", "browser", "module"],
-        });
-
-        const outHtml = await generator.htmlGenerate(
-          `
-          <!doctype html>
-          <script type="module">
-          ${codeBlock.textContent}
-          </script>
-        `,
-          { esModuleShims: true },
-        );
-
-        const { getSandboxHash } = await import("@jspm/packages/statehash");
-        const hash = await getSandboxHash(outHtml);
-        const sandboxURL = `https://jspm.org/sandbox${hash}`;
-        const sandboxLink = document.createElement("a");
-        sandboxLink.href = sandboxURL;
-        sandboxLink.innerText = "Run in JSPM Sandbox";
-        sandboxLink.target = "_blank";
-        codeBlock.parentNode.prepend(sandboxLink);
-      });
-    }
-  };
-
-  toggleImportmapDialog = (event) => {
+  toggleImportmapDialog = (event: MouseEvent) => {
     event.preventDefault();
     const {openImportmapDialog} = this.store.state;
     this.store.setState({ ...this.store.state, openImportmapDialog: !openImportmapDialog });
@@ -50,13 +18,12 @@ class ImportmapToggleButton extends Component {
 
   didMount() {
     // subscribe to store changes
-    this.store.subscribe((newState, prevState) => {
+    this.store.subscribe((newState: { openImportmapDialog: boolean; jspmGeneratorState: { deps: string[]; }; }, prevState: { openImportmapDialog: boolean; jspmGeneratorState: { deps: string[]; }; }) => {
       // check if you need to update your component or not
-      if (JSON.stringify(newState) !== JSON.stringify(prevState)) {
+      if (newState.openImportmapDialog !== prevState.openImportmapDialog || newState.jspmGeneratorState.deps.length !== prevState.jspmGeneratorState.deps.length) {
         this.update();
       }
     });
-    this.generateSandboxURL();
   }
 
   didUnmount() {

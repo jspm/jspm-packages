@@ -24,6 +24,7 @@ const jspmGeneratorState = {
 const store = new Store(
   {
     selectedExports: {},
+    selectedDeps: [],
     generatorHash: "",
     openImportmapDialog: false,
     openVersionSelector: false,

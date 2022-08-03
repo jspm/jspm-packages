@@ -1,4 +1,6 @@
 /** @jsx h */
+/// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
+
 import { Component, h } from "nano-jsx";
 import { store } from "@jspm/packages/store";
 

@@ -1,4 +1,8 @@
 /** @jsx h */
+
+/// <reference lib="dom" />
+/// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
+
 import { h, Component } from "nano-jsx";
 import { store } from "@jspm/packages/store";
 
@@ -13,6 +17,7 @@ function fromPkgStr(pkg: string) {
   const subpath = "." + pkg.slice(name.length + version.length + 1);
   return { name, version, subpath };
 }
+
 class ImportMapDialog extends Component {
   store = store.use();
   showImportmapShareLink = false;
@@ -58,26 +63,47 @@ class ImportMapDialog extends Component {
     this.update();
   };
 
+  generateHash = async () => {
+    if (typeof globalThis.document !== "undefined") {
+      const { getStateHash } = await import(
+        "@jspm/packages/generate-statehash"
+      );
+
+      const { jspmGeneratorState } = this.store.state;
+
+      const generatorHash = await getStateHash({
+        jspmGeneratorState,
+      });
+
+      if (generatorHash) {
+        this.store.setState({ ...this.store.state, generatorHash });
+      }
+    }
+  };
   // TODO tackle duplicate src/package-export-add-to-importmap-toggle.tsx#l25
   toggleExportSelection = (event: Event) => {
     event.preventDefault();
 
-    const { value } = event.target;
+    const { value } = event.currentTarget;
     const { selectedExports, jspmGeneratorState } = this.store.state;
 
     selectedExports[value] = !selectedExports[value];
 
-    const deps = Object.keys(selectedExports)
-      .filter((subpath) => selectedExports[subpath] === true)
-      .map((subpath) => [subpath, !!subpath]);
+    const selectedDeps = Object.keys(selectedExports).filter(
+      (subpath) => selectedExports[subpath] === true
+    );
+
+    const deps = selectedDeps.map((subpath) => [subpath, !!subpath]);
 
     this.store.setState({
       ...this.store.state,
-      selectedExports,
       jspmGeneratorState: { ...jspmGeneratorState, deps },
+      selectedDeps,
+      selectedExports,
     });
 
     if (typeof globalThis.document !== "undefined") {
+      this.generateHash();
       this.generateImportmap();
     }
   };
@@ -101,14 +127,23 @@ class ImportMapDialog extends Component {
       // check if you need to update your component or not
       if (JSON.stringify(newState) !== JSON.stringify(prevState)) {
         this.update();
-        this.togglePagewidth(newState.openImportmapDialog);
+        // this.togglePagewidth(newState.openImportmapDialog);
       }
     });
 
+    const { generatorHash, importMap } = this.store.state;
+
     if (typeof globalThis.document !== "undefined") {
       this.generateImportmap();
+
+      if (!generatorHash) {
+        this.generateHash();
+      }
+      if (!importMap) {
+        this.generateImportmap();
+      }
     }
-    this.togglePagewidth(this.store.state.openImportmapDialog);
+    // this.togglePagewidth(this.store.state.openImportmapDialog);
   }
 
   didUnmount() {
@@ -119,26 +154,24 @@ class ImportMapDialog extends Component {
   render() {
     const {
       generatorHash = "",
+      selectedDeps = [],
       openImportmapDialog: dialogOpen,
       importMap,
-      jspmGeneratorState: { deps },
     } = this.store.state;
 
-    const shouldOpen = dialogOpen && deps.length > 0;
+    const shouldOpen = dialogOpen && selectedDeps.length > 0;
     const open = shouldOpen ? { open: shouldOpen } : {};
     const map = {};
-    deps
-      .map(([dependency]) => dependency)
-      .forEach((dependency: string) => {
-        const { name, version, subpath } = fromPkgStr(dependency);
-        if (typeof map[name] === "undefined") {
-          map[name] = { [version]: [] };
-        }
-        if (typeof map[name][version] === "undefined") {
-          map[name][version] = [];
-        }
-        map[name][version] = [...map[name][version], subpath];
-      });
+    selectedDeps.forEach((dependency: string) => {
+      const { name, version, subpath } = fromPkgStr(dependency);
+      if (typeof map[name] === "undefined") {
+        map[name] = { [version]: [] };
+      }
+      if (typeof map[name][version] === "undefined") {
+        map[name][version] = [];
+      }
+      map[name][version] = [...map[name][version], subpath];
+    });
 
     return (
       <dialog id="importmap-dialog" {...open}>
