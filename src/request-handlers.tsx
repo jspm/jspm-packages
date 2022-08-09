@@ -19,7 +19,6 @@ import {
 } from "@jspm/packages/constants";
 import {
   parsePackageNameVersion,
-  pageServingHeaders,
   removeSlashes,
 } from "@jspm/packages/functions";
 import { HomeSSR } from "@jspm/packages/home-ssr";
@@ -41,7 +40,16 @@ const staticResources = {
   "/search.css": "./src/search.css",
   "/search.html": "./lib/search.html",
   "/favicon.ico": "./favicon.ico",
+  "/package.json": "./package.json",
   ...JSON.parse(staticResourcesFile),
+};
+
+const pageServingHeaders = {
+  "content-type": "text/html; charset=UTF-8",
+  "Cache-Control":
+    "s-maxage=1500, public, immutable, stale-while-revalidate=1501",
+  Link:
+    `<https://ga.jspm.io>; rel="preconnect",<https://fonts.googleapis.com>; rel="preconnect", <https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css>; rel="preload"; as="style", <https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap>; rel="preload"; as="style"`,
 };
 
 async function generateHTML(

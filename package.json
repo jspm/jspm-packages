@@ -4,7 +4,7 @@
     "@jspm/generator": "^1.0.0-beta.34",
     "@jspm/plugin-rollup": "github:jspm/rollup-plugin-jspm",
     "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.223",
+    "@swc/core": "^1.2.224",
     "mkdirp": "^1.0.4",
     "rollup": "^2.77.2",
     "typescript": "^4.7.4"
@@ -94,6 +94,10 @@
     "./package": {
       "browser": "./lib/package.js",
       "default": "./src/package.tsx"
+    },
+    "./package.json": {
+      "browser": "./package.json",
+      "default": "./package.json"
     },
     "./package-dom": {
       "browser": "./lib/package-dom.js"

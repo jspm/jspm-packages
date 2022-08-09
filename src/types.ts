@@ -1,3 +1,9 @@
+type PackageDescriptor = {
+  name: string;
+  version: string;
+  subpath: string;
+}
+
 type Maintainer = { name: string; email: string };
 
 type ExportsTarget =
@@ -6,4 +12,4 @@ type ExportsTarget =
   | { [condition: string]: ExportsTarget }
   | ExportsTarget[];
 
-export type { Maintainer, ExportsTarget };
+export type { Maintainer, ExportsTarget, PackageDescriptor };

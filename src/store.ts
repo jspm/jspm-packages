@@ -23,13 +23,15 @@ const jspmGeneratorState = {
 
 const store = new Store(
   {
+    dependencies: [],
     selectedExports: {},
     selectedDeps: [],
     generatorHash: "",
-    openImportmapDialog: false,
+    dialogOpen: false,
     openVersionSelector: false,
     sandboxHashes: {},
     importMap: {},
+    importmapDialogOpenDependencyDetails: [],
     jspmGeneratorState
   },
   "@jspm/packages/store",

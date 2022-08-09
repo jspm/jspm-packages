@@ -1,10 +1,13 @@
 /** @jsx h */
 import { h } from "nano-jsx";
 
+import type { ExportsTarget } from "@jspm/packages/types";
+
 type Prop = {
   name: string;
   subpaths: string[];
   version: string;
+  exports: ExportsTarget | Record<string, ExportsTarget>;
 };
 
 function PackageExports({ subpaths, name, version }: Prop) {
@@ -13,8 +16,8 @@ function PackageExports({ subpaths, name, version }: Prop) {
       <ul class="code">
         {subpaths.map((subpath) => {
           const subpathName = subpath.slice(1);
-          const packageBase = `${name}@${version}`;
-          const packageExport = `${packageBase}${subpathName}`;
+          // const packageBase = `${name}@${version}`;
+          // const packageExportTarget = `${packageBase}${subpathName}`;
           // const addedToImportMap = selectedDeps?.includes(packageExport);
           // const filePath =
           //   typeof exports[subpath] === "string"
@@ -30,7 +33,9 @@ function PackageExports({ subpaths, name, version }: Prop) {
                 <span class="export-subpath">{subpathName || name}</span>
               </span>
               <jspm-packages-package-export-add-to-importmap-toggle
-                data-package-export={packageExport}
+                data-name={name}
+                data-version={version}
+                data-subpath={subpath}
               ></jspm-packages-package-export-add-to-importmap-toggle>
             </li>
           );

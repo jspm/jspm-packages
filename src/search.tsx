@@ -16,9 +16,10 @@ function Search() {
         autofocus="true"
         placeholder="Package"
         autocomplete="on"
+        pattern="(\w+:)?(@[^\/:\\]+\/)?[^\/:\\]+(@[^\/:]+)?(\/.*[^\/])?"
         name="q"
       />
-      <button>
+      <button type="submit">
         Search
       </button>
     </form>

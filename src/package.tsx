@@ -9,12 +9,6 @@ import { PackageExports } from "@jspm/packages/package-exports";
 
 import type { Maintainer, ExportsTarget } from "@jspm/packages/types";
 
-type ExportsTarget =
-  | string
-  | null
-  | { [condition: string]: ExportsTarget }
-  | ExportsTarget[];
-
 type Prop = {
   createdTime: string;
   created: string;
