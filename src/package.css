@@ -142,11 +142,13 @@ jspm-packages-package-highlights ul li span:first-of-type {
   }
 } */
 
-main details {
+main details,
+jspm-packages-importmap-dialog dialog .selected-dependencies details {
   margin-top: 25px;
 }
 
-main details summary {
+main details summary,
+jspm-packages-importmap-dialog dialog .selected-dependencies details summary {
   display: flex;
   cursor: pointer;
   justify-content: space-between;
@@ -155,11 +157,21 @@ main details summary {
   border-bottom: 5px solid black;
 }
 
-main details[open] summary {
+main details[open] summary,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details[open]
+  summary {
   border: none;
 }
 
-main details summary::after {
+main details summary::after,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details
+  summary::after {
   content: "";
   height: 12px;
   width: 12px;
@@ -168,16 +180,27 @@ main details summary::after {
   background-size: cover;
 }
 
-main details[open] summary::after {
+main details[open] summary::after,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details[open]
+  summary::after {
   transform: scaleY(-1);
 }
 
-main details summary h3 {
+main details summary h3,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details
+  summary
+  h3 {
   margin: 0;
   font-family: "Bebas Neue";
 }
 
-#packages-page.shrink{
+#packages-page.shrink {
   margin-right: 520px;
 }
 

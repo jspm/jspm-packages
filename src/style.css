@@ -212,9 +212,35 @@ jspm-packages-importmap-dialog dialog {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   margin-top: -17px;
 }
-jspm-packages-importmap-dialog dialog .selected-dependencies{
+jspm-packages-importmap-dialog dialog .selected-dependencies {
   max-height: 50%;
   overflow: scroll;
+}
+jspm-packages-importmap-dialog dialog .selected-dependencies button {
+  color: black;
+  display: inline-block;
+  border: none;
+  font-size: 20px;
+  padding: 2px 8px;
+}
+
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  button[data-selected="false"] {
+  background: var(--dl-color-primary-js-primary);
+}
+jspm-packages-importmap-dialog dialog .selected-dependencies details ol{
+  padding: 0;
+  margin: 0;
+}
+jspm-packages-importmap-dialog dialog .selected-dependencies details ol li {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid;
+  align-items: center;
 }
 jspm-packages-importmap-dialog dialog .importmap-text {
   max-width: 480px;

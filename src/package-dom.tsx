@@ -5,7 +5,8 @@
 
 import { h, hydrate, Component } from "nano-jsx";
 import { store } from "@jspm/packages/store";
-import { toPkgStr, sortArray } from "@jspm/packages/functions";
+import type { ENV, Store } from "@jspm/packages/store";
+import { fromPkgStrToPin, toPkgStr, sortArray } from "@jspm/packages/functions";
 import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
 import type { ImportmapToggleButtonProp } from "@jspm/packages/importmap-toggle-button";
 import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
@@ -14,6 +15,7 @@ import { PackageExportAddToImportmapToggle } from "@jspm/packages/package-export
 import type { PackageExportAddToImportmapToggleProp } from "@jspm/packages/package-export-add-to-importmap-toggle";
 import { GeneratorLink } from "@jspm/packages/generator-link";
 import type { GeneratorLinkProp } from "@jspm/packages/generator-link";
+import { Generator } from "@jspm/generator";
 
 function hydrateImportmapToggleButton({
   dependencyCount,
@@ -54,9 +56,11 @@ function hydrateImportMapDialog({
         generatorHash={generatorHash}
         dependencies={dependencies}
         dialogOpen={dialogOpen}
-        importMap={importMap}
+        importMap={JSON.stringify(importMap, null, 2)}
         importmapShareLink={importmapShareLink}
-        importmapDialogOpenDependencyDetails={importmapDialogOpenDependencyDetails}
+        importmapDialogOpenDependencyDetails={
+          importmapDialogOpenDependencyDetails
+        }
         toggleImportmapDialog={toggleImportmapDialog}
         toggleExportSelection={toggleExportSelection}
         toggleDependencyDetail={toggleDependencyDetail}
@@ -108,14 +112,7 @@ function hydrateAll({
   toggleImportmapDialog,
   toggleDependencyDetail,
 }: {
-  state: {
-    generatorHash: string;
-    dependencies: string[];
-    dialogOpen: boolean;
-    importMap: string;
-    importmapShareLink: string;
-    importmapDialogOpenDependencyDetails: { [key: string]: boolean };
-  };
+  state: Store;
   toggleExportSelection: (event: MouseEvent) => void;
   toggleImportmapDialog: (event: MouseEvent) => void;
   toggleDependencyDetail: (event: MouseEvent) => void;
@@ -154,15 +151,30 @@ function hydrateAll({
     //generateSandboxURLs()
   ]);
 }
+
 class DOM extends Component {
   store = store.use();
 
+  static generator = new Generator();
+
+  togglePagewidth = (dialogOpen: boolean = this.store.state.dialogOpen) => {
+    const dialogRef = document.getElementById("importmap-dialog");
+    const dialogWidth = dialogRef?.offsetWidth || 520;
+
+    const packagePageRef = document.getElementById("packages-page");
+    if (packagePageRef) {
+      packagePageRef.style["margin-right"] = dialogOpen
+        ? `${dialogWidth + 20}px`
+        : "20px";
+    }
+  };
+
   toggleImportmapDialog = () => {
-    const { dialogOpen } = this.store.state;
+    const { dialogOpen, dependencies } = this.store.state;
 
     this.store.setState({
       ...this.store.state,
-      dialogOpen: !dialogOpen,
+      dialogOpen: dependencies.length > 0 ? !dialogOpen : false,
     });
   };
 
@@ -190,6 +202,59 @@ class DOM extends Component {
     });
   };
 
+  installDependency = async (dependency: string) => {
+    await DOM.generator.install(dependency);
+
+    const importMap = await DOM.generator.getMap();
+
+    this.store.setState({
+      ...this.store.state,
+      importMap,
+    });
+
+    return importMap;
+  };
+
+  unInstallDependency = async (dependency: string) => {
+    const pin = fromPkgStrToPin(dependency);
+    await DOM.generator.uninstall(pin);
+
+    const importMap = await DOM.generator.getMap();
+
+    this.store.setState({
+      ...this.store.state,
+      importMap,
+    });
+  };
+
+  reinstallImportmap = async (env: ENV = this.store?.state?.jspmGeneratorState?.env) => {
+    const { importMap } = this.store.state;
+
+    const generator = new Generator({
+      env: Object.keys(env).filter((key) => env[key]),
+      inputMap: importMap,
+    });
+
+    await generator.reinstall();
+
+    const updatedImportMap = await generator.getMap();
+
+    this.store.setState({
+      ...this.store.state,
+      importMap: updatedImportMap,
+    });
+
+    DOM.generator = generator;
+  };
+
+  updateJSPMGeneratorEnv = (env: ENV) => {
+    const { jspmGeneratorState } = this.store.state;
+    this.store.setState({
+      ...this.store.state,
+      jspmGeneratorState: { ...jspmGeneratorState, env },
+    });
+  };
+
   updateJSPMGeneratorDependencies = (dependencies: string[]) => {
     const { jspmGeneratorState } = this.store.state;
 
@@ -214,6 +279,10 @@ class DOM extends Component {
       ? dependencies.filter((dependency: string) => dependency !== value)
       : [...dependencies, value];
 
+    existingDependency
+      ? this.unInstallDependency(value)
+      : this.installDependency(value);
+
     this.store.setState({
       ...this.store.state,
       dependencies: sortArray(updatedDependencies),
@@ -222,15 +291,19 @@ class DOM extends Component {
 
   didMount() {
     console.log("mounted");
-    hydrateAll({
-      state: this.store.state,
-      toggleExportSelection: this.toggleExportSelection,
-      toggleImportmapDialog: this.toggleImportmapDialog,
-      toggleDependencyDetail: this.toggleDependencyDetail,
-    });
+    Promise.all([
+      this.togglePagewidth(),
+      hydrateAll({
+        state: this.store.state,
+        toggleExportSelection: this.toggleExportSelection,
+        toggleImportmapDialog: this.toggleImportmapDialog,
+        toggleDependencyDetail: this.toggleDependencyDetail,
+      }),
+      this.reinstallImportmap(),
+    ]);
     // this.generateSandboxURL();
     // subscribe to store changes
-    this.store.subscribe((newState, prevState) => {
+    this.store.subscribe((newState: Store, prevState: Store) => {
       // check if you need to update your component or not
       const prevDependencyCount = prevState.dependencies.length;
 
@@ -270,6 +343,17 @@ class DOM extends Component {
       }
 
       if (
+        JSON.stringify(newState.jspmGeneratorState.env) !==
+        JSON.stringify(prevState.jspmGeneratorState.env)
+      ) {
+        Promise.all([this.reinstallImportmap(newState.jspmGeneratorState.env)]);
+      }
+
+      if (newState.dialogOpen !== prevState.dialogOpen) {
+        this.togglePagewidth(newState.dialogOpen);
+      }
+
+      if (
         newState.generatorHash !== prevState.generatorHash ||
         JSON.stringify(newState.dependencies) !==
           JSON.stringify(prevState.dependencies) ||
@@ -277,7 +361,9 @@ class DOM extends Component {
         newState.importMap !== prevState.importMap ||
         newState.importmapShareLink !== prevState.importmapShareLink ||
         JSON.stringify(newState.importmapDialogOpenDependencyDetails) !==
-          JSON.stringify(prevState.importmapDialogOpenDependencyDetails)
+          JSON.stringify(prevState.importmapDialogOpenDependencyDetails) ||
+          JSON.stringify(newState.importMap) !==
+            JSON.stringify(prevState.importMap)
       ) {
         hydrateImportMapDialog({
           dependencies: newState.dependencies,

@@ -1,7 +1,7 @@
 /** @jsx h */
 
 import { h } from "nano-jsx";
-import { fromPkgStr } from "@jspm/packages/functions";
+import { fromPkgStr, sortArray } from "@jspm/packages/functions";
 
 type Prop = {
   generatorHash: string;
@@ -30,12 +30,12 @@ function ImportMapDialog({
   const open = shouldOpen ? { open: shouldOpen } : {};
   type Map = {
     [key: string]: {
-      [key: string]: string[],
-     },
-   }
+      [key: string]: string[];
+    };
+  };
   const map: Map = {};
 
-  dependencies.forEach((dependency: string) => {
+  sortArray(dependencies).forEach((dependency: string) => {
     const { name, version, subpath } = fromPkgStr(dependency);
     if (typeof map[name] === "undefined") {
       map[name] = { [version]: [] };
@@ -63,15 +63,19 @@ function ImportMapDialog({
       <section class="selected-dependencies">
         {Object.entries(map).map(([name, versions]) => {
           const mapEntries = Object.entries(versions);
-          
+
           if (mapEntries.length === 1) {
             const [version, subpaths] = mapEntries[0];
 
             const detailId = `importmap-dialog-dependency-detail-${name}@${version}`;
-            const shouldOpen = importmapDialogOpenDependencyDetails[detailId]
+            const shouldOpen = importmapDialogOpenDependencyDetails[detailId];
             const detailOpen = shouldOpen ? { open: shouldOpen } : {};
             return (
-              <details id={detailId} onToggle={toggleDependencyDetail} {...detailOpen}>
+              <details
+                id={detailId}
+                onToggle={toggleDependencyDetail}
+                {...detailOpen}
+              >
                 <summary>
                   <span>{name}</span>
                   <span class="code">v{version}</span>
@@ -79,15 +83,13 @@ function ImportMapDialog({
                 <ol>
                   {subpaths.map((subpath) => (
                     <li>
-                      <span>
-                        <span class="code">{subpath}</span>
-                        <button
-                          onClick={toggleExportSelection}
-                          value={`${name}@${version}${subpath.slice(1)}`}
-                        >
-                          &minus;
-                        </button>
-                      </span>
+                      <span class="code">{subpath}</span>
+                      <button
+                        onClick={toggleExportSelection}
+                        value={`${name}@${version}${subpath.slice(1)}`}
+                      >
+                        &minus;
+                      </button>
                     </li>
                   ))}
                 </ol>
@@ -95,12 +97,18 @@ function ImportMapDialog({
             );
           }
 
-
           const multipleVersionDetailId = `importmap-dialog-dependency-detail-${name}-[${mapEntries.length}]-muilti`;
-          const shouldOpenMultipleVersion = importmapDialogOpenDependencyDetails[multipleVersionDetailId]
-          const multipleVersionDetailOpen = shouldOpenMultipleVersion ? { open: shouldOpenMultipleVersion } : {};
+          const shouldOpenMultipleVersion =
+            importmapDialogOpenDependencyDetails[multipleVersionDetailId];
+          const multipleVersionDetailOpen = shouldOpenMultipleVersion
+            ? { open: shouldOpenMultipleVersion }
+            : {};
           return (
-            <details id={multipleVersionDetailId} onToggle={toggleDependencyDetail} {...multipleVersionDetailOpen}>
+            <details
+              id={multipleVersionDetailId}
+              onToggle={toggleDependencyDetail}
+              {...multipleVersionDetailOpen}
+            >
               <summary>
                 <span>{name}</span>
                 <span class="code">[{mapEntries.length} versions]</span>
@@ -108,11 +116,16 @@ function ImportMapDialog({
 
               {mapEntries.map(([version, subpaths]) => {
                 const detailId = `importmap-dialog-dependency-detail-${name}@${version}`;
-                const shouldOpen = importmapDialogOpenDependencyDetails[multipleVersionDetailId]
+                const shouldOpen =
+                  importmapDialogOpenDependencyDetails[multipleVersionDetailId];
                 const detailOpen = shouldOpen ? { open: shouldOpen } : {};
-                
+
                 return (
-                  <details id={detailId} onToggle={toggleDependencyDetail} {...detailOpen}>
+                  <details
+                    id={detailId}
+                    onToggle={toggleDependencyDetail}
+                    {...detailOpen}
+                  >
                     <summary>
                       <span class="code">v{version}</span>
                     </summary>
@@ -141,7 +154,9 @@ function ImportMapDialog({
 
       <h3>Copy Importmap</h3>
       <section class="importmap-text">
-        <pre class="code">{importMap}</pre>
+        <pre>
+          <code class="language-json">{importMap}</code>
+        </pre>
       </section>
     </dialog>
   );

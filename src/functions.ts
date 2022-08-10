@@ -16,6 +16,11 @@ function toPkgStr({ name, version, subpath }: PackageDescriptor) {
   return name + "@" + version + subpath.slice(1);
 }
 
+function fromPkgStrToPin(pkg: string) {
+  const { name, subpath } = fromPkgStr(pkg);
+  return `${name}${subpath.slice(1)}`;
+}
+
 function sortArray(arr: string[]) {
   return arr.sort(([a], [b]) => (a > b ? 1 : -1));
 }
@@ -73,6 +78,7 @@ function removeSlashes(path: string) {
 
 export {
   fromPkgStr,
+  fromPkgStrToPin,
   toPkgStr,
   parsePackageNameVersion,
   getRandomFloat,
