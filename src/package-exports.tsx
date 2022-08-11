@@ -1,13 +1,9 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-
-import type { ExportsTarget } from "@jspm/packages/types";
-
 type Prop = {
   name: string;
   subpaths: string[];
   version: string;
-  exports: ExportsTarget | Record<string, ExportsTarget>;
 };
 
 function PackageExports({ subpaths, name, version }: Prop) {

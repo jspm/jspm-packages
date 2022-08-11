@@ -37,7 +37,7 @@ h4 {
   font-size: var(--step-1);
 }
 pre {
-  border: dotted 1px grey;
+  border: solid 1px black;
   overflow-x: scroll;
   padding: 10px;
   background-color: var(--dl-color-jspm-placeholder);
@@ -171,7 +171,14 @@ jspm-packages-search button {
     border-bottom-left-radius: 0;
   }
 }
-
+.link-button {
+  background-color: var(--dl-color-primary-js-primary);
+  border: none;
+  margin-top: 40px;
+  padding: 10px;
+  color: black;
+  text-transform: uppercase;
+}
 jspm-packages-nav nav ul {
   display: flex;
   list-style: none;
@@ -230,7 +237,7 @@ jspm-packages-importmap-dialog
   button[data-selected="false"] {
   background: var(--dl-color-primary-js-primary);
 }
-jspm-packages-importmap-dialog dialog .selected-dependencies details ol{
+jspm-packages-importmap-dialog dialog .selected-dependencies details ol {
   padding: 0;
   margin: 0;
 }
@@ -261,7 +268,14 @@ jspm-packages-importmap-dialog dialog header {
   font-size: 16px;
   margin-bottom: var(--dl-space-space-unit);
 }
-
+jspm-packages-importmap-dialog dialog header h4 {
+  font-size: var(--step-0);
+  margin: 0;
+}
+jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-generator-link {
+  font-size: var(--step--2);
+  font-family: "Sen", sans-serif;
+}
 jspm-generator-link {
   font-size: 14px;
   display: inline-block;
@@ -275,15 +289,14 @@ jspm-packages-importmap-dialog dialog jspm-generator-link a {
   padding-right: var(--dl-space-space-twounits);
 }
 
-jspm-packages-importmap-dialog dialog details {
+/* jspm-packages-importmap-dialog dialog details {
   margin: var(--dl-space-space-halfunit) 0px;
   border-radius: 8px;
   border: 1px solid #ccc;
-}
+} */
 
 jspm-packages-importmap-dialog dialog details summary,
 jspm-importmap-entry-summary {
-  padding: var(--dl-space-space-halfunit);
   cursor: pointer;
   display: flex;
   align-content: center;

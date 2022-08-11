@@ -1,7 +1,11 @@
 /** @jsx h */
 
 import { h } from "nano-jsx";
-import { fromPkgStr, sortArray } from "@jspm/packages/functions";
+import {
+  fromPkgStr,
+  sortArray,
+  copyToClipboard,
+} from "@jspm/packages/functions";
 
 type Prop = {
   generatorHash: string;
@@ -35,7 +39,7 @@ function ImportMapDialog({
   };
   const map: Map = {};
 
-  sortArray(dependencies).forEach((dependency: string) => {
+  dependencies.forEach((dependency: string) => {
     const { name, version, subpath } = fromPkgStr(dependency);
     if (typeof map[name] === "undefined") {
       map[name] = { [version]: [] };
@@ -49,24 +53,47 @@ function ImportMapDialog({
   return (
     <dialog id="importmap-dialog" {...open}>
       <header>
-        <h4>Selected dependencies</h4>
+        <h4>My Importmap</h4>
         <button class="icon-close" onClick={toggleImportmapDialog}>
           ✕
         </button>
         {importmapShareLink && <a href={importmapShareLink}>importmap</a>}
       </header>
       {generatorHash && (
-        <a target="_blank" href={`https://generator.jspm.io/${generatorHash}`}>
+        <a
+          class="jspm-packages-importmap-dialog-generator-link"
+          target="_blank"
+          href={`https://generator.jspm.io/${generatorHash}`}
+        >
           Customize importmap at JSPM Generator
         </a>
       )}
       <section class="selected-dependencies">
-        {Object.entries(map).map(([name, versions]) => {
+        {sortArray(Object.keys(map)).map((name) => {
+          const versions = map[name];
           const mapEntries = Object.entries(versions);
 
           if (mapEntries.length === 1) {
             const [version, subpaths] = mapEntries[0];
+            if (subpaths.length === 1) {
+              return (
+                <article class="details">
+                  <div class="summary">
+                    <div class="package-name-version">
+                      <strong>{name}</strong>
 
+                      <span class="code">v{version}</span>
+                    </div>
+                    <button
+                      onClick={toggleExportSelection}
+                      value={`${name}@${version}${subpaths[0].slice(1)}`}
+                    >
+                      &minus;
+                    </button>
+                  </div>
+                </article>
+              );
+            }
             const detailId = `importmap-dialog-dependency-detail-${name}@${version}`;
             const shouldOpen = importmapDialogOpenDependencyDetails[detailId];
             const detailOpen = shouldOpen ? { open: shouldOpen } : {};
@@ -77,13 +104,21 @@ function ImportMapDialog({
                 {...detailOpen}
               >
                 <summary>
-                  <span>{name}</span>
-                  <span class="code">v{version}</span>
+                  <div class="package-name-version">
+                    <strong>{name}</strong>
+
+                    <span class="code">v{version}</span>
+                  </div>
                 </summary>
                 <ol>
-                  {subpaths.map((subpath) => (
+                  {sortArray(subpaths).map((subpath) => (
                     <li>
-                      <span class="code">{subpath}</span>
+                      <span class="code export-name">
+                        {subpath.slice(1) && <span>{name}</span>}
+                        <span class="export-subpath">
+                          {subpath.slice(1) || name}
+                        </span>
+                      </span>
                       <button
                         onClick={toggleExportSelection}
                         value={`${name}@${version}${subpath.slice(1)}`}
@@ -130,7 +165,7 @@ function ImportMapDialog({
                       <span class="code">v{version}</span>
                     </summary>
                     <ol>
-                      {subpaths.map((subpath) => (
+                      {sortArray(subpaths).map((subpath) => (
                         <li>
                           <span>
                             {subpath}
@@ -152,12 +187,14 @@ function ImportMapDialog({
         })}
       </section>
 
-      <h3>Copy Importmap</h3>
-      <section class="importmap-text">
-        <pre>
-          <code class="language-json">{importMap}</code>
-        </pre>
-      </section>
+      {importMap && (
+        <section class="importmap-text">
+          <button class="link-button" onClick={() => copyToClipboard(importMap)}>Copy Importmap</button>
+          <pre>
+            <code class="code">{importMap}</code>
+          </pre>
+        </section>
+      )}
     </dialog>
   );
 }

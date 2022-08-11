@@ -106,6 +106,42 @@ function hydratePackageExportAddToImportmapToggles({
   });
 }
 
+function generateSandboxURLs() {
+  if (typeof globalThis.document !== "undefined") {
+    const codeBlocks = document.querySelectorAll(
+      ".highlight-source-javascript pre, .highlight-source-js pre"
+    );
+
+    codeBlocks.forEach(async (codeBlock, index) => {
+      //const { Generator } = await import("@jspm/generator");
+
+      const generator = new Generator({
+        env: ["production", "browser", "module"],
+      });
+
+      const outHtml = await generator.htmlInject(
+        `
+        <!doctype html>
+        <script type="module">
+        ${codeBlock.textContent}
+        </script>
+      `,
+        { esModuleShims: true }
+      );
+
+      const { getSandboxHash } = await import("@jspm/packages/statehash");
+      const hash = await getSandboxHash(outHtml);
+      const sandboxURL = `https://jspm.org/sandbox${hash}`;
+      const sandboxLink = document.createElement("a");
+      sandboxLink.href = sandboxURL;
+      sandboxLink.innerText = "Run in JSPM Sandbox";
+      sandboxLink.target = "_blank";
+      sandboxLink.classList.add("link-button");
+      codeBlock.parentNode.prepend(sandboxLink);
+    });
+  }
+}
+
 function hydrateAll({
   state,
   toggleExportSelection,
@@ -148,7 +184,6 @@ function hydrateAll({
       dependencies,
       generatorHash,
     }),
-    //generateSandboxURLs()
   ]);
 }
 
@@ -227,7 +262,9 @@ class DOM extends Component {
     });
   };
 
-  reinstallImportmap = async (env: ENV = this.store?.state?.jspmGeneratorState?.env) => {
+  reinstallImportmap = async (
+    env: ENV = this.store?.state?.jspmGeneratorState?.env
+  ) => {
     const { importMap } = this.store.state;
 
     const generator = new Generator({
@@ -300,6 +337,8 @@ class DOM extends Component {
         toggleDependencyDetail: this.toggleDependencyDetail,
       }),
       this.reinstallImportmap(),
+
+      generateSandboxURLs(),
     ]);
     // this.generateSandboxURL();
     // subscribe to store changes
@@ -362,8 +401,8 @@ class DOM extends Component {
         newState.importmapShareLink !== prevState.importmapShareLink ||
         JSON.stringify(newState.importmapDialogOpenDependencyDetails) !==
           JSON.stringify(prevState.importmapDialogOpenDependencyDetails) ||
-          JSON.stringify(newState.importMap) !==
-            JSON.stringify(prevState.importMap)
+        JSON.stringify(newState.importMap) !==
+          JSON.stringify(prevState.importMap)
       ) {
         hydrateImportMapDialog({
           dependencies: newState.dependencies,

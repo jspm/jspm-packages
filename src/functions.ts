@@ -76,6 +76,16 @@ function removeSlashes(path: string) {
   return removeTrailingSlash(removeLeadingSlash(path));
 }
 
+function copyToClipboard(text: string) {
+  if (typeof document !== 'undefined') {
+    const el = document.createElement("textarea");
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+  }
+}
 export {
   fromPkgStr,
   fromPkgStrToPin,
@@ -85,4 +95,5 @@ export {
   getRecentPackages,
   removeSlashes,
   sortArray,
+  copyToClipboard,
 };

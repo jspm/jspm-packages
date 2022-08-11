@@ -112,7 +112,6 @@ function Package({
                 <PackageExports
                   name={name}
                   version={version}
-                  exports={exports}
                   subpaths={subpaths}
                 />
               </jspm-packages-package-exports>
