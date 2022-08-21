@@ -142,102 +142,6 @@ jspm-packages-package-highlights ul li span:first-of-type {
   }
 } */
 
-main details,
-jspm-packages-importmap-dialog dialog .selected-dependencies details,
-jspm-packages-importmap-dialog dialog .selected-dependencies .details {
-  margin-top: 25px;
-}
-
-main details summary,
-jspm-packages-importmap-dialog dialog .selected-dependencies details summary,
-jspm-packages-importmap-dialog dialog .selected-dependencies .details .summary {
-  display: flex;
-  cursor: pointer;
-  justify-content: space-between;
-  align-items: center;
-  align-content: center;
-  border-bottom: 5px solid black;
-}
-
-jspm-packages-importmap-dialog dialog .selected-dependencies .details .summary {
-  border-bottom: none;
-}
-
-/* jspm-packages-importmap-dialog dialog .selected-dependencies .details {
-  border-top: 5px solid black;
-  border-bottom: 5px solid black;
-} */
-
-main details[open] summary,
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  details[open]
-  summary,
-.selected-dependencies .details .summary {
-  border: none;
-}
-
-jspm-packages-importmap-dialog dialog .selected-dependencies details[open] ol {
-  border-top: 5px solid black;
-  border-bottom: 5px solid black;
-}
-
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  .package-name-version
-  strong {
-  padding-right: 20px;
-}
-
-main details summary::after,
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  details
-  summary::after {
-  content: "";
-  height: 12px;
-  width: 12px;
-  display: block;
-  background: url(icon-arrow-down.png) no-repeat right center;
-  background-size: cover;
-}
-
-main details[open] summary::after,
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  details[open]
-  summary::after {
-  transform: scaleY(-1);
-}
-
-main details summary h3 {
-  margin: 0;
-  font-family: "Bebas Neue";
-}
-
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  details
-  summary
-  strong,
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  .details
-  .summary
-  strong {
-  margin: 0;
-  font-family: "Bebas Neue", serif;
-}
-#packages-page.shrink {
-  margin-right: 520px;
-}
-
 .package-exports {
   padding: 20px;
   border: 20px solid #ffc95d;
@@ -278,33 +182,13 @@ jspm-packages-package-exports section ul li {
   align-items: center;
 }
 
-jspm-packages-package-exports section ul li .export-name,
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  details
-  .export-name,
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  .details
-  .export-name {
+jspm-packages-package-exports section ul li .export-name {
   font-weight: 300;
   color: #a5a5a5;
   font-style: italic;
 }
 
-jspm-packages-package-exports section ul li .export-subpath,
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  details
-  .export-subpath,
-jspm-packages-importmap-dialog
-  dialog
-  .selected-dependencies
-  .details
-  .export-subpath {
+jspm-packages-package-exports section ul li .export-subpath {
   font-weight: 700;
   color: black;
   font-style: normal;

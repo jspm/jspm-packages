@@ -20,7 +20,7 @@ function ImportmapToggleButton({
       title="Explore Importmap"
       onClick={toggleImportmapDialog}
     >
-      [{`${dependencyCount}`}]
+      [{`${dependencyCount || 0}`}]
     </button>
   );
 }

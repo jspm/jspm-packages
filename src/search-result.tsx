@@ -248,7 +248,7 @@ function SearchResult({ result }: Prop) {
     <article>
       <header>
         <h4>
-          <a href={`/package/${name}@${version}`}>{name}</a>
+          <a href={`/package/${name}`}>{name}</a>
         </h4>
 
         <jspm-packages-package-links>

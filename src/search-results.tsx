@@ -8,7 +8,6 @@ import type { Result } from "@jspm/packages/search-result";
 type Results = {
   objects: Result[];
   total: number;
-  time: string;
 };
 
 type Prop = Results & {
@@ -83,73 +82,83 @@ function SearchResults({
 
   return (
     <Fragment>
-      <jspm-packages-importmap-dialog>
-      </jspm-packages-importmap-dialog>
-      <jspm-packages-header>
-        <Header search />
-      </jspm-packages-header>
-      <main>
-        {total === 0 ? (
-          <jspm-packages-search-no-results>
-            <NoResult />
-          </jspm-packages-search-no-results>
-        ) : (
-          <Fragment>
-            <p>
-              Found <em>{total}</em> results for{" "}
-              <strong>{searchKeyword || searchTerm}</strong>
-            </p>
-            {objects.map((result) => (
-              <jspm-packages-search-result>
-                <SearchResult result={result} />
-              </jspm-packages-search-result>
-            ))}
-            <nav aria-label="pagination">
-              <ol>
-                {page > 1 && (
-                  <li>
-                    <a href={`${paginationBaseURL}&page=1`}>First</a>
-                  </li>
-                )}
-                {previousPageLink && (
-                  <li>
-                    <a href={previousPageLink}>Prev</a>
-                  </li>
-                )}
-                {pagination.map((pageNumber) => {
-                  const isCurrentPage = pageNumber === page;
-                  if (isCurrentPage) {
-                    return <li>{pageNumber}</li>;
-                  }
-                  return (
-                    <li>
-                      <a href={`${paginationBaseURL}&page=${pageNumber}`}>
-                        {pageNumber}
-                      </a>
-                    </li>
-                  );
-                })}
-                {/* {pages.map((page) => (
+      <section>
+        <jspm-packages-importmap-dialog></jspm-packages-importmap-dialog>
+      </section>
+      <section id="packages-page">
+        <section>
+          <jspm-packages-header>
+            <Header search />
+          </jspm-packages-header>
+        </section>
+
+        <section>
+          <main>
+            {total === 0 ? (
+              <jspm-packages-search-no-results>
+                <NoResult />
+              </jspm-packages-search-no-results>
+            ) : (
+              <Fragment>
+                <p>
+                  Found <em>{total}</em> results for{" "}
+                  <strong>{searchKeyword || searchTerm}</strong>
+                </p>
+                {objects.map((result) => (
+                  <jspm-packages-search-result>
+                    <SearchResult result={result} />
+                  </jspm-packages-search-result>
+                ))}
+                <nav aria-label="pagination">
+                  <ol>
+                    {page > 1 && (
+                      <li>
+                        <a href={`${paginationBaseURL}&page=1`}>First</a>
+                      </li>
+                    )}
+                    {previousPageLink && (
+                      <li>
+                        <a href={previousPageLink}>Prev</a>
+                      </li>
+                    )}
+                    {pagination.map((pageNumber) => {
+                      const isCurrentPage = pageNumber === page;
+                      if (isCurrentPage) {
+                        return <li>{pageNumber}</li>;
+                      }
+                      return (
+                        <li>
+                          <a href={`${paginationBaseURL}&page=${pageNumber}`}>
+                            {pageNumber}
+                          </a>
+                        </li>
+                      );
+                    })}
+                    {/* {pages.map((page) => (
                   <li>
                     <a href={`${paginationBaseURL}&page=${page}`}>{page}</a>
                   </li>
                 ))} */}
 
-                {nextPageLink && (
-                  <li>
-                    <a href={nextPageLink}>Next</a>
-                  </li>
-                )}
-                {page < totalPages && (
-                  <li>
-                    <a href={`${paginationBaseURL}&page=${totalPages}`}>Last</a>
-                  </li>
-                )}
-              </ol>
-            </nav>
-          </Fragment>
-        )}
-      </main>
+                    {nextPageLink && (
+                      <li>
+                        <a href={nextPageLink}>Next</a>
+                      </li>
+                    )}
+                    {page < totalPages && (
+                      <li>
+                        <a href={`${paginationBaseURL}&page=${totalPages}`}>
+                          Last
+                        </a>
+                      </li>
+                    )}
+                  </ol>
+                </nav>
+              </Fragment>
+            )}
+          </main>
+        </section>
+      </section>
     </Fragment>
   );
 }

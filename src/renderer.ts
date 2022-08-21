@@ -7,6 +7,9 @@
 
 import he from "he";
 import Prism from "prismjs";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-shell-session";
 // import sanitizeHtml from "sanitize-html";
 // import sanitizeHtml from "https://jspm.dev/sanitize-html";
 
@@ -33,7 +36,7 @@ class Renderer extends marked.Renderer {
         ? Prism.languages[language]
         : undefined;
     if (grammar === undefined) {
-      return `<pre><code>${he.escape(code)}</code></pre>`;
+      return `<pre><code class="language-${language}">${he.escape(code)}</code></pre>`;
     }
     const html = Prism.highlight(code, grammar, language!);
     return `<div class="highlight highlight-source-${language}"><pre>${html}</pre></div>`;

@@ -127,7 +127,7 @@ function Package({
                     subpath is missing, it is recommended to{" "}
                     <a
                       href={
-                        links.issues ||
+                        links.bugs ||
                         links.repository ||
                         links.homepage ||
                         links.npm

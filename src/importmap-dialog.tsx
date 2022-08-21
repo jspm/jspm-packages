@@ -1,6 +1,8 @@
 /** @jsx h */
 
 import { h } from "nano-jsx";
+import Prism from "prismjs";
+import "prismjs/components/prism-json";
 import {
   fromPkgStr,
   sortArray,
@@ -138,6 +140,7 @@ function ImportMapDialog({
           const multipleVersionDetailOpen = shouldOpenMultipleVersion
             ? { open: shouldOpenMultipleVersion }
             : {};
+
           return (
             <details
               id={multipleVersionDetailId}
@@ -189,10 +192,23 @@ function ImportMapDialog({
 
       {importMap && (
         <section class="importmap-text">
-          <button class="link-button" onClick={() => copyToClipboard(importMap)}>Copy Importmap</button>
-          <pre>
-            <code class="code">{importMap}</code>
-          </pre>
+          <button
+            class="link-button"
+            onClick={() => copyToClipboard(importMap)}
+          >
+            Copy Importmap
+          </button>
+          <div class="highlight highlight-source-json">
+            <pre
+              innerHTML={{
+                __dangerousHtml: Prism?.highlight(
+                  importMap,
+                  Prism?.languages.json,
+                  "json"
+                ),
+              }}
+            />
+          </div>
         </section>
       )}
     </dialog>

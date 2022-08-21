@@ -48,8 +48,7 @@ const pageServingHeaders = {
   "content-type": "text/html; charset=UTF-8",
   "Cache-Control":
     "s-maxage=1500, public, immutable, stale-while-revalidate=1501",
-  Link:
-    `<https://ga.jspm.io>; rel="preconnect",<https://fonts.googleapis.com>; rel="preconnect", <https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css>; rel="preload"; as="style", <https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap>; rel="preload"; as="style"`,
+  Link: `<https://ga.jspm.io>; rel="preconnect",<https://fonts.googleapis.com>; rel="preconnect", <https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css>; rel="preload"; as="style", <https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap>; rel="preload"; as="style"`,
 };
 
 async function generateHTML(
@@ -80,18 +79,30 @@ async function generateHTML(
 }
 
 async function requestHandlerHome() {
-  const indexPage = renderSSR(<HomeSSR />);
+  const templateURL = new URL("../lib/home.html", import.meta.url);
+  const templateFileResponse = await fetch(templateURL);
 
-  const { body, head, footer } = Helmet.SSR(indexPage);
-  const html = await generateHTML({
-    template: "./lib/home.html",
-    body,
-    head,
-    footer,
-  });
+  const response = templateFileResponse.body
+    .pipeThrough(new TextDecoderStream())
+    .pipeThrough(
+      new TransformStream({
+        transform: (chunk, controller) => {
+          const PLACEHOLDER = "<!-- __CONTENT__ -->";
 
-  return new Response(html, {
-    headers: pageServingHeaders,
+          if (chunk.includes(PLACEHOLDER)) {
+            const content = renderSSR(<HomeSSR />);
+            controller.enqueue(chunk.replace(PLACEHOLDER, content));
+          } else {
+            controller.enqueue(chunk);
+          }
+        },
+      })
+    )
+    .pipeThrough(new TextEncoderStream());
+
+  return new Response(response, {
+    status: templateFileResponse.status,
+    headers: { ...templateFileResponse.headers, ...pageServingHeaders },
   });
 }
 
@@ -121,9 +132,11 @@ async function getReadmeContent(baseURL: string) {
   );
 
   const validReadmeFileContent = await [READMEFile, readmeFile].find(
-    (readmeFile) => readmeFile.status === 200 || readmeFile.status === 304
+    (readme) => {
+      return readme.status === 200 || readme.status === 304
+    }
   );
-  return validReadmeFileContent?.text();
+  return validReadmeFileContent?.text() || '';
 }
 
 async function getWeeklyDownloads(name: string) {
@@ -386,11 +399,7 @@ const requestHandlers: RequestHandler = {
   "/search": requestHandlerSearch,
 };
 
-/**
- * @param {request} Request
- * @returns Response
- */
-async function requestHandler(request: { url: string }) {
+async function requestHandler(request: Request) {
   try {
     const { pathname } = new URL(request.url);
 
