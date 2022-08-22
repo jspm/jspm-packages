@@ -1,0 +1,539 @@
+/* @link https://utopia.fyi/type/calculator?c=320,21,1.2,1140,24,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l */
+/*
+  https://codesandbox.io/s/xewcm?file=/style.css:2541-2862
+  https://play.teleporthq.io/projects/jspm-registry
+
+  for css-references
+*/
+* {
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: var(--dl-space-space-twounits);
+}
+
+h1 a {
+  text-decoration: none;
+}
+
+h2,
+h4,
+h5,
+h6 {
+  font-family: "Roboto", sans-serif;
+}
+h2 {
+  font-size: var(--step-3);
+}
+h3 {
+  font-weight: 600;
+}
+h4 {
+  font-size: var(--step-1);
+}
+pre {
+  border: solid 1px black;
+  overflow-x: scroll;
+  padding: 10px;
+  background-color: var(--dl-color-jspm-placeholder);
+  white-space: pre-wrap;
+}
+
+code,
+.code,
+code[class*="language-"],
+pre[class*="language-"] {
+  font-family: "Source Code Pro", monospace;
+  font-family: "DM Mono", monospace;
+  font-size: var(--step--2);
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  font-size: var(--step--1);
+}
+
+a {
+  cursor: pointer;
+  color: #ff5722;
+  text-decoration: none;
+}
+
+label {
+  margin-right: 10px;
+}
+
+button {
+  cursor: pointer;
+}
+
+jspm-packages {
+  display: block;
+  padding: 0 var(--dl-space-space-oneandhalfunits);
+}
+
+@media (min-width: 768px) {
+  jspm-packages {
+    padding: var(--dl-space-space-unit);
+  }
+}
+
+jspm-packages-header header {
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  jspm-packages-header header {
+    align-items: center;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+  }
+}
+
+jspm-packages-logo h1 {
+  margin-right: var(--dl-space-space-unit);
+  text-align: center;
+}
+
+jspm-packages-logo h1 a {
+  background: url(https://jspm.org/jspm.png) no-repeat left center;
+  color: var(--dl-color-gray-black);
+  background-size: contain;
+  padding-left: 2.5rem;
+}
+
+jspm-packages-search form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+}
+
+@media (min-width: 768px) {
+  jspm-packages-search form {
+    flex-direction: row;
+    margin-bottom: 0;
+  }
+}
+
+jspm-packages-search input[type="search"] {
+  color: var(--dl-color-gray-black);
+  cursor: auto;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-gray-black);
+  border-width: 1px;
+  background-color: var(--dl-color-gray-white);
+  height: 40px;
+  padding: var(--dl-space-space-halfunit);
+  border-color: var(--dl-color-jspm-placeholder);
+  background-color: var(--dl-color-jspm-placeholder);
+  border-radius: var(--dl-radius-radius-radius8);
+  background: url("/npm-n-block-16.png") no-repeat 8px center;
+  font-size: var(--step--2);
+  padding-left: 32px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  jspm-packages-search input[type="search"] {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+jspm-packages-search button {
+  color: var(--dl-color-gray-black);
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-gray-black);
+  border-width: 1px;
+  height: 40px;
+  align-items: center;
+  border-width: 0px;
+  padding-left: var(--dl-space-space-oneandhalfunits);
+  padding-right: var(--dl-space-space-oneandhalfunits);
+  background-color: var(--dl-color-primary-js-primary);
+  border-top-left-radius: none;
+  border-top-right-radius: var(--dl-radius-radius-radius8);
+  border-radius: var(--dl-radius-radius-radius8);
+  margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+  jspm-packages-search button {
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+jspm-packages-nav nav ul {
+  display: flex;
+  list-style: none;
+  display: flex;
+  list-style: none;
+  gap: 5px;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  font-size: var(--step--2);
+}
+
+jspm-packages-nav nav ul li {
+  margin: 5px;
+}
+
+.nav-list-item .toggle-dialog {
+  background: transparent url("/icon-importmap.png") left center no-repeat;
+  background-size: contain;
+  padding-left: 25px;
+  border: 0;
+  cursor: pointer;
+  color: crimson;
+}
+
+main details {
+  margin-top: 25px;
+}
+jspm-packages-importmap-dialog dialog .selected-dependencies details {
+  margin-top: 10px;
+}
+
+jspm-packages-importmap-dialog dialog .selected-dependencies .details {
+  margin-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
+}
+
+main details summary,
+jspm-packages-importmap-dialog dialog .selected-dependencies details summary,
+jspm-packages-importmap-dialog dialog .selected-dependencies .details .summary {
+  display: flex;
+  cursor: pointer;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+  border-bottom: 5px solid black;
+}
+
+jspm-packages-importmap-dialog dialog .selected-dependencies .details .summary {
+  border-bottom: none;
+}
+
+/* jspm-packages-importmap-dialog dialog .selected-dependencies .details {
+  border-top: 5px solid black;
+  border-bottom: 5px solid black;
+} */
+
+main details[open] summary,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details[open]
+  summary,
+.selected-dependencies .details .summary {
+  border: none;
+}
+
+jspm-packages-importmap-dialog dialog .selected-dependencies details[open] ol {
+  border-top: 5px solid black;
+  border-bottom: 5px solid black;
+}
+
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  .package-name-version
+  strong {
+  padding-right: 20px;
+}
+
+main details summary::after,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details
+  summary::after {
+  content: "";
+  height: 12px;
+  width: 12px;
+  display: block;
+  background: url(icon-arrow-down.png) no-repeat right center;
+  background-size: cover;
+}
+
+main details[open] summary::after,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details[open]
+  summary::after {
+  transform: scaleY(-1);
+}
+
+main details summary h3 {
+  margin: 0;
+  font-family: "Bebas Neue";
+}
+
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details
+  summary
+  strong,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  .details
+  .summary
+  strong {
+  margin: 0;
+  font-family: "Bebas Neue", serif;
+}
+#packages-page.shrink {
+  margin-right: 520px;
+}
+
+jspm-packages-importmap-dialog dialog {
+  position: fixed;
+  overflow: scroll;
+  z-index: 2;
+  height: 100vh;
+  min-width: 350px;
+  background: white;
+  left: unset;
+  border: 0 solid black;
+  border-radius: 0;
+  /*background: linear-gradient(225deg, #e6e6e6, #ffffff);*/
+  /*box-shadow:  -5px 5px 10px #d9d9d9, 5px -5px 10px #ffffff;*/
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-top: -17px;
+}
+jspm-packages-importmap-dialog dialog .selected-dependencies {
+  max-height: 50%;
+  overflow: scroll;
+}
+jspm-packages-importmap-dialog dialog .selected-dependencies button {
+  color: black;
+  display: inline-block;
+  border: none;
+  font-size: 20px;
+  padding: 2px 8px;
+}
+
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  button[data-selected="false"] {
+  background: var(--dl-color-primary-js-primary);
+}
+jspm-packages-importmap-dialog dialog .selected-dependencies details ol {
+  padding: 0;
+  margin: 0;
+}
+jspm-packages-importmap-dialog dialog .selected-dependencies details ol li {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid;
+  align-items: center;
+}
+jspm-packages-importmap-dialog dialog .importmap-text {
+  max-width: 480px;
+  max-height: 50%;
+  overflow: scroll;
+  font-size: var(--step--2);
+  position: relative;
+}
+
+jspm-packages-importmap-dialog dialog .importmap-text code[class*="language-"],
+jspm-packages-importmap-dialog dialog .importmap-text pre[class*="language-"] {
+  font-size: var(--step--2);
+}
+
+jspm-packages-importmap-dialog dialog .importmap-text pre {
+  width: max-content;
+}
+
+.link-button, .link-copy {
+  background-color: var(--dl-color-primary-js-primary);
+  border: none;
+  padding: 10px;
+  color: black;
+}
+
+jspm-packages-importmap-dialog dialog .importmap-text .link-copy{
+  display: none;
+}
+
+jspm-packages-importmap-dialog dialog .importmap-text:hover .link-copy{
+  display: block;
+  animation: fade-in 200ms both;
+  position: absolute;
+  top: 7px;
+  right: 0;
+  padding-left: 30px;
+  background: var(--dl-color-primary-js-primary) url(/icon-copy.png) 10px center no-repeat;
+}
+
+jspm-packages-importmap-dialog dialog header {
+  font-family: "Roboto" sans-serif;
+  font-size: 16px;
+  margin-bottom: var(--dl-space-space-unit);
+}
+jspm-packages-importmap-dialog dialog header h4 {
+  font-size: var(--step-0);
+  margin: 0;
+}
+
+jspm-packages-importmap-dialog dialog header .title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: solid 5px;
+}
+
+jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links {
+  font-size: var(--step--2);
+  font-family: "Sen", sans-serif;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  align-content: center;
+}
+jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links a[download]{
+  background: transparent url(/icon-download-black.png) left center no-repeat;
+  padding-left: 20px;
+}
+jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links .icon-customization{
+  background: transparent url(/icon-customization-black.png) left center no-repeat;
+  padding-left: 20px;
+}
+jspm-generator-link {
+  font-size: 14px;
+  display: inline-block;
+  margin-bottom: var(--dl-space-space-unit);
+}
+
+jspm-packages-importmap-dialog dialog jspm-generator-link a {
+  display: inline-block;
+  background: url(/images/icon-external-link.png) no-repeat right center;
+  background-size: contain;
+  padding-right: var(--dl-space-space-twounits);
+}
+
+/* jspm-packages-importmap-dialog dialog details {
+  margin: var(--dl-space-space-halfunit) 0px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+} */
+
+jspm-packages-importmap-dialog dialog details summary,
+jspm-importmap-entry-summary {
+  cursor: pointer;
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
+jspm-packages-importmap-dialog dialog details summary:after {
+  content: "›";
+  margin-right: 10px;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+jspm-packages-importmap-dialog dialog details[open] summary:after {
+  content: "";
+}
+
+jspm-importmap-entry-name {
+  font-weight: 700;
+}
+
+jspm-importmap-entry-version {
+  margin-left: 10px;
+}
+
+jspm-packages-importmap-dialog dialog .icon-close {
+  background: white;
+  border: none;
+  background: transparent;
+  font-size: var(--step-0);
+  cursor: pointer;
+}
+
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details
+  .export-subpath,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  .details
+  .export-subpath {
+  font-weight: 700;
+  color: black;
+  font-style: normal;
+}
+
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  details
+  .export-name,
+jspm-packages-importmap-dialog
+  dialog
+  .selected-dependencies
+  .details
+  .export-name {
+  font-weight: 300;
+  color: #a5a5a5;
+  font-style: italic;
+}
+
+jspm-importmap-entry {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+  margin-right: var(--dl-space-space-unit);
+}
+
+jspm-importmap-entry button {
+  background: var(--dl-color-gray-900);
+  border: none;
+  cursor: pointer;
+  color: var(--dl-color-gray-black);
+}
+
+.check-icon {
+  margin-right: 5px;
+  width: 18px;
+  fill: var(--dl-color-success-100);
+}
+
+.package-file {
+  display: block;
+  line-height: 1.3;
+}
+.package-files {
+  list-style: none;
+  padding-left: 0px;
+  max-height: 500px;
+  overflow: scroll;
+}
+.package-files li {
+  line-height: 1.3;
+}

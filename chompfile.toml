@@ -1,5 +1,5 @@
-version = 0.1
 default-task = 'build'
+version = 0.1
 
 extensions = ['chomp@0.1:swc', 'chomp@0.1:jspm', 'chomp@0.1:npm']
 
@@ -7,44 +7,88 @@ extensions = ['chomp@0.1:swc', 'chomp@0.1:jspm', 'chomp@0.1:npm']
 auto-install = true
 
 [[task]]
+deps = ['lib/**/*.html', 'deno.importmap', 'lib/static-resources.json']
 name = 'build'
-deps = ['deno.importmap', 'shell.html', 'lib/static-resources.json']
 
 [[task]]
+deps = ['browser', 'lib/**/*.html', 'deno.importmap', 'server.tsx', 'lib/static-resources.json']
 name = 'serve'
-deps = ['lib/**/*.js', 'deno.importmap', 'server.jsx', 'shell.html', 'lib/static-resources.json']
-run = 'deno run -A --import-map=deno.importmap --unstable --no-check server.jsx'
+run = 'deno run -A --import-map=deno.importmap --unstable --no-check server.tsx'
 
 [[task]]
+name = 'browser'
+deps = ['jsx', 'ts']
+
+[[task]]
+name = 'ts'
+dep = 'src/#.ts'
 target = 'lib/#.js'
-dep = 'src/#.jsx'
+template = 'swc'
+
+[[task]]
+name = 'jsx'
+dep = 'src/#.tsx'
+target = 'lib/#.js'
 template = 'swc'
 [task.template-options.config]
-'jsc.transform.react.pragma' = 'h'
 'jsc.parser.tsx' = true
+'jsc.transform.react.pragma' = 'h'
 
 [[task]]
 name = 'clean'
+run = 'rm deno.importmap ; rm lib/* ;'
 validation = 'none'
-run = 'rm deno.importmap ; rm lib/* ; rm shell.html'
 
 [[task]]
-target = 'lib/#.js'
 dep = 'src/#.js'
 run = 'cp $DEP $TARGET'
+target = 'lib/#.js'
+
+# [[task]]
+# deps = ['server.tsx', 'lib/static-resources.json']
+# target = 'deno.importmap'
+# template = 'jspm'
+# [task.template-options]
+# env = ['deno', 'production']
+# [task.template-options."inputMap".imports]
+# nano-jsx = 'https://deno.land/x/nano_jsx@v0.0.33/mod.ts'
 
 [[task]]
-target = 'deno.importmap'
-deps = ['server.jsx', 'lib/static-resources.json']
-template = 'jspm'
-[task.template-options]
-env = ['deno', 'production']
-
-[[task]]
-target = 'shell.html'
-deps = ['src/shell.html', 'lib/**/*.js', 'npm:install']
+targets = ['deno.importmap']
+deps = [
+    'server.tsx',
+    'lib/static-resources.json',
+    'npm:install',
+]
 invalidation = 'always'
 engine = 'node'
+run = '''
+    import { Generator } from '@jspm/generator';
+    import { readFile, writeFile } from 'fs/promises';
+    import { pathToFileURL } from 'url';
+    import mkdirp from 'mkdirp';
+    import { dirname } from 'path';
+
+    const generator = new Generator({
+      mapUrl: import.meta.url,
+      env: ["deno", "production"],
+      inputMap: {
+        imports: {
+          "nano-jsx": "https://deno.land/x/nano_jsx@v0.0.33/mod.ts"
+        }
+      }
+    });
+
+    await Promise.all(process.env.DEPS.split(':').map(dep => generator.traceInstall('./' + dep)));
+
+    mkdirp.sync(dirname(process.env.TARGET));
+    await writeFile(process.env.TARGET, JSON.stringify(generator.getMap(), null, 2));
+'''
+
+[[task]]
+deps = ['src/#.html', 'browser', 'npm:install']
+engine = 'node'
+invalidation = 'always'
 run = '''
     import { Generator } from '@jspm/generator';
     import { readFile, writeFile } from 'fs/promises';
@@ -62,24 +106,30 @@ run = '''
     mkdirp.sync(dirname(process.env.TARGET));
     await writeFile(process.env.TARGET, await generator.htmlGenerate(htmlSource, {
       // custom task required to set this up for now!
-      htmlUrl: pathToFileURL('lib/shell.html')
+      htmlUrl: pathToFileURL('process.env.TARGET'),
+      preload: true,
+      integrity: false, // erring ATM
+      whitespace: true,
+      esModuleShims: true,
+      comment: true
     }));
 '''
+target = 'lib/#.html'
 
 [[task]]
-target = 'lib/static-resources.json'
-deps = ['src/shell.html', 'lib/**/*.js', 'npm:install']
-invalidation = 'always'
+deps = ['lib/**/*.html', 'browser', 'npm:install']
 engine = 'node'
+invalidation = 'always'
 run = '''
    import './generate-static-resources-map.js';
 '''
+target = 'lib/static-resources.json'
 
 [[task]]
-name = 'exportmap'
 deps = ['package.json', 'npm:install']
-invalidation = 'always'
 engine = 'node'
+invalidation = 'always'
+name = 'exportmap'
 run = '''
    import './generate-exportmap.js';
 '''
