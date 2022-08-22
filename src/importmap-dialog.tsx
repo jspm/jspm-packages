@@ -82,9 +82,13 @@ function ImportMapDialog({
                 <article class="details">
                   <div class="summary">
                     <div class="package-name-version">
-                      <strong>{name}</strong>
+                      <a href={`/package/${name}`}>
+                        <strong>{name}</strong>
+                      </a>
 
-                      <span class="code">v{version}</span>
+                      <a href={`/package/${name}@${version}`}>
+                        <span class="code">v{version}</span>
+                      </a>
                     </div>
                     <button
                       onClick={toggleExportSelection}
@@ -107,9 +111,13 @@ function ImportMapDialog({
               >
                 <summary>
                   <div class="package-name-version">
-                    <strong>{name}</strong>
+                    <a href={`/package/${name}`}>
+                      <strong>{name}</strong>
+                    </a>
 
-                    <span class="code">v{version}</span>
+                    <a href={`/package/${name}@${version}`}>
+                      <span class="code">v{version}</span>
+                    </a>
                   </div>
                 </summary>
                 <ol>
@@ -148,7 +156,9 @@ function ImportMapDialog({
               {...multipleVersionDetailOpen}
             >
               <summary>
-                <span>{name}</span>
+                <span>
+                  <a href={`/package/${name}`}>{name}</a>
+                </span>
                 <span class="code">[{mapEntries.length} versions]</span>
               </summary>
 
@@ -200,6 +210,7 @@ function ImportMapDialog({
           </button>
           <div class="highlight highlight-source-json">
             <pre
+              class="language-${language}"
               innerHTML={{
                 __dangerousHtml: Prism?.highlight(
                   importMap,

@@ -39,7 +39,7 @@ class Renderer extends marked.Renderer {
       return `<pre><code class="language-${language}">${he.escape(code)}</code></pre>`;
     }
     const html = Prism.highlight(code, grammar, language!);
-    return `<div class="highlight highlight-source-${language}"><pre>${html}</pre></div>`;
+    return `<div class="highlight highlight-source-${language}"><pre class="language-${language}">${html}</pre></div>`;
   }
 
   link(href: string, title: string, text: string) {

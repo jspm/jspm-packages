@@ -58,7 +58,7 @@ body {
 
 a {
   cursor: pointer;
-  color: crimson;
+  color: #ff5722;
   text-decoration: none;
 }
 
@@ -209,6 +209,12 @@ main details,
 jspm-packages-importmap-dialog dialog .selected-dependencies details,
 jspm-packages-importmap-dialog dialog .selected-dependencies .details {
   margin-top: 25px;
+}
+
+jspm-packages-importmap-dialog dialog .selected-dependencies .details {
+  margin-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
 }
 
 main details summary,
