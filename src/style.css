@@ -45,7 +45,9 @@ pre {
 }
 
 code,
-.code {
+.code,
+code[class*="language-"],
+pre[class*="language-"] {
   font-family: "Source Code Pro", monospace;
   font-family: "DM Mono", monospace;
   font-size: var(--step--2);
@@ -171,14 +173,6 @@ jspm-packages-search button {
     border-bottom-left-radius: 0;
   }
 }
-.link-button {
-  background-color: var(--dl-color-primary-js-primary);
-  border: none;
-  margin-top: 40px;
-  padding: 10px;
-  color: black;
-  text-transform: uppercase;
-}
 jspm-packages-nav nav ul {
   display: flex;
   list-style: none;
@@ -204,11 +198,11 @@ jspm-packages-nav nav ul li {
   color: crimson;
 }
 
-
-main details,
-jspm-packages-importmap-dialog dialog .selected-dependencies details,
-jspm-packages-importmap-dialog dialog .selected-dependencies .details {
+main details {
   margin-top: 25px;
+}
+jspm-packages-importmap-dialog dialog .selected-dependencies details {
+  margin-top: 10px;
 }
 
 jspm-packages-importmap-dialog dialog .selected-dependencies .details {
@@ -307,7 +301,6 @@ jspm-packages-importmap-dialog
   margin-right: 520px;
 }
 
-
 jspm-packages-importmap-dialog dialog {
   position: fixed;
   overflow: scroll;
@@ -358,17 +351,41 @@ jspm-packages-importmap-dialog dialog .importmap-text {
   max-height: 50%;
   overflow: scroll;
   font-size: var(--step--2);
+  position: relative;
+}
+
+jspm-packages-importmap-dialog dialog .importmap-text code[class*="language-"],
+jspm-packages-importmap-dialog dialog .importmap-text pre[class*="language-"] {
+  font-size: var(--step--2);
 }
 
 jspm-packages-importmap-dialog dialog .importmap-text pre {
   width: max-content;
 }
 
+.link-button, .link-copy {
+  background-color: var(--dl-color-primary-js-primary);
+  border: none;
+  padding: 10px;
+  color: black;
+}
+
+jspm-packages-importmap-dialog dialog .importmap-text .link-copy{
+  display: none;
+}
+
+jspm-packages-importmap-dialog dialog .importmap-text:hover .link-copy{
+  display: block;
+  animation: fade-in 200ms both;
+  position: absolute;
+  top: 7px;
+  right: 0;
+  padding-left: 30px;
+  background: var(--dl-color-primary-js-primary) url(/icon-copy.png) 10px center no-repeat;
+}
+
 jspm-packages-importmap-dialog dialog header {
   font-family: "Roboto" sans-serif;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   font-size: 16px;
   margin-bottom: var(--dl-space-space-unit);
 }
@@ -376,9 +393,30 @@ jspm-packages-importmap-dialog dialog header h4 {
   font-size: var(--step-0);
   margin: 0;
 }
-jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-generator-link {
+
+jspm-packages-importmap-dialog dialog header .title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: solid 5px;
+}
+
+jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links {
   font-size: var(--step--2);
   font-family: "Sen", sans-serif;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  align-content: center;
+}
+jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links a[download]{
+  background: transparent url(/icon-download-black.png) left center no-repeat;
+  padding-left: 20px;
+}
+jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links .icon-customization{
+  background: transparent url(/icon-customization-black.png) left center no-repeat;
+  padding-left: 20px;
 }
 jspm-generator-link {
   font-size: 14px;

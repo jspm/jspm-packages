@@ -55,32 +55,57 @@ function ImportMapDialog({
   return (
     <dialog id="importmap-dialog" {...open}>
       <header>
-        <h4>My Importmap</h4>
-        <button class="icon-close" onClick={toggleImportmapDialog}>
-          ✕
-        </button>
-        {importmapShareLink && <a href={importmapShareLink}>importmap</a>}
+        <section class="title">
+          <h4>My Importmap</h4>
+          <button class="icon-close" onClick={toggleImportmapDialog}>
+            ✕
+          </button>
+        </section>
+        <section>
+          {importmapShareLink && <a href={importmapShareLink}>importmap</a>}
+        </section>
       </header>
-      {generatorHash && (
-        <a
-          class="jspm-packages-importmap-dialog-generator-link"
-          target="_blank"
-          href={`https://generator.jspm.io/${generatorHash}`}
-        >
-          Customize importmap at JSPM Generator
-        </a>
-      )}
-      <section class="selected-dependencies">
-        {sortArray(Object.keys(map)).map((name) => {
-          const versions = map[name];
-          const mapEntries = Object.entries(versions);
+      <main>
+        <section class="selected-dependencies">
+          {sortArray(Object.keys(map)).map((name) => {
+            const versions = map[name];
+            const mapEntries = Object.entries(versions);
 
-          if (mapEntries.length === 1) {
-            const [version, subpaths] = mapEntries[0];
-            if (subpaths.length === 1) {
+            if (mapEntries.length === 1) {
+              const [version, subpaths] = mapEntries[0];
+              if (subpaths.length === 1) {
+                return (
+                  <article class="details">
+                    <div class="summary">
+                      <div class="package-name-version">
+                        <a href={`/package/${name}`}>
+                          <strong>{name}</strong>
+                        </a>
+
+                        <a href={`/package/${name}@${version}`}>
+                          <span class="code">v{version}</span>
+                        </a>
+                      </div>
+                      <button
+                        onClick={toggleExportSelection}
+                        value={`${name}@${version}${subpaths[0].slice(1)}`}
+                      >
+                        &minus;
+                      </button>
+                    </div>
+                  </article>
+                );
+              }
+              const detailId = `importmap-dialog-dependency-detail-${name}@${version}`;
+              const shouldOpen = importmapDialogOpenDependencyDetails[detailId];
+              const detailOpen = shouldOpen ? { open: shouldOpen } : {};
               return (
-                <article class="details">
-                  <div class="summary">
+                <details
+                  id={detailId}
+                  onToggle={toggleDependencyDetail}
+                  {...detailOpen}
+                >
+                  <summary>
                     <div class="package-name-version">
                       <a href={`/package/${name}`}>
                         <strong>{name}</strong>
@@ -90,138 +115,131 @@ function ImportMapDialog({
                         <span class="code">v{version}</span>
                       </a>
                     </div>
-                    <button
-                      onClick={toggleExportSelection}
-                      value={`${name}@${version}${subpaths[0].slice(1)}`}
-                    >
-                      &minus;
-                    </button>
-                  </div>
-                </article>
+                  </summary>
+                  <ol>
+                    {sortArray(subpaths).map((subpath) => (
+                      <li>
+                        <span class="code export-name">
+                          {subpath.slice(1) && <span>{name}</span>}
+                          <span class="export-subpath">
+                            {subpath.slice(1) || name}
+                          </span>
+                        </span>
+                        <button
+                          onClick={toggleExportSelection}
+                          value={`${name}@${version}${subpath.slice(1)}`}
+                        >
+                          &minus;
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                </details>
               );
             }
-            const detailId = `importmap-dialog-dependency-detail-${name}@${version}`;
-            const shouldOpen = importmapDialogOpenDependencyDetails[detailId];
-            const detailOpen = shouldOpen ? { open: shouldOpen } : {};
+
+            const multipleVersionDetailId = `importmap-dialog-dependency-detail-${name}-[${mapEntries.length}]-muilti`;
+            const shouldOpenMultipleVersion =
+              importmapDialogOpenDependencyDetails[multipleVersionDetailId];
+            const multipleVersionDetailOpen = shouldOpenMultipleVersion
+              ? { open: shouldOpenMultipleVersion }
+              : {};
+
             return (
               <details
-                id={detailId}
+                id={multipleVersionDetailId}
                 onToggle={toggleDependencyDetail}
-                {...detailOpen}
+                {...multipleVersionDetailOpen}
               >
                 <summary>
-                  <div class="package-name-version">
-                    <a href={`/package/${name}`}>
-                      <strong>{name}</strong>
-                    </a>
-
-                    <a href={`/package/${name}@${version}`}>
-                      <span class="code">v{version}</span>
-                    </a>
-                  </div>
+                  <span>
+                    <a href={`/package/${name}`}>{name}</a>
+                  </span>
+                  <span class="code">[{mapEntries.length} versions]</span>
                 </summary>
-                <ol>
-                  {sortArray(subpaths).map((subpath) => (
-                    <li>
-                      <span class="code export-name">
-                        {subpath.slice(1) && <span>{name}</span>}
-                        <span class="export-subpath">
-                          {subpath.slice(1) || name}
-                        </span>
-                      </span>
-                      <button
-                        onClick={toggleExportSelection}
-                        value={`${name}@${version}${subpath.slice(1)}`}
-                      >
-                        &minus;
-                      </button>
-                    </li>
-                  ))}
-                </ol>
+
+                {mapEntries.map(([version, subpaths]) => {
+                  const detailId = `importmap-dialog-dependency-detail-${name}@${version}`;
+                  const shouldOpen =
+                    importmapDialogOpenDependencyDetails[
+                      multipleVersionDetailId
+                    ];
+                  const detailOpen = shouldOpen ? { open: shouldOpen } : {};
+
+                  return (
+                    <details
+                      id={detailId}
+                      onToggle={toggleDependencyDetail}
+                      {...detailOpen}
+                    >
+                      <summary>
+                        <span class="code">v{version}</span>
+                      </summary>
+                      <ol>
+                        {sortArray(subpaths).map((subpath) => (
+                          <li>
+                            <span>
+                              {subpath}
+                              <button
+                                onClick={toggleExportSelection}
+                                value={`${name}@${version}${subpath.slice(1)}`}
+                              >
+                                &minus;
+                              </button>
+                            </span>
+                          </li>
+                        ))}
+                      </ol>
+                    </details>
+                  );
+                })}
               </details>
             );
-          }
-
-          const multipleVersionDetailId = `importmap-dialog-dependency-detail-${name}-[${mapEntries.length}]-muilti`;
-          const shouldOpenMultipleVersion =
-            importmapDialogOpenDependencyDetails[multipleVersionDetailId];
-          const multipleVersionDetailOpen = shouldOpenMultipleVersion
-            ? { open: shouldOpenMultipleVersion }
-            : {};
-
-          return (
-            <details
-              id={multipleVersionDetailId}
-              onToggle={toggleDependencyDetail}
-              {...multipleVersionDetailOpen}
-            >
-              <summary>
-                <span>
-                  <a href={`/package/${name}`}>{name}</a>
-                </span>
-                <span class="code">[{mapEntries.length} versions]</span>
-              </summary>
-
-              {mapEntries.map(([version, subpaths]) => {
-                const detailId = `importmap-dialog-dependency-detail-${name}@${version}`;
-                const shouldOpen =
-                  importmapDialogOpenDependencyDetails[multipleVersionDetailId];
-                const detailOpen = shouldOpen ? { open: shouldOpen } : {};
-
-                return (
-                  <details
-                    id={detailId}
-                    onToggle={toggleDependencyDetail}
-                    {...detailOpen}
-                  >
-                    <summary>
-                      <span class="code">v{version}</span>
-                    </summary>
-                    <ol>
-                      {sortArray(subpaths).map((subpath) => (
-                        <li>
-                          <span>
-                            {subpath}
-                            <button
-                              onClick={toggleExportSelection}
-                              value={`${name}@${version}${subpath.slice(1)}`}
-                            >
-                              &minus;
-                            </button>
-                          </span>
-                        </li>
-                      ))}
-                    </ol>
-                  </details>
-                );
-              })}
-            </details>
-          );
-        })}
-      </section>
-
-      {importMap && (
-        <section class="importmap-text">
-          <button
-            class="link-button"
-            onClick={() => copyToClipboard(importMap)}
-          >
-            Copy Importmap
-          </button>
-          <div class="highlight highlight-source-json">
-            <pre
-              class="language-${language}"
-              innerHTML={{
-                __dangerousHtml: Prism?.highlight(
-                  importMap,
-                  Prism?.languages.json,
-                  "json"
-                ),
-              }}
-            />
-          </div>
+          })}
         </section>
-      )}
+
+        <section class="jspm-packages-importmap-dialog-links">
+          {generatorHash && (
+            <a
+              class="icon-customization"
+              target="_blank"
+              href={`https://generator.jspm.io/${generatorHash}`}
+            >
+              Customize
+            </a>
+          )}
+          {importMap && (
+            <a
+              href={URL.createObjectURL(new Blob([importMap]))}
+              download="dependencies.importmap"
+            >
+              Download
+            </a>
+          )}
+        </section>
+        {importMap && (
+          <section class="importmap-text">
+            <button
+              class="link-copy"
+              onClick={() => copyToClipboard(importMap)}
+            >
+              Copy
+            </button>
+            <div class="highlight highlight-source-json">
+              <pre
+                class="language-json"
+                innerHTML={{
+                  __dangerousHtml: Prism?.highlight(
+                    importMap,
+                    Prism?.languages.json,
+                    "json"
+                  ),
+                }}
+              />
+            </div>
+          </section>
+        )}
+      </main>
     </dialog>
   );
 }
