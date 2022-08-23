@@ -53,7 +53,7 @@ jspm-packages-home jspm-packages-search form button {
   border-bottom-left-radius: 0;
 }
 
-jspm-packages-home main {
+jspm-packages-home .jspm-packages-home-main {
   margin-top: 50px;
 }
 
@@ -64,7 +64,7 @@ jspm-packages-home jspm-packages-search + h2 {
   margin: 0 auto;
 }
 
-jspm-packages-home main section {
+jspm-packages-home main .jspm-packages-home-features {
   display: flex;
   gap: 10px;
   justify-content: space-between;
@@ -72,7 +72,7 @@ jspm-packages-home main section {
   margin-top: 25px;
 }
 
-jspm-packages-home main section article {
+jspm-packages-home main .jspm-packages-home-features article {
   max-width: 350px;
 }
 /* @media (min-width: 768px) {
