@@ -1,5 +1,6 @@
 /** @jsx h */
 import { Fragment, h } from "nano-jsx";
+import { Score } from "@jspm/packages/score";
 
 function GithubIcon() {
   return (
@@ -218,7 +219,62 @@ function PackageHighlights({
       )}
       {score && (
         <li>
-          <span>Score</span> {parseFloat(Number(score.final)).toFixed(2)}
+          <span>
+            Score{" "}
+            <a
+              href="https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-info-circle"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <circle cx="12" cy="12" r="9"></circle>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                <polyline points="11 12 12 12 12 16 13 16"></polyline>
+              </svg>
+            </a>
+          </span>{" "}
+          <div class="package-scores">
+            <jspm-packages-score title="Maintenance">
+              <Score
+                value={
+                  parseFloat(Number(score.detail.maintenance)).toFixed(2) * 100
+                }
+              />
+              <span>M</span>
+            </jspm-packages-score>
+            <jspm-packages-score title="Popularity">
+              <Score
+                value={
+                  parseFloat(Number(score.detail.popularity)).toFixed(2) * 100
+                }
+              />
+              <span>P</span>
+            </jspm-packages-score>
+            <jspm-packages-score title="Quality">
+              <Score
+                value={
+                  parseFloat(Number(score.detail.quality)).toFixed(2) * 100
+                }
+              />
+              <span>Q</span>
+            </jspm-packages-score>
+            <jspm-packages-score title="Final">
+              <Score value={parseFloat(Number(score.final)).toFixed(2) * 100} />
+              <span>F</span>
+            </jspm-packages-score>
+          </div>
         </li>
       )}
       {license && (

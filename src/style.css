@@ -184,6 +184,25 @@ jspm-packages-nav nav ul {
   padding: 0;
   font-size: var(--step--2);
 }
+.package-scores {
+  display: flex;
+  gap: 10px;
+}
+jspm-packages-score svg {
+  transform: rotate(-90deg);
+  width: 25px;
+  height: 25px;
+}
+
+jspm-packages-score svg text {
+  transform: rotate(90deg);
+  font-size: var(--step-4);
+}
+
+jspm-packages-score .percent {
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(100 - var(--score));
+}
 
 jspm-packages-nav nav ul li {
   margin: 5px;
@@ -361,27 +380,31 @@ jspm-packages-importmap-dialog dialog .importmap-text pre[class*="language-"] {
 
 jspm-packages-importmap-dialog dialog .importmap-text pre {
   width: max-content;
+  max-width: calc(100vw - 60px);
 }
 
-.link-button, .link-copy {
+.link-button,
+.link-copy,
+.button-run-jspm-sandbox {
   background-color: var(--dl-color-primary-js-primary);
   border: none;
   padding: 10px;
   color: black;
 }
 
-jspm-packages-importmap-dialog dialog .importmap-text .link-copy{
+jspm-packages-importmap-dialog dialog .importmap-text .link-copy {
   display: none;
 }
 
-jspm-packages-importmap-dialog dialog .importmap-text:hover .link-copy{
+jspm-packages-importmap-dialog dialog .importmap-text:hover .link-copy {
   display: block;
   animation: fade-in 200ms both;
   position: absolute;
   top: 7px;
   right: 0;
   padding-left: 30px;
-  background: var(--dl-color-primary-js-primary) url(/icon-copy.png) 10px center no-repeat;
+  background: var(--dl-color-primary-js-primary) url(/icon-copy.png) 10px center
+    no-repeat;
 }
 
 jspm-packages-importmap-dialog dialog header {
@@ -410,12 +433,21 @@ jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links {
   justify-content: space-evenly;
   align-content: center;
 }
-jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links a[download]{
+
+jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links a {
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+/* jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links a[download]{
   background: transparent url(/icon-download-black.png) left center no-repeat;
   padding-left: 20px;
-}
-jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links .icon-customization{
-  background: transparent url(/icon-customization-black.png) left center no-repeat;
+} */
+jspm-packages-importmap-dialog
+  .jspm-packages-importmap-dialog-links
+  .icon-customization {
+  background: transparent url(/icon-customization-black.png) left center
+    no-repeat;
   padding-left: 20px;
 }
 jspm-generator-link {

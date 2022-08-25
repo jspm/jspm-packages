@@ -131,8 +131,8 @@ class DOM extends Component {
     const packagePageRef = document.getElementById("packages-page");
     if (packagePageRef) {
       packagePageRef.style["margin-right"] = dialogOpen
-        ? `${dialogWidth + 20}px`
-        : "20px";
+        ? `${dialogWidth}px`
+        : "0";
     }
   };
 

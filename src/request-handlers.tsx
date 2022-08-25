@@ -355,7 +355,7 @@ async function requestHandlerSearch(request: Request): Promise<Response> {
 
     const searchTerm = searchParams.get("q") || "";
     const searchKeyword = searchParams.get("keyword") || "";
-    const page = searchParams.get("page") || "";
+    const page = searchParams.get("page") || "1";
     const maintainer = searchParams.get("maintainer") || "";
 
     const results: Results =

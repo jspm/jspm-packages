@@ -77,8 +77,8 @@ function SearchResults({
   }`;
   const previousPageLink =
     page > 1 ? `${paginationBaseURL}&page=${page - 1}` : "";
-  const nextPageLink =
-    page < totalPages ? `${paginationBaseURL}&page=${page + 1}` : "";
+  const nextPage = page < totalPages && page + 1;
+  const nextPageLink = nextPage && `${paginationBaseURL}&page=${nextPage}`;
 
   return (
     <Fragment>
@@ -139,12 +139,26 @@ function SearchResults({
                     <a href={`${paginationBaseURL}&page=${page}`}>{page}</a>
                   </li>
                 ))} */}
-
+                    {/* <li>
+                      <details>
+                        <summary>...</summary>
+                        <ul>
+                          {pages.map((page) => (
+                            <li>
+                              <a href={`${paginationBaseURL}&page=${page}`}>
+                                {page}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    </li> */}
                     {nextPageLink && (
                       <li>
                         <a href={nextPageLink}>Next</a>
                       </li>
                     )}
+
                     {page < totalPages && (
                       <li>
                         <a href={`${paginationBaseURL}&page=${totalPages}`}>

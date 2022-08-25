@@ -201,10 +201,32 @@ function ImportMapDialog({
         <section class="jspm-packages-importmap-dialog-links">
           {generatorHash && (
             <a
-              class="icon-customization"
               target="_blank"
               href={`https://generator.jspm.io/${generatorHash}`}
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-adjustments-alt"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <rect x="4" y="8" width="4" height="4"></rect>
+                <line x1="6" y1="4" x2="6" y2="8"></line>
+                <line x1="6" y1="12" x2="6" y2="20"></line>
+                <rect x="10" y="14" width="4" height="4"></rect>
+                <line x1="12" y1="4" x2="12" y2="14"></line>
+                <line x1="12" y1="18" x2="12" y2="20"></line>
+                <rect x="16" y="5" width="4" height="4"></rect>
+                <line x1="18" y1="4" x2="18" y2="5"></line>
+                <line x1="18" y1="9" x2="18" y2="20"></line>
+              </svg>
               Customize
             </a>
           )}
@@ -213,6 +235,24 @@ function ImportMapDialog({
               href={URL.createObjectURL(new Blob([importMap]))}
               download="dependencies.importmap"
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-file-download"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                <path d="M12 17v-6"></path>
+                <path d="M9.5 14.5l2.5 2.5l2.5 -2.5"></path>
+              </svg>
               Download
             </a>
           )}
