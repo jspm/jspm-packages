@@ -172,6 +172,10 @@
       "browser": "./lib/store.js",
       "default": "./src/store.ts"
     },
+    "./score": {
+      "browser": "./lib/score.js",
+      "default": "./src/score.tsx"
+    },
     "./types": {
       "default": "./types.ts"
     },

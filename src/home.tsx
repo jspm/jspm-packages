@@ -18,7 +18,7 @@ function Home() {
         </section>
 
         <section>
-          <main>
+          <main class="jspm-packages-home-main">
             <h1>Let's Just Serve Packages and Modules</h1>
             <jspm-packages-search>
               <Search />
@@ -27,7 +27,7 @@ function Home() {
               A CDN to serve NPM packages as standard ECMA Script &amp;
               Importmaps.
             </h2>
-            <section>
+            <section class="jspm-packages-home-features">
               <article>
                 <h3>Importmap</h3>
                 <ol>

@@ -264,8 +264,20 @@ jspm-packages-readme > section {
   }
 
   jspm-packages-readme > section .highlight {
-    column-span: all;
+    /* column-span: all; */
+    position: relative;
   }
+  jspm-packages-readme > section .highlight .button-run-jspm-sandbox{
+    margin-bottom: -8px;
+    margin-top: 25px;
+    position: relative;
+    display: inline-block;
+  }
+
+  jspm-packages-readme > section p + .highlight .button-run-jspm-sandbox{
+    margin-top: calc(25px - 1em);
+  }
+  
   jspm-packages-readme > section h1,
   jspm-packages-readme > section h2,
   jspm-packages-readme > section h3,

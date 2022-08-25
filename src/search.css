@@ -58,7 +58,9 @@ jspm-packages-search-results nav[aria-label="pagination"] ol {
   list-style: none;
   padding: 0;
   margin: 10px 0;
-  justify-content: space-evenly;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
+  align-items: center;
+  align-content: center;
 }
