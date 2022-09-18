@@ -1,7 +1,7 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import { FEATURED_PACKAGES } from "@jspm/packages/featured-packages-list";
-import { Home } from "@jspm/packages/home";
+import { FEATURED_PACKAGES } from "#featured-packages-list";
+import { Home } from "#home";
 
 function SSRHome() {
   return (

@@ -1,6 +1,6 @@
 /** @jsx h */
 import { Fragment, h } from "nano-jsx";
-import { Score } from "@jspm/packages/score";
+import { Score } from "#score";
 
 function GithubIcon() {
   return (

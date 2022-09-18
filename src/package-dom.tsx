@@ -4,17 +4,17 @@
 /// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
 
 import { h, hydrate, Component } from "nano-jsx";
-import { store } from "@jspm/packages/store";
-import type { ENV, Store } from "@jspm/packages/store";
-import { fromPkgStrToPin, toPkgStr, sortArray } from "@jspm/packages/functions";
-import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
-import type { ImportmapToggleButtonProp } from "@jspm/packages/importmap-toggle-button";
-import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
-import type { ImportMapDialogProp } from "@jspm/packages/importmap-dialog";
-import { PackageExportAddToImportmapToggle } from "@jspm/packages/package-export-add-to-importmap-toggle";
-import type { PackageExportAddToImportmapToggleProp } from "@jspm/packages/package-export-add-to-importmap-toggle";
-import { GeneratorLink } from "@jspm/packages/generator-link";
-import type { GeneratorLinkProp } from "@jspm/packages/generator-link";
+import { store } from "#store";
+import type { ENV, Store } from "#store";
+import { fromPkgStrToPin, toPkgStr, sortArray } from "#functions";
+import { ImportmapToggleButton } from "#importmap-toggle-button";
+import type { ImportmapToggleButtonProp } from "#importmap-toggle-button";
+import { ImportMapDialog } from "#importmap-dialog";
+import type { ImportMapDialogProp } from "#importmap-dialog";
+import { PackageExportAddToImportmapToggle } from "#package-export-add-to-importmap-toggle";
+import type { PackageExportAddToImportmapToggleProp } from "#package-export-add-to-importmap-toggle";
+import { GeneratorLink } from "#generator-link";
+import type { GeneratorLinkProp } from "#generator-link";
 import { Generator } from "@jspm/generator";
 
 function hydrateImportmapToggleButton({
@@ -129,7 +129,7 @@ function generateSandboxURLs() {
         { esModuleShims: true }
       );
 
-      const { getSandboxHash } = await import("@jspm/packages/statehash");
+      const { getSandboxHash } = await import("#statehash");
       const hash = await getSandboxHash(outHtml);
       const sandboxURL = `https://jspm.org/sandbox${hash}`;
       const sandboxLink = document.createElement("a");
@@ -242,7 +242,7 @@ class DOM extends Component {
   };
 
   generateJSPMGeneratorHash = async (state) => {
-    const { stateToHash } = await import("@jspm/packages/statehash");
+    const { stateToHash } = await import("#statehash");
     const generatorHash = await stateToHash(state);
 
     this.store.setState({

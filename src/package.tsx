@@ -1,13 +1,12 @@
 /** @jsx h */
 
 import { Fragment, Helmet, h } from "nano-jsx";
-import { Readme } from "@jspm/packages/readme";
-// import { Aside } from "@jspm/packages/aside";
-import { Header } from "@jspm/packages/header";
-import { Hero } from "@jspm/packages/hero";
-import { PackageExports } from "@jspm/packages/package-exports";
+import { Readme } from "#readme";
+import { Header } from "#header";
+import { Hero } from "#hero";
+import { PackageExports } from "#package-exports";
 
-import type { Maintainer, ExportsTarget } from "@jspm/packages/types";
+import type { Maintainer, ExportsTarget } from "#types";
 
 type Prop = {
   createdTime: string;
@@ -167,26 +166,6 @@ function Package({
               </jspm-packages-readme>
             </details>
           </main>
-          {/* <jspm-packages-aside>
-          <Aside
-            created={created}
-            updated={updated}
-            dependencies={dependencies}
-            downloads={downloads}
-            version={version}
-            versions={versions}
-            name={name}
-            license={license}
-            files={files}
-            exports={exports}
-            keywords={keywords}
-            type={type}
-            types={types}
-            features={features}
-            links={links}
-            maintainers={maintainers}
-          />
-        </jspm-packages-aside> */}
         </section>
         <footer>
           <section class="maintainers">

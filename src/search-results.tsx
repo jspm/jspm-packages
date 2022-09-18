@@ -1,9 +1,9 @@
 /** @jsx h */
 
 import { h, Fragment } from "nano-jsx";
-import { Header } from "@jspm/packages/header";
-import { SearchResult } from "@jspm/packages/search-result";
-import type { Result } from "@jspm/packages/search-result";
+import { Header } from "#header";
+import { SearchResult } from "#search-result";
+import type { Result } from "#search-result";
 
 type Results = {
   objects: Result[];

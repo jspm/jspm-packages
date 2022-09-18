@@ -1,8 +1,8 @@
 /** @jsx h */
 
 import { h } from "nano-jsx";
-import { Package } from "@jspm/packages/package";
-import type { Maintainer, ExportsTarget } from "@jspm/packages/types";
+import { Package } from "#package";
+import type { Maintainer, ExportsTarget } from "#types";
 
 type Prop = {
   created: string;

@@ -16,17 +16,17 @@ import {
   MAYBE_README_FILES,
   NPM_PROVIDER_URL,
   PACKAGE_BASE_PATH,
-} from "@jspm/packages/constants";
+} from "#constants";
 import {
   parsePackageNameVersion,
   removeSlashes,
-} from "@jspm/packages/functions";
-import { HomeSSR } from "@jspm/packages/home-ssr";
-import { SearchResultsSSR } from "@jspm/packages/search-results-ssr";
-import type { Results } from "@jspm/packages/search-results";
-import { PackageSSR } from "@jspm/packages/package-ssr";
-import { features } from "@jspm/packages/package-quality-check";
-import { render } from "@jspm/packages/renderer";
+} from "#functions";
+import { HomeSSR } from "#home-ssr";
+import { SearchResultsSSR } from "#search-results-ssr";
+import type { Results } from "#search-results";
+import { PackageSSR } from "#package-ssr";
+import { features } from "#package-quality-check";
+import { render } from "#renderer";
 
 const staticResourcesFile = await Deno.readTextFile(
   "./lib/static-resources.json"

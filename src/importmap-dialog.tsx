@@ -7,7 +7,7 @@ import {
   fromPkgStr,
   sortArray,
   copyToClipboard,
-} from "@jspm/packages/functions";
+} from "#functions";
 
 type Prop = {
   generatorHash: string;

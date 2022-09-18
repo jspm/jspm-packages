@@ -1,5 +1,5 @@
 
-import hostedGitInfo from "@jspm/packages/repository-url";
+import hostedGitInfo from "#repository-url";
 
 // 🙏🏻🙏🏻🙏🏻 Gratefully taken from
 // - https://github.com/skypackjs/package-check/blob/ee925e7410bdd8252c0582b54f841231a4ae9bbf/src/index.ts
