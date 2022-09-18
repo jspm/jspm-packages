@@ -14,6 +14,22 @@
     "build": "rollup -c"
   },
   "imports": {
+    "#404": {
+      "browser": "./lib/404.js",
+      "default": "./src/404.tsx"
+    },
+    "#404-ssr": {
+      "browser": "./lib/404-ssr.js",
+      "default": "./src/404-ssr.tsx"
+    },
+    "#500": {
+      "browser": "./lib/500.js",
+      "default": "./src/500.tsx"
+    },
+    "#500-ssr": {
+      "browser": "./lib/500-ssr.js",
+      "default": "./src/500-ssr.tsx"
+    },
     "#constants": {
       "browser": "./lib/constants.js",
       "default": "./src/constants.ts"
@@ -114,6 +130,12 @@
   "exports": {
     ".": {
       "default": "./src/request-handlers.tsx"
+    },
+    "./404-dom": {
+      "browser": "./lib/404-dom.js"
+    },
+    "./500-dom": {
+      "browser": "./lib/500-dom.js"
     },
     "./dom": {
       "browser": "./lib/home-dom.js"

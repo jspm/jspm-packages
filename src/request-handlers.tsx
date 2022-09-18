@@ -17,11 +17,10 @@ import {
   NPM_PROVIDER_URL,
   PACKAGE_BASE_PATH,
 } from "#constants";
-import {
-  parsePackageNameVersion,
-  removeSlashes,
-} from "#functions";
+import { parsePackageNameVersion, removeSlashes } from "#functions";
 import { HomeSSR } from "#home-ssr";
+import { NotFoundSSR } from "#404-ssr";
+import { ServerErrorSSR } from "#500-ssr";
 import { SearchResultsSSR } from "#search-results-ssr";
 import type { Results } from "#search-results";
 import { PackageSSR } from "#package-ssr";
@@ -38,6 +37,7 @@ const staticResources = {
   "/package.css": "./src/package.css",
   "/home.css": "./src/home.css",
   "/search.css": "./src/search.css",
+  "/404.css": "./src/404.css",
   "/search.html": "./lib/search.html",
   "/favicon.ico": "./favicon.ico",
   "/package.json": "./package.json",
@@ -64,262 +64,382 @@ async function generateHTML(
     footer?: HTMLElement[];
   } = { template: "./shell.html" }
 ): Promise<string> {
-  const content = await Deno.readTextFile(template);
-  const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] =
-    content.split(/<!-- __[A-Z]*__ -->/i);
-  return [
-    START,
-    head?.join("\n"),
-    AFTER_HEADER_BEFORE_CONTENT,
-    body,
-    DOM_SCRIPT,
-    footer?.join("\n"),
-    END,
-  ].join("\n");
+  try {
+    const content = await Deno.readTextFile(template);
+    const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] =
+      content.split(/<!-- __[A-Z]*__ -->/i);
+    return [
+      START,
+      head?.join("\n"),
+      AFTER_HEADER_BEFORE_CONTENT,
+      body,
+      DOM_SCRIPT,
+      footer?.join("\n"),
+      END,
+    ].join("\n");
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function requestHandlerHome() {
-  const templateURL = new URL("../lib/home.html", import.meta.url);
-  const templateFileResponse = await fetch(templateURL);
+  try {
+    const templateURL = new URL("../lib/home.html", import.meta.url);
+    const templateFileResponse = await fetch(templateURL);
 
-  const response = templateFileResponse.body
-    .pipeThrough(new TextDecoderStream())
-    .pipeThrough(
-      new TransformStream({
-        transform: (chunk, controller) => {
-          const PLACEHOLDER = "<!-- __CONTENT__ -->";
+    const response = templateFileResponse.body
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(
+        new TransformStream({
+          transform: (chunk, controller) => {
+            const PLACEHOLDER = "<!-- __CONTENT__ -->";
 
-          if (chunk.includes(PLACEHOLDER)) {
-            const content = renderSSR(<HomeSSR />);
-            controller.enqueue(chunk.replace(PLACEHOLDER, content));
-          } else {
-            controller.enqueue(chunk);
-          }
-        },
-      })
-    )
-    .pipeThrough(new TextEncoderStream());
+            if (chunk.includes(PLACEHOLDER)) {
+              const content = renderSSR(<HomeSSR />);
+              controller.enqueue(chunk.replace(PLACEHOLDER, content));
+            } else {
+              controller.enqueue(chunk);
+            }
+          },
+        })
+      )
+      .pipeThrough(new TextEncoderStream());
 
-  return new Response(response, {
-    status: templateFileResponse.status,
-    headers: { ...templateFileResponse.headers, ...pageServingHeaders },
-  });
+    return new Response(response, {
+      status: templateFileResponse.status,
+      headers: { ...templateFileResponse.headers, ...pageServingHeaders },
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function requestHandler404(request?: Request) {
+  try {
+    const templateURL = new URL("../lib/404.html", import.meta.url);
+    const templateFileResponse = await fetch(templateURL);
+
+    const response = templateFileResponse.body
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(
+        new TransformStream({
+          transform: (chunk, controller) => {
+            const PLACEHOLDER = "<!-- __CONTENT__ -->";
+
+            if (chunk.includes(PLACEHOLDER)) {
+              const content = renderSSR(<NotFoundSSR />);
+              controller.enqueue(chunk.replace(PLACEHOLDER, content));
+            } else {
+              controller.enqueue(chunk);
+            }
+          },
+        })
+      )
+      .pipeThrough(new TextEncoderStream());
+
+    return new Response(response, {
+      status: 404,
+      headers: { ...templateFileResponse.headers, ...pageServingHeaders },
+    });
+  } catch (error) {
+    console.error(error.message || error.toString());
+    return requestHandler500(request);
+  }
+}
+
+async function requestHandler500(request?: Request) {
+  try {
+    const templateURL = new URL("../lib/500.html", import.meta.url);
+    const templateFileResponse = await fetch(templateURL);
+
+    const response = templateFileResponse.body
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(
+        new TransformStream({
+          transform: (chunk, controller) => {
+            const PLACEHOLDER = "<!-- __CONTENT__ -->";
+
+            if (chunk.includes(PLACEHOLDER)) {
+              const content = renderSSR(<ServerErrorSSR />);
+              controller.enqueue(chunk.replace(PLACEHOLDER, content));
+            } else {
+              controller.enqueue(chunk);
+            }
+          },
+        })
+      )
+      .pipeThrough(new TextEncoderStream());
+
+    return new Response(response, {
+      status: 500,
+      headers: { ...templateFileResponse.headers, ...pageServingHeaders },
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getVersions(name: string) {
+  const response = await fetch(
+    `https://npmlookup.jspm.io/${encodeURIComponent(name)}`
+  );
+  if (!response.ok) {
+    console.error(
+      `Error: Unable to get version list for ${name} (${response.status})`
+    );
+    return [];
+  }
+  const json = await response.json();
+  return Object.keys(json.versions).sort(Semver.compare).reverse();
 }
 
 async function redirectToJSPMPackageVersion(packageName: string) {
-  const npmPackageProbe = await fetch(`${NPM_PROVIDER_URL}${packageName}`);
-  const npmPackageVersion = await npmPackageProbe.text();
+  try {
+    const [version] = await getVersions(packageName);
 
-  if (npmPackageVersion) {
-    return new Response(packageName, {
-      status: 302,
-      headers: {
-        Location: `/package/${packageName}@${npmPackageVersion}`,
-      },
-    });
+    if (version) {
+      return new Response(packageName, {
+        status: 302,
+        headers: {
+          Location: `/package/${packageName}@${version}`,
+        },
+      });
+    }
+    return requestHandler404();
+  } catch (error) {
+    throw error;
   }
-  return new Response("404", { status: 404 });
 }
 
 async function getPackageJSON(baseURL: string) {
-  const packageJSON = await fetch(`${baseURL}/package.json`);
-  return packageJSON.json();
+  try {
+    const packageJSON = await fetch(`${baseURL}/package.json`);
+    return packageJSON.json();
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getReadmeContent(baseURL: string) {
-  const [READMEFile, readmeFile] = await Promise.all(
-    MAYBE_README_FILES.map((file) => fetch(`${baseURL}/${file}`))
-  );
+  try {
+    const [READMEFile, readmeFile] = await Promise.all(
+      MAYBE_README_FILES.map((file) => fetch(`${baseURL}/${file}`))
+    );
 
-  const validReadmeFileContent = await [READMEFile, readmeFile].find(
-    (readme) => {
-      return readme.status === 200 || readme.status === 304
-    }
-  );
-  return validReadmeFileContent?.text() || '';
+    const validReadmeFileContent = await [READMEFile, readmeFile].find(
+      (readme) => {
+        return readme.status === 200 || readme.status === 304;
+      }
+    );
+    return validReadmeFileContent?.text() || "";
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getWeeklyDownloads(name: string) {
-  // https://github.com/npm/registry/blob/master/docs/download-counts.md
-  const weeklyDownloadsResponse = await fetch(
-    `https://api.npmjs.org/downloads/point/last-week/${name}`
-  );
+  try {
+    // https://github.com/npm/registry/blob/master/docs/download-counts.md
+    const weeklyDownloadsResponse = await fetch(
+      `https://api.npmjs.org/downloads/point/last-week/${name}`
+    );
 
-  return weeklyDownloadsResponse.json();
+    return weeklyDownloadsResponse.json();
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getPackageMetaData(name: string) {
-  // https://github.com/npm/registry
-  const packageMetaData = await fetch(`https://registry.npmjs.org/${name}`);
-  return packageMetaData.json();
+  try {
+    // https://github.com/npm/registry
+    const packageMetaData = await fetch(`https://registry.npmjs.org/${name}`);
+    return packageMetaData.json();
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getPackageScore(name: string) {
-  const packageScoreResponse = await fetch(
-    `https://registry.npmjs.org/-/v1/search?text=${name}&size=1`
-  );
-  return packageScoreResponse.json();
+  try {
+    const packageScoreResponse = await fetch(
+      `https://registry.npmjs.org/-/v1/search?text=${name}&size=1`
+    );
+    return packageScoreResponse.json();
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getPackageComponentProps(packageNameVersion: {
   name: string;
   version: string;
 }) {
-  const baseURL = `${NPM_PROVIDER_URL}${packageNameVersion.name}@${packageNameVersion.version}`;
+  try {
+    const baseURL = `${NPM_PROVIDER_URL}${packageNameVersion.name}@${packageNameVersion.version}`;
 
-  const [
-    packageJson,
-    readmeFileContent,
-    weeklyDownloads,
-    packageMetaData,
-    packageScore,
-  ] = await Promise.all([
-    getPackageJSON(baseURL),
-    getReadmeContent(baseURL),
-    getWeeklyDownloads(packageNameVersion.name),
-    getPackageMetaData(packageNameVersion.name),
-    getPackageScore(packageNameVersion.name),
-  ]);
+    const [
+      packageJson,
+      readmeFileContent,
+      weeklyDownloads,
+      packageMetaData,
+      packageScore,
+    ] = await Promise.all([
+      getPackageJSON(baseURL),
+      getReadmeContent(baseURL),
+      getWeeklyDownloads(packageNameVersion.name),
+      getPackageMetaData(packageNameVersion.name),
+      getPackageScore(packageNameVersion.name),
+    ]).catch((reason) => {
+      throw reason;
+    });
 
-  const {
-    dependencies,
-    description,
-    exports,
-    files,
-    keywords,
-    license,
-    name,
-    type,
-    types,
-    version,
-  } = packageJson;
+    const {
+      dependencies,
+      description,
+      exports,
+      files,
+      keywords,
+      license,
+      name,
+      type,
+      types,
+      version,
+    } = packageJson;
 
-  const { maintainers, readme, time, versions } = packageMetaData;
-  const { created: createdISO } = time;
+    const { maintainers, readme, time, versions } = packageMetaData;
+    const { created: createdISO } = time;
 
-  dayjs.extend(dayjsPluginRelativeTime);
+    dayjs.extend(dayjsPluginRelativeTime);
 
-  const updatedTime = time[version];
-  const updated = dayjs(updatedTime).fromNow();
-  const created = dayjs(createdISO).fromNow();
+    const updatedTime = time[version];
+    const updated = dayjs(updatedTime).fromNow();
+    const created = dayjs(createdISO).fromNow();
 
-  const {
-    score,
-    package: { links },
-  } = packageScore.objects[0];
+    const {
+      score,
+      package: { links },
+    } = packageScore.objects[0];
 
-  // `readme` is preferred here but this content always refers to the latest version
-  // hence using it as fallback
-  const readmeHTML = render(readmeFileContent || readme);
-  // https://github.com/jspm/generator.jspm.io/blob/main/src/api.js#L137
-  const filteredExport = Object.keys(exports)
-    .filter(
-      (expt) =>
-        !expt.endsWith("!cjs") &&
-        !expt.endsWith("/") &&
-        expt.indexOf("*") === -1
-    )
-    .sort();
+    // `readme` is preferred here but this content always refers to the latest version
+    // hence using it as fallback
+    const readmeHTML = render(readmeFileContent || readme);
+    // https://github.com/jspm/generator.jspm.io/blob/main/src/api.js#L137
+    const filteredExport = Object.keys(exports)
+      .filter(
+        (expt) =>
+          !expt.endsWith("!cjs") &&
+          !expt.endsWith("/") &&
+          expt.indexOf("*") === -1
+      )
+      .sort();
 
-  const sortedVersions = Object.keys(versions).sort(Semver.compare).reverse();
-  const nativePackageExports = versions[version].exports;
+    const sortedVersions = Object.keys(versions).sort(Semver.compare).reverse();
+    const nativePackageExports = versions[version]?.exports;
 
-  return {
-    name,
-    dependencies,
-    description,
-    version,
-    versions: sortedVersions,
-    license,
-    files,
-    subpaths: filteredExport,
-    exports,
-    readme: readmeHTML,
-    keywords,
-    downloads: weeklyDownloads.downloads,
-    created,
-    updated,
-    createdTime: createdISO,
-    updatedTime,
-    type,
-    types,
-    features: features(packageJson),
-    links,
-    maintainers,
-    score,
-    jspmExports: !nativePackageExports,
-  };
+    return {
+      name,
+      dependencies,
+      description,
+      version,
+      versions: sortedVersions,
+      license,
+      files,
+      subpaths: filteredExport,
+      exports,
+      readme: readmeHTML,
+      keywords,
+      downloads: weeklyDownloads.downloads,
+      created,
+      updated,
+      createdTime: createdISO,
+      updatedTime,
+      type,
+      types,
+      features: features(packageJson),
+      links,
+      maintainers,
+      score,
+      jspmExports: !nativePackageExports,
+    };
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function renderPackagePage(packageNameVersion: {
   name: string;
   version: string;
 }) {
-  const {
-    name,
-    dependencies,
-    description,
-    version,
-    versions,
-    license,
-    files,
-    subpaths,
-    exports,
-    readme,
-    keywords,
-    downloads,
-    created,
-    updated,
-    createdTime,
-    updatedTime,
-    type,
-    types,
-    features,
-    links,
-    maintainers,
-    score,
-    jspmExports,
-  } = await getPackageComponentProps(packageNameVersion);
+  try {
+    const {
+      name,
+      dependencies,
+      description,
+      version,
+      versions,
+      license,
+      files,
+      subpaths,
+      exports,
+      readme,
+      keywords,
+      downloads,
+      created,
+      updated,
+      createdTime,
+      updatedTime,
+      type,
+      types,
+      features,
+      links,
+      maintainers,
+      score,
+      jspmExports,
+    } = await getPackageComponentProps(packageNameVersion);
 
-  const app = renderSSR(
-    <PackageSSR
-      name={name}
-      dependencies={dependencies}
-      description={description}
-      version={version}
-      versions={versions}
-      license={license}
-      files={files}
-      subpaths={subpaths}
-      exports={exports}
-      readme={readme}
-      keywords={keywords}
-      downloads={downloads}
-      created={created}
-      updated={updated}
-      createdTime={createdTime}
-      updatedTime={updatedTime}
-      type={type}
-      types={types}
-      features={features}
-      links={links}
-      maintainers={maintainers}
-      score={score}
-      jspmExports={jspmExports}
-    />
-  );
-  const { body, head, footer } = Helmet.SSR(app);
-  /* Hack to SSR readme :! */
-  const html = await generateHTML({
-    template: "./lib/package.html",
-    body,
-    head,
-    footer,
-  });
+    const app = renderSSR(
+      <PackageSSR
+        name={name}
+        dependencies={dependencies}
+        description={description}
+        version={version}
+        versions={versions}
+        license={license}
+        files={files}
+        subpaths={subpaths}
+        exports={exports}
+        readme={readme}
+        keywords={keywords}
+        downloads={downloads}
+        created={created}
+        updated={updated}
+        createdTime={createdTime}
+        updatedTime={updatedTime}
+        type={type}
+        types={types}
+        features={features}
+        links={links}
+        maintainers={maintainers}
+        score={score}
+        jspmExports={jspmExports}
+      />
+    );
+    const { body, head, footer } = Helmet.SSR(app);
+    /* Hack to SSR readme :! */
+    const html = await generateHTML({
+      template: "./lib/package.html",
+      body,
+      head,
+      footer,
+    });
 
-  return new Response(html, {
-    headers: pageServingHeaders,
-  });
+    return new Response(html, {
+      headers: pageServingHeaders,
+    });
+  } catch (error) {
+    throw error;
+  }
 }
 
 function requestHandlerPackage(request: Request): Promise<Response> {
@@ -336,15 +456,20 @@ function requestHandlerPackage(request: Request): Promise<Response> {
 
 // https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
 const PAGE_SIZE = 20;
+
 async function getSearchResult(q = "", keyword = "", page = 1) {
-  const response = await fetch(
-    `https://registry.npmjs.org/-/v1/search?text=${q}${
-      q ? "&" : ""
-    }keywords:${keyword}&not:insecure&maintenance=1.0&quality=1.0&popularity=1.0${
-      page > 1 ? `&from=${(page - 1) * PAGE_SIZE}` : ""
-    }`
-  );
-  return response.json();
+  try {
+    const response = await fetch(
+      `https://registry.npmjs.org/-/v1/search?text=${q}${
+        q ? "&" : ""
+      }keywords:${keyword}&not:insecure&maintenance=1.0&quality=1.0&popularity=1.0${
+        page > 1 ? `&from=${(page - 1) * PAGE_SIZE}` : ""
+      }`
+    );
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
 }
 
 const __SEARCH_RESULT_PLACEHOLDER__ = "<!-- __SEARCH_RESULT__ -->";
@@ -385,7 +510,8 @@ async function requestHandlerSearch(request: Request): Promise<Response> {
       headers: pageServingHeaders,
     });
   } catch (error) {
-    return new Response(error.message || error.toString(), { status: 500 });
+    console.error(error.message || error.toString());
+    return requestHandler500(request);
   }
 }
 
@@ -426,9 +552,10 @@ async function requestHandler(request: Request) {
       return requestHandlerPackage(request);
     }
 
-    return new Response("404", { status: 404 });
+    return requestHandler404(request);
   } catch (error) {
-    return new Response(error.message || error.toString(), { status: 500 });
+    console.error(error.message || error.toString());
+    return requestHandler500(request);
   }
 }
 
