@@ -1,4 +1,4 @@
-import type { PackageDescriptor } from "@jspm/packages/types";
+import type { PackageDescriptor } from "#types";
 
 function fromPkgStr(pkg: string) {
   const versionIndex = pkg.indexOf("@", 1);

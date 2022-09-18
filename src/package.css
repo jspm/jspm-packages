@@ -302,47 +302,6 @@ jspm-packages-readme img {
   max-width: 100%;
 }
 
-aside h3 {
-  font-family: "Bebas Neue";
-}
-
-jspm-packages-aside {
-  padding: var(--dl-space-space-oneandhalfunits);
-  min-width: 350px;
-  font-size: var(--step--2);
-}
-
-jspm-packages-aside aside > div {
-  display: flex;
-  align-content: center;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-jspm-packages-aside aside > div.maintainers ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-jspm-packages-aside aside > div.maintainers ul li a figure {
-  margin: 0;
-}
-
-jspm-packages-aside aside > div.maintainers ul li a figure img {
-  width: 75px;
-}
-
-/* footer > section{
-  border-bottom: 5px solid black;
-  border-top: 5px solid black;
-} */
-
 footer > section > h3 {
   font-family: "Bebas Neue";
   text-align: left;

@@ -4,16 +4,16 @@
 /// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
 
 import { h, hydrate, Component } from "nano-jsx";
-import { store } from "@jspm/packages/store";
-import type { ENV, Store } from "@jspm/packages/store";
-import { fromPkgStrToPin, sortArray } from "@jspm/packages/functions";
-import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
-import type { ImportmapToggleButtonProp } from "@jspm/packages/importmap-toggle-button";
-import { ImportMapDialog } from "@jspm/packages/importmap-dialog";
-import type { ImportMapDialogProp } from "@jspm/packages/importmap-dialog";
-import { GeneratorLink } from "@jspm/packages/generator-link";
-import type { GeneratorLinkProp } from "@jspm/packages/generator-link";
 import { Generator } from "@jspm/generator";
+import { store } from "#store";
+import type { ENV, Store } from "#store";
+import { fromPkgStrToPin, sortArray } from "#functions";
+import { ImportmapToggleButton } from "#importmap-toggle-button";
+import type { ImportmapToggleButtonProp } from "#importmap-toggle-button";
+import { ImportMapDialog } from "#importmap-dialog";
+import type { ImportMapDialogProp } from "#importmap-dialog";
+import { GeneratorLink } from "#generator-link";
+import type { GeneratorLinkProp } from "#generator-link";
 
 function hydrateImportmapToggleButton({
   dependencyCount,
@@ -159,7 +159,7 @@ class DOM extends Component {
   };
 
   generateJSPMGeneratorHash = async (state) => {
-    const { stateToHash } = await import("@jspm/packages/statehash");
+    const { stateToHash } = await import("#statehash");
     const generatorHash = await stateToHash(state);
 
     this.store.setState({

@@ -6,7 +6,7 @@
 
 ## Naming convention
 
-Wrap uses of `JSX` component, with a valid [custom element](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name) tag, composed of the `jspm-packages-{exports[subpath] || importmap.imports[subpath]}`.
+Wrap uses of `JSX` component, with a valid [custom element](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name) tag, composed of the `jspm-packages-{imports[subpath] || importmap.imports[subpath]}`.
 
 Intention is to be compatible with API of compiling and using JSX Components to custom-elements
 https://nanojsx.io/docs.html#:~:text=root%27))-,CustomElementsMode,-You%20can%20easily
@@ -14,8 +14,8 @@ https://nanojsx.io/docs.html#:~:text=root%27))-,CustomElementsMode,-You%20can%20
 ```jsx
 
     import { Fragment, h } from "nano-jsx";
-    import { Header } from "@jspm/packages/header";
-    import { Hero } from "@jspm/packages/hero";
+    import { Header } from "#header";
+    import { Hero } from "#hero";
 
     function Home() {
         return (
@@ -40,7 +40,7 @@ https://nanojsx.io/docs.html#:~:text=root%27))-,CustomElementsMode,-You%20can%20
         render(<Home />
     </jspm-packages>
 ```
-i.e. `@jspm/packages/header` -> `jspm-packages-header`
+i.e. `@jspm/packages/header` || `#header` -> `jspm-packages-header`
 # credit
 
 <a href="https://www.flaticon.com/free-icons/external-link" title="external link icons">External link icons created by Moon.de - Flaticon</a>

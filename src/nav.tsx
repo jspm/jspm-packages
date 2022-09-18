@@ -1,7 +1,7 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import { ImportmapToggleButton } from "@jspm/packages/importmap-toggle-button";
-import { GeneratorLink } from "@jspm/packages/generator-link";
+import { ImportmapToggleButton } from "#importmap-toggle-button";
+import { GeneratorLink } from "#generator-link";
 
 function Nav() {
   return (

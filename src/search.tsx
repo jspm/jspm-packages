@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import { FEATURED_PACKAGES } from "@jspm/packages/featured-packages-list";
+import { FEATURED_PACKAGES } from "#featured-packages-list";
 
 function Search() {
   return (

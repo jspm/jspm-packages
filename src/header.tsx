@@ -1,8 +1,8 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import { Logo } from "@jspm/packages/logo";
-import { Search } from "@jspm/packages/search";
-import { Nav } from "@jspm/packages/nav";
+import { Logo } from "#logo";
+import { Search } from "#search";
+import { Nav } from "#nav";
 
 type Prop = {
   search?: boolean;

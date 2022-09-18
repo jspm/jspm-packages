@@ -1,7 +1,7 @@
 /** @jsx h */
 import { Fragment, h } from "nano-jsx";
-import { Header } from "@jspm/packages/header";
-import { Search } from "@jspm/packages/search";
+import { Header } from "#header";
+import { Search } from "#search";
 
 function Home() {
   return (

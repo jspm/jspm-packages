@@ -1,187 +1,128 @@
 {
   "name": "@jspm/packages",
   "devDependencies": {
-    "@jspm/generator": "^1.0.0-beta.36",
+    "@jspm/generator": "^1.0.0-beta.37",
     "@jspm/plugin-rollup": "github:jspm/rollup-plugin-jspm",
+    "@rollup/plugin-replace": "^4.0.0",
     "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.241",
+    "@swc/core": "^1.3.1",
     "mkdirp": "^1.0.4",
-    "rollup": "^2.78.1",
-    "typescript": "^4.7.4"
+    "rollup": "^2.79.0",
+    "typescript": "^4.8.3"
+  },
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "imports": {
+    "#constants": {
+      "browser": "./lib/constants.js",
+      "default": "./src/constants.ts"
+    },
+    "#featured-packages-list": {
+      "browser": "./lib/featured-packages-list.js",
+      "default": "./src/featured-packages-list.ts"
+    },
+    "#functions": {
+      "browser": "./lib/functions.js",
+      "default": "./src/functions.ts"
+    },
+    "#generator-link": {
+      "browser": "./lib/generator-link.js",
+      "default": "./src/generator-link.tsx"
+    },
+    "#header": {
+      "browser": "./lib/header.js",
+      "default": "./src/header.tsx"
+    },
+    "#hero": {
+      "browser": "./lib/hero.js",
+      "default": "./src/hero.tsx"
+    },
+    "#home": {
+      "browser": "./lib/home.js",
+      "default": "./src/home.tsx"
+    },
+    "#home-ssr": {
+      "browser": "./lib/home-ssr.js",
+      "default": "./src/home-ssr.tsx"
+    },
+    "#importmap-dialog": {
+      "browser": "./lib/importmap-dialog.js",
+      "default": "./src/importmap-dialog.tsx"
+    },
+    "#importmap-toggle-button": {
+      "browser": "./lib/importmap-toggle-button.js",
+      "default": "./src/importmap-toggle-button.tsx"
+    },
+    "#logo": {
+      "browser": "./lib/logo.js",
+      "default": "./src/logo.tsx"
+    },
+    "#nav": {
+      "browser": "./lib/nav.js",
+      "default": "./src/nav.tsx"
+    },
+    "#package": "./src/package.tsx",
+    "#package.json": "./package.json",
+    "#package-exports": {
+      "browser": "./lib/package-exports.js",
+      "default": "./src/package-exports.tsx"
+    },
+    "#package-export-add-to-importmap-toggle": {
+      "browser": "./lib/package-export-add-to-importmap-toggle.js",
+      "default": "./src/package-export-add-to-importmap-toggle.tsx"
+    },
+    "#package-quality-check": "./src/package-quality-check.ts",
+    "#package-ssr": "./src/package-ssr.tsx",
+    "#readme": {
+      "browser": "./lib/readme.js",
+      "default": "./src/readme.tsx"
+    },
+    "#renderer": {
+      "browser": "./lib/renderer.js",
+      "default": "./src/renderer.ts"
+    },
+    "#repository-url": "./src/repository-url.js",
+    "#search": {
+      "browser": "./lib/search.js",
+      "default": "./src/search.tsx"
+    },
+    "#search-result": {
+      "browser": "./lib/search-result.js",
+      "default": "./src/search-result.tsx"
+    },
+    "#search-results": {
+      "browser": "./lib/search-results.js",
+      "default": "./src/search-results.tsx"
+    },
+    "#search-results-ssr": "./src/search-results-ssr.tsx",
+    "#statehash": {
+      "browser": "./lib/statehash.js",
+      "default": "./src/statehash.ts"
+    },
+    "#store": {
+      "browser": "./lib/store.js",
+      "default": "./src/store.ts"
+    },
+    "#score": {
+      "browser": "./lib/score.js",
+      "default": "./src/score.tsx"
+    },
+    "#types": "./types.ts",
+    "#static-resources": "./lib/static-resources.json"
   },
   "exports": {
     ".": {
       "default": "./src/request-handlers.tsx"
     },
-    "./aside": {
-      "browser": "./lib/aside.js",
-      "default": "./src/aside.tsx"
-    },
-    "./constants": {
-      "browser": "./lib/constants.js",
-      "default": "./src/constants.ts"
-    },
     "./dom": {
       "browser": "./lib/home-dom.js"
-    },
-    "./dom-main": {
-      "browser": "./lib/dom-main.js"
-    },
-    "./exports": {
-      "browser": "./lib/exports.js",
-      "default": "./src/exports.tsx"
-    },
-    "./featured-packages": {
-      "browser": "./lib/featured-packages.js",
-      "default": "./src/featured-packages.tsx"
-    },
-    "./featured-packages-list": {
-      "browser": "./lib/featured-packages-list.js",
-      "default": "./src/featured-packages-list.ts"
-    },
-    "./footer": {
-      "browser": "./lib/footer.js",
-      "default": "./src/footer.tsx"
-    },
-    "./functions": {
-      "browser": "./lib/functions.js",
-      "default": "./src/functions.ts"
-    },
-    "./generate-statehash": {
-      "browser": "./lib/generate-statehash.js",
-      "default": "./src/generate-statehash.ts"
-    },
-    "./generator-link": {
-      "browser": "./lib/generator-link.js",
-      "default": "./src/generator-link.tsx"
-    },
-    "./header": {
-      "browser": "./lib/header.js",
-      "default": "./src/header.tsx"
-    },
-    "./hero": {
-      "browser": "./lib/hero.js",
-      "default": "./src/hero.tsx"
-    },
-    "./home": {
-      "browser": "./lib/home.js",
-      "default": "./src/home.tsx"
-    },
-    "./home-ssr": {
-      "browser": "./lib/home-ssr.js",
-      "default": "./src/home-ssr.tsx"
-    },
-    "./importmap-dialog": {
-      "browser": "./lib/importmap-dialog.js",
-      "default": "./src/importmap-dialog.tsx"
-    },
-    "./importmap-toggle-button": {
-      "browser": "./lib/importmap-toggle-button.js",
-      "default": "./src/importmap-toggle-button.tsx"
-    },
-    "./jspm-package-exports": {
-      "browser": "./lib/jspm-package-exports.js",
-      "default": "./src/jspm-package-exports.tsx"
-    },
-    "./logo": {
-      "browser": "./lib/logo.js",
-      "default": "./src/logo.tsx"
-    },
-    "./nav": {
-      "browser": "./lib/nav.js",
-      "default": "./src/nav.tsx"
-    },
-    "./package": {
-      "browser": "./lib/package.js",
-      "default": "./src/package.tsx"
-    },
-    "./package.json": {
-      "browser": "./package.json",
-      "default": "./package.json"
     },
     "./package-dom": {
       "browser": "./lib/package-dom.js"
     },
-    "./package-dom-root": {
-      "browser": "./lib/package-dom-root.js"
-    },
-    "./package-exports": {
-      "browser": "./lib/package-exports.js",
-      "default": "./src/package-exports.tsx"
-    },
-    "./package-export-add-to-importmap-toggle": {
-      "browser": "./lib/package-export-add-to-importmap-toggle.js",
-      "default": "./src/package-export-add-to-importmap-toggle.tsx"
-    },
-    "./package-quality-check": {
-      "browser": "./lib/package-quality-check.js",
-      "default": "./src/package-quality-check.ts"
-    },
-    "./package-ssr": {
-      "default": "./src/package-ssr.tsx"
-    },
-    "./readme": {
-      "browser": "./lib/readme.js",
-      "default": "./src/readme.tsx"
-    },
-    "./renderer": {
-      "browser": "./lib/renderer.js",
-      "default": "./src/renderer.ts"
-    },
-    "./repository-url": {
-      "default": "./src/repository-url.js"
-    },
-    "./search": {
-      "browser": "./lib/search.js",
-      "default": "./src/search.tsx"
-    },
     "./search-dom": {
       "browser": "./lib/search-dom.js"
-    },
-    "./search-result": {
-      "browser": "./lib/search-result.js",
-      "default": "./src/search-result.tsx"
-    },
-    "./search-results": {
-      "browser": "./lib/search-results.js",
-      "default": "./src/search-results.tsx"
-    },
-    "./search-results-ssr": {
-      "default": "./src/search-results-ssr.tsx"
-    },
-    "./separator": {
-      "browser": "./lib/separator.js",
-      "default": "./src/separator.tsx"
-    },
-    "./ssr-root": {
-      "browser": "./lib/ssr-root.js",
-      "default": "./src/ssr-root.tsx"
-    },
-    "./state": {
-      "browser": "./lib/state.js",
-      "default": "./src/state.ts"
-    },
-    "./statehash": {
-      "browser": "./lib/statehash.js",
-      "default": "./src/statehash.ts"
-    },
-    "./static-resources": {
-      "default": "./lib/static-resources.json"
-    },
-    "./store": {
-      "browser": "./lib/store.js",
-      "default": "./src/store.ts"
-    },
-    "./score": {
-      "browser": "./lib/score.js",
-      "default": "./src/score.tsx"
-    },
-    "./types": {
-      "default": "./types.ts"
-    },
-    "./utils": {
-      "browser": "./lib/utils.js",
-      "default": "./utils.ts"
     }
   },
   "type": "module"

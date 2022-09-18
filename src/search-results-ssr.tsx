@@ -1,7 +1,7 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import { SearchResults } from "@jspm/packages/search-results";
-import type { SearchResultsProp } from "@jspm/packages/search-results";
+import { SearchResults } from "#search-results";
+import type { SearchResultsProp } from "#search-results";
 
 function SearchResultsSSR({
   objects,

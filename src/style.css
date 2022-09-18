@@ -26,6 +26,7 @@ h4,
 h5,
 h6 {
   font-family: "Roboto", sans-serif;
+  font-family: 'Source Sans Pro', sans-serif;
 }
 h2 {
   font-size: var(--step-3);
@@ -55,6 +56,7 @@ pre[class*="language-"] {
 
 body {
   font-family: "Inter", sans-serif;
+  font-family: 'Source Sans Pro', sans-serif;
   font-size: var(--step--1);
 }
 
@@ -409,6 +411,7 @@ jspm-packages-importmap-dialog dialog .importmap-text:hover .link-copy {
 
 jspm-packages-importmap-dialog dialog header {
   font-family: "Roboto" sans-serif;
+  font-family: 'Source Sans Pro', sans-serif;
   font-size: 16px;
   margin-bottom: var(--dl-space-space-unit);
 }
@@ -439,10 +442,7 @@ jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links a {
   align-items: center;
   align-content: center;
 }
-/* jspm-packages-importmap-dialog .jspm-packages-importmap-dialog-links a[download]{
-  background: transparent url(/icon-download-black.png) left center no-repeat;
-  padding-left: 20px;
-} */
+
 jspm-packages-importmap-dialog
   .jspm-packages-importmap-dialog-links
   .icon-customization {
@@ -450,24 +450,7 @@ jspm-packages-importmap-dialog
     no-repeat;
   padding-left: 20px;
 }
-jspm-generator-link {
-  font-size: 14px;
-  display: inline-block;
-  margin-bottom: var(--dl-space-space-unit);
-}
 
-jspm-packages-importmap-dialog dialog jspm-generator-link a {
-  display: inline-block;
-  background: url(/images/icon-external-link.png) no-repeat right center;
-  background-size: contain;
-  padding-right: var(--dl-space-space-twounits);
-}
-
-/* jspm-packages-importmap-dialog dialog details {
-  margin: var(--dl-space-space-halfunit) 0px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-} */
 
 jspm-packages-importmap-dialog dialog details summary,
 jspm-importmap-entry-summary {
