@@ -247,31 +247,19 @@ function PackageHighlights({
           </span>{" "}
           <div class="package-scores">
             <jspm-packages-score title="Maintenance">
-              <Score
-                value={
-                  parseFloat(Number(score.detail.maintenance)).toFixed(2) * 100
-                }
-              />
+              <Score value={parseInt(`${score.detail.maintenance * 100}`)} />
               <span>M</span>
             </jspm-packages-score>
             <jspm-packages-score title="Popularity">
-              <Score
-                value={
-                  parseFloat(Number(score.detail.popularity)).toFixed(2) * 100
-                }
-              />
+              <Score value={parseInt(`${score.detail.popularity * 100}`)} />
               <span>P</span>
             </jspm-packages-score>
             <jspm-packages-score title="Quality">
-              <Score
-                value={
-                  parseFloat(Number(score.detail.quality)).toFixed(2) * 100
-                }
-              />
+              <Score value={parseInt(`${score.detail.quality * 100}`)} />
               <span>Q</span>
             </jspm-packages-score>
             <jspm-packages-score title="Final">
-              <Score value={parseFloat(Number(score.final)).toFixed(2) * 100} />
+              <Score value={parseInt(`${score.final * 100}`)} />
               <span>F</span>
             </jspm-packages-score>
           </div>
