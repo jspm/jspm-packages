@@ -179,23 +179,64 @@ async function requestHandler500(request?: Request) {
   }
 }
 
-export async function getVersions(name: string) {
+// gratefully taken from https://github.com/jspm/generator/blob/main/src/providers/jspm.ts#L59-L71
+async function checkBuildOrError(
+  pkgUrl: string,
+  fetchOpts?: any
+): Promise<boolean> {
+  const pjsonRes = await fetch(`${pkgUrl}/package.json`, fetchOpts);
+  if (pjsonRes.ok) return true;
+  // no package.json! Check if there's a build error:
+  const errLogRes = await fetch(`${pkgUrl}/_error.log`, fetchOpts);
+  if (errLogRes.ok) {
+    const errLog = await errLogRes.text();
+    throw new Error(
+      `Resolved dependency ${pkgUrl} with error:\n\n${errLog}\nPlease post an issue at jspm/project on GitHub, or by following the link below:\n\nhttps://github.com/jspm/project/issues/new?title=CDN%20build%20error%20for%20${encodeURIComponent(
+        pkgUrl
+      )}&body=_Reporting%20CDN%20Build%20Error._%0A%0A%3C!--%20%20No%20further%20description%20necessary,%20just%20click%20%22Submit%20new%20issue%22%20--%3E`
+    );
+  }
+  console.error(
+    `Unable to request ${pkgUrl}/package.json - ${pjsonRes.status} ${
+      pjsonRes.statusText || "returned"
+    }`
+  );
+  return false;
+}
+
+export async function getLatestBuiltVersion(name: string) {
   const response = await fetch(
     `https://npmlookup.jspm.io/${encodeURIComponent(name)}`
   );
+
   if (!response.ok) {
     console.error(
       `Error: Unable to get version list for ${name} (${response.status})`
     );
     return [];
   }
+
   const json = await response.json();
-  return Object.keys(json.versions).sort(Semver.compare).reverse();
+
+  const sortedVersions = Object.keys(json.versions)
+    .sort(Semver.compare)
+    .reverse();
+
+  for await (const version of sortedVersions) {
+    const buildExist = await checkBuildOrError(
+      `${NPM_PROVIDER_URL}${name}@${version}`
+    );
+    if (buildExist) {
+      return version;
+    }
+  }
+
+  return false;
 }
 
 async function redirectToJSPMPackageVersion(packageName: string) {
   try {
-    const [version] = await getVersions(packageName);
+    const version = await getLatestBuiltVersion(packageName);
 
     if (version) {
       return new Response(packageName, {
@@ -223,7 +264,7 @@ async function getPackageJSON(baseURL: string) {
 async function getReadmeContent(baseURL: string) {
   try {
     const [READMEFile, readmeFile] = await Promise.all(
-      MAYBE_README_FILES.map((file) => fetch(`${baseURL}/${file}`))
+      MAYBE_README_FILES.map((file: string) => fetch(`${baseURL}/${file}`))
     );
 
     const validReadmeFileContent = await [READMEFile, readmeFile].find(
@@ -231,7 +272,7 @@ async function getReadmeContent(baseURL: string) {
         return readme.status === 200 || readme.status === 304;
       }
     );
-    return validReadmeFileContent?.text() || "";
+    return (validReadmeFileContent?.text()) || "";
   } catch (error) {
     throw error;
   }
@@ -472,16 +513,13 @@ async function getSearchResult(q = "", keyword = "", page = 1) {
   }
 }
 
-const __SEARCH_RESULT_PLACEHOLDER__ = "<!-- __SEARCH_RESULT__ -->";
-
 async function requestHandlerSearch(request: Request): Promise<Response> {
   try {
-    const { pathname, searchParams } = new URL(request.url);
+    const { searchParams } = new URL(request.url);
 
     const searchTerm = searchParams.get("q") || "";
     const searchKeyword = searchParams.get("keyword") || "";
     const page = searchParams.get("page") || "1";
-    const maintainer = searchParams.get("maintainer") || "";
 
     const results: Results =
       searchTerm || searchKeyword
@@ -542,10 +580,8 @@ async function requestHandler(request: Request) {
       });
     }
 
-    const requestHandler = requestHandlers[pathname];
-
-    if (requestHandler) {
-      return requestHandler(request);
+    if (pathname in requestHandlers) {
+      return requestHandlers[pathname](request);
     }
 
     if (pathname.startsWith(PACKAGE_BASE_PATH)) {
