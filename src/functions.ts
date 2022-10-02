@@ -1,3 +1,4 @@
+import { SEARCH_RESULT_DEFAULT_PAGE_SIZE as PAGE_SIZE } from "#constants";
 import type { PackageDescriptor } from "#types";
 
 function fromPkgStr(pkg: string) {
@@ -46,6 +47,23 @@ async function getRecentPackages() {
   return result.json();
 }
 
+// https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
+
+async function getSearchResult(q = "", keyword = "", page = 1) {
+  try {
+    const response = await fetch(
+      `https://registry.npmjs.org/-/v1/search?text=${q}${
+        q ? "&" : ""
+      }keywords:${keyword}&not:insecure&maintenance=1.0&quality=1.0&popularity=1.0${
+        page > 1 ? `&from=${(page - 1) * PAGE_SIZE}` : ""
+      }`
+    );
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
 /**
  * @param {string} path
  * @returns {string}
@@ -77,7 +95,7 @@ function removeSlashes(path: string) {
 }
 
 function copyToClipboard(text: string) {
-  if (typeof document !== 'undefined') {
+  if (typeof document !== "undefined") {
     const el = document.createElement("textarea");
     el.value = text;
     document.body.appendChild(el);
@@ -96,4 +114,5 @@ export {
   removeSlashes,
   sortArray,
   copyToClipboard,
+  getSearchResult
 };

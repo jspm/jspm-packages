@@ -1,6 +1,5 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import { ImportmapToggleButton } from "#importmap-toggle-button";
 import { GeneratorLink } from "#generator-link";
 
 function Nav() {
@@ -23,7 +22,6 @@ function Nav() {
         </li>
         <li class="nav-list-item">
           <jspm-packages-importmap-toggle-button>
-            <ImportmapToggleButton />
           </jspm-packages-importmap-toggle-button>
         </li>
       </ul>

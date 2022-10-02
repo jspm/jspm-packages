@@ -2,7 +2,7 @@
 import { h } from "nano-jsx";
 
 type Prop = {
-  generatorHash: string;
+  generatorHash?: string;
 };
 
 function GeneratorLink({ generatorHash }: Prop) {

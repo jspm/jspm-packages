@@ -16,8 +16,9 @@ import {
   MAYBE_README_FILES,
   NPM_PROVIDER_URL,
   PACKAGE_BASE_PATH,
+  SEARCH_RESULT_DEFAULT_PAGE_SIZE as PAGE_SIZE
 } from "#constants";
-import { parsePackageNameVersion, removeSlashes } from "#functions";
+import { parsePackageNameVersion, removeSlashes, getSearchResult } from "#functions";
 import { HomeSSR } from "#home-ssr";
 import { NotFoundSSR } from "#404-ssr";
 import { ServerErrorSSR } from "#500-ssr";
@@ -493,24 +494,6 @@ function requestHandlerPackage(request: Request): Promise<Response> {
     return redirectToJSPMPackageVersion(packageNameVersion.name);
   }
   return renderPackagePage(packageNameVersion);
-}
-
-// https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
-const PAGE_SIZE = 20;
-
-async function getSearchResult(q = "", keyword = "", page = 1) {
-  try {
-    const response = await fetch(
-      `https://registry.npmjs.org/-/v1/search?text=${q}${
-        q ? "&" : ""
-      }keywords:${keyword}&not:insecure&maintenance=1.0&quality=1.0&popularity=1.0${
-        page > 1 ? `&from=${(page - 1) * PAGE_SIZE}` : ""
-      }`
-    );
-    return response.json();
-  } catch (error) {
-    throw error;
-  }
 }
 
 async function requestHandlerSearch(request: Request): Promise<Response> {
