@@ -292,7 +292,7 @@ class DOM extends Component {
   };
 
   handleNPMSearch = async (event: InputEvent) => {
-    const { value } = event.currentTarget;
+    const { value } = event?.currentTarget;
     console.log(value);
 
     const { npmSearch } = this.store.state;
@@ -306,16 +306,17 @@ class DOM extends Component {
     }
 
     const result = await getSearchResult(value);
+
     this.store.setState({
       ...this.store.state,
       searchTerm: value,
       npmSearch: { ...npmSearch, [value]: result },
     });
+
     return result;
   };
 
   didMount() {
-    console.log("mounted");
     Promise.all([
       this.togglePagewidth(),
       hydrateAll({

@@ -16,9 +16,13 @@ import {
   MAYBE_README_FILES,
   NPM_PROVIDER_URL,
   PACKAGE_BASE_PATH,
-  SEARCH_RESULT_DEFAULT_PAGE_SIZE as PAGE_SIZE
+  SEARCH_RESULT_DEFAULT_PAGE_SIZE as PAGE_SIZE,
 } from "#constants";
-import { parsePackageNameVersion, removeSlashes, getSearchResult } from "#functions";
+import {
+  parsePackageNameVersion,
+  removeSlashes,
+  getSearchResult,
+} from "#functions";
 import { HomeSSR } from "#home-ssr";
 import { NotFoundSSR } from "#404-ssr";
 import { ServerErrorSSR } from "#500-ssr";
@@ -92,11 +96,41 @@ async function requestHandlerHome() {
       .pipeThrough(new TextDecoderStream())
       .pipeThrough(
         new TransformStream({
-          transform: (chunk, controller) => {
+          transform: async (chunk, controller) => {
             const PLACEHOLDER = "<!-- __CONTENT__ -->";
 
             if (chunk.includes(PLACEHOLDER)) {
-              const content = renderSSR(<HomeSSR />);
+              const templatePropExampleBrowserInputFileURL = new URL(
+                "example-browser.html",
+                import.meta.url
+              );
+
+              const templatePropExampleBrowserOutputFileURL = new URL(
+                "../lib/example-browser.html",
+                import.meta.url
+              );
+
+              const [
+                templatePropExampleBrowserInputFileResponse,
+                templatePropExampleBrowserOutputFileResponse,
+              ] = await Promise.all([
+                fetch(templatePropExampleBrowserInputFileURL),
+                fetch(templatePropExampleBrowserOutputFileURL),
+              ]);
+
+              const templatePropExampleBrowserInput =
+                await templatePropExampleBrowserInputFileResponse.text();
+              const templatePropExampleBrowserOutput =
+                await templatePropExampleBrowserOutputFileResponse.text();
+
+              const content = renderSSR(
+                <HomeSSR
+                  exampleBrowser={{
+                    input: templatePropExampleBrowserInput,
+                    output: templatePropExampleBrowserOutput,
+                  }}
+                />
+              );
               controller.enqueue(chunk.replace(PLACEHOLDER, content));
             } else {
               controller.enqueue(chunk);
@@ -273,7 +307,7 @@ async function getReadmeContent(baseURL: string) {
         return readme.status === 200 || readme.status === 304;
       }
     );
-    return (validReadmeFileContent?.text()) || "";
+    return validReadmeFileContent?.text() || "";
   } catch (error) {
     throw error;
   }

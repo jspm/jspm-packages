@@ -1,5 +1,5 @@
 import { SEARCH_RESULT_DEFAULT_PAGE_SIZE as PAGE_SIZE } from "#constants";
-import type { PackageDescriptor } from "#types";
+import type { PackageDescriptor } from "./types.ts";
 
 function fromPkgStr(pkg: string) {
   const versionIndex = pkg.indexOf("@", 1);

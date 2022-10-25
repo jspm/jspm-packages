@@ -1,0 +1,19 @@
+<html>
+<head>
+  <title>Rive Hello World</title>
+</head>
+
+<body>
+  <canvas id="canvas" width="500" height="500"></canvas>
+
+  <script>
+    import rive from "@rive-app/canvas";
+
+    new rive.Rive({
+      src: "https://cdn.rive.app/animations/vehicles.riv",
+      canvas: document.getElementById("canvas"),
+      autoplay: true
+    });
+  </script>
+</body>
+</html>

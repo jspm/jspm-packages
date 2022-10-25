@@ -75,6 +75,72 @@ jspm-packages-home main .jspm-packages-home-features {
 jspm-packages-home main .jspm-packages-home-features article {
   max-width: 350px;
 }
+
+jspm-packages-home jspm-packages-examples > section {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 2fr);
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  margin-top: 50px;
+  border-top: 5px;
+}
+
+jspm-packages-home jspm-packages-examples > section .importmap {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  --token-6169be82-135f-4fbf-89fd-b7eef3c0d1e9: rgb(249, 229, 102);
+  --token-fce07394-c8a1-4b52-a376-328fb742f7a2: rgb(194, 190, 169);
+  --token-9b2bf856-2c00-41ed-908b-8737b54e381d: rgb(153, 153, 153);
+  --token-aa839e54-d8fe-455c-80fc-6db74c1beb59: rgb(85, 85, 85);
+  --token-e40f9096-a3ed-4e72-948d-6eb5a5603885: rgba(255, 255, 255, 0.6);
+  --framer-aspect-ratio-supported: auto;
+  box-sizing: border-box;
+  -webkit-font-smoothing: inherit;
+  pointer-events: unset;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  place-items: center;
+  place-content: center;
+  transform: rotateX(2deg) rotateY(-12deg);
+  z-index: 100;
+  outline: 1px solid transparent;
+  transform-origin: 50% 50% 0;
+}
+jspm-packages-home jspm-packages-examples > section .importmap pre {
+  transform: rotateX(2deg) rotateY(-12deg);
+  transform-origin: 50% 50% 0;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 10px 20px 30px 0px rgba(0, 0, 0, 0.1);
+}
+
+jspm-packages-home jspm-packages-examples > section .generator-button {
+  text-align: center;
+}
+
+jspm-packages-home jspm-packages-examples > section button.generate {
+  height: 100px;
+  width: 100px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+  background-size: 100% 100%;
+  background-color: transparent;
+  border: none;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%22114%22%20height%3D%22129%22%3E%3Cpath%20d%3D%22M%2055.798%2028.925%20C%2056.744%2028.37%2057.916%2028.376%2058.857%2028.939%20L%2087.041%2045.817%20C%2087.946%2046.359%2088.5%2047.337%2088.5%2048.391%20L%2088.5%2081.623%20C%2088.5%2082.695%2087.928%2083.685%2087%2084.221%20L%2058.816%20100.496%20C%2057.896%20101.027%2056.764%20101.033%2055.839%20100.51%20L%2027.023%2084.216%20C%2026.082%2083.684%2025.5%2082.686%2025.5%2081.605%20L%2025.5%2048.41%20C%2025.5%2047.345%2026.064%2046.36%2026.983%2045.822%20Z%22%20fill%3D%22%23fef8dc%22%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M%2057%2037.5%20L%2072%2046.5%20L%2057%2055%20L%2041.5%2046.5%20Z%22%20fill%3D%22var(--token-6169be82-135f-4fbf-89fd-b7eef3c0d1e9%2C%20rgb(249%2C%20229%2C%20102))%20%2F*%20%7B%26quot%3Bname%26quot%3B%3A%26quot%3BYellow%26quot%3B%7D%20*%2F%22%20stroke-width%3D%222.65%22%20stroke%3D%22var(--token-6169be82-135f-4fbf-89fd-b7eef3c0d1e9%2C%20rgb(249%2C%20229%2C%20102))%20%2F*%20%7B%26quot%3Bname%26quot%3B%3A%26quot%3BYellow%26quot%3B%7D%20*%2F%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M%2080.86%2061.175%20L%2065.616%2069.82%20L%2065.616%2087.108%20L%2080.86%2077.799%20Z%22%20fill%3D%22var(--token-6169be82-135f-4fbf-89fd-b7eef3c0d1e9%2C%20rgb(249%2C%20229%2C%20102))%20%2F*%20%7B%26quot%3Bname%26quot%3B%3A%26quot%3BYellow%26quot%3B%7D%20*%2F%22%20stroke-width%3D%222.65%22%20stroke%3D%22var(--token-6169be82-135f-4fbf-89fd-b7eef3c0d1e9%2C%20rgb(249%2C%20229%2C%20102))%20%2F*%20%7B%26quot%3Bname%26quot%3B%3A%26quot%3BYellow%26quot%3B%7D%20*%2F%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M%2033.14%2061.175%20L%2048.384%2069.82%20L%2048.384%2087.108%20L%2033.14%2077.799%20Z%22%20fill%3D%22var(--token-6169be82-135f-4fbf-89fd-b7eef3c0d1e9%2C%20rgb(249%2C%20229%2C%20102))%20%2F*%20%7B%26quot%3Bname%26quot%3B%3A%26quot%3BYellow%26quot%3B%7D%20*%2F%22%20stroke-width%3D%222.65%22%20stroke%3D%22var(--token-6169be82-135f-4fbf-89fd-b7eef3c0d1e9%2C%20rgb(249%2C%20229%2C%20102))%20%2F*%20%7B%26quot%3Bname%26quot%3B%3A%26quot%3BYellow%26quot%3B%7D%20*%2F%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fpath%3E%3Cg%3E%3Cdefs%3E%3Cpath%20d%3D%22M%2054.97%2029.116%20C%2056.222%2028.383%2057.774%2028.39%2059.019%2029.134%20L%2086.215%2045.389%20C%2087.416%2046.107%2088.151%2047.403%2088.151%2048.802%20L%2088.151%2080.821%20C%2088.151%2082.242%2087.392%2083.556%2086.16%2084.266%20L%2058.965%2099.94%20C%2057.747%20100.642%2056.249%20100.648%2055.025%2099.957%20L%2027.208%2084.26%20C%2025.959%2083.555%2025.186%2082.231%2025.186%2080.796%20L%2025.186%2048.827%20C%2025.186%2047.414%2025.935%2046.108%2027.154%2045.395%20Z%20M%2025.186%2047.211%20L%2057%2064.5%20L%2088.151%2046.546%20M%2057%2063.835%20L%2057%20100.407%22%20id%3D%22a1067z%22%3E%3C%2Fpath%3E%3Cfilter%20id%3D%22a1069z%22%20x%3D%22-61.0%25%22%20y%3D%22-53.6%25%22%20width%3D%22220.0%25%22%20height%3D%22205.4%25%22%20filterUnits%3D%22objectBoundingBox%22%3E%3CfeOffset%20dx%3D%220%22%20dy%3D%220%22%20in%3D%22SourceAlpha%22%20result%3D%22a1071z%22%3E%3C%2FfeOffset%3E%3CfeGaussianBlur%20stdDeviation%3D%227.955%22%20in%3D%22a1071z%22%20result%3D%22a1072z%22%3E%3C%2FfeGaussianBlur%3E%3CfeColorMatrix%20color-interpolation-filters%3D%22sRGB%22%20values%3D%220%200%200%200%200.976%200%200%200%200%200.898%200%200%200%200%200.4%200%200%200%201%200%22%20type%3D%22matrix%22%20in%3D%22a1072z%22%20result%3D%22a1073z%22%3E%3C%2FfeColorMatrix%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cg%20filter%3D%22url(%23a1069z)%22%3E%3Cuse%20stroke-width%3D%222.65%22%20stroke%3D%22black%22%20fill%3D%22black%22%20fill-opacity%3D%220%22%20stroke-opacity%3D%221%22%20xlink%3Ahref%3D%22%23a1067z%22%20clip-path%3D%22url(%23a1068z)%22%3E%3C%2Fuse%3E%3C%2Fg%3E%3Cuse%20xlink%3Ahref%3D%22%23a1067z%22%20fill%3D%22transparent%22%20clip-path%3D%22url(%23a1068z)%22%20stroke-width%3D%222.65%22%20stroke%3D%22var(--token-6169be82-135f-4fbf-89fd-b7eef3c0d1e9%2C%20rgb(249%2C%20229%2C%20102))%20%2F*%20%7B%26quot%3Bname%26quot%3B%3A%26quot%3BYellow%26quot%3B%7D%20*%2F%22%3E%3C%2Fuse%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* jspm-packages-home .example button.generate:hover{
+  transform: rotate(120deg) translateZ(0px)
+} */
 /* @media (min-width: 768px) {
   jspm-packages-home main section {
     display: flex;
