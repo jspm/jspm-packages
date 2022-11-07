@@ -1,5 +1,5 @@
 /** @jsx h */
-import { h } from "nano-jsx";
+import { h, Fragment } from "nano-jsx";
 
 type Prop = {
   browser?: {
@@ -10,29 +10,22 @@ type Prop = {
 
 function Examples({ browser }: Prop) {
   return (
-    <section class="example">
-      <div>
-        <h3>
-          <a href="https://marketplace.visualstudio.com/items?itemName=JSPM.jspm-vscode">
-            JSPM Generator VS Code plugin
-          </a>{" "}
-        </h3>
-        <p>
-          scans HTML for javascipt and injects updated importmap and a shim for
-          browsers without importmap support.
-        </p>
-        <pre>
-          <code class="language-markup">{browser?.input}</code>
-        </pre>
-      </div>
-      <div class="generator-button">
-        <button class="generate"></button>
-      </div>
-      <div>
-        <pre>
-          <code class="language-markup">{browser?.output}</code>
-        </pre>
-      </div>
+    <section class="examples">
+      <h1>Liberate your modules with JSPM CDN.</h1>
+      <article class="example">
+        <jspm-packages-example-browser data-input={browser?.input}>
+          <div class="example-browser-input">
+            <pre>
+              <code class="language-markup">{browser?.input}</code>
+            </pre>
+          </div>
+        </jspm-packages-example-browser>
+
+        <jspm-packages-generator-button>
+          <button></button>
+        </jspm-packages-generator-button>
+        <jspm-packages-example-render id="container">Render</jspm-packages-example-render>
+      </article>
     </section>
   );
 }
