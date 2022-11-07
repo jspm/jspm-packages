@@ -44,6 +44,7 @@ const staticResources = {
   "/search.css": "./src/search.css",
   "/404.css": "./src/404.css",
   "/search.html": "./lib/search.html",
+  "/example-browser.html": "./lib/example-browser.html",
   "/favicon.ico": "./favicon.ico",
   "/package.json": "./package.json",
   ...JSON.parse(staticResourcesFile),

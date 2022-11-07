@@ -76,7 +76,7 @@ jspm-packages-home main .jspm-packages-home-features article {
   max-width: 350px;
 }
 
-jspm-packages-home jspm-packages-examples > section {
+jspm-packages-home jspm-packages-examples .examples .example{
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 2fr);
   align-items: center;
@@ -85,6 +85,14 @@ jspm-packages-home jspm-packages-examples > section {
   margin-top: 50px;
   border-top: 5px;
 }
+
+/* jspm-packages-home jspm-packages-examples > section span:not(.script) {
+  opacity: 0.75;
+}
+
+jspm-packages-home jspm-packages-examples > section .script span {
+  opacity: 1;
+} */
 
 jspm-packages-home jspm-packages-examples > section .importmap {
   font-family: "Inter", sans-serif;
@@ -116,12 +124,16 @@ jspm-packages-home jspm-packages-examples > section .importmap pre {
   border-radius: 20px;
   box-shadow: 10px 20px 30px 0px rgba(0, 0, 0, 0.1);
 }
+jspm-packages-home jspm-packages-examples > section pre{
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 15px;
+}
 
-jspm-packages-home jspm-packages-examples > section .generator-button {
+jspm-packages-home jspm-packages-examples > section jspm-packages-generator-button {
   text-align: center;
 }
 
-jspm-packages-home jspm-packages-examples > section button.generate {
+jspm-packages-home jspm-packages-examples > section jspm-packages-generator-button > button {
   height: 100px;
   width: 100px;
   image-rendering: pixelated;

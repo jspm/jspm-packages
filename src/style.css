@@ -47,6 +47,7 @@ pre {
 
 code,
 .code,
+.cm-editor,
 code[class*="language-"],
 pre[class*="language-"] {
   font-family: "Source Code Pro", monospace;

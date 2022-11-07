@@ -145,7 +145,11 @@
       "default": "./src/score.tsx"
     },
     "#types": "./src/types.ts",
-    "#static-resources": "./lib/static-resources.json"
+    "#static-resources": "./lib/static-resources.json",
+    "#theme-codemirror-jspm-dark": {
+      "browser": "./lib/theme-codemirror-jspm-dark.js",
+      "default": "./src/theme-codemirror-jspm-dark.ts"
+    }
   },
   "exports": {
     ".": {
@@ -162,6 +166,9 @@
     },
     "./package-dom": {
       "browser": "./lib/package-dom.js"
+    },
+    "./sandbox": {
+      "browser": "./lib/sandbox.js"
     },
     "./search-dom": {
       "browser": "./lib/search-dom.js"
