@@ -46,6 +46,7 @@ const htmlSource = input || await getSampleCode();
 
 const doc = await getDoc(htmlSource);
 
+renderExample(doc);
 mountElement.innerHTML = "";
 
 const editor = new EditorView({

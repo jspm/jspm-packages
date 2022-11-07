@@ -93,7 +93,9 @@ jspm-packages-home jspm-packages-examples .examples .example{
 jspm-packages-home jspm-packages-examples > section .script span {
   opacity: 1;
 } */
-
+jspm-packages-home jspm-packages-examples jspm-packages-example-render {
+  height: 100%;
+}
 jspm-packages-home jspm-packages-examples > section .importmap {
   font-family: "Inter", sans-serif;
   font-size: 12px;
