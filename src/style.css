@@ -26,7 +26,7 @@ h4,
 h5,
 h6 {
   font-family: "Roboto", sans-serif;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
 }
 h2 {
   font-size: var(--step-3);
@@ -47,6 +47,7 @@ pre {
 
 code,
 .code,
+.cm-editor,
 code[class*="language-"],
 pre[class*="language-"] {
   font-family: "Source Code Pro", monospace;
@@ -56,7 +57,7 @@ pre[class*="language-"] {
 
 body {
   font-family: "Inter", sans-serif;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   font-size: var(--step--1);
 }
 
@@ -411,7 +412,7 @@ jspm-packages-importmap-dialog dialog .importmap-text:hover .link-copy {
 
 jspm-packages-importmap-dialog dialog header {
   font-family: "Roboto" sans-serif;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   font-size: 16px;
   margin-bottom: var(--dl-space-space-unit);
 }
@@ -450,7 +451,6 @@ jspm-packages-importmap-dialog
     no-repeat;
   padding-left: 20px;
 }
-
 
 jspm-packages-importmap-dialog dialog details summary,
 jspm-importmap-entry-summary {
@@ -551,4 +551,70 @@ jspm-importmap-entry button {
 }
 .package-files li {
   line-height: 1.3;
+}
+
+jspm-packages-search-suggestions dialog {
+  margin-top: -30px;
+  box-shadow: rgb(0 0 0 / 24%) 0px 3px 8px;
+  border: none;
+  max-height: 300px;
+  overflow-y: scroll;
+}
+@media (min-width: 768px) {
+  jspm-packages-search-suggestions dialog {
+    margin-top: -50px;
+    min-width: 650px;
+
+  }
+}
+
+jspm-packages-search-suggestion article {
+  margin-bottom: 20px;
+}
+
+jspm-packages-search-suggestion article header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+jspm-packages-search-suggestion h5 {
+  margin: 0;
+  font-size: var(--step--1);
+}
+
+jspm-packages-search-suggestion jspm-packages-package-links ul {
+  display: flex;
+  list-style: none;
+  justify-content: center;
+  margin: 10px 0;
+  padding: 0;
+  align-items: center;
+  gap: 20px;
+}
+
+jspm-packages-search-suggestion jspm-packages-package-highlights ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  font-size: var(--step--2);
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  font-family: "Sen", sans-serif;
+}
+jspm-packages-search-suggestion
+  jspm-packages-package-highlights
+  ul
+  li
+  + li:before {
+  content: "|";
+  margin-right: 10px;
 }

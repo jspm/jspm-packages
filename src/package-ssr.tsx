@@ -2,7 +2,7 @@
 
 import { h } from "nano-jsx";
 import { Package } from "#package";
-import type { Maintainer, ExportsTarget } from "#types";
+import type { Maintainer, ExportsTarget } from "./types.ts";
 
 type Prop = {
   created: string;

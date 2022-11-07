@@ -4,16 +4,20 @@
 /// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
 
 import { h, hydrate, Component } from "nano-jsx";
+import { Generator } from "@jspm/generator";
 import { store } from "#store";
 import type { ENV, Store } from "#store";
-import { fromPkgStrToPin, sortArray } from "#functions";
+import { fromPkgStrToPin, sortArray, getSearchResult } from "#functions";
 import { ImportmapToggleButton } from "#importmap-toggle-button";
 import type { ImportmapToggleButtonProp } from "#importmap-toggle-button";
 import { ImportMapDialog } from "#importmap-dialog";
 import type { ImportMapDialogProp } from "#importmap-dialog";
 import { GeneratorLink } from "#generator-link";
 import type { GeneratorLinkProp } from "#generator-link";
-import { Generator } from "@jspm/generator";
+import { SearchForm } from "#search-form";
+import type { SearchFormProps } from "#search-form";
+import { SearchSuggestions } from "#search-suggestions";
+import type { SearchSuggestionsProps } from "#search-suggestions";
 
 function hydrateImportmapToggleButton({
   dependencyCount,
@@ -79,16 +83,42 @@ function hydrateGeneratorLink({ generatorHash }: GeneratorLinkProp) {
   }
 }
 
+function hydrateSearchForm({ handleNPMSearch, searchTerm }: SearchFormProps) {
+  const mountElement = document.querySelector("jspm-packages-search-form");
+
+  if (mountElement) {
+    return hydrate(
+      <SearchForm onInput={handleNPMSearch} value={searchTerm} />,
+      mountElement
+    );
+  }
+}
+
+function hydrateSearchSuggestion(searchResult: SearchSuggestionsProps) {
+  const mountElement = document.querySelector(
+    "jspm-packages-search-suggestions"
+  );
+
+  if (mountElement && searchResult?.objects) {
+    return hydrate(
+      <SearchSuggestions objects={searchResult?.objects} />,
+      mountElement
+    );
+  }
+}
+
 function hydrateAll({
   state,
   toggleExportSelection,
   toggleImportmapDialog,
   toggleDependencyDetail,
+  handleNPMSearch,
 }: {
   state: Store;
   toggleExportSelection: (event: MouseEvent) => void;
   toggleImportmapDialog: (event: MouseEvent) => void;
   toggleDependencyDetail: (event: MouseEvent) => void;
+  handleNPMSearch: (Event: InputEvent) => void;
 }) {
   const {
     dependencies,
@@ -97,6 +127,8 @@ function hydrateAll({
     importMap,
     importmapShareLink,
     importmapDialogOpenDependencyDetails,
+    npmSearch,
+    searchTerm,
   } = state;
 
   Promise.all([
@@ -116,6 +148,8 @@ function hydrateAll({
       toggleExportSelection,
       toggleDependencyDetail,
     }),
+    hydrateSearchForm({ handleNPMSearch, searchTerm }),
+    hydrateSearchSuggestion(npmSearch[searchTerm]),
   ]);
 }
 
@@ -257,8 +291,32 @@ class DOM extends Component {
     });
   };
 
+  handleNPMSearch = async (event: InputEvent) => {
+    const { value } = event?.currentTarget;
+    console.log(value);
+
+    const { npmSearch } = this.store.state;
+
+    if (value in npmSearch) {
+      this.store.setState({
+        ...this.store.state,
+        searchTerm: value,
+      });
+      return npmSearch[value];
+    }
+
+    const result = await getSearchResult(value);
+
+    this.store.setState({
+      ...this.store.state,
+      searchTerm: value,
+      npmSearch: { ...npmSearch, [value]: result },
+    });
+
+    return result;
+  };
+
   didMount() {
-    console.log("mounted");
     Promise.all([
       this.togglePagewidth(),
       hydrateAll({
@@ -266,6 +324,7 @@ class DOM extends Component {
         toggleExportSelection: this.toggleExportSelection,
         toggleImportmapDialog: this.toggleImportmapDialog,
         toggleDependencyDetail: this.toggleDependencyDetail,
+        handleNPMSearch: this.handleNPMSearch,
       }),
       this.reinstallImportmap(),
     ]);
@@ -341,6 +400,12 @@ class DOM extends Component {
           toggleExportSelection: this.toggleExportSelection,
           toggleDependencyDetail: this.toggleDependencyDetail,
         });
+      }
+      if (
+        JSON.stringify(newState.npmSearch[newState.searchTerm]) !==
+        JSON.stringify(prevState.npmSearch[prevState.searchTerm])
+      ) {
+        hydrateSearchSuggestion(newState.npmSearch[newState.searchTerm]);
       }
     });
   }

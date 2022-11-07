@@ -34,7 +34,8 @@ const initialState = {
   sandboxHashes: {},
   importMap: {},
   importmapDialogOpenDependencyDetails: [],
-  jspmGeneratorState
+  jspmGeneratorState,
+  npmSearch: {}
 };
 
 type Store = typeof initialState;

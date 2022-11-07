@@ -7,7 +7,7 @@ extensions = ['chomp@0.1:swc', 'chomp@0.1:jspm', 'chomp@0.1:npm']
 auto-install = true
 
 [[task]]
-deps = ['lib/**/*.html', 'deno.importmap', 'lib/static-resources.json']
+deps = ['copy', 'lib/static-resources.json', 'lib/**/*.html', 'deno.importmap']
 name = 'build'
 
 [[task]]
@@ -40,6 +40,7 @@ run = 'rm deno.importmap ; rm lib/* ;'
 validation = 'none'
 
 [[task]]
+name = 'copy'
 dep = 'src/#.js'
 run = 'cp $DEP $TARGET'
 target = 'lib/#.js'

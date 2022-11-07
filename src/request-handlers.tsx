@@ -16,8 +16,13 @@ import {
   MAYBE_README_FILES,
   NPM_PROVIDER_URL,
   PACKAGE_BASE_PATH,
+  SEARCH_RESULT_DEFAULT_PAGE_SIZE as PAGE_SIZE,
 } from "#constants";
-import { parsePackageNameVersion, removeSlashes } from "#functions";
+import {
+  parsePackageNameVersion,
+  removeSlashes,
+  getSearchResult,
+} from "#functions";
 import { HomeSSR } from "#home-ssr";
 import { NotFoundSSR } from "#404-ssr";
 import { ServerErrorSSR } from "#500-ssr";
@@ -39,6 +44,7 @@ const staticResources = {
   "/search.css": "./src/search.css",
   "/404.css": "./src/404.css",
   "/search.html": "./lib/search.html",
+  "/example-browser.html": "./lib/example-browser.html",
   "/favicon.ico": "./favicon.ico",
   "/package.json": "./package.json",
   ...JSON.parse(staticResourcesFile),
@@ -91,11 +97,41 @@ async function requestHandlerHome() {
       .pipeThrough(new TextDecoderStream())
       .pipeThrough(
         new TransformStream({
-          transform: (chunk, controller) => {
+          transform: async (chunk, controller) => {
             const PLACEHOLDER = "<!-- __CONTENT__ -->";
 
             if (chunk.includes(PLACEHOLDER)) {
-              const content = renderSSR(<HomeSSR />);
+              const templatePropExampleBrowserInputFileURL = new URL(
+                "example-browser.html",
+                import.meta.url
+              );
+
+              const templatePropExampleBrowserOutputFileURL = new URL(
+                "../lib/example-browser.html",
+                import.meta.url
+              );
+
+              const [
+                templatePropExampleBrowserInputFileResponse,
+                templatePropExampleBrowserOutputFileResponse,
+              ] = await Promise.all([
+                fetch(templatePropExampleBrowserInputFileURL),
+                fetch(templatePropExampleBrowserOutputFileURL),
+              ]);
+
+              const templatePropExampleBrowserInput =
+                await templatePropExampleBrowserInputFileResponse.text();
+              const templatePropExampleBrowserOutput =
+                await templatePropExampleBrowserOutputFileResponse.text();
+
+              const content = renderSSR(
+                <HomeSSR
+                  exampleBrowser={{
+                    input: templatePropExampleBrowserInput,
+                    output: templatePropExampleBrowserOutput,
+                  }}
+                />
+              );
               controller.enqueue(chunk.replace(PLACEHOLDER, content));
             } else {
               controller.enqueue(chunk);
@@ -272,7 +308,7 @@ async function getReadmeContent(baseURL: string) {
         return readme.status === 200 || readme.status === 304;
       }
     );
-    return (validReadmeFileContent?.text()) || "";
+    return validReadmeFileContent?.text() || "";
   } catch (error) {
     throw error;
   }
@@ -493,24 +529,6 @@ function requestHandlerPackage(request: Request): Promise<Response> {
     return redirectToJSPMPackageVersion(packageNameVersion.name);
   }
   return renderPackagePage(packageNameVersion);
-}
-
-// https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
-const PAGE_SIZE = 20;
-
-async function getSearchResult(q = "", keyword = "", page = 1) {
-  try {
-    const response = await fetch(
-      `https://registry.npmjs.org/-/v1/search?text=${q}${
-        q ? "&" : ""
-      }keywords:${keyword}&not:insecure&maintenance=1.0&quality=1.0&popularity=1.0${
-        page > 1 ? `&from=${(page - 1) * PAGE_SIZE}` : ""
-      }`
-    );
-    return response.json();
-  } catch (error) {
-    throw error;
-  }
 }
 
 async function requestHandlerSearch(request: Request): Promise<Response> {

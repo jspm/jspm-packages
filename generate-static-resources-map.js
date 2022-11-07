@@ -47,6 +47,7 @@ const staticResources = {
   ...await generateStaticResourceMap("@jspm/packages/404-dom"),
   ...await generateStaticResourceMap("@jspm/packages/500-dom"),
   ...await generateStaticResourceMap("@jspm/packages/package-dom"),
+  ...await generateStaticResourceMap("@jspm/packages/sandbox"),
   ...await generateStaticResourceMap("@jspm/packages/search-dom")
 }
 const sortedStaticResources = {};

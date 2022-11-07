@@ -2,8 +2,13 @@
 import { Fragment, h } from "nano-jsx";
 import { Header } from "#header";
 import { Search } from "#search";
+import { Examples } from "#examples";
 
-function Home() {
+type Prop = {
+  exampleBrowser?: { input: string; output: string };
+};
+
+function Home({ exampleBrowser }: Prop) {
   return (
     <Fragment>
       <section>
@@ -27,6 +32,11 @@ function Home() {
               A CDN to serve NPM packages as standard ECMA Script &amp;
               Importmaps.
             </h2>
+            
+            <jspm-packages-examples>
+              <Examples browser={exampleBrowser} />
+            </jspm-packages-examples>
+
             <section class="jspm-packages-home-features">
               <article>
                 <h3>Importmap</h3>
@@ -66,3 +76,4 @@ function Home() {
 }
 
 export { Home };
+export type { Prop as HomeProp };

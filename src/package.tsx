@@ -6,7 +6,7 @@ import { Header } from "#header";
 import { Hero } from "#hero";
 import { PackageExports } from "#package-exports";
 
-import type { Maintainer, ExportsTarget } from "#types";
+import type { Maintainer, ExportsTarget } from "./types.ts";
 
 type Prop = {
   createdTime: string;
