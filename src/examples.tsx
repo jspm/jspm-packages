@@ -16,7 +16,7 @@ function Examples({ browser }: Prop) {
         <jspm-packages-example-browser data-input={browser?.input}>
           <div class="example-browser-input">
             <pre>
-              <code class="language-markup">{browser?.input}</code>
+              <code class="language-markup">{browser?.output}</code>
             </pre>
           </div>
         </jspm-packages-example-browser>
