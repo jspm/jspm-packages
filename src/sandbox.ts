@@ -177,20 +177,8 @@ async function renderInput() {
   }
 }
 
-const codeblocks = document.querySelectorAll("jspm-packages-code-block")
-
-function stackUp() {
-  codeblocks.forEach((element) => {
-    element.classList.toggle("high");
-  });
-}
-
 function main() {
   Promise.all([renderInput(), renderOutput()]);
-
-  codeblocks.forEach((element) => {
-    element.addEventListener("click", stackUp);
-  });
 }
 
 export { main };
