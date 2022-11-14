@@ -78,7 +78,7 @@ jspm-packages-home main .jspm-packages-home-features article {
 
 jspm-packages-home jspm-packages-examples .examples .example {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 2fr);
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) minmax(0, 2fr);
   align-items: center;
   justify-content: center;
   align-content: center;
@@ -86,20 +86,40 @@ jspm-packages-home jspm-packages-examples .examples .example {
   border-top: 5px;
 }
 
-jspm-packages-example-browser .browser-control {
+jspm-packages-code-blocks {
+  position: relative;
+}
+
+jspm-packages-code-block .browser-control {
   padding-bottom: 10px;
 }
 
-jspm-packages-home
-  jspm-packages-examples
-  .examples
-  .example
-  jspm-packages-example-browser {
+jspm-packages-code-block {
   background: black;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   border-radius: 15px;
   padding: 20px;
   display: block;
+}
+
+.high{
+  z-index: 5;
+  border: 5px solid var(--dl-color-primary-js-primary);
+}
+
+jspm-packages-code-block:not(.high) .cm-editor{
+  opacity: 0.7;
+}
+
+jspm-packages-code-block:has(jspm-packages-example-browser-input) {
+  position: absolute;
+  bottom: 25px;
+}
+
+jspm-packages-code-block:has(jspm-packages-example-browser-output) {
+  left: 250px;
+  position: relative;
+  /* transform: perspective(1051px) rotateY(30deg); */
 }
 
 /* jspm-packages-home jspm-packages-examples > section span:not(.script) {
@@ -109,9 +129,11 @@ jspm-packages-home
 jspm-packages-home jspm-packages-examples > section .script span {
   opacity: 1;
 } */
+
 jspm-packages-home jspm-packages-examples jspm-packages-example-render {
   height: 100%;
 }
+
 jspm-packages-home jspm-packages-examples > section .importmap {
   font-family: "Inter", sans-serif;
   font-size: 12px;
@@ -135,6 +157,7 @@ jspm-packages-home jspm-packages-examples > section .importmap {
   outline: 1px solid transparent;
   transform-origin: 50% 50% 0;
 }
+
 jspm-packages-home jspm-packages-examples > section .importmap pre {
   transform: rotateX(2deg) rotateY(-12deg);
   transform-origin: 50% 50% 0;
@@ -142,6 +165,7 @@ jspm-packages-home jspm-packages-examples > section .importmap pre {
   border-radius: 20px;
   box-shadow: 10px 20px 30px 0px rgba(0, 0, 0, 0.1);
 }
+
 jspm-packages-home jspm-packages-examples > section pre {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   border-radius: 15px;

@@ -119,7 +119,7 @@ let outputEditor: EditorView;
 
 async function renderOutput() {
   const outputEditorMountElement = document.querySelector(
-    "jspm-packages-example-browser .example-browser-output"
+    "jspm-packages-example-browser-output"
   ) as HTMLElement | null;
 
   if (outputEditorMountElement) {
@@ -130,12 +130,7 @@ async function renderOutput() {
 
     const editor = new EditorView({
       doc: htmlSource,
-      extensions: [
-        basicSetup,
-        languageConf.of(javascript()),
-        autoLanguage,
-        jspmDark,
-      ],
+      extensions: [basicSetup, languageConf.of(html()), autoLanguage, jspmDark],
       parent: outputEditorMountElement,
     });
     outputEditor = editor;
@@ -153,19 +148,11 @@ async function updateDoc(viewUpdate: ViewUpdate) {
     },
   });
   renderExample(insert);
-  // const outputDom = document.querySelector(
-  //   ".example-browser-output .language-markup"
-  // );
-  // outputDom.innerHTML = Prism?.highlight(
-  //   insert,
-  //   Prism?.languages.markup,
-  //   "markup"
-  // );
 }
 
 async function renderInput() {
   const inputEditorMountElement = document.querySelector(
-    "jspm-packages-example-browser .example-browser-input"
+    "jspm-packages-example-browser-input"
   ) as HTMLElement | null;
 
   if (inputEditorMountElement) {
