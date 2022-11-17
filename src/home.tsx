@@ -24,15 +24,15 @@ function Home({ exampleBrowser }: Prop) {
 
         <section>
           <main class="jspm-packages-home-main">
-            <h1>Let's Just Serve Packages and Modules</h1>
-            <jspm-packages-search>
-              <Search />
-            </jspm-packages-search>
             <h2>
               A CDN to serve NPM packages as standard ECMA Script &amp;
               Importmaps.
             </h2>
-            
+
+            <jspm-packages-search>
+              <Search />
+            </jspm-packages-search>
+
             <jspm-packages-examples>
               <Examples browser={exampleBrowser} />
             </jspm-packages-examples>
