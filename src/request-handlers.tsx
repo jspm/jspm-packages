@@ -6,8 +6,8 @@
 /// <reference lib="deno.unstable" />
 /// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
 
-import { contentType } from "https://deno.land/std@0.150.0/media_types/mod.ts";
-import { extname } from "https://deno.land/std@0.150.0/path/mod.ts";
+import { contentType } from "https://deno.land/std@0.170.0/media_types/mod.ts";
+import { extname } from "https://deno.land/std@0.170.0/path/mod.ts";
 import { h, renderSSR, Helmet } from "nano-jsx";
 import dayjs from "dayjs";
 import dayjsPluginRelativeTime from "dayjs/plugin/relativeTime";
