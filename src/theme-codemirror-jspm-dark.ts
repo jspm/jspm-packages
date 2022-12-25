@@ -9,8 +9,8 @@ export const jspmDark = createTheme({
 		caret: '#fd9e02',
 		selection: '#14213d',
 		lineHighlight: '#212c54',
-		gutterBackground: '#14213d',
-		gutterForeground: '#8ecae6',
+		gutterBackground: '#000000',
+		gutterForeground: '#b51fc97d',
 	},
 	styles: [
 		{
@@ -20,6 +20,23 @@ export const jspmDark = createTheme({
 		{
 			tag: t.variableName,
 			color: '#ffbe0b',
+		},
+
+		{
+			tag: t.typeName,
+			color: '#3a86ff',
+		},
+		{
+			tag: t.angleBracket,
+			color: '#06d6a0',
+		},
+		{
+			tag: t.tagName,
+			color: '#ff006e',
+		},
+		{
+			tag: t.attributeName,
+			color: '#fca311',
 		},
 		{
 			tag: [t.string],
@@ -56,22 +73,6 @@ export const jspmDark = createTheme({
 		{
 			tag: t.definition(t.typeName),
 			color: '#fca311',
-		},
-		{
-			tag: t.typeName,
-			color: '#3a86ff',
-		},
-		{
-			tag: t.angleBracket,
-			color: '#06d6a0',
-		},
-		{
-			tag: t.tagName,
-			color: '#ff006e',
-		},
-		{
-			tag: t.attributeName,
-			color: '#fca311',
-		},
+		}
 	],
 });

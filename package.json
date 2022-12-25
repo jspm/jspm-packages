@@ -147,8 +147,8 @@
     "#types": "./src/types.ts",
     "#static-resources": "./lib/static-resources.json",
     "#theme-codemirror-jspm-dark": {
-      "browser": "./lib/theme-codemirror-jspm-dark.js",
-      "default": "./src/theme-codemirror-jspm-dark.ts"
+      "browser": "./lib/theme-codemirror-jspm-dark-1.js",
+      "default": "./src/theme-codemirror-jspm-dark-1.ts"
     },
     "#icon": {
       "browser": "./lib/icon.js",
