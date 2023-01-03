@@ -92,7 +92,7 @@ function SearchResults({
           </jspm-packages-header>
         </section>
 
-        <section>
+        <section class="search-results-wrapper">
           <main>
             {total === 0 ? (
               <jspm-packages-search-no-results>

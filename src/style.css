@@ -57,8 +57,10 @@ pre[class*="language-"] {
 
 body {
   font-family: "Inter", sans-serif;
-  font-family: "Source Sans Pro", sans-serif;
   font-size: var(--step--1);
+  max-width: 1440px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 a {

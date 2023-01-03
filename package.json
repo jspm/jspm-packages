@@ -149,6 +149,10 @@
     "#theme-codemirror-jspm-dark": {
       "browser": "./lib/theme-codemirror-jspm-dark-1.js",
       "default": "./src/theme-codemirror-jspm-dark-1.ts"
+    },
+    "#icon": {
+      "browser": "./lib/icon.js",
+      "default": "./src/icon.tsx"
     }
   },
   "exports": {
