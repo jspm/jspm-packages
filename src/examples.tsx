@@ -11,7 +11,7 @@ type Prop = {
 function Examples({ browser }: Prop) {
   return (
     <section class="examples">
-      <h1>Liberate your modules with JSPM CDN.</h1>
+      <p class="example-copy">Effortlessly access pre-optimized NPM modules as importmaps & ESM, directly in the browser at unmatched scale.</p>
       <article class="example">
         <jspm-packages-code-blocks>
           <jspm-packages-code-block>

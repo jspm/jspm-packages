@@ -14,7 +14,7 @@ html {
 }
 
 h1 {
-  font-size: var(--dl-space-space-twounits);
+  font-size: var(--step-5);
 }
 
 h1 a {
@@ -25,17 +25,18 @@ h2,
 h4,
 h5,
 h6 {
-  font-family: "Roboto", sans-serif;
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: "Inter", "Roboto", sans-serif;
+  /* font-family: "Source Sans Pro", sans-serif; */
 }
 h2 {
-  font-size: var(--step-3);
+  font-size: var(--step-5);
 }
 h3 {
   font-weight: 600;
+  font-size: var(--step-4);
 }
 h4 {
-  font-size: var(--step-1);
+  font-size: var(--step-3);
 }
 pre {
   border: solid 1px black;
@@ -106,13 +107,15 @@ jspm-packages-header header {
 jspm-packages-logo h1 {
   margin-right: var(--dl-space-space-unit);
   text-align: center;
+  margin: 0;
+  font-size: var(--step-2);
 }
 
 jspm-packages-logo h1 a {
   background: url(https://jspm.org/jspm.png) no-repeat left center;
   color: var(--dl-color-gray-black);
   background-size: contain;
-  padding-left: 2.5rem;
+  padding-left: 2.8rem;
 }
 
 jspm-packages-search form {

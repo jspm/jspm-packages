@@ -25,8 +25,10 @@ function Home({ exampleBrowser }: Prop) {
         <section>
           <main class="jspm-packages-home-main">
             <h2>
-              A CDN to serve NPM packages as standard ECMA Script &amp;
-              Importmaps.
+              {/* A CDN to serve NPM packages as standard ECMA Script &amp;
+              Importmaps. */}
+              {/* JSPM CDN: Unleashing the true power of JavaScript development with import maps, ESM and pre-optimized NPM modules, at scale */}
+              JSPM CDN: Unleashing the future of JavaScript development.
             </h2>
 
             <jspm-packages-search>
