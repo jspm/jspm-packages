@@ -1,7 +1,7 @@
 /** @jsx h */
 
 /// <reference lib="dom" />
-/// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
+/// <reference types="https://deno.land/x/nano_jsx@v0.0.35/types.ts" />
 
 import { h } from "nano-jsx";
 
