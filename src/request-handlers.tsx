@@ -59,38 +59,6 @@ const pageServingHeaders = {
     `<https://ga.jspm.io>; rel="preconnect",<https://fonts.googleapis.com>; rel="preconnect", <https://ga.jspm.io/npm:normalize.css@8.0.1/normalize.css>; rel="preload"; as="style", <https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Major+Mono+Display&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Source+Code+Pro&family=Vollkorn&family=Inter:wght@200;400;800&display=swap>; rel="preload"; as="style"`,
 };
 
-// async function generateHTML(
-//   {
-//     template,
-//     body,
-//     head,
-//     footer,
-//   }: {
-//     template: string;
-//     body?: string;
-//     head?: HTMLElement[];
-//     footer?: HTMLElement[];
-//   } = { template: "./shell.html" },
-// ): Promise<string> {
-//   try {
-//     const content = await Deno.readTextFile(template);
-//     const [START, AFTER_HEADER_BEFORE_CONTENT, DOM_SCRIPT, END] = content.split(
-//       /<!-- __[A-Z]*__ -->/i,
-//     );
-//     return [
-//       START,
-//       head?.join("\n"),
-//       AFTER_HEADER_BEFORE_CONTENT,
-//       body,
-//       DOM_SCRIPT,
-//       footer?.join("\n"),
-//       END,
-//     ].join("\n");
-//   } catch (error) {
-//     throw error;
-//   }
-// }
-
 async function requestHandler500(request?: Request) {
   try {
     const templateURL = new URL("../lib/500.html", import.meta.url);
@@ -100,7 +68,7 @@ async function requestHandler500(request?: Request) {
       .pipeThrough(new TextDecoderStream())
       .pipeThrough(
         new TransformStream({
-          transform: (chunk, controller) => {
+          transform(chunk, controller) {
             const PLACEHOLDER = "<!-- __CONTENT__ -->";
 
             if (chunk.includes(PLACEHOLDER)) {
@@ -132,7 +100,7 @@ async function requestHandler404(request?: Request) {
       .pipeThrough(new TextDecoderStream())
       .pipeThrough(
         new TransformStream({
-          transform: (chunk, controller) => {
+          transform(chunk, controller) {
             const PLACEHOLDER = "<!-- __CONTENT__ -->";
 
             if (chunk.includes(PLACEHOLDER)) {
@@ -257,7 +225,7 @@ async function requestHandlerHome(request: Request) {
       .pipeThrough(new TextDecoderStream())
       .pipeThrough(
         new TransformStream({
-          transform: async (chunk, controller) => {
+          async transform(chunk, controller) {
             const PLACEHOLDER = "<!-- __CONTENT__ -->";
 
             if (chunk.includes(PLACEHOLDER)) {
@@ -543,81 +511,6 @@ async function getPackageComponentProps(packageNameVersion: {
   }
 }
 
-// async function renderPackagePage(packageNameVersion: {
-//   name: string;
-//   version: string;
-// }) {
-//   try {
-//     const {
-//       name,
-//       dependencies,
-//       description,
-//       version,
-//       versions,
-//       license,
-//       files,
-//       subpaths,
-//       exports,
-//       readme,
-//       keywords,
-//       downloads,
-//       created,
-//       updated,
-//       createdTime,
-//       updatedTime,
-//       type,
-//       types,
-//       features,
-//       links,
-//       maintainers,
-//       score,
-//       jspmExports,
-//     } = await getPackageComponentProps(packageNameVersion);
-
-//     const app = renderSSR(
-//       <PackageSSR
-//         name={name}
-//         dependencies={dependencies}
-//         description={description}
-//         version={version}
-//         versions={versions}
-//         license={license}
-//         files={files}
-//         subpaths={subpaths}
-//         exports={exports}
-//         readme={readme}
-//         keywords={keywords}
-//         downloads={downloads}
-//         created={created}
-//         updated={updated}
-//         createdTime={createdTime}
-//         updatedTime={updatedTime}
-//         type={type}
-//         types={types}
-//         features={features}
-//         links={links}
-//         maintainers={maintainers}
-//         score={score}
-//         jspmExports={jspmExports}
-//       />,
-//     );
-//     const { body, head, footer } = Helmet.SSR(app);
-//     /* Hack to SSR readme :! */
-//     const html = await generateHTML({
-//       template: "./lib/package.html",
-//       body,
-//       head,
-//       footer,
-//     });
-
-//     return new Response(html, {
-//       headers: pageServingHeaders,
-//     });
-//   } catch (error) {
-//     throw error;
-//   }
-// }
-
 function requestHandlerPackage(request: Request): Promise<Response> {
   const { pathname } = new URL(request.url);
   const [, packagePath] = pathname.split(PACKAGE_BASE_PATH);
@@ -629,45 +522,6 @@ function requestHandlerPackage(request: Request): Promise<Response> {
   }
   return renderPackagePage(request, packageNameVersion);
 }
-
-// async function requestHandlerSearch_(request: Request): Promise<Response> {
-//   try {
-//     const { searchParams } = new URL(request.url);
-
-//     const searchTerm = searchParams.get("q") || "";
-//     const searchKeyword = searchParams.get("keyword") || "";
-//     const page = searchParams.get("page") || "1";
-
-//     const results: Results = searchTerm || searchKeyword
-//       ? await getSearchResult(searchTerm, searchKeyword, parseInt(page))
-//       : { objects: [], total: 0, time: new Date(Date.now()) };
-
-//     const searchResults = renderSSR(
-//       <SearchResultsSSR
-//         {...results}
-//         size={PAGE_SIZE}
-//         searchTerm={searchTerm}
-//         searchKeyword={searchKeyword}
-//         page={parseInt(page)}
-//       />,
-//     );
-
-//     const { body, head, footer } = Helmet.SSR(searchResults);
-//     const html = await generateHTML({
-//       template: "./lib/search.html",
-//       body,
-//       head,
-//       footer,
-//     });
-
-//     return new Response(html, {
-//       headers: pageServingHeaders,
-//     });
-//   } catch (error) {
-//     console.error(error.message || error.toString());
-//     return requestHandler500(request);
-//   }
-// }
 
 async function requestHandlerSearch(request: Request) {
   try {
