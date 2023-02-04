@@ -35,7 +35,8 @@ const initialState = {
   importMap: {},
   importmapDialogOpenDependencyDetails: [],
   jspmGeneratorState,
-  npmSearch: {}
+  npmSearch: {},
+  sandboxActiveTab: "nft"
 };
 
 type Store = typeof initialState;

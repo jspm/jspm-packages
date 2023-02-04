@@ -8,6 +8,7 @@ import { html, htmlLanguage } from "@codemirror/lang-html";
 import { javascript } from "@codemirror/lang-javascript";
 import { Generator } from "@jspm/generator";
 import { jspmDark } from "#theme-codemirror-jspm-dark";
+import {generateTreeFromDOM} from '#domtree'
 
 const generator = new Generator({
   env: ["browser", "production"],
@@ -148,6 +149,7 @@ async function updateDoc(viewUpdate: ViewUpdate) {
     },
   });
   renderExample(insert);
+  generateTreeFromDOM(insert)
 }
 
 async function renderInput() {

@@ -18,6 +18,7 @@ import { SearchForm } from "#search-form";
 import type { SearchFormProps } from "#search-form";
 import { SearchSuggestions } from "#search-suggestions";
 import type { SearchSuggestionsProps } from "#search-suggestions";
+import { main as startSandbox } from '#sandbox';
 
 function hydrateImportmapToggleButton({
   dependencyCount,
@@ -327,6 +328,7 @@ class DOM extends Component {
         handleNPMSearch: this.handleNPMSearch,
       }),
       this.reinstallImportmap(),
+      startSandbox()
     ]);
     // this.generateSandboxURL();
     // subscribe to store changes

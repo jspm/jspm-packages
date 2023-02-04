@@ -69,7 +69,7 @@
     "https://ga.jspm.io/npm:dayjs@1.11.7/dayjs.min.js": "acac1182efc2557739c9ee5ef583c3427ba632ecd43856efd1617db92fac949f",
     "https://ga.jspm.io/npm:dayjs@1.11.7/plugin/relativeTime.js": "e2bb3eb4f0beeb1eff53fd4ca20047cd055cc286066e566c0cdd41f876133d66",
     "https://ga.jspm.io/npm:he@1.2.0/he.js": "b34161ac2938f972efc777c1d208816c61d5709218b347170a2ca9889abda740",
-    "https://ga.jspm.io/npm:marked@4.2.5/lib/marked.esm.js": "9d5f34360a5a998e124841829f7fdb8b75623e7d19eca0aee7adb0eab4ed46e8",
+    "https://ga.jspm.io/npm:marked@4.2.12/lib/marked.esm.js": "9d5f34360a5a998e124841829f7fdb8b75623e7d19eca0aee7adb0eab4ed46e8",
     "https://ga.jspm.io/npm:prismjs@1.29.0/components/prism-bash.js": "f20d6706606329ae51c13c864514e7aa5fd32b2274ed152c9c47f597016a3893",
     "https://ga.jspm.io/npm:prismjs@1.29.0/components/prism-json.js": "bd1b96161f1bb6b52fcd50b30c38a2a94f0b88d870480ec751a528d0860217c9",
     "https://ga.jspm.io/npm:prismjs@1.29.0/components/prism-jsx.js": "772ba0df89cc416453163fdc23d48af64ee1fca4464ebce5181ae74b4e8ee80e",
