@@ -9,11 +9,11 @@ function ExamplesNavigation({ activate }: Prop) {
   return (
     <aside>
       <ul>
-        <li id="sandbox-nft" onClick={activate}>Overview</li>
-        <li id="sandbox-render" onClick={activate}>Render</li>
-        <li id="sandbox-code" onClick={activate}>Source</li>
+        <li id="sandbox-input" onClick={activate}>Input Source</li>
+        <li id="sandbox-output" onClick={activate}>Output Source</li>
+        <li id="sandbox-render-html" onClick={activate}>Render</li>
+        <li id="sandbox-render-importmap" onClick={activate}>Importmap</li>
       </ul>
-      <figure id="domtree" />
     </aside>
   );
 }

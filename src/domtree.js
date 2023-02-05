@@ -94,10 +94,14 @@ const getRandomColor = function () {
   return { bgColor: bgColor, leafColor: leafColor, gradient: gradient };
 };
 
-const svgWidth = document.documentElement.clientWidth > document.documentElement.clientHeight
-  ? document.documentElement.clientHeight * 0.7
-  : document.documentElement.clientWidth * 0.8;
-const svgHeight = svgWidth;
+// const svgWidth = document.documentElement.clientWidth > document.documentElement.clientHeight
+//   ? document.documentElement.clientHeight * 0.7
+//   : document.documentElement.clientWidth * 0.8;
+// const svgHeight = svgWidth;
+
+const svgParent = document.querySelector("dom-tree-container");
+const svgWidth = svgParent.clientWidth;
+const svgHeight = svgWidth * 0.75;
 let allTrees = [];
 const leafCoordinates = [];
 const rootTree = Tree(svgWidth / 2, svgHeight, svgWidth / 200, "black");
@@ -153,13 +157,13 @@ const assignLeaves = function () {
 const drawTree = function (allTrees, leafCoordinates) {
   //Uses function in data to save a color object.
   const color = getRandomColor();
-  d3.selectAll("#domtree svg").remove()
+  d3.selectAll("#domtree svg").remove();
   //Adding svg canvas.
   const svg = d3.select("#domtree").append("svg")
     .attr("class", "tree")
     .attr("width", svgWidth)
     .attr("height", svgHeight)
-    .style("background", 'gold'/* color.bgColor */);
+   // .style("background", 'gold'/* color.bgColor */);
   //Drawing branches.
   svg.selectAll("rect").data(allTrees)
     .enter().append("rect")
@@ -185,6 +189,7 @@ const drawTree = function (allTrees, leafCoordinates) {
     .attr("transform", function (d) {
       return "rotate(" + d.angle + " " + d.root.x + " " + d.root.y + ")";
     });
+    
   //Drawing leaves.
   svg.selectAll("circle").data(leafCoordinates)
     .enter().append("circle")
@@ -199,7 +204,7 @@ const drawTree = function (allTrees, leafCoordinates) {
     .attr("r", function (d) {
       return findRandom(svgWidth / 100, svgWidth / 500);
     })
-    .attr("fill", 'red' /* color.leafColor */);
+    .attr("fill", color.leafColor);
 };
 
 export { generateTreeFromDOM }

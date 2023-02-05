@@ -6,7 +6,7 @@ type Prop = {
     input: string;
     output: string;
   };
-  sandboxActiveTab?: "nft" | "render";
+  sandboxActiveTab?: string;
 };
 
 function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
@@ -16,11 +16,15 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
         Effortlessly access pre-optimized NPM modules as importmaps & ESM,
         directly in the browser at unmatched scale.
       </p>
-      <jspm-packages-example-navigation>
-      </jspm-packages-example-navigation>
       <article class="example">
+        <dom-tree-container>
+          <figure id="domtree" />
+        </dom-tree-container>
         <jspm-packages-code-blocks>
-          {/* <jspm-packages-code-block>
+          <jspm-packages-example-navigation>
+          </jspm-packages-example-navigation>
+          {
+            /* <jspm-packages-code-block>
             <jspm-packages-browser-control>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +68,8 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
                 <code class="language-markup">{browser?.output}</code>
               </pre>
             </jspm-packages-example-browser-output>
-          </jspm-packages-code-block> */}
+          </jspm-packages-code-block> */
+          }
 
           <jspm-packages-code-block class="high">
             <jspm-packages-browser-control>
@@ -112,9 +117,11 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
             </jspm-packages-example-browser-input>
           </jspm-packages-code-block>
         </jspm-packages-code-blocks>
-        {/* <jspm-packages-generator-button>
+        {
+          /* <jspm-packages-generator-button>
           <button></button>
-        </jspm-packages-generator-button> */}
+        </jspm-packages-generator-button> */
+        }
 
         <jspm-packages-example-sandbox id="container">
           {

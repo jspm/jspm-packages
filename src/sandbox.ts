@@ -50,7 +50,7 @@ const autoLanguage = EditorState.transactionExtender.of((tr) => {
 
 function renderExample(source: string) {
   const iframe = document.querySelector(
-    "jspm-packages-example-sandbox > iframe",
+    "#sandbox-render",
   ) as HTMLIFrameElement | null;
   if (iframe) {
     const needsShim = !source.match(/es-module-shims(\.min)?\.js/);
@@ -195,7 +195,8 @@ async function renderInput() {
 }
 
 function main() {
-  Promise.all([renderInput(), /* renderOutput() */]);
+  Promise.all([renderInput()/* renderOutput() */
+  ]);
 }
 
 export { main };

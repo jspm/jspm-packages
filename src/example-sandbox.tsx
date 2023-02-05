@@ -11,6 +11,7 @@ function ExampleSandbox({ sandboxActiveTab }: Prop) {
       {sandboxActiveTab === "sandbox-nft" && <figure id="_domtree" />}
       {sandboxActiveTab === "sandbox-render" && (
         <iframe
+          id="sandbox-render"
           frameborder="0"
           margin="0"
           padding="0"

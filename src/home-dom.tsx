@@ -20,8 +20,8 @@ import { SearchSuggestions } from "#search-suggestions";
 import type { SearchSuggestionsProps } from "#search-suggestions";
 import { ExamplesNavigation } from "#examples-navigation";
 import type { ExamplesNavigationProp } from "#examples-navigation";
-import { ExampleSandbox } from "#example-sandbox";
-import type { ExampleSandboxProp } from "#example-sandbox";
+// import { ExampleSandbox } from "#example-sandbox";
+// import type { ExampleSandboxProp } from "#example-sandbox";
 function hydrateImportmapToggleButton({
   dependencyCount,
   toggleImportmapDialog,
@@ -60,23 +60,23 @@ function hydrateExamplesNavigation({
   return false;
 }
 
-function hydrateExampleSandbox({
-  sandboxActiveTab,
-}: ExampleSandboxProp) {
-  const mountElement = document.querySelector(
-    "jspm-packages-example-sandbox",
-  );
+// function hydrateExampleSandbox({
+//   sandboxActiveTab,
+// }: ExampleSandboxProp) {
+//   const mountElement = document.querySelector(
+//     "jspm-packages-example-sandbox",
+//   );
 
-  if (mountElement) {
-    return hydrate(
-      <ExampleSandbox
-        sandboxActiveTab={sandboxActiveTab}
-      />,
-      mountElement,
-    );
-  }
-  return false;
-}
+//   if (mountElement) {
+//     return hydrate(
+//       <ExampleSandbox
+//         sandboxActiveTab={sandboxActiveTab}
+//       />,
+//       mountElement,
+//     );
+//   }
+//   return false;
+// }
 
 function hydrateImportMapDialog({
   generatorHash,
@@ -190,7 +190,7 @@ function hydrateAll({
     }),
     hydrateSearchForm({ onInput: handleNPMSearch, value: searchTerm }),
     hydrateSearchSuggestion(npmSearch[searchTerm]),
-    hydrateExampleSandbox({ sandboxActiveTab }),
+    //hydrateExampleSandbox({ sandboxActiveTab }),
     hydrateExamplesNavigation({ activate: activateSandboxTab }),
   ]);
 }
@@ -415,9 +415,9 @@ class DOM extends Component {
         hydrateGeneratorLink({ generatorHash: newState.generatorHash });
       }
 
-      if (newState.sandboxActiveTab !== prevState.sandboxActiveTab) {
-        hydrateExampleSandbox({ sandboxActiveTab: newState.sandboxActiveTab });
-      }
+      // if (newState.sandboxActiveTab !== prevState.sandboxActiveTab) {
+      //   hydrateExampleSandbox({ sandboxActiveTab: newState.sandboxActiveTab });
+      // }
 
       if (
         JSON.stringify(newState.jspmGeneratorState.env) !==
