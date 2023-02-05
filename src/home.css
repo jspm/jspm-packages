@@ -102,12 +102,12 @@ jspm-packages-code-block {
   display: block;
 }
 
-.high {
+.active {
   z-index: 5;
   border: 5px solid var(--dl-color-primary-js-primary);
 }
 
-jspm-packages-code-block:not(.high) .cm-editor {
+jspm-packages-code-block:not(.active) .cm-editor {
   opacity: 0.7;
 }
 
@@ -117,7 +117,7 @@ jspm-packages-code-block:not(.high) .cm-editor {
 } */
 
 jspm-packages-code-block:has(jspm-packages-example-browser-output) {
-  left: 250px;
+  /* left: 250px; */
   position: relative;
   /* transform: perspective(1051px) rotateY(30deg); */
 }
@@ -248,4 +248,12 @@ jspm-packages-example-navigation aside ul {
 jspm-packages-example-navigation aside ul li {
   background-color: var(--dl-color-primary-js-primary);
   padding: 0.5rem 1rem;
+}
+
+.sandbox-section {
+  display: none;
+}
+
+.sandbox-section.active {
+  display: block;
 }

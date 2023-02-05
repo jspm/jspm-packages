@@ -221,10 +221,11 @@ class DOM extends Component {
     });
   };
   activateSandboxTab = (event: MouseEvent) => {
-    const { id } = event.currentTarget;
+    const { href } = event.currentTarget.dataset;
+
     this.store.setState({
       ...this.store.state,
-      sandboxActiveTab: id,
+      sandboxActiveTab: href,
     });
   };
 
@@ -415,9 +416,21 @@ class DOM extends Component {
         hydrateGeneratorLink({ generatorHash: newState.generatorHash });
       }
 
-      // if (newState.sandboxActiveTab !== prevState.sandboxActiveTab) {
-      //   hydrateExampleSandbox({ sandboxActiveTab: newState.sandboxActiveTab });
-      // }
+      if (newState.sandboxActiveTab !== prevState.sandboxActiveTab) {
+        const sandboxSections = document.querySelectorAll(".sandbox-section");
+
+        sandboxSections.forEach((section) => {
+          section.classList.remove("active");
+        });
+        
+        const activeTab = document.getElementById(newState.sandboxActiveTab);
+        if (activeTab) {
+          activeTab.classList.add(
+            "active",
+          );
+        }
+        //hydrateExampleSandbox({ sandboxActiveTab: newState.sandboxActiveTab });
+      }
 
       if (
         JSON.stringify(newState.jspmGeneratorState.env) !==

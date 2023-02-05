@@ -50,7 +50,7 @@ const autoLanguage = EditorState.transactionExtender.of((tr) => {
 
 function renderExample(source: string) {
   const iframe = document.querySelector(
-    "#sandbox-render",
+    "#sandbox-render-html > iframe",
   ) as HTMLIFrameElement | null;
   if (iframe) {
     const needsShim = !source.match(/es-module-shims(\.min)?\.js/);
@@ -140,30 +140,30 @@ async function renderOutput() {
     return editor;
   }
 }
-async function renderSandbox(insert: string) {
+function renderSandbox(insert: string) {
   const store = localStorage.getItem("@jspm/packages/store");
   if (store) {
     const { sandboxActiveTab } = JSON.parse(store);
-    if (sandboxActiveTab === "sandbox-render") {
+    if (sandboxActiveTab === "sandbox-render-html") {
       renderExample(insert);
     }
 
-    if (sandboxActiveTab === "sandbox-nft") {
-      generateTreeFromDOM(insert);
-    }
+    //if (sandboxActiveTab === "sandbox-nft") {
+    generateTreeFromDOM(insert);
+    // }
   }
 }
 
 async function updateDoc(viewUpdate: ViewUpdate) {
   const insert = await getDoc(viewUpdate.state.doc.toString());
 
-  // outputEditor?.dispatch({
-  //   changes: {
-  //     from: 0,
-  //     to: outputEditor.state.doc.length,
-  //     insert,
-  //   },
-  // });
+  outputEditor?.dispatch({
+    changes: {
+      from: 0,
+      to: outputEditor.state.doc.length,
+      insert,
+    },
+  });
   renderSandbox(insert);
 }
 
@@ -195,8 +195,7 @@ async function renderInput() {
 }
 
 function main() {
-  Promise.all([renderInput()/* renderOutput() */
-  ]);
+  Promise.all([renderInput(), renderOutput() ]);
 }
 
 export { main };
