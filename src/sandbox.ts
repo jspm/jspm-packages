@@ -116,6 +116,27 @@ function renderExample(source: string) {
   }
 }
 
+let importmapEditor: EditorView;
+
+function renderImportmap() {
+  const importmapEditorMountElement = document.querySelector(
+    "jspm-packages-example-browser-importmap",
+  ) as HTMLElement | null;
+
+  if (importmapEditorMountElement) {
+    
+    importmapEditorMountElement.innerHTML = "";
+
+    const editor = new EditorView({
+      doc: '{}',
+      extensions: [basicSetup, languageConf.of(html()), autoLanguage, jspmDark],
+      parent: importmapEditorMountElement,
+    });
+    importmapEditor = editor;
+    return editor;
+  }
+}
+
 let outputEditor: EditorView;
 
 async function renderOutput() {
@@ -135,21 +156,21 @@ async function renderOutput() {
       parent: outputEditorMountElement,
     });
     outputEditor = editor;
-
-    renderSandbox(htmlSource);
     return editor;
   }
 }
+
 function renderSandbox(insert: string) {
   const store = localStorage.getItem("@jspm/packages/store");
   if (store) {
-    const { sandboxActiveTab } = JSON.parse(store);
-    if (sandboxActiveTab === "sandbox-render-html") {
-      renderExample(insert);
-    }
+    //const { sandboxActiveTab } = JSON.parse(store);
+    //if (sandboxActiveTab === "sandbox-render-html") {
+    renderExample(insert);
+    //}
 
     //if (sandboxActiveTab === "sandbox-nft") {
     generateTreeFromDOM(insert);
+    //renderImportmap(insert);
     // }
   }
 }
@@ -165,6 +186,19 @@ async function updateDoc(viewUpdate: ViewUpdate) {
     },
   });
   renderSandbox(insert);
+
+  const parsedDOM = new DOMParser().parseFromString(insert, "text/html");
+
+  const scripts = Array.from(parsedDOM.scripts).find((script) =>
+    script.type === "importmap"
+  );
+  importmapEditor?.dispatch({
+    changes: {
+      from: 0,
+      to: importmapEditor.state.doc.length,
+      insert: scripts?.innerText,
+    },
+  });
 }
 
 async function renderInput() {
@@ -195,7 +229,7 @@ async function renderInput() {
 }
 
 function main() {
-  Promise.all([renderInput(), renderOutput() ]);
+  Promise.all([renderInput(), renderOutput(), renderImportmap()]);
 }
 
 export { main };

@@ -95,11 +95,11 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
               <BrowserControl />
             </jspm-packages-browser-control>
 
-            <jspm-packages-example-browser-output>
+            <jspm-packages-example-browser-importmap>
               <pre>
                 <code class="language-json">{{}}</code>
               </pre>
-            </jspm-packages-example-browser-output>
+            </jspm-packages-example-browser-importmap>
           </jspm-packages-code-block>
 
           <jspm-packages-example-sandbox

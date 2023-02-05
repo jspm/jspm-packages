@@ -107,12 +107,12 @@ const leafCoordinates = [];
 const rootTree = Tree(svgWidth / 2, svgHeight, svgWidth / 200, "black");
 
 function generateTreeFromDOM(dom) {
-  const parsedDOM = new DOMParser().parseFromString(dom, "text/html")
-    .body.childNodes;
+  const parsedDOM = new DOMParser().parseFromString(dom, "text/html");
+  const { body: {childNodes}, scripts } = parsedDOM;
   rootTree.angle = 0;
   allTrees = [rootTree];
-  for (let i = 0; i < parsedDOM.length; i++) {
-    scrape(parsedDOM[i], rootTree);
+  for (let i = 0; i < childNodes.length; i++) {
+    scrape(childNodes[i], rootTree);
     rootTree.isLeaf = false;
   }
 
@@ -163,7 +163,7 @@ const drawTree = function (allTrees, leafCoordinates) {
     .attr("class", "tree")
     .attr("width", svgWidth)
     .attr("height", svgHeight)
-   // .style("background", 'gold'/* color.bgColor */);
+  // .style("background", 'gold'/* color.bgColor */);
   //Drawing branches.
   svg.selectAll("rect").data(allTrees)
     .enter().append("rect")
@@ -189,7 +189,7 @@ const drawTree = function (allTrees, leafCoordinates) {
     .attr("transform", function (d) {
       return "rotate(" + d.angle + " " + d.root.x + " " + d.root.y + ")";
     });
-    
+
   //Drawing leaves.
   svg.selectAll("circle").data(leafCoordinates)
     .enter().append("circle")
