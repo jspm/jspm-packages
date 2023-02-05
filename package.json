@@ -32,6 +32,14 @@
       "browser": "./lib/examples.js",
       "default": "./src/examples.tsx"
     },
+    "#examples-navigation": {
+      "browser": "./lib/examples-navigation.js",
+      "default": "./src/examples-navigation.tsx"
+    },
+    "#example-sandbox": {
+      "browser": "./lib/example-sandbox.js",
+      "default": "./src/example-sandbox.tsx"
+    },
     "#featured-packages-list": {
       "browser": "./lib/featured-packages-list.js",
       "default": "./src/featured-packages-list.ts"

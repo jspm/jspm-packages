@@ -3,11 +3,11 @@
 /// <reference lib="dom" />
 /// <reference types="https://deno.land/x/nano_jsx@v0.0.35/types.ts" />
 
-import { h, hydrate, Component } from "nano-jsx";
+import { Component, h, hydrate } from "nano-jsx";
 import { Generator } from "@jspm/generator";
 import { store } from "#store";
 import type { ENV, Store } from "#store";
-import { fromPkgStrToPin, sortArray, getSearchResult } from "#functions";
+import { fromPkgStrToPin, getSearchResult, sortArray } from "#functions";
 import { ImportmapToggleButton } from "#importmap-toggle-button";
 import type { ImportmapToggleButtonProp } from "#importmap-toggle-button";
 import { ImportMapDialog } from "#importmap-dialog";
@@ -18,14 +18,16 @@ import { SearchForm } from "#search-form";
 import type { SearchFormProps } from "#search-form";
 import { SearchSuggestions } from "#search-suggestions";
 import type { SearchSuggestionsProps } from "#search-suggestions";
-import { main as startSandbox } from '#sandbox';
-
+import { ExamplesNavigation } from "#examples-navigation";
+import type { ExamplesNavigationProp } from "#examples-navigation";
+import { ExampleSandbox } from "#example-sandbox";
+import type { ExampleSandboxProp } from "#example-sandbox";
 function hydrateImportmapToggleButton({
   dependencyCount,
   toggleImportmapDialog,
 }: ImportmapToggleButtonProp) {
   const mountElement = document.querySelector(
-    "jspm-packages-importmap-toggle-button"
+    "jspm-packages-importmap-toggle-button",
   );
 
   if (mountElement) {
@@ -34,7 +36,43 @@ function hydrateImportmapToggleButton({
         dependencyCount={dependencyCount}
         toggleImportmapDialog={toggleImportmapDialog}
       />,
-      mountElement
+      mountElement,
+    );
+  }
+  return false;
+}
+
+function hydrateExamplesNavigation({
+  activate,
+}: ExamplesNavigationProp) {
+  const mountElement = document.querySelector(
+    "jspm-packages-example-navigation",
+  );
+
+  if (mountElement) {
+    return hydrate(
+      <ExamplesNavigation
+        activate={activate}
+      />,
+      mountElement,
+    );
+  }
+  return false;
+}
+
+function hydrateExampleSandbox({
+  sandboxActiveTab,
+}: ExampleSandboxProp) {
+  const mountElement = document.querySelector(
+    "jspm-packages-example-sandbox",
+  );
+
+  if (mountElement) {
+    return hydrate(
+      <ExampleSandbox
+        sandboxActiveTab={sandboxActiveTab}
+      />,
+      mountElement,
     );
   }
   return false;
@@ -61,14 +99,12 @@ function hydrateImportMapDialog({
         dialogOpen={dialogOpen}
         importMap={JSON.stringify(importMap, null, 2)}
         importmapShareLink={importmapShareLink}
-        importmapDialogOpenDependencyDetails={
-          importmapDialogOpenDependencyDetails
-        }
+        importmapDialogOpenDependencyDetails={importmapDialogOpenDependencyDetails}
         toggleImportmapDialog={toggleImportmapDialog}
         toggleExportSelection={toggleExportSelection}
         toggleDependencyDetail={toggleDependencyDetail}
       />,
-      mountElement
+      mountElement,
     );
   }
 }
@@ -79,31 +115,31 @@ function hydrateGeneratorLink({ generatorHash }: GeneratorLinkProp) {
   if (mountElement) {
     return hydrate(
       <GeneratorLink generatorHash={generatorHash} />,
-      mountElement
+      mountElement,
     );
   }
 }
 
-function hydrateSearchForm({ handleNPMSearch, searchTerm }: SearchFormProps) {
+function hydrateSearchForm({ onInput, value }: SearchFormProps) {
   const mountElement = document.querySelector("jspm-packages-search-form");
 
   if (mountElement) {
     return hydrate(
-      <SearchForm onInput={handleNPMSearch} value={searchTerm} />,
-      mountElement
+      <SearchForm onInput={onInput} value={value} />,
+      mountElement,
     );
   }
 }
 
 function hydrateSearchSuggestion(searchResult: SearchSuggestionsProps) {
   const mountElement = document.querySelector(
-    "jspm-packages-search-suggestions"
+    "jspm-packages-search-suggestions",
   );
 
   if (mountElement && searchResult?.objects) {
     return hydrate(
       <SearchSuggestions objects={searchResult?.objects} />,
-      mountElement
+      mountElement,
     );
   }
 }
@@ -114,12 +150,14 @@ function hydrateAll({
   toggleImportmapDialog,
   toggleDependencyDetail,
   handleNPMSearch,
+  activateSandboxTab,
 }: {
   state: Store;
   toggleExportSelection: (event: MouseEvent) => void;
   toggleImportmapDialog: (event: MouseEvent) => void;
   toggleDependencyDetail: (event: MouseEvent) => void;
   handleNPMSearch: (Event: InputEvent) => void;
+  activateSandboxTab: (event: MouseEvent) => void;
 }) {
   const {
     dependencies,
@@ -130,6 +168,7 @@ function hydrateAll({
     importmapDialogOpenDependencyDetails,
     npmSearch,
     searchTerm,
+    sandboxActiveTab,
   } = state;
 
   Promise.all([
@@ -149,8 +188,10 @@ function hydrateAll({
       toggleExportSelection,
       toggleDependencyDetail,
     }),
-    hydrateSearchForm({ handleNPMSearch, searchTerm }),
+    hydrateSearchForm({ onInput: handleNPMSearch, value: searchTerm }),
     hydrateSearchSuggestion(npmSearch[searchTerm]),
+    hydrateExampleSandbox({ sandboxActiveTab }),
+    hydrateExamplesNavigation({ activate: activateSandboxTab }),
   ]);
 }
 
@@ -177,6 +218,13 @@ class DOM extends Component {
     this.store.setState({
       ...this.store.state,
       dialogOpen: dependencies.length > 0 ? !dialogOpen : false,
+    });
+  };
+  activateSandboxTab = (event: MouseEvent) => {
+    const { id } = event.currentTarget;
+    this.store.setState({
+      ...this.store.state,
+      sandboxActiveTab: id,
     });
   };
 
@@ -229,7 +277,7 @@ class DOM extends Component {
   };
 
   reinstallImportmap = async (
-    env: ENV = this.store?.state?.jspmGeneratorState?.env
+    env: ENV = this.store?.state?.jspmGeneratorState?.env,
   ) => {
     const { importMap } = this.store.state;
 
@@ -326,9 +374,9 @@ class DOM extends Component {
         toggleImportmapDialog: this.toggleImportmapDialog,
         toggleDependencyDetail: this.toggleDependencyDetail,
         handleNPMSearch: this.handleNPMSearch,
+        activateSandboxTab: this.activateSandboxTab,
       }),
       this.reinstallImportmap(),
-      startSandbox()
     ]);
     // this.generateSandboxURL();
     // subscribe to store changes
@@ -347,7 +395,7 @@ class DOM extends Component {
 
       if (
         JSON.stringify(newState.dependencies) !==
-        JSON.stringify(prevState.dependencies)
+          JSON.stringify(prevState.dependencies)
       ) {
         Promise.all([
           this.updateJSPMGeneratorDependencies(newState.dependencies),
@@ -356,7 +404,7 @@ class DOM extends Component {
 
       if (
         JSON.stringify(newState.jspmGeneratorState) !==
-        JSON.stringify(prevState.jspmGeneratorState)
+          JSON.stringify(prevState.jspmGeneratorState)
       ) {
         Promise.all([
           this.generateJSPMGeneratorHash(newState.jspmGeneratorState),
@@ -367,9 +415,13 @@ class DOM extends Component {
         hydrateGeneratorLink({ generatorHash: newState.generatorHash });
       }
 
+      if (newState.sandboxActiveTab !== prevState.sandboxActiveTab) {
+        hydrateExampleSandbox({ sandboxActiveTab: newState.sandboxActiveTab });
+      }
+
       if (
         JSON.stringify(newState.jspmGeneratorState.env) !==
-        JSON.stringify(prevState.jspmGeneratorState.env)
+          JSON.stringify(prevState.jspmGeneratorState.env)
       ) {
         Promise.all([this.reinstallImportmap(newState.jspmGeneratorState.env)]);
       }
@@ -405,7 +457,7 @@ class DOM extends Component {
       }
       if (
         JSON.stringify(newState.npmSearch[newState.searchTerm]) !==
-        JSON.stringify(prevState.npmSearch[prevState.searchTerm])
+          JSON.stringify(prevState.npmSearch[prevState.searchTerm])
       ) {
         hydrateSearchSuggestion(newState.npmSearch[newState.searchTerm]);
       }

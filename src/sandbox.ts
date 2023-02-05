@@ -8,7 +8,7 @@ import { html, htmlLanguage } from "@codemirror/lang-html";
 import { javascript } from "@codemirror/lang-javascript";
 import { Generator } from "@jspm/generator";
 import { jspmDark } from "#theme-codemirror-jspm-dark";
-import {generateTreeFromDOM} from '#domtree'
+import { generateTreeFromDOM } from "#domtree";
 
 const generator = new Generator({
   env: ["browser", "production"],
@@ -50,7 +50,7 @@ const autoLanguage = EditorState.transactionExtender.of((tr) => {
 
 function renderExample(source: string) {
   const iframe = document.querySelector(
-    "jspm-packages-example-render > iframe"
+    "jspm-packages-example-sandbox > iframe",
   ) as HTMLIFrameElement | null;
   if (iframe) {
     const needsShim = !source.match(/es-module-shims(\.min)?\.js/);
@@ -60,10 +60,10 @@ function renderExample(source: string) {
           `
         <script>self.esmsInitOptions = { onerror: e=>{window.parent.jspmSandboxError(e.message || e, '', '', '', e)} };</script>
         ${
-          needsShim
-            ? `<script async src="https://ga.jspm.io/npm:es-module-shims@0.10.1/dist/es-module-shims.min.js"><${""}/script>`
-            : ""
-        }
+            needsShim
+              ? `<script async src="https://ga.jspm.io/npm:es-module-shims@0.10.1/dist/es-module-shims.min.js"><${""}/script>`
+              : ""
+          }
         <script>window.parent.jspmSandboxStarted()<${""}/script>
         ${source}
         <script type="module">window.parent.jspmSandboxFinished()<${""}/script>
@@ -75,12 +75,12 @@ function renderExample(source: string) {
         <${""}/script>
       `,
         ],
-        { type: "text/html" }
-      )
+        { type: "text/html" },
+      ),
     );
     iframe.src = blobUrl;
 
-    // const renderElement = document.querySelector("jspm-packages-example-render")  as HTMLElement | null;
+    // const renderElement = document.querySelector("jspm-packages-example-sandbox")  as HTMLElement | null;
     // renderElement.innerHTML = "";
     // renderElement.appendChild(iframe);
 
@@ -91,7 +91,7 @@ function renderExample(source: string) {
       if (!started) {
         if (running) {
           console.log(
-            "Network error loading modules. Check the browser network panel."
+            "Network error loading modules. Check the browser network panel.",
           );
           running = false;
           iframe.contentDocument.body.style.cursor = "default";
@@ -120,7 +120,7 @@ let outputEditor: EditorView;
 
 async function renderOutput() {
   const outputEditorMountElement = document.querySelector(
-    "jspm-packages-example-browser-output"
+    "jspm-packages-example-browser-output",
   ) as HTMLElement | null;
 
   if (outputEditorMountElement) {
@@ -135,26 +135,41 @@ async function renderOutput() {
       parent: outputEditorMountElement,
     });
     outputEditor = editor;
+
+    renderSandbox(htmlSource);
     return editor;
+  }
+}
+async function renderSandbox(insert: string) {
+  const store = localStorage.getItem("@jspm/packages/store");
+  if (store) {
+    const { sandboxActiveTab } = JSON.parse(store);
+    if (sandboxActiveTab === "sandbox-render") {
+      renderExample(insert);
+    }
+
+    if (sandboxActiveTab === "sandbox-nft") {
+      generateTreeFromDOM(insert);
+    }
   }
 }
 
 async function updateDoc(viewUpdate: ViewUpdate) {
   const insert = await getDoc(viewUpdate.state.doc.toString());
-  outputEditor?.dispatch({
-    changes: {
-      from: 0,
-      to: outputEditor.state.doc.length,
-      insert,
-    },
-  });
-  renderExample(insert);
-  generateTreeFromDOM(insert)
+
+  // outputEditor?.dispatch({
+  //   changes: {
+  //     from: 0,
+  //     to: outputEditor.state.doc.length,
+  //     insert,
+  //   },
+  // });
+  renderSandbox(insert);
 }
 
 async function renderInput() {
   const inputEditorMountElement = document.querySelector(
-    "jspm-packages-example-browser-input"
+    "jspm-packages-example-browser-input",
   ) as HTMLElement | null;
 
   if (inputEditorMountElement) {
@@ -180,7 +195,7 @@ async function renderInput() {
 }
 
 function main() {
-  Promise.all([renderInput(), renderOutput()]);
+  Promise.all([renderInput(), /* renderOutput() */]);
 }
 
 export { main };

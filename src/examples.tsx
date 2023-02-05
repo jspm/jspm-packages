@@ -16,16 +16,11 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
         Effortlessly access pre-optimized NPM modules as importmaps & ESM,
         directly in the browser at unmatched scale.
       </p>
-      <aside>
-        <ul>
-          <li>Overview</li>
-          <li>Render</li>
-          <li>Source</li>
-        </ul>
-      </aside>
+      <jspm-packages-example-navigation>
+      </jspm-packages-example-navigation>
       <article class="example">
         <jspm-packages-code-blocks>
-          <jspm-packages-code-block>
+          {/* <jspm-packages-code-block>
             <jspm-packages-browser-control>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +64,7 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
                 <code class="language-markup">{browser?.output}</code>
               </pre>
             </jspm-packages-example-browser-output>
-          </jspm-packages-code-block>
+          </jspm-packages-code-block> */}
 
           <jspm-packages-code-block class="high">
             <jspm-packages-browser-control>
@@ -117,23 +112,11 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
             </jspm-packages-example-browser-input>
           </jspm-packages-code-block>
         </jspm-packages-code-blocks>
-        <jspm-packages-generator-button>
+        {/* <jspm-packages-generator-button>
           <button></button>
-        </jspm-packages-generator-button>
+        </jspm-packages-generator-button> */}
 
-        <jspm-packages-example-render id="container">
-          <section id="domtree">
-          </section>
-          <iframe
-            frameborder="0"
-            margin="0"
-            padding="0"
-            borderStyle="none"
-            height="100%"
-            width="100%"
-            marginBottom="-5px"
-            overflow="scroll"
-          />
+        <jspm-packages-example-sandbox id="container">
           {
             /*  <jspm-packages-tabs>
             {sandboxActiveTab === "nft" && (
@@ -159,7 +142,7 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
             )}
           </jspm-packages-tabs> */
           }
-        </jspm-packages-example-render>
+        </jspm-packages-example-sandbox>
       </article>
     </section>
   );

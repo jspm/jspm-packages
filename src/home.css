@@ -111,10 +111,10 @@ jspm-packages-code-block:not(.high) .cm-editor{
   opacity: 0.7;
 }
 
-jspm-packages-code-block:has(jspm-packages-example-browser-input) {
+/* jspm-packages-code-block:has(jspm-packages-example-browser-input) {
   position: absolute;
   bottom: 25px;
-}
+} */
 
 jspm-packages-code-block:has(jspm-packages-example-browser-output) {
   left: 250px;
@@ -130,7 +130,7 @@ jspm-packages-home jspm-packages-examples > section .script span {
   opacity: 1;
 } */
 
-jspm-packages-home jspm-packages-examples jspm-packages-example-render {
+jspm-packages-home jspm-packages-examples jspm-packages-example-sandbox {
   height: 100%;
 }
 
