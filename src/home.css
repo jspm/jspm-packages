@@ -218,9 +218,10 @@ jspm-packages-home jspm-packages-examples>section jspm-packages-generator-button
 } */
 
 .example-copy {
-  font-size: var(--step-3);
-  font-weight: 700;
+  font-size: var(--step-1);
   text-align: center;
+  list-style: hiragana-iroha;
+  font-family: sen;
 }
 
 jspm-packages-example-navigation {
