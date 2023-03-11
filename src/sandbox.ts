@@ -11,8 +11,7 @@ import { jspmDark } from "#theme-codemirror-jspm-dark";
 import { generateTreeFromDOM } from "#domtree";
 
 const generator = new Generator({
-  env: ["browser", "production"],
-  defaultProvider: "jspm.cachefly",
+  env: ["browser", "production"]
 });
 
 async function getExampleInputCode() {

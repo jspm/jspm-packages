@@ -71,19 +71,28 @@ jspm-packages-home main .jspm-packages-home-features {
   margin-top: 25px;
 }
 
-jspm-packages-home main .jspm-packages-home-features article {
-  max-width: 350px;
+@media (min-width: 750px) {
+  jspm-packages-featured-feature-content {
+    columns: 2;
+    display: flex;
+  }
 }
 
-jspm-packages-home jspm-packages-examples .examples .example {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  align-items: center;
-  justify-content: center;
-  align-content: center;
-  /* margin-top: 50px; */
-  border-top: 5px;
-  align-items: end;
+jspm-packages-cdn-features-content article {
+  min-width: 350px;
+}
+
+@media (min-width: 750px) {
+  jspm-packages-home jspm-packages-examples .examples .example {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    /* margin-top: 50px; */
+    border-top: 5px;
+    align-items: end;
+  }
 }
 
 jspm-packages-code-blocks {
@@ -91,7 +100,7 @@ jspm-packages-code-blocks {
 }
 
 jspm-packages-code-block .browser-control {
-  padding-bottom: 10px;
+  display: none;
 }
 
 jspm-packages-code-block {
@@ -100,6 +109,21 @@ jspm-packages-code-block {
   border-radius: 15px;
   padding: 20px;
   display: block;
+  margin: 0 -24px;
+}
+
+@media (min-width: 750px) {
+  jspm-packages-code-block {
+    margin: 0;
+  }
+
+}
+
+@media (min-width: 550px) {
+  jspm-packages-code-block .browser-control {
+    display: block;
+    padding-bottom: 10px;
+  }
 }
 
 .active {

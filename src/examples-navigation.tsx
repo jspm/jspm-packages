@@ -9,8 +9,8 @@ function ExamplesNavigation({ activate }: Prop) {
   return (
     <aside>
       <ul>
-        <li data-href="sandbox-input" onClick={activate}>Input Source</li>
-        <li data-href="sandbox-output" onClick={activate}>Output Source</li>
+        <li data-href="sandbox-input" onClick={activate}>Input</li>
+        <li data-href="sandbox-output" onClick={activate}>Output</li>
         <li data-href="sandbox-render-importmap" onClick={activate}>Importmap</li>
         <li data-href="sandbox-render-html" onClick={activate}>Render</li>
       </ul>

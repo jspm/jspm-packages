@@ -90,7 +90,10 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
             </jspm-packages-example-browser-output>
           </jspm-packages-code-block>
 
-          <jspm-packages-code-block class="sandbox-section" id="sandbox-render-importmap">
+          <jspm-packages-code-block
+            class="sandbox-section"
+            id="sandbox-render-importmap"
+          >
             <jspm-packages-browser-control>
               <BrowserControl />
             </jspm-packages-browser-control>
@@ -119,6 +122,9 @@ function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
             </iframe>
           </jspm-packages-example-sandbox>
         </jspm-packages-code-blocks>
+        <jspm-packages-example-render>
+          <button>Render HTML</button>
+        </jspm-packages-example-render>
       </article>
     </section>
   );

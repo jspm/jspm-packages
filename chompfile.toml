@@ -100,7 +100,7 @@ run = '''
     const generator = new Generator({
       mapUrl: pathToFileURL(process.env.TARGET),
       env: ["browser", "production"], 
-      defaultProvider: 'jspm.cachefly'
+      defaultProvider: 'jspm'
     });
 
     const htmlSource = await readFile(process.env.DEP, 'utf-8');
