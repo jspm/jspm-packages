@@ -1,13 +1,14 @@
 /** @jsx h */
 
 /// <reference lib="dom" />
-/// <reference types="https://deno.land/x/nano_jsx@v0.0.33/types.d.ts" />
+/// <reference types="https://deno.land/x/nano_jsx@v0.0.35/types.ts" />
 
-import { h, hydrate, Component } from "nano-jsx";
+import { Component, h, hydrate } from "nano-jsx";
+import type { EditorView } from "codemirror";
 import { Generator } from "@jspm/generator";
 import { store } from "#store";
 import type { ENV, Store } from "#store";
-import { fromPkgStrToPin, sortArray, getSearchResult } from "#functions";
+import { fromPkgStrToPin, getSearchResult, sortArray } from "#functions";
 import { ImportmapToggleButton } from "#importmap-toggle-button";
 import type { ImportmapToggleButtonProp } from "#importmap-toggle-button";
 import { ImportMapDialog } from "#importmap-dialog";
@@ -18,13 +19,22 @@ import { SearchForm } from "#search-form";
 import type { SearchFormProps } from "#search-form";
 import { SearchSuggestions } from "#search-suggestions";
 import type { SearchSuggestionsProps } from "#search-suggestions";
+import { ExamplesCodeBlockTabs } from "#examples-code-block-tabs";
+import type { ExamplesCodeBlockTabsProp } from "#examples-code-block-tabs";
+import { ExamplesRenderBlockTabs } from "#examples-render-block-tabs";
+import type { ExamplesRenderBlockTabsProp } from "#examples-render-block-tabs";
+import { main as renderExamplesEditor } from '@jspm/packages/sandbox';
+import {
+  EXAMPLES_CODE_TAB,
+  EXAMPLES_RENDER_TAB
+} from "#constants";
 
 function hydrateImportmapToggleButton({
   dependencyCount,
   toggleImportmapDialog,
 }: ImportmapToggleButtonProp) {
   const mountElement = document.querySelector(
-    "jspm-packages-importmap-toggle-button"
+    "jspm-packages-importmap-toggle-button",
   );
 
   if (mountElement) {
@@ -33,7 +43,49 @@ function hydrateImportmapToggleButton({
         dependencyCount={dependencyCount}
         toggleImportmapDialog={toggleImportmapDialog}
       />,
-      mountElement
+      mountElement,
+    );
+  }
+  return false;
+}
+
+function hydrateExamplesCodeBlockTabs({
+  changeCodeBlockTab,
+  examplesCodeBlockActiveTab
+}: ExamplesCodeBlockTabsProp) {
+  const mountElement = document.querySelector(
+    "jspm-packages-examples-code-block-tabs",
+  );
+
+  if (mountElement) {
+    return hydrate(
+      <ExamplesCodeBlockTabs
+        id="examples-code-home"
+        changeCodeBlockTab={changeCodeBlockTab}
+        examplesCodeBlockActiveTab={examplesCodeBlockActiveTab}
+      />,
+      mountElement,
+    );
+  }
+  return false;
+}
+
+function hydrateExamplesRenderBlockTabs({
+  changeRenderBlockTab,
+  examplesRenderBlockActiveTab
+}: ExamplesRenderBlockTabsProp) {
+  const mountElement = document.querySelector(
+    "jspm-packages-examples-render-block-tabs",
+  );
+
+  if (mountElement) {
+    return hydrate(
+      <ExamplesRenderBlockTabs
+        id="examples-render-home"
+        changeRenderBlockTab={changeRenderBlockTab}
+        examplesRenderBlockActiveTab={examplesRenderBlockActiveTab}
+      />,
+      mountElement,
     );
   }
   return false;
@@ -60,14 +112,12 @@ function hydrateImportMapDialog({
         dialogOpen={dialogOpen}
         importMap={JSON.stringify(importMap, null, 2)}
         importmapShareLink={importmapShareLink}
-        importmapDialogOpenDependencyDetails={
-          importmapDialogOpenDependencyDetails
-        }
+        importmapDialogOpenDependencyDetails={importmapDialogOpenDependencyDetails}
         toggleImportmapDialog={toggleImportmapDialog}
         toggleExportSelection={toggleExportSelection}
         toggleDependencyDetail={toggleDependencyDetail}
       />,
-      mountElement
+      mountElement,
     );
   }
 }
@@ -78,31 +128,31 @@ function hydrateGeneratorLink({ generatorHash }: GeneratorLinkProp) {
   if (mountElement) {
     return hydrate(
       <GeneratorLink generatorHash={generatorHash} />,
-      mountElement
+      mountElement,
     );
   }
 }
 
-function hydrateSearchForm({ handleNPMSearch, searchTerm }: SearchFormProps) {
+function hydrateSearchForm({ onInput, value }: SearchFormProps) {
   const mountElement = document.querySelector("jspm-packages-search-form");
 
   if (mountElement) {
     return hydrate(
-      <SearchForm onInput={handleNPMSearch} value={searchTerm} />,
-      mountElement
+      <SearchForm onInput={onInput} value={value} />,
+      mountElement,
     );
   }
 }
 
 function hydrateSearchSuggestion(searchResult: SearchSuggestionsProps) {
   const mountElement = document.querySelector(
-    "jspm-packages-search-suggestions"
+    "jspm-packages-search-suggestions",
   );
 
   if (mountElement && searchResult?.objects) {
     return hydrate(
       <SearchSuggestions objects={searchResult?.objects} />,
-      mountElement
+      mountElement,
     );
   }
 }
@@ -113,12 +163,16 @@ function hydrateAll({
   toggleImportmapDialog,
   toggleDependencyDetail,
   handleNPMSearch,
+  changeCodeBlockTab,
+  changeRenderBlockTab,
 }: {
   state: Store;
   toggleExportSelection: (event: MouseEvent) => void;
   toggleImportmapDialog: (event: MouseEvent) => void;
   toggleDependencyDetail: (event: MouseEvent) => void;
   handleNPMSearch: (Event: InputEvent) => void;
+  changeCodeBlockTab: (event: MouseEvent) => void;
+  changeRenderBlockTab: (event: MouseEvent) => void;
 }) {
   const {
     dependencies,
@@ -129,6 +183,8 @@ function hydrateAll({
     importmapDialogOpenDependencyDetails,
     npmSearch,
     searchTerm,
+    examplesCodeBlockActiveTab,
+    examplesRenderBlockActiveTab
   } = state;
 
   Promise.all([
@@ -148,8 +204,10 @@ function hydrateAll({
       toggleExportSelection,
       toggleDependencyDetail,
     }),
-    hydrateSearchForm({ handleNPMSearch, searchTerm }),
+    hydrateSearchForm({ onInput: handleNPMSearch, value: searchTerm }),
     hydrateSearchSuggestion(npmSearch[searchTerm]),
+    hydrateExamplesCodeBlockTabs({ changeCodeBlockTab, examplesCodeBlockActiveTab }),
+    hydrateExamplesRenderBlockTabs({ changeRenderBlockTab, examplesRenderBlockActiveTab }),
   ]);
 }
 
@@ -176,6 +234,25 @@ class DOM extends Component {
     this.store.setState({
       ...this.store.state,
       dialogOpen: dependencies.length > 0 ? !dialogOpen : false,
+    });
+  };
+  
+  changeExamplesCodeBlockTab = (event: MouseEvent) => {
+    // const { href } = event.currentTarget.dataset;
+    const { value } = event.currentTarget;
+    //jspm-packages-examples-render-block-tabs
+    this.store.setState({
+      ...this.store.state,
+      examplesCodeBlockActiveTab: value,
+    });
+  };
+
+  changeExamplesRenderBlockTab = (event: MouseEvent) => {
+    // const { href } = event.currentTarget.dataset;
+    const { value } = event.currentTarget;
+    this.store.setState({
+      ...this.store.state,
+      examplesRenderBlockActiveTab: value,
     });
   };
 
@@ -228,7 +305,7 @@ class DOM extends Component {
   };
 
   reinstallImportmap = async (
-    env: ENV = this.store?.state?.jspmGeneratorState?.env
+    env: ENV = this.store?.state?.jspmGeneratorState?.env,
   ) => {
     const { importMap } = this.store.state;
 
@@ -315,6 +392,11 @@ class DOM extends Component {
 
     return result;
   };
+  examplesSourceCodeHTMLBrowserEditor: EditorView;
+
+  renderExamples = async () =>{
+    this.examplesSourceCodeHTMLBrowserEditor = await renderExamplesEditor()
+  };
 
   didMount() {
     Promise.all([
@@ -325,11 +407,12 @@ class DOM extends Component {
         toggleImportmapDialog: this.toggleImportmapDialog,
         toggleDependencyDetail: this.toggleDependencyDetail,
         handleNPMSearch: this.handleNPMSearch,
+        changeCodeBlockTab: this.changeExamplesCodeBlockTab,
+        changeRenderBlockTab: this.changeExamplesRenderBlockTab,
       }),
       this.reinstallImportmap(),
+      this.renderExamples()
     ]);
-    // this.generateSandboxURL();
-    // subscribe to store changes
     this.store.subscribe((newState: Store, prevState: Store) => {
       // check if you need to update your component or not
       const prevDependencyCount = prevState.dependencies.length;
@@ -345,7 +428,7 @@ class DOM extends Component {
 
       if (
         JSON.stringify(newState.dependencies) !==
-        JSON.stringify(prevState.dependencies)
+          JSON.stringify(prevState.dependencies)
       ) {
         Promise.all([
           this.updateJSPMGeneratorDependencies(newState.dependencies),
@@ -354,7 +437,7 @@ class DOM extends Component {
 
       if (
         JSON.stringify(newState.jspmGeneratorState) !==
-        JSON.stringify(prevState.jspmGeneratorState)
+          JSON.stringify(prevState.jspmGeneratorState)
       ) {
         Promise.all([
           this.generateJSPMGeneratorHash(newState.jspmGeneratorState),
@@ -366,8 +449,46 @@ class DOM extends Component {
       }
 
       if (
+        newState.examplesCodeBlockActiveTab !==
+          prevState.examplesCodeBlockActiveTab
+      ) {
+        //jspm-packages-code-block:has(jspm-packages-examples-source-code-html-browser) 
+        const examplesCodeBlocks = document.querySelectorAll(`.${EXAMPLES_CODE_TAB}`);
+
+        examplesCodeBlocks.forEach((section) => {
+          section.classList.remove("active");
+        });
+
+        const activeTab = document.querySelector(`.${EXAMPLES_CODE_TAB}:has(jspm-packages-${newState.examplesCodeBlockActiveTab})`);
+        if (activeTab) {
+          activeTab.classList.add(
+            "active",
+          );
+        }
+      }
+
+      if (
+        newState.examplesRenderBlockActiveTab !==
+          prevState.examplesRenderBlockActiveTab
+      ) {
+        //jspm-packages-code-block:has(jspm-packages-examples-source-code-html-browser) 
+        const examplesCodeBlocks = document.querySelectorAll(`.${EXAMPLES_RENDER_TAB}`);
+
+        examplesCodeBlocks.forEach((section) => {
+          section.classList.remove("active");
+        });
+
+        const activeTab = document.querySelector(`.${EXAMPLES_RENDER_TAB}:has(jspm-packages-${newState.examplesRenderBlockActiveTab})`);
+        if (activeTab) {
+          activeTab.classList.add(
+            "active",
+          );
+        }
+      }
+
+      if (
         JSON.stringify(newState.jspmGeneratorState.env) !==
-        JSON.stringify(prevState.jspmGeneratorState.env)
+          JSON.stringify(prevState.jspmGeneratorState.env)
       ) {
         Promise.all([this.reinstallImportmap(newState.jspmGeneratorState.env)]);
       }
@@ -403,7 +524,7 @@ class DOM extends Component {
       }
       if (
         JSON.stringify(newState.npmSearch[newState.searchTerm]) !==
-        JSON.stringify(prevState.npmSearch[prevState.searchTerm])
+          JSON.stringify(prevState.npmSearch[prevState.searchTerm])
       ) {
         hydrateSearchSuggestion(newState.npmSearch[newState.searchTerm]);
       }

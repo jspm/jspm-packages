@@ -4,7 +4,7 @@ import { FEATURED_PACKAGES } from "#featured-packages-list";
 
 type Props = {
   onSubmit?: SubmitEvent;
-  onInput?: InputEvent;
+  onInput?: (event: InputEvent) => void;
   value?: string;
 };
 

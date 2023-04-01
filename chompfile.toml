@@ -52,7 +52,7 @@ target = 'lib/#.js'
 # [task.template-options]
 # env = ['deno', 'production']
 # [task.template-options."inputMap".imports]
-# nano-jsx = 'https://deno.land/x/nano_jsx@v0.0.33/mod.ts'
+# nano-jsx = 'https://deno.land/x/nano_jsx@v0.0.35/types.ts'
 
 [[task]]
 targets = ['deno.importmap']
@@ -72,11 +72,10 @@ run = '''
 
     const generator = new Generator({
       mapUrl: import.meta.url,
-      env: ["deno", "production"], 
-      defaultProvider: 'jspm.cachefly',
+      env: ['deno', 'browser', 'module', 'production'],
       inputMap: {
         imports: {
-          "nano-jsx": "https://deno.land/x/nano_jsx@v0.0.33/mod.ts"
+          "nano-jsx": "https://deno.land/x/nano_jsx@v0.0.35/types.ts"
         }
       }
     });
@@ -101,7 +100,7 @@ run = '''
     const generator = new Generator({
       mapUrl: pathToFileURL(process.env.TARGET),
       env: ["browser", "production"], 
-      defaultProvider: 'jspm.cachefly'
+      defaultProvider: 'jspm'
     });
 
     const htmlSource = await readFile(process.env.DEP, 'utf-8');

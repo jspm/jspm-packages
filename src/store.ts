@@ -1,4 +1,8 @@
 import { Store } from "nano-jsx";
+import {
+  EXAMPLES_SOURCE_CODE_HTML_BROWSER,
+  EXAMPLES_RENDER_DOMTREE
+} from "#constants";
 
 const env = {
   development: true,
@@ -35,7 +39,9 @@ const initialState = {
   importMap: {},
   importmapDialogOpenDependencyDetails: [],
   jspmGeneratorState,
-  npmSearch: {}
+  npmSearch: {},
+  examplesCodeBlockActiveTab: EXAMPLES_SOURCE_CODE_HTML_BROWSER,
+  examplesRenderBlockActiveTab: EXAMPLES_RENDER_DOMTREE
 };
 
 type Store = typeof initialState;

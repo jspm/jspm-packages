@@ -2,7 +2,7 @@
 
 # Develop
 - `chomp serve --watch` or
-- `chrome build --watch` and run [server.jsx](./server.jsx) in debug mode 
+- `chomp build --watch` and run [server.jsx](./server.jsx) in debug mode 
 
 ## Naming convention
 

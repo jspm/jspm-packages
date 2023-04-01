@@ -5,3 +5,4 @@ package-lock.json
 lib
 server.js
 server.js.map
+.DS_Store

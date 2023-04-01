@@ -14,28 +14,30 @@ html {
 }
 
 h1 {
-  font-size: var(--dl-space-space-twounits);
+  font-size: var(--step-5);
 }
 
 h1 a {
   text-decoration: none;
 }
 
+h1,
 h2,
 h4,
 h5,
 h6 {
-  font-family: "Roboto", sans-serif;
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: "Inter", "Roboto", sans-serif;
+  /* font-family: "Source Sans Pro", sans-serif; */
 }
 h2 {
-  font-size: var(--step-3);
+  font-size: var(--step-5);
 }
 h3 {
   font-weight: 600;
+  font-size: var(--step-4);
 }
 h4 {
-  font-size: var(--step-1);
+  font-size: var(--step-3);
 }
 pre {
   border: solid 1px black;
@@ -56,7 +58,7 @@ pre[class*="language-"] {
 }
 
 body {
-  font-family: "Inter", sans-serif;
+  font-family: "Source Sans Pro", "Inter", sans-serif;
   font-size: var(--step--1);
   max-width: 1440px;
   margin-right: auto;
@@ -106,13 +108,16 @@ jspm-packages-header header {
 jspm-packages-logo h1 {
   margin-right: var(--dl-space-space-unit);
   text-align: center;
+  margin: 0;
+  font-size: var(--step-0);
+  font-family: "Inter", sans-serif;
 }
 
 jspm-packages-logo h1 a {
   background: url(https://jspm.org/jspm.png) no-repeat left center;
   color: var(--dl-color-gray-black);
   background-size: contain;
-  padding-left: 2.5rem;
+  padding-left: 2rem;
 }
 
 jspm-packages-search form {
@@ -620,3 +625,56 @@ jspm-packages-search-suggestion
   content: "|";
   margin-right: 10px;
 }
+
+jspm-packages-render-blocks, jspm-packages-examples-render-domtree, jspm-packages-examples-render-domtree figure{
+  display: block;
+  height: 100%;
+}
+/* 
+jspm-packages-examples-render-block-tabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+jspm-packages-examples-render-block-tabs label {
+  display: inline-block;
+  padding: 10px 20px;
+  margin-right: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  position: relative;
+  top: 1px;
+  z-index: 1;
+}
+
+jspm-packages-examples-render-block-tabs input[type="radio"] {
+  display: none;
+}
+
+jspm-packages-examples-render-block-tabs input[type="radio"]:checked + label {
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
+  z-index: 2;
+}
+
+jspm-packages-examples-render-block-tabs-content {
+  display: none;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 0 5px 5px 5px;
+  background-color: #fff;
+}
+
+jspm-packages-examples-render-block-tabs-content:first-of-type {
+  display: block;
+} */
