@@ -99,7 +99,7 @@ const getRandomColor = function () {
 //   : document.documentElement.clientWidth * 0.8;
 // const svgHeight = svgWidth;
 
-const svgParent = document.querySelector("dom-tree-container");
+const svgParent = document.querySelector("jspm-packages-examples-render-domtree");
 const svgWidth = svgParent.clientWidth;
 const svgHeight = svgWidth * 0.75;
 let allTrees = [];

@@ -1,12 +1,12 @@
 /** @jsx h */
-import { Fragment, h } from "nano-jsx";
+import { h } from "nano-jsx";
+import { EXAMPLES_CODE_TAB, EXAMPLES_RENDER_TAB } from "#constants";
 
 type Prop = {
   browser?: {
     input: string;
     output: string;
   };
-  sandboxActiveTab?: string;
 };
 
 function BrowserControl() {
@@ -49,82 +49,91 @@ function BrowserControl() {
     </svg>
   );
 }
-function Examples({ browser, sandboxActiveTab = "nft" }: Prop) {
+function Examples({ browser }: Prop) {
   return (
     <section class="examples">
       <p class="example-copy">
         Effortlessly access pre-optimized NPM modules as importmaps & ESM,
         directly in the browser at unmatched scale.
       </p>
+
       <article class="example">
-        <dom-tree-container>
-          <figure id="domtree" />
-        </dom-tree-container>
-        <jspm-packages-code-blocks>
-          <jspm-packages-example-navigation>
-          </jspm-packages-example-navigation>
-
-          <jspm-packages-code-block
-            class="sandbox-section active"
-            id="sandbox-input"
-          >
-            <jspm-packages-browser-control>
-              <BrowserControl />
-            </jspm-packages-browser-control>
-            <jspm-packages-example-browser-input>
-              <pre>
-      <code class="language-markup">{browser?.input}</code>
-              </pre>
-            </jspm-packages-example-browser-input>
-          </jspm-packages-code-block>
-
-          <jspm-packages-code-block class="sandbox-section" id="sandbox-output">
-            <jspm-packages-browser-control>
-              <BrowserControl />
-            </jspm-packages-browser-control>
-
-            <jspm-packages-example-browser-output>
-              <pre>
-                <code class="language-markup">{browser?.output}</code>
-              </pre>
-            </jspm-packages-example-browser-output>
-          </jspm-packages-code-block>
-
-          <jspm-packages-code-block
-            class="sandbox-section"
-            id="sandbox-render-importmap"
-          >
-            <jspm-packages-browser-control>
-              <BrowserControl />
-            </jspm-packages-browser-control>
-
-            <jspm-packages-example-browser-importmap>
-              <pre>
-                <code class="language-json">{{}}</code>
-              </pre>
-            </jspm-packages-example-browser-importmap>
-          </jspm-packages-code-block>
-
-          <jspm-packages-example-sandbox
-            class="sandbox-section"
-            id="sandbox-render-html"
-          >
-            <iframe
-              frameborder="0"
-              margin="0"
-              padding="0"
-              borderStyle="none"
-              height="100%"
-              width="100%"
-              marginBottom="-5px"
-              overflow="scroll"
+        <jspm-packages-render-blocks>
+          <jspm-packages-examples-render-block-tabs>
+          </jspm-packages-examples-render-block-tabs>
+          <jspm-packages-examples-render-block-tabs-content>
+            <jspm-packages-render-block
+              class={`${EXAMPLES_RENDER_TAB} active`}
             >
-            </iframe>
-          </jspm-packages-example-sandbox>
+              <jspm-packages-examples-render-domtree>
+                <figure id="domtree" />
+              </jspm-packages-examples-render-domtree>
+            </jspm-packages-render-block>
+            <jspm-packages-render-block
+              class={`${EXAMPLES_RENDER_TAB}`}
+            >
+              <jspm-packages-examples-render-html-browser>
+                <iframe
+                  frameborder="0"
+                  margin="0"
+                  padding="0"
+                  borderStyle="none"
+                  height="100%"
+                  width="100%"
+                  marginBottom="-5px"
+                  overflow="scroll"
+                >
+                </iframe>
+              </jspm-packages-examples-render-html-browser>
+            </jspm-packages-render-block>
+          </jspm-packages-examples-render-block-tabs-content>
+        </jspm-packages-render-blocks>
+        <jspm-packages-code-blocks>
+          <jspm-packages-examples-code-block-tabs>
+          </jspm-packages-examples-code-block-tabs>
+          <jspm-packages-examples-code-block-tabs-content>
+            <jspm-packages-code-block
+              class={`${EXAMPLES_CODE_TAB} active`}
+            >
+              <jspm-packages-browser-control>
+                <BrowserControl />
+              </jspm-packages-browser-control>
+              <jspm-packages-examples-source-code-html-browser>
+                <pre>
+      <code class="language-markup">{browser?.input}</code>
+                </pre>
+              </jspm-packages-examples-source-code-html-browser>
+            </jspm-packages-code-block>
+
+            <jspm-packages-code-block
+              class={EXAMPLES_CODE_TAB}
+            >
+              <jspm-packages-browser-control>
+                <BrowserControl />
+              </jspm-packages-browser-control>
+
+              <jspm-packages-examples-generated-code-html-browser>
+                <pre>
+                <code class="language-markup">{browser?.output}</code>
+                </pre>
+              </jspm-packages-examples-generated-code-html-browser>
+            </jspm-packages-code-block>
+
+            <jspm-packages-code-block
+              class={EXAMPLES_CODE_TAB}
+            >
+              <jspm-packages-browser-control>
+                <BrowserControl />
+              </jspm-packages-browser-control>
+
+              <jspm-packages-examples-generated-code-importmap-browser>
+                <pre>
+                <code class="language-json">{{}}</code>
+                </pre>
+              </jspm-packages-examples-generated-code-importmap-browser>
+            </jspm-packages-code-block>
+          </jspm-packages-examples-code-block-tabs-content>
         </jspm-packages-code-blocks>
-        <jspm-packages-example-render>
-          <button>Render HTML</button>
-        </jspm-packages-example-render>
       </article>
     </section>
   );

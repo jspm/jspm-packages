@@ -625,3 +625,56 @@ jspm-packages-search-suggestion
   content: "|";
   margin-right: 10px;
 }
+
+jspm-packages-render-blocks, jspm-packages-examples-render-domtree, jspm-packages-examples-render-domtree figure{
+  display: block;
+  height: 100%;
+}
+/* 
+jspm-packages-examples-render-block-tabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+jspm-packages-examples-render-block-tabs label {
+  display: inline-block;
+  padding: 10px 20px;
+  margin-right: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  position: relative;
+  top: 1px;
+  z-index: 1;
+}
+
+jspm-packages-examples-render-block-tabs input[type="radio"] {
+  display: none;
+}
+
+jspm-packages-examples-render-block-tabs input[type="radio"]:checked + label {
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
+  z-index: 2;
+}
+
+jspm-packages-examples-render-block-tabs-content {
+  display: none;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 0 5px 5px 5px;
+  background-color: #fff;
+}
+
+jspm-packages-examples-render-block-tabs-content:first-of-type {
+  display: block;
+} */

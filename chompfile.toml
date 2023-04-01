@@ -72,7 +72,7 @@ run = '''
 
     const generator = new Generator({
       mapUrl: import.meta.url,
-      env: ["deno", "production"],
+      env: ['deno', 'browser', 'module', 'production'],
       inputMap: {
         imports: {
           "nano-jsx": "https://deno.land/x/nano_jsx@v0.0.35/types.ts"

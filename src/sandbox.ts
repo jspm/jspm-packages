@@ -9,6 +9,13 @@ import { javascript } from "@codemirror/lang-javascript";
 import { Generator } from "@jspm/generator";
 import { jspmDark } from "#theme-codemirror-jspm-dark";
 import { generateTreeFromDOM } from "#domtree";
+import {
+  EXAMPLES_GENERATED_CODE_HTML_BROWSER,
+  EXAMPLES_GENERATED_CODE_IMPORTMAP_BROWSER,
+  EXAMPLES_RENDER_HTML_BROWSER,
+  EXAMPLES_RENDER_DOMTREE,
+  DEFAULT_EXAMPLES_CODE_ACTIVE_TAB
+} from "#constants";
 
 const generator = new Generator({
   env: ["browser", "production"]
@@ -19,20 +26,26 @@ async function getExampleInputCode() {
   return docTemplate.text();
 }
 
-async function getExampleOutputCode() {
-  const docTemplate = await fetch("/example-browser-output.html");
-  return docTemplate.text();
-}
+let examplesGeneratedCodeImportmapBrowserEditor: EditorView;
 
-function getDoc(htmlSource: string) {
+let examplesGeneratedCodeHTMLBrowserEditor: EditorView;
+
+let examplesSourceCodeHTMLBrowserEditor: EditorView;
+
+function jspmGeneratedHTML(htmlSource: string) {
   return generator.htmlInject(htmlSource, {
     preload: true,
-    integrity: true, // erring ATM
+    // integrity: true, // erring ATM
     whitespace: true,
     esModuleShims: true,
     comment: true,
     trace: true,
   });
+}
+
+async function getExampleOutputCode() {
+  const docTemplate = await fetch("/example-browser-output.html");
+  return docTemplate.text();
 }
 
 const languageConf = new Compartment();
@@ -49,7 +62,7 @@ const autoLanguage = EditorState.transactionExtender.of((tr) => {
 
 function renderExample(source: string) {
   const iframe = document.querySelector(
-    "#sandbox-render-html > iframe",
+    "jspm-packages-examples-render-html-browser > iframe",
   ) as HTMLIFrameElement | null;
   if (iframe) {
     const needsShim = !source.match(/es-module-shims(\.min)?\.js/);
@@ -57,11 +70,10 @@ function renderExample(source: string) {
       new Blob(
         [
           `
-        <script>self.esmsInitOptions = { onerror: e=>{window.parent.jspmSandboxError(e.message || e, '', '', '', e)} };</script>
-        ${
-            needsShim
-              ? `<script async src="https://ga.jspm.io/npm:es-module-shims@0.10.1/dist/es-module-shims.min.js"><${""}/script>`
-              : ""
+        <script>self.esmsInitOptions = { polyfillEnable: ['css-modules', 'json-modules'], onerror: e=>{window.parent.jspmSandboxError(e.message || e, '', '', '', e)} };</script>
+        ${needsShim
+            ? `<script async src="https://ga.jspm.io/npm:es-module-shims@1.7.0/dist/es-module-shims.min.js"><${""}/script>`
+            : ""
           }
         <script>window.parent.jspmSandboxStarted()<${""}/script>
         ${source}
@@ -78,10 +90,6 @@ function renderExample(source: string) {
       ),
     );
     iframe.src = blobUrl;
-
-    // const renderElement = document.querySelector("jspm-packages-example-sandbox")  as HTMLElement | null;
-    // renderElement.innerHTML = "";
-    // renderElement.appendChild(iframe);
 
     let started = false;
     let running = false;
@@ -115,15 +123,13 @@ function renderExample(source: string) {
   }
 }
 
-let importmapEditor: EditorView;
-
-function renderImportmap() {
+function renderExamplesGeneratedCodeImportmapBrowser() {
   const importmapEditorMountElement = document.querySelector(
-    "jspm-packages-example-browser-importmap",
+    "jspm-packages-examples-generated-code-importmap-browser",
   ) as HTMLElement | null;
 
   if (importmapEditorMountElement) {
-    
+
     importmapEditorMountElement.innerHTML = "";
 
     const editor = new EditorView({
@@ -131,16 +137,14 @@ function renderImportmap() {
       extensions: [basicSetup, languageConf.of(html()), autoLanguage, jspmDark],
       parent: importmapEditorMountElement,
     });
-    importmapEditor = editor;
+    examplesGeneratedCodeImportmapBrowserEditor = editor;
     return editor;
   }
 }
 
-let outputEditor: EditorView;
-
-async function renderOutput() {
+async function renderExamplesGeneratedCodeHTMLBrowser() {
   const outputEditorMountElement = document.querySelector(
-    "jspm-packages-example-browser-output",
+    "jspm-packages-examples-generated-code-html-browser",
   ) as HTMLElement | null;
 
   if (outputEditorMountElement) {
@@ -154,7 +158,9 @@ async function renderOutput() {
       extensions: [basicSetup, languageConf.of(html()), autoLanguage, jspmDark],
       parent: outputEditorMountElement,
     });
-    outputEditor = editor;
+
+    examplesGeneratedCodeHTMLBrowserEditor = editor;
+
     return editor;
   }
 }
@@ -162,47 +168,78 @@ async function renderOutput() {
 function renderSandbox(insert: string) {
   const store = localStorage.getItem("@jspm/packages/store");
   if (store) {
-    //const { sandboxActiveTab } = JSON.parse(store);
-    //if (sandboxActiveTab === "sandbox-render-html") {
-    renderExample(insert);
-    //}
+    const { examplesCodeBlockActiveTab } = JSON.parse(store);
+    if (examplesCodeBlockActiveTab === "sandbox-generated-html-browser-render") {
+      renderExample(insert);
+    }
 
-    //if (sandboxActiveTab === "sandbox-nft") {
-    generateTreeFromDOM(insert);
-    //renderImportmap(insert);
-    // }
+    if (examplesCodeBlockActiveTab === "sandbox-nft") {
+      generateTreeFromDOM(insert);
+      //renderImportmap(insert);
+    }
   }
 }
 
 async function updateDoc(viewUpdate: ViewUpdate) {
-  const insert = await getDoc(viewUpdate.state.doc.toString());
+  const insert = await jspmGeneratedHTML(viewUpdate.state.doc.toString());
+  const store = localStorage.getItem("@jspm/packages/store");
+  
+  if (store) {
+    const { examplesCodeBlockActiveTab, examplesRenderBlockActiveTab } = JSON.parse(store);
+   
+    switch (examplesCodeBlockActiveTab) {
+      case EXAMPLES_GENERATED_CODE_HTML_BROWSER: {
+        console.log(EXAMPLES_GENERATED_CODE_HTML_BROWSER);
+        examplesGeneratedCodeHTMLBrowserEditor?.dispatch({
+          changes: {
+            from: 0,
+            to: examplesGeneratedCodeHTMLBrowserEditor.state.doc.length,
+            insert,
+          },
+        });
+        break;
+      }
+      case EXAMPLES_GENERATED_CODE_IMPORTMAP_BROWSER: {
+        console.log(EXAMPLES_GENERATED_CODE_IMPORTMAP_BROWSER);
+        const parsedDOM = new DOMParser().parseFromString(insert, "text/html");
+        const scripts = Array.from(parsedDOM.scripts).find((script) =>
+          script.type === "importmap"
+        );
+        examplesGeneratedCodeImportmapBrowserEditor?.dispatch({
+          changes: {
+            from: 0,
+            to: examplesGeneratedCodeImportmapBrowserEditor.state.doc.length,
+            insert: scripts?.innerText,
+          },
+        });
+        break;
+      }
+      default: {
+        console.info(DEFAULT_EXAMPLES_CODE_ACTIVE_TAB);
+      }
+    }
 
-  outputEditor?.dispatch({
-    changes: {
-      from: 0,
-      to: outputEditor.state.doc.length,
-      insert,
-    },
-  });
-  renderSandbox(insert);
-
-  const parsedDOM = new DOMParser().parseFromString(insert, "text/html");
-
-  const scripts = Array.from(parsedDOM.scripts).find((script) =>
-    script.type === "importmap"
-  );
-  importmapEditor?.dispatch({
-    changes: {
-      from: 0,
-      to: importmapEditor.state.doc.length,
-      insert: scripts?.innerText,
-    },
-  });
+    switch (examplesRenderBlockActiveTab) {
+      case EXAMPLES_RENDER_DOMTREE: {
+        console.log(EXAMPLES_RENDER_DOMTREE);
+        generateTreeFromDOM(insert);
+        break;
+      }
+      case EXAMPLES_RENDER_HTML_BROWSER: {
+        console.log(EXAMPLES_RENDER_HTML_BROWSER);
+        renderExample(insert);
+        break;
+      }
+      default: {
+        console.error(`unhandled render block case`);
+      }
+    }
+  }
 }
 
-async function renderInput() {
+async function renderExamplesSourceCodeHTMLBrowserEditor() {
   const inputEditorMountElement = document.querySelector(
-    "jspm-packages-example-browser-input",
+    "jspm-packages-examples-source-code-html-browser",
   ) as HTMLElement | null;
 
   if (inputEditorMountElement) {
@@ -215,7 +252,7 @@ async function renderInput() {
       doc: htmlSource,
       extensions: [
         basicSetup,
-        languageConf.of(javascript()),
+        languageConf.of(html()),
         autoLanguage,
         jspmDark,
         EditorView.updateListener.of(updateDoc),
@@ -228,7 +265,7 @@ async function renderInput() {
 }
 
 function main() {
-  Promise.all([renderInput(), renderOutput(), renderImportmap()]);
+  Promise.all([renderExamplesSourceCodeHTMLBrowserEditor(), renderExamplesGeneratedCodeHTMLBrowser(), renderExamplesGeneratedCodeImportmapBrowser()]);
 }
 
-export { main };
+export { main, renderExamplesSourceCodeHTMLBrowserEditor };

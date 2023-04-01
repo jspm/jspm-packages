@@ -1,7 +1,7 @@
 /** @jsx h */
 import { Fragment, h } from "nano-jsx";
 import { Header } from "#header";
-import { Search } from "#search";
+// import { Search } from "#search";
 import { Examples } from "#examples";
 
 type Prop = {

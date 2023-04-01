@@ -126,21 +126,16 @@ jspm-packages-code-block {
   }
 }
 
-.active {
-  z-index: 5;
-  border: 5px solid var(--dl-color-primary-js-primary);
-}
-
 jspm-packages-code-block:not(.active) .cm-editor {
   opacity: 0.7;
 }
 
-/* jspm-packages-code-block:has(jspm-packages-example-browser-input) {
+/* jspm-packages-code-block:has(jspm-packages-examples-source-code-html-browser) {
   position: absolute;
   bottom: 25px;
 } */
 
-jspm-packages-code-block:has(jspm-packages-example-browser-output) {
+jspm-packages-code-block:has(jspm-packages-examples-generated-code-html-browser) {
   /* left: 250px; */
   position: relative;
   /* transform: perspective(1051px) rotateY(30deg); */
@@ -154,9 +149,6 @@ jspm-packages-home jspm-packages-examples > section .script span {
   opacity: 1;
 } */
 
-jspm-packages-home jspm-packages-examples jspm-packages-example-sandbox {
-  height: 100%;
-}
 
 jspm-packages-home jspm-packages-examples>section .importmap {
   font-family: "Inter", sans-serif;
@@ -248,16 +240,16 @@ jspm-packages-home jspm-packages-examples>section jspm-packages-generator-button
   font-family: sen;
 }
 
-jspm-packages-example-navigation {
+jspm-packages-examples-code-block-tabs {
   display: block;
 }
 
-jspm-packages-example-navigation figure {
+jspm-packages-examples-code-block-tabs figure {
   margin: 0;
   padding: 0;
 }
 
-jspm-packages-example-navigation aside ul {
+jspm-packages-examples-code-block-tabs aside ul {
   position: relative;
   margin: 0 0 0 20px;
   padding: 0;
@@ -270,15 +262,21 @@ jspm-packages-example-navigation aside ul {
   gap: 10px;
 }
 
-jspm-packages-example-navigation aside ul li {
+jspm-packages-examples-code-block-tabs aside ul li {
   background-color: var(--dl-color-primary-js-primary);
   padding: 0.5rem 1rem;
 }
 
-.sandbox-section {
+jspm-packages-code-block,
+jspm-packages-render-block {
   display: none;
 }
 
-.sandbox-section.active {
+jspm-packages-code-block.active,
+jspm-packages-render-block.active {
   display: block;
+}
+
+jspm-packages-code-block.active {
+  border: 5px solid var(--dl-color-primary-js-primary);
 }

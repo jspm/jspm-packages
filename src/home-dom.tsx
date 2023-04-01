@@ -4,6 +4,7 @@
 /// <reference types="https://deno.land/x/nano_jsx@v0.0.35/types.ts" />
 
 import { Component, h, hydrate } from "nano-jsx";
+import type { EditorView } from "codemirror";
 import { Generator } from "@jspm/generator";
 import { store } from "#store";
 import type { ENV, Store } from "#store";
@@ -18,10 +19,16 @@ import { SearchForm } from "#search-form";
 import type { SearchFormProps } from "#search-form";
 import { SearchSuggestions } from "#search-suggestions";
 import type { SearchSuggestionsProps } from "#search-suggestions";
-import { ExamplesNavigation } from "#examples-navigation";
-import type { ExamplesNavigationProp } from "#examples-navigation";
-// import { ExampleSandbox } from "#example-sandbox";
-// import type { ExampleSandboxProp } from "#example-sandbox";
+import { ExamplesCodeBlockTabs } from "#examples-code-block-tabs";
+import type { ExamplesCodeBlockTabsProp } from "#examples-code-block-tabs";
+import { ExamplesRenderBlockTabs } from "#examples-render-block-tabs";
+import type { ExamplesRenderBlockTabsProp } from "#examples-render-block-tabs";
+import { main as renderExamplesEditor } from '@jspm/packages/sandbox';
+import {
+  EXAMPLES_CODE_TAB,
+  EXAMPLES_RENDER_TAB
+} from "#constants";
+
 function hydrateImportmapToggleButton({
   dependencyCount,
   toggleImportmapDialog,
@@ -42,17 +49,20 @@ function hydrateImportmapToggleButton({
   return false;
 }
 
-function hydrateExamplesNavigation({
-  activate,
-}: ExamplesNavigationProp) {
+function hydrateExamplesCodeBlockTabs({
+  changeCodeBlockTab,
+  examplesCodeBlockActiveTab
+}: ExamplesCodeBlockTabsProp) {
   const mountElement = document.querySelector(
-    "jspm-packages-example-navigation",
+    "jspm-packages-examples-code-block-tabs",
   );
 
   if (mountElement) {
     return hydrate(
-      <ExamplesNavigation
-        activate={activate}
+      <ExamplesCodeBlockTabs
+        id="examples-code-home"
+        changeCodeBlockTab={changeCodeBlockTab}
+        examplesCodeBlockActiveTab={examplesCodeBlockActiveTab}
       />,
       mountElement,
     );
@@ -60,23 +70,26 @@ function hydrateExamplesNavigation({
   return false;
 }
 
-// function hydrateExampleSandbox({
-//   sandboxActiveTab,
-// }: ExampleSandboxProp) {
-//   const mountElement = document.querySelector(
-//     "jspm-packages-example-sandbox",
-//   );
+function hydrateExamplesRenderBlockTabs({
+  changeRenderBlockTab,
+  examplesRenderBlockActiveTab
+}: ExamplesRenderBlockTabsProp) {
+  const mountElement = document.querySelector(
+    "jspm-packages-examples-render-block-tabs",
+  );
 
-//   if (mountElement) {
-//     return hydrate(
-//       <ExampleSandbox
-//         sandboxActiveTab={sandboxActiveTab}
-//       />,
-//       mountElement,
-//     );
-//   }
-//   return false;
-// }
+  if (mountElement) {
+    return hydrate(
+      <ExamplesRenderBlockTabs
+        id="examples-render-home"
+        changeRenderBlockTab={changeRenderBlockTab}
+        examplesRenderBlockActiveTab={examplesRenderBlockActiveTab}
+      />,
+      mountElement,
+    );
+  }
+  return false;
+}
 
 function hydrateImportMapDialog({
   generatorHash,
@@ -150,14 +163,16 @@ function hydrateAll({
   toggleImportmapDialog,
   toggleDependencyDetail,
   handleNPMSearch,
-  activateSandboxTab,
+  changeCodeBlockTab,
+  changeRenderBlockTab,
 }: {
   state: Store;
   toggleExportSelection: (event: MouseEvent) => void;
   toggleImportmapDialog: (event: MouseEvent) => void;
   toggleDependencyDetail: (event: MouseEvent) => void;
   handleNPMSearch: (Event: InputEvent) => void;
-  activateSandboxTab: (event: MouseEvent) => void;
+  changeCodeBlockTab: (event: MouseEvent) => void;
+  changeRenderBlockTab: (event: MouseEvent) => void;
 }) {
   const {
     dependencies,
@@ -168,7 +183,8 @@ function hydrateAll({
     importmapDialogOpenDependencyDetails,
     npmSearch,
     searchTerm,
-    sandboxActiveTab,
+    examplesCodeBlockActiveTab,
+    examplesRenderBlockActiveTab
   } = state;
 
   Promise.all([
@@ -190,8 +206,8 @@ function hydrateAll({
     }),
     hydrateSearchForm({ onInput: handleNPMSearch, value: searchTerm }),
     hydrateSearchSuggestion(npmSearch[searchTerm]),
-    //hydrateExampleSandbox({ sandboxActiveTab }),
-    hydrateExamplesNavigation({ activate: activateSandboxTab }),
+    hydrateExamplesCodeBlockTabs({ changeCodeBlockTab, examplesCodeBlockActiveTab }),
+    hydrateExamplesRenderBlockTabs({ changeRenderBlockTab, examplesRenderBlockActiveTab }),
   ]);
 }
 
@@ -220,12 +236,23 @@ class DOM extends Component {
       dialogOpen: dependencies.length > 0 ? !dialogOpen : false,
     });
   };
-  activateSandboxTab = (event: MouseEvent) => {
-    const { href } = event.currentTarget.dataset;
-
+  
+  changeExamplesCodeBlockTab = (event: MouseEvent) => {
+    // const { href } = event.currentTarget.dataset;
+    const { value } = event.currentTarget;
+    //jspm-packages-examples-render-block-tabs
     this.store.setState({
       ...this.store.state,
-      sandboxActiveTab: href,
+      examplesCodeBlockActiveTab: value,
+    });
+  };
+
+  changeExamplesRenderBlockTab = (event: MouseEvent) => {
+    // const { href } = event.currentTarget.dataset;
+    const { value } = event.currentTarget;
+    this.store.setState({
+      ...this.store.state,
+      examplesRenderBlockActiveTab: value,
     });
   };
 
@@ -365,6 +392,11 @@ class DOM extends Component {
 
     return result;
   };
+  examplesSourceCodeHTMLBrowserEditor: EditorView;
+
+  renderExamples = async () =>{
+    this.examplesSourceCodeHTMLBrowserEditor = await renderExamplesEditor()
+  };
 
   didMount() {
     Promise.all([
@@ -375,12 +407,12 @@ class DOM extends Component {
         toggleImportmapDialog: this.toggleImportmapDialog,
         toggleDependencyDetail: this.toggleDependencyDetail,
         handleNPMSearch: this.handleNPMSearch,
-        activateSandboxTab: this.activateSandboxTab,
+        changeCodeBlockTab: this.changeExamplesCodeBlockTab,
+        changeRenderBlockTab: this.changeExamplesRenderBlockTab,
       }),
       this.reinstallImportmap(),
+      this.renderExamples()
     ]);
-    // this.generateSandboxURL();
-    // subscribe to store changes
     this.store.subscribe((newState: Store, prevState: Store) => {
       // check if you need to update your component or not
       const prevDependencyCount = prevState.dependencies.length;
@@ -416,20 +448,42 @@ class DOM extends Component {
         hydrateGeneratorLink({ generatorHash: newState.generatorHash });
       }
 
-      if (newState.sandboxActiveTab !== prevState.sandboxActiveTab) {
-        const sandboxSections = document.querySelectorAll(".sandbox-section");
+      if (
+        newState.examplesCodeBlockActiveTab !==
+          prevState.examplesCodeBlockActiveTab
+      ) {
+        //jspm-packages-code-block:has(jspm-packages-examples-source-code-html-browser) 
+        const examplesCodeBlocks = document.querySelectorAll(`.${EXAMPLES_CODE_TAB}`);
 
-        sandboxSections.forEach((section) => {
+        examplesCodeBlocks.forEach((section) => {
           section.classList.remove("active");
         });
-        
-        const activeTab = document.getElementById(newState.sandboxActiveTab);
+
+        const activeTab = document.querySelector(`.${EXAMPLES_CODE_TAB}:has(jspm-packages-${newState.examplesCodeBlockActiveTab})`);
         if (activeTab) {
           activeTab.classList.add(
             "active",
           );
         }
-        //hydrateExampleSandbox({ sandboxActiveTab: newState.sandboxActiveTab });
+      }
+
+      if (
+        newState.examplesRenderBlockActiveTab !==
+          prevState.examplesRenderBlockActiveTab
+      ) {
+        //jspm-packages-code-block:has(jspm-packages-examples-source-code-html-browser) 
+        const examplesCodeBlocks = document.querySelectorAll(`.${EXAMPLES_RENDER_TAB}`);
+
+        examplesCodeBlocks.forEach((section) => {
+          section.classList.remove("active");
+        });
+
+        const activeTab = document.querySelector(`.${EXAMPLES_RENDER_TAB}:has(jspm-packages-${newState.examplesRenderBlockActiveTab})`);
+        if (activeTab) {
+          activeTab.classList.add(
+            "active",
+          );
+        }
       }
 
       if (

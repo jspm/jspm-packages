@@ -2,14 +2,14 @@
 import { Fragment, h } from "nano-jsx";
 
 type Prop = {
-  sandboxActiveTab: "sandbox-nft" | "sandbox-render" | "sandbox-code";
+  examplesCodeBlockActiveTab: "sandbox-nft" | "sandbox-render" | "sandbox-code";
 };
 
-function ExampleSandbox({ sandboxActiveTab }: Prop) {
+function ExampleSandbox({ examplesCodeBlockActiveTab }: Prop) {
   return (
     <Fragment>
-      {sandboxActiveTab === "sandbox-nft" && <figure id="_domtree" />}
-      {sandboxActiveTab === "sandbox-render" && (
+      {examplesCodeBlockActiveTab === "sandbox-nft" && <figure id="_domtree" />}
+      {examplesCodeBlockActiveTab === "sandbox-render" && (
         <iframe
           id="sandbox-render"
           frameborder="0"
