@@ -72,8 +72,8 @@ run = '''
 
     const generator = new Generator({
       mapUrl: import.meta.url,
-      env: ["deno", "production"], 
-      defaultProvider: 'jspm.cachefly',
+      env: ["deno", "production"],
+      defaultProvider: 'jspm',
       inputMap: {
         imports: {
           "nano-jsx": "https://deno.land/x/nano_jsx@v0.0.33/mod.ts"
@@ -100,8 +100,8 @@ run = '''
 
     const generator = new Generator({
       mapUrl: pathToFileURL(process.env.TARGET),
-      env: ["browser", "production"], 
-      defaultProvider: 'jspm.cachefly'
+      env: ["browser", "production"],
+      defaultProvider: 'jspm'
     });
 
     const htmlSource = await readFile(process.env.DEP, 'utf-8');
