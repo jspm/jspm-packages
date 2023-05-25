@@ -15,6 +15,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup Chomp
         uses: guybedford/chomp-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: chomp build
       - name: Upload built artifacts
         uses: actions/upload-artifact@v3
